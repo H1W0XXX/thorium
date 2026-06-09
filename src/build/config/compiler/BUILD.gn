@@ -2843,8 +2843,6 @@ config("thorium_simd_optimization") {
     } else if (is_mac) {
       cflags += [ "-mcpu=apple-m1"]
     } else if (!is_android) {
-      # Linux and ChromiumOS.
-      cflags += [ "-march=armv8-a+simd", ]
       if (is_raspi) {
         cflags += [ "-mtune=cortex-a72", ]
       }

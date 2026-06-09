@@ -22,6 +22,10 @@ if (bundle_widevine_cdm) {
   import("//media/cdm/library_cdm/cdm_paths.gni")
 }
 
+if (enable_library_cdms && !bundle_widevine_cdm) {
+  import("//media/cdm/library_cdm/cdm_paths.gni")
+}
+
 declare_args() {
   # Enables checks that ensure the packages are installable on all supported
   # distributions.
@@ -91,6 +95,11 @@ packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
 # (e.g. all locales, resources, etc.)
 packaging_files = packaging_files_binaries + [
                     "common/installer.py",
+                    "$root_out_dir/initial_preferences",
+                    "$root_out_dir/resources/inspector_overlay/inspector_overlay_resources.grd",
+                    "$root_out_dir/resources/inspector_overlay/main.js",
+                    "$root_out_dir/thorium.svg",
+                    "$root_out_dir/ui_resources_100_percent.pak",
                     "$root_out_dir/xdg-mime",
                     "$root_out_dir/xdg-settings",
                     "$root_out_dir/locales/en-US.pak",
@@ -211,6 +220,35 @@ strip_binary("strip_chrome_sandbox") {
   deps = [ "//sandbox/linux:chrome_sandbox" ]
 }
 
+strip_binary("strip_thorium_shell") {
+  testonly = true
+  binary_input = "$root_out_dir/thorium_shell"
+  deps = [ "//content/shell:thorium_shell" ]
+}
+
+if (enable_library_cdms) {
+  strip_binary("strip_clearkey_cdm") {
+    testonly = true
+    binary_input = "$root_out_dir/$clearkey_cdm_path/libclearkeycdm.so"
+    stripped_binary_output =
+        "$root_out_dir/$clearkey_cdm_path/libclearkeycdm.so.stripped"
+    deps = [ "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm_bin" ]
+  }
+}
+
+group("thorium_package_extras") {
+  testonly = true
+  deps = [
+    ":strip_thorium_shell",
+    "//chrome/test/chromedriver:chromedriver_server",
+    "//content/shell:copy_shell_resources",
+    "//content/shell:pak",
+  ]
+  if (enable_library_cdms) {
+    deps += [ ":strip_clearkey_cdm" ]
+  }
+}
+
 strip_binary("strip_libEGL_shlib") {
   binary_input = "$root_out_dir/libEGL.so"
   deps = [ "//third_party/angle:libEGL" ]
@@ -309,6 +347,16 @@ copy("deb_packaging_files") {
   outputs = [ "$root_out_dir/installer/debian/{{source_file_part}}" ]
 }
 
+generated_file("thorium_initial_preferences") {
+  outputs = [ "$root_out_dir/initial_preferences" ]
+  contents = "{\n}\n"
+}
+
+copy("thorium_svg") {
+  sources = [ "//chrome/app/theme/chromium/product_logo.svg" ]
+  outputs = [ "$root_out_dir/thorium.svg" ]
+}
+
 copy("theme_files") {
   visibility = [ ":*" ]
   sources = [
@@ -384,6 +432,8 @@ group("installer_deps") {
     ":strip_chrome_management_service",
     ":strip_chrome_sandbox",
     ":theme_files",
+    ":thorium_initial_preferences",
+    ":thorium_svg",
     "//chrome",
     "//chrome:packed_resources",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:chrome_management_service",
@@ -391,6 +441,8 @@ group("installer_deps") {
     "//components/crash/core/app:chrome_crashpad_handler",
     "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
     "//sandbox/linux:chrome_sandbox",
+    "//third_party/devtools-frontend/src/inspector_overlay:build_inspector_overlay",
+    "//ui/resources:copy_ui_resources_100_percent",
   ]
   if (bundle_widevine_cdm) {
     public_deps += [ "//third_party/widevine/cdm" ]

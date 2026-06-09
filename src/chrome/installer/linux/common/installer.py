@@ -275,6 +275,7 @@ class Installer:
 
         self._stage_binaries(install_dir)
         self._stage_resources(install_dir)
+        self._stage_thorium_extras(install_dir)
         self._stage_theme_icons(install_dir)
         self._stage_desktop_integration(install_dir)
 
@@ -386,6 +387,122 @@ class Installer:
                 mode=self.shlib_perms,
                 strip=True,
             )
+
+    def _stage_thorium_extras(self, install_dir):
+        required_files = [
+            "chromedriver",
+            "content_shell.pak",
+            "initial_preferences",
+            "resources/inspector_overlay/inspector_overlay_resources.grd",
+            "resources/inspector_overlay/main.js",
+            "shell_resources.pak",
+            "thorium.svg",
+            "thorium_shell.stripped",
+            "thorium_shell.png",
+            "thorium-shell",
+            "thorium-shell.desktop",
+            "ui_resources_100_percent.pak",
+            "pak",
+        ]
+        missing_files = [
+            filename for filename in required_files
+            if not (self.output_dir / filename).is_file()
+        ]
+        if missing_files:
+            missing_list = ", ".join(missing_files)
+            raise FileNotFoundError(
+                "Missing Thorium package extras: "
+                f"{missing_list}. Build "
+                "//chrome/installer/linux:thorium_package_extras "
+                "before building the Linux package."
+            )
+
+        clearkey_dir = self.output_dir / "ClearKeyCdm"
+        clearkey_libraries = []
+        if clearkey_dir.is_dir():
+            clearkey_libraries = list(
+                clearkey_dir.glob(
+                    "_platform_specific/*/libclearkeycdm.so.stripped"
+                )
+            )
+            if len(clearkey_libraries) != 1:
+                raise FileNotFoundError(
+                    "Expected exactly one stripped ClearKey CDM library. "
+                    "Build //chrome/installer/linux:thorium_package_extras "
+                    "before building the Linux package."
+                )
+
+        for filename in [
+            "content_shell.pak",
+            "initial_preferences",
+            "shell_resources.pak",
+            "thorium.svg",
+            "thorium_shell.png",
+            "ui_resources_100_percent.pak",
+        ]:
+            self._install_into_dir(
+                self.output_dir / filename,
+                install_dir,
+                mode=0o644,
+            )
+
+        self._install(
+            self.output_dir / "thorium_shell.stripped",
+            install_dir / "thorium_shell",
+            mode=0o755,
+        )
+        self._install(
+            self.output_dir / "chromedriver",
+            install_dir / "chromedriver",
+            mode=0o755,
+        )
+        self._install(
+            self.output_dir / "pak",
+            install_dir / "pak",
+            mode=0o755,
+        )
+        self._install(
+            self.output_dir / "thorium-shell",
+            self.staging_dir / "usr/bin/thorium-shell",
+            mode=0o755,
+        )
+        self._install(
+            self.output_dir / "thorium-shell.desktop",
+            self.staging_dir /
+            "usr/share/applications/thorium-shell.desktop",
+            mode=0o644,
+        )
+
+        if clearkey_libraries:
+            clearkey_source = clearkey_libraries[0]
+            clearkey_relative_dir = clearkey_source.parent.relative_to(
+                clearkey_dir
+            )
+            clearkey_destination = (
+                install_dir / "ClearKeyCdm" / clearkey_relative_dir /
+                "libclearkeycdm.so"
+            )
+            self._install(
+                clearkey_source,
+                clearkey_destination,
+                mode=self.shlib_perms,
+            )
+
+        inspector_overlay_dir = install_dir / "resources/inspector_overlay"
+        for filename in [
+            "inspector_overlay_resources.grd",
+            "main.js",
+        ]:
+            self._install(
+                self.output_dir / "resources/inspector_overlay" / filename,
+                inspector_overlay_dir / filename,
+                mode=0o644,
+            )
+
+        pak_link = self.staging_dir / "usr/bin/pak"
+        if pak_link.exists() or pak_link.is_symlink():
+            pak_link.unlink()
+        os.symlink(f"{self.context['INSTALLDIR']}/pak", pak_link)
 
     def _stage_resources(self, install_dir):
         # resources

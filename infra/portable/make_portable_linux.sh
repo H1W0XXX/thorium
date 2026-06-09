@@ -70,13 +70,14 @@ makeARM () {
 	sleep 2 &&
 
 	# Extract data.tar.xz
+	rm -r -f ./temp &&
+	rm -f "./${ZIP_NAME}" &&
 	mkdir -v -p ./temp &&
 	ar xv "$DEB_NAME" &&
 	tar xvf ./data.tar.xz &&
 	cp -r -v ./opt/chromium.org/thorium/* ./temp/ &&
 	rm -r -v ./temp/cron &&
 	rm -r -v ./temp/thorium-browser &&
-	cp -r -v ./usr/bin/pak temp/ &&
 	cp -r -v ./README.linux temp/README.txt &&
 	cp -r -v ./THORIUM-PORTABLE.sh temp/ &&
 	cp -r -v ./thorium-portable.desktop temp/ &&
@@ -132,13 +133,14 @@ printf "${c0}\n" &&
 sleep 2 &&
 
 # Extract data.tar.xz
+rm -r -f ./temp &&
+rm -f "./${ZIP_NAME}" &&
 mkdir -v -p ./temp &&
 ar xv "$DEB_NAME" &&
 tar xvf ./data.tar.xz &&
 cp -r -v ./opt/chromium.org/thorium/* ./temp/ &&
 rm -r -v ./temp/cron &&
 rm -r -v ./temp/thorium-browser &&
-cp -r -v ./usr/bin/pak temp/ &&
 cp -r -v ./README.linux temp/README.txt &&
 cp -r -v ./THORIUM-PORTABLE temp/ &&
 cp -r -v ./thorium-portable.desktop temp/ &&

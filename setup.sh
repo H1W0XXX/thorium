@@ -409,10 +409,10 @@ copyAndroid () {
 	#rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon.png &&
 	#./infra/fix_libaom.sh &&
 	printf "\n" &&
-	printf "${YEL}Switch to the thorium directory...${c0}\n" &&
+	printf "${YEL}Downloading PGO profiles...${c0}\n" &&
 	cd ${CR_SRC_DIR} &&
 	# python3 tools/update_pgo_profiles.py --target=android-desktop-arm64 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
-	# python3 tools/update_pgo_profiles.py --target=android-arm32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
+	python3 tools/update_pgo_profiles.py --target=android-arm32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	cd ~/thorium &&
 	printf "\n"
 }

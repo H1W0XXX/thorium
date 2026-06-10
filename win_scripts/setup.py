@@ -311,10 +311,6 @@ else:
 def copy_woa():
     print("\nCopying Windows on Arm build files\n")
     copy_directory(
-        os.path.normpath(os.path.join(thor_src_dir, "arm", "build")),
-        os.path.normpath(os.path.join(cr_src_dir, "build")),
-    )
-    copy_directory(
         os.path.normpath(os.path.join(thor_src_dir, "arm", "third_party")),
         os.path.normpath(os.path.join(cr_src_dir, "third_party")),
     )

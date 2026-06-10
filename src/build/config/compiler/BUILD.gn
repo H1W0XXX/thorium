@@ -2839,7 +2839,6 @@ config("thorium_simd_optimization") {
     }
   } else if (current_cpu == "arm64") {
     if (is_win) {
-      cflags += [ "-march=armv8-a+simd", ]
     } else if (is_mac) {
       cflags += [ "-mcpu=apple-m1"]
     } else if (!is_android) {

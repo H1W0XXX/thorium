@@ -116,15 +116,20 @@ patchThor () {
 	# cp -v other/fix_drag_and_drop_on_wayland.patch ${CR_SRC_DIR}/ &&
 	# cp -v other/fix_touch_emulator_double_tap_zoom.patch ${CR_SRC_DIR}/ &&
 	# cp -v other/fix_setting_popover_invoker_crash.patch ${CR_SRC_DIR}/ &&
+	
 	# Starting with M145, the following patch can be removed
 	cp -v other/fix_dangling_pointer_tooltip.patch ${CR_SRC_DIR}/ &&
+	
 	# The following patch could not be fixed upstream because it
 	# is related to our custom flags
 	cp -v other/fix_disable_aero_crash.patch ${CR_SRC_DIR}/ &&
 	
 	cp -v other/allow_manifest_v2_extensions.patch ${CR_SRC_DIR}/ &&
+	
 	# Starting with M149, the following patch can be removed
 	cp -v other/fix_deb_dependency_generation.patch ${CR_SRC_DIR}/ &&
+	
+	cp -v other/android-disable-signin-without-account-manager.patch ${CR_SRC_DIR}/ &&
 
 	printf "\n" &&
 	printf "${YEL}Patching FFMPEG for HEVC...${c0}\n" &&
@@ -191,7 +196,9 @@ patchThor () {
 	git apply --reject ./fix_dangling_pointer_tooltip.patch &&
 	git apply --reject ./fix_disable_aero_crash.patch &&
 	printf "${YEL}Fix deb dependency generation...${c0}\n" &&
-	git apply --reject ./fix_deb_dependency_generation.patch
+	git apply --reject ./fix_deb_dependency_generation.patch &&
+    printf "${YEL}Disable signin without account manager...${c0}\n" &&
+	git apply --reject ./android-disable-signin-without-account-manager.patch
 	# git apply --reject ./fix_file_dialog_crash.patch &&
 	# git apply --reject ./fix_wayland_scale_crash.patch &&
 	# git apply --reject ./fix_setting_popover_invoker_crash.patch &&

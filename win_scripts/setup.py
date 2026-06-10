@@ -160,6 +160,7 @@ patches = [
     # "other/fix_setting_popover_invoker_crash.patch",
     "other/allow_manifest_v2_extensions.patch",
     "other/fix_deb_dependency_generation.patch",
+    "other/android-disable-signin-without-account-manager.patch",
 ]
 for patch in patches:
     relative_path = patch.replace("other/", "", 1)
@@ -263,6 +264,7 @@ os.chdir(cr_src_dir)
 try_run(f"git apply --reject fix_dangling_pointer_tooltip.patch")
 try_run(f"git apply --reject fix_disable_aero_crash.patch")
 try_run(f"git apply --reject fix_deb_dependency_generation.patch")
+try_run(f"git apply --reject android-disable-signin-without-account-manager.patch")
 # try_run(f"git apply --reject fix_file_dialog_crash.patch")
 # try_run(f"git apply --reject fix_wayland_scale_crash.patch")
 # try_run(f"git apply --reject fix_setting_popover_invoker_crash.patch")

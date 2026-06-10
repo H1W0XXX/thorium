@@ -92,4 +92,8 @@ use_thin_lto = true
 thin_lto_enable_optimizations = true
 enable_rust = true
 chrome_pgo_phase = 2
-pgo_data_path = "/home/alex/chromium/src/chrome/build/pgo_profiles/chrome-android-desktop-arm64-main-1756461135-92315c719e6a2f89e46aab48079e1acf58aa5880-05d475a73c264090f2af9393612481363853df99.profdata"
+use_order_profiling = false
+# It can now automatically locate and use the relevant orderfile.
+# pgo_data_path = "/home/alex/chromium/src/chrome/build/pgo_profiles/chrome-android-desktop-arm64-main-1756461135-92315c719e6a2f89e46aab48079e1acf58aa5880-05d475a73c264090f2af9393612481363853df99.profdata"
+# The path for the order file currently needs to be specified manually.
+chrome_orderfile_path = "/home/alex/chromium/src/chrome/android/orderfiles/arm64/orderfile.arm64.out"

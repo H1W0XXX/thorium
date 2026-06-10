@@ -3551,6 +3551,14 @@ bool Browser::CanCloseWithMultipleTabs() {
     return true;
   }
 
+  // A browser with no tabs is being closed as part of an internal operation,
+  // such as moving its last tab to another window. It must not be kept alive
+  // for a close confirmation, since its window may already be hidden.
+  const int tab_count = tab_strip_model()->count();
+  if (tab_count == 0) {
+    return true;
+  }
+
   // Figure out how many windows are open total.
   int total_window_count = 0;
   for (Browser* browser : *BrowserList::GetInstance()) {
@@ -3569,15 +3577,12 @@ bool Browser::CanCloseWithMultipleTabs() {
   bool show_confirmation_last_window = flag_value == "last";
 
   if (show_confirmation_last_window) {
-    if (total_window_count >= 1 || tab_strip_model()->count() <= 1) {
+    if (total_window_count >= 1 || tab_count <= 1) {
       return true;
     }
   } else {
     if (total_window_count == 0) {
       return true;
-    }
-    if (tab_strip_model()->count() == 0) {
-      tab_strip_model_delegate_->AddTabAt(GURL(), -1, true);
     }
   }
 

@@ -19,8 +19,6 @@
 
 &#45; Clean up the main Thorium repository and find ways to speed up rebasing (automation scripts may be introduced as appropriate).
 
-&#45; Add extension support for the Android version.
-
 ### Notes to self
 
 ## .grd text replacements (search with grep), because there are a few places we want to tweak some strings.

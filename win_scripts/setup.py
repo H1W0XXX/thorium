@@ -161,6 +161,9 @@ patches = [
     "other/allow_manifest_v2_extensions.patch",
     "other/fix_deb_dependency_generation.patch",
     "other/android-disable-signin-without-account-manager.patch",
+    "other/android-extensions-support.patch",
+    "other/chrome-web-store-protection.patch",
+    "other/enable-extension-in-incognito.patch",
 ]
 for patch in patches:
     relative_path = patch.replace("other/", "", 1)
@@ -265,6 +268,16 @@ try_run(f"git apply --reject fix_dangling_pointer_tooltip.patch")
 try_run(f"git apply --reject fix_disable_aero_crash.patch")
 try_run(f"git apply --reject fix_deb_dependency_generation.patch")
 try_run(f"git apply --reject android-disable-signin-without-account-manager.patch")
+
+
+print("\nApplying extension support and protection patches...\n")
+# Change directory to cr_src_dir and run commands
+os.chdir(cr_src_dir)
+try_run(f"git apply --reject android-extensions-support.patch")
+try_run(f"git apply --reject chrome-web-store-protection.patch")
+try_run(f"git apply --reject enable-extension-in-incognito.patch")
+
+
 # try_run(f"git apply --reject fix_file_dialog_crash.patch")
 # try_run(f"git apply --reject fix_wayland_scale_crash.patch")
 # try_run(f"git apply --reject fix_setting_popover_invoker_crash.patch")

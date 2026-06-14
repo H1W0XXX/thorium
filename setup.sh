@@ -130,6 +130,9 @@ patchThor () {
 	cp -v other/fix_deb_dependency_generation.patch ${CR_SRC_DIR}/ &&
 	
 	cp -v other/android-disable-signin-without-account-manager.patch ${CR_SRC_DIR}/ &&
+	cp -v other/android-extensions-support.patch ${CR_SRC_DIR}/ &&
+	cp -v other/chrome-web-store-protection.patch ${CR_SRC_DIR}/ &&
+	cp -v other/enable-extension-in-incognito.patch ${CR_SRC_DIR}/ &&
 
 	printf "\n" &&
 	printf "${YEL}Patching FFMPEG for HEVC...${c0}\n" &&
@@ -198,7 +201,13 @@ patchThor () {
 	printf "${YEL}Fix deb dependency generation...${c0}\n" &&
 	git apply --reject ./fix_deb_dependency_generation.patch &&
     printf "${YEL}Disable signin without account manager...${c0}\n" &&
-	git apply --reject ./android-disable-signin-without-account-manager.patch
+	git apply --reject ./android-disable-signin-without-account-manager.patch &&
+	printf "${YEL}Android extensions support patch...${c0}\n" &&
+	git apply --reject ./android-extensions-support.patch &&
+	printf "${YEL}Chrome Web Store protection patch...${c0}\n" &&
+	git apply --reject ./chrome-web-store-protection.patch &&
+	printf "${YEL}Enable extension in incognito patch...${c0}\n" &&
+	git apply --reject ./enable-extension-in-incognito.patch
 	# git apply --reject ./fix_file_dialog_crash.patch &&
 	# git apply --reject ./fix_wayland_scale_crash.patch &&
 	# git apply --reject ./fix_setting_popover_invoker_crash.patch &&

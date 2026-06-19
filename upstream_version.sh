@@ -36,7 +36,7 @@ else
     export CR_SRC_DIR
 fi
 
-CR_VER="144.0.7559.254"
+CR_VER="150.0.7871.25"
 
 export CR_VER &&
 

@@ -136,22 +136,11 @@ patches = [
     "other/disable-privacy-sandbox.patch",
     "other/win_updater.patch",
     "other/keyboard_shortcuts.patch",
-    # "other/partalloc.patch",
     # gz83: Temporarily skip i18n patch.
     # "other/multi-language-translate.patch",
-    # "other/fix_profile_selector_crash.patch",
-    # "other/fix_getupdatesprocessor_crash.patch",
-    "other/fix_dangling_pointer_tooltip.patch",
     "other/fix_disable_aero_crash.patch",
-    # "other/fix_file_dialog_crash.patch",
-    # "other/fix_wayland_scale_crash.patch",
     "other/restore_download_shelf.patch",
-    # "other/fix_absl_undefined_symbol.patch",
-    # "other/fix_drag_and_drop_on_wayland.patch",
-    # "other/fix_touch_emulator_double_tap_zoom.patch",
-    # "other/fix_setting_popover_invoker_crash.patch",
     "other/allow_manifest_v2_extensions.patch",
-    "other/fix_deb_dependency_generation.patch",
     "other/android-disable-signin-without-account-manager.patch",
     "other/android-extensions-support.patch",
     "other/chrome-web-store-protection.patch",
@@ -245,20 +234,12 @@ try_run(f"git apply --reject thorium_webui.patch")
 try_run(f"git apply --reject win_updater.patch")
 try_run(f"git apply --reject keyboard_shortcuts.patch")
 try_run(f"git apply --reject disable-privacy-sandbox.patch")
-# try_run(f"git apply --reject fix_touch_emulator_double_tap_zoom.patch")
 
 
-print("\nApplying deb dependency generation and crash fixes patches...\n")
+print("\nApplying crash fixes patches...\n")
 # Change directory to cr_src_dir and run commands
 os.chdir(cr_src_dir)
-# try_run(f"git apply --reject fix_absl_undefined_symbol.patch")
-# try_run(f"git apply --reject fix_drag_and_drop_on_wayland.patch")
-# try_run(f"git apply --reject partalloc.patch")
-# try_run(f"git apply --reject fix_profile_selector_crash.patch")
-# try_run(f"git apply --reject fix_getupdatesprocessor_crash.patch")
-try_run(f"git apply --reject fix_dangling_pointer_tooltip.patch")
 try_run(f"git apply --reject fix_disable_aero_crash.patch")
-try_run(f"git apply --reject fix_deb_dependency_generation.patch")
 try_run(f"git apply --reject android-disable-signin-without-account-manager.patch")
 
 
@@ -268,11 +249,6 @@ os.chdir(cr_src_dir)
 try_run(f"git apply --reject android-extensions-support.patch")
 try_run(f"git apply --reject chrome-web-store-protection.patch")
 try_run(f"git apply --reject enable-extension-in-incognito.patch")
-
-
-# try_run(f"git apply --reject fix_file_dialog_crash.patch")
-# try_run(f"git apply --reject fix_wayland_scale_crash.patch")
-# try_run(f"git apply --reject fix_setting_popover_invoker_crash.patch")
 
 
 print("\nCopying other files to out/thorium\n")

@@ -103,28 +103,12 @@ patchThor () {
 	cp -v other/keyboard_shortcuts.patch ${CR_SRC_DIR}/ &&
 	# gz83: Temporarily skip i18n patch.
 	# cp -v other/multi-language-translate.patch ${CR_SRC_DIR}/ &&
-	# Starting with M144, the following patches can be removed
-	# cp -v other/partalloc.patch ${CR_SRC_DIR}/ &&
-	# cp -v other/fix_profile_selector_crash.patch ${CR_SRC_DIR}/ &&
-	# cp -v other/fix_getupdatesprocessor_crash.patch ${CR_SRC_DIR}/ &&
-	# cp -v other/fix_absl_undefined_symbol.patch ${CR_SRC_DIR}/ &&
-	# cp -v other/fix_file_dialog_crash.patch ${CR_SRC_DIR}/ &&
-	# cp -v other/fix_wayland_scale_crash.patch ${CR_SRC_DIR}/ &&
-	# cp -v other/fix_drag_and_drop_on_wayland.patch ${CR_SRC_DIR}/ &&
-	# cp -v other/fix_touch_emulator_double_tap_zoom.patch ${CR_SRC_DIR}/ &&
-	# cp -v other/fix_setting_popover_invoker_crash.patch ${CR_SRC_DIR}/ &&
-	
-	# Starting with M145, the following patch can be removed
-	cp -v other/fix_dangling_pointer_tooltip.patch ${CR_SRC_DIR}/ &&
-	
+
 	# The following patch could not be fixed upstream because it
 	# is related to our custom flags
 	cp -v other/fix_disable_aero_crash.patch ${CR_SRC_DIR}/ &&
 	
 	cp -v other/allow_manifest_v2_extensions.patch ${CR_SRC_DIR}/ &&
-	
-	# Starting with M149, the following patch can be removed
-	cp -v other/fix_deb_dependency_generation.patch ${CR_SRC_DIR}/ &&
 	
 	cp -v other/android-disable-signin-without-account-manager.patch ${CR_SRC_DIR}/ &&
 	cp -v other/android-extensions-support.patch ${CR_SRC_DIR}/ &&
@@ -186,17 +170,8 @@ patchThor () {
 	git apply --reject ./keyboard_shortcuts.patch &&
 	printf "${YEL}Disable Privacy Sandbox patch...${c0}\n" &&
 	git apply --reject ./disable-privacy-sandbox.patch &&
-	# printf "${YEL}Partalloc fix...${c0}\n" &&
-	# git apply --reject ./partalloc.patch &&
-	# printf "${YEL}Absl undefined symbol fix...${c0}\n" &&
-	# git apply --reject ./fix_absl_undefined_symbol.patch &&
 	printf "${YEL}Some crashes fixes...${c0}\n" &&
-	# git apply --reject ./fix_profile_selector_crash.patch &&
-	# git apply --reject ./fix_getupdatesprocessor_crash.patch &&
-	git apply --reject ./fix_dangling_pointer_tooltip.patch &&
 	git apply --reject ./fix_disable_aero_crash.patch &&
-	printf "${YEL}Fix deb dependency generation...${c0}\n" &&
-	git apply --reject ./fix_deb_dependency_generation.patch &&
     printf "${YEL}Disable signin without account manager...${c0}\n" &&
 	git apply --reject ./android-disable-signin-without-account-manager.patch &&
 	printf "${YEL}Android extensions support patch...${c0}\n" &&
@@ -205,13 +180,6 @@ patchThor () {
 	git apply --reject ./chrome-web-store-protection.patch &&
 	printf "${YEL}Enable extension in incognito patch...${c0}\n" &&
 	git apply --reject ./enable-extension-in-incognito.patch
-	# git apply --reject ./fix_file_dialog_crash.patch &&
-	# git apply --reject ./fix_wayland_scale_crash.patch &&
-	# git apply --reject ./fix_setting_popover_invoker_crash.patch &&
-	# printf "${YEL}Fix Drag and Drop on wayland...${c0}\n" &&
-	# git apply --reject ./fix_drag_and_drop_on_wayland.patch &&
-	# printf "${YEL}Fix Touch Emulator Double Tap Zoom...${c0}\n" &&
-	# git apply --reject ./fix_touch_emulator_double_tap_zoom.patch
 }
 [ -f ${CR_SRC_DIR}/fix-policy-templates.patch ] || patchThor;
 
@@ -240,7 +208,7 @@ cd ~/thorium &&
 printf "\n" &&
 echo "Copying other files to \`out/thorium\`" &&
 
-# Add default_apps dir for Google Docs Offline extension.
+# Add default_apps dir for uBlock Origin extension.
 mkdir -v -p ${CR_SRC_DIR}/out/thorium/default_apps &&
 cp -r -v infra/default_apps/. ${CR_SRC_DIR}/out/thorium/default_apps/ &&
 
@@ -273,7 +241,6 @@ esac
 copyRaspi () {
 	printf "\n" &&
 	printf "${YEL}Copying Raspberry Pi build files...${c0}\n" &&
-	# cp -r -v arm/build/* ${CR_SRC_DIR}/build/ &&
 	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	cp -r -v arm/raspi/* ${CR_SRC_DIR}/ &&
 	cp -v arm/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
@@ -297,7 +264,6 @@ esac
 copyWOA () {
 	printf "\n" &&
 	printf "${YEL}Copying Windows on ARM build files...${c0}\n" &&
-	# cp -r -v arm/build/* ${CR_SRC_DIR}/build/ &&
 	cp -v arm/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	cd ${CR_SRC_DIR} &&
@@ -394,12 +360,10 @@ esac
 copyAndroid () {
 	printf "\n" &&
 	printf "${YEL}Copying Android (ARM64 and ARM32) build files...${c0}\n" &&
-	# cp -r -v arm/build/* ${CR_SRC_DIR}/build/ &&
 	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	printf "\n" &&
 	cp -r -v arm/android/* ${CR_SRC_DIR}/ &&
 	printf "\n" &&
-	#cp -r -v arm/android/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_base/drawable-v26/ic_launcher.xml &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_base/drawable-v26/ic_launcher_round.xml &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon_background.png &&

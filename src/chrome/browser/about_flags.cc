@@ -9472,12 +9472,6 @@ const FeatureEntry kFeatureEntries[] = {
          "LauncherDynamicAnimations")},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_JXL_DECODER)
-    {"enable-jxl", flag_descriptions::kEnableJXLName,
-     flag_descriptions::kEnableJXLDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kJXL)},
-#endif  // BUILDFLAG(ENABLE_JXL_DECODER)
-
 #if BUILDFLAG(IS_ANDROID)
     {"smart-suggestion-for-large-downloads",
      flag_descriptions::kSmartSuggestionForLargeDownloadsName,

@@ -1738,12 +1738,6 @@ enable_js_type_check
     enables the webui_closure_compile target which does a no-op without this
     flag enabled. Requires Java.
 
-enable_jxl_decoder
-    Current value (from the default) = true
-      From //third_party/blink/public/public_features.gni:9
-
-    If true, adds support for JPEG XL image decoding.
-
 enable_keystone_registration_framework
     Current value (from the default) = true
       From //chrome/BUILD.gn:60

@@ -2024,9 +2024,6 @@ BASE_FEATURE(kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
 
 BASE_FEATURE(kProcessHtmlDataImmediately, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the JPEG XL Image File Format (JXL).
-BASE_FEATURE(kJXL, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE_PARAM(bool,
                    kProcessHtmlDataImmediatelyChildFrame,
                    &kProcessHtmlDataImmediately,

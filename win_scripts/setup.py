@@ -75,14 +75,6 @@ thor_src_dir = os.path.expandvars(
 print("\nCreating build output directory...\n")
 os.makedirs(f"{cr_src_dir}/out/thorium/", exist_ok=True)
 
-print("\nCopying thorium-libjxl source for JPEG-XL Support\n")
-
-# Copy libjxl src
-copy_directory(
-    os.path.normpath(os.path.join(thor_src_dir, "thorium-libjxl/src/")),
-    os.path.normpath(os.path.join(cr_src_dir)),
-)
-
 print("\nCopying Thorium source files over the Chromium tree\n")
 
 # Copy src/BUILD.gn

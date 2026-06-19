@@ -65,23 +65,6 @@ os.chdir(cr_src_dir)
 
 try_run(f"git checkout -f tags/{thor_ver}")
 
-# Copy files using shutil
-copy(
-    os.path.normpath(os.path.join(thor_src_dir, "thorium-libjxl/src/DEPS")),
-    os.path.normpath(os.path.join(cr_src_dir, "DEPS")),
-)
-copy(
-    os.path.normpath(os.path.join(
-        thor_src_dir, "thorium-libjxl/src/.gitmodules")),
-    os.path.normpath(os.path.join(cr_src_dir, ".gitmodules")),
-)
-copy(
-    os.path.normpath(
-        os.path.join(thor_src_dir, "thorium-libjxl/src/third_party/.gitignore")
-    ),
-    os.path.normpath(os.path.join(cr_src_dir, "third_party/.gitignore")),
-)
-
 # Commands to run
 commands = [
     "git clean -ffd",

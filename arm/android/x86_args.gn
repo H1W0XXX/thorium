@@ -6,7 +6,7 @@ use_avx2 = false
 use_avx512 = false
 use_fma = false
 
-enable_jxl_decoder = true
+# enable_jxl_decoder = true
 target_os = "android"
 target_cpu = "x86"
 v8_target_cpu = "x86"

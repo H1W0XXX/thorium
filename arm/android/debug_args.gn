@@ -1,4 +1,4 @@
-enable_jxl_decoder = true
+# enable_jxl_decoder = true
 target_os = "android"
 target_cpu = "arm64"
 v8_target_cpu = "arm64"

@@ -1943,12 +1943,6 @@ enable_js_protobuf
     Allows subprojects to omit javascript dependencies (e.g.) closure_compiler
     and google-closure-library.
 
-enable_jxl_decoder
-    Current value (from the default) = true
-      From //third_party/blink/public/public_features.gni:9
-
-    If true, adds support for JPEG XL image decoding.
-
 enable_kythe_annotations
     Current value (from the default) = false
       From //build/toolchain/kythe.gni:10

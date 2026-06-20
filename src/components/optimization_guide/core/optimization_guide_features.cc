@@ -47,23 +47,16 @@ constexpr auto enabled_by_default_mobile_only =
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
 
-constexpr auto fix_borked_macos_build =
-#if BUILDFLAG(IS_MAC)
-    base::FEATURE_DISABLED_BY_DEFAULT;
-#else
-    base::FEATURE_ENABLED_BY_DEFAULT;
-#endif
-
 }  // namespace
 
 // Enables the syncing of the Optimization Hints component, which provides
 // hints for what optimizations can be applied on a page load.
 BASE_FEATURE(kOptimizationHints,
-             base::FEATURE_ENABLED_BY_DEFAULT);  // fix_borked_macos_build
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the prediction of optimization targets.
 BASE_FEATURE(kOptimizationTargetPrediction,
-             base::FEATURE_ENABLED_BY_DEFAULT);  // fix_borked_macos_build
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature flag does not turn off any behavior, it is only used for
 // experiment parameters.

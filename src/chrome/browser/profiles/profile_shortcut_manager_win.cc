@@ -4,8 +4,6 @@
 
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
 
-#include "blah.h"
-
 #include <shlobj.h>  // For SHChangeNotify().
 #include <stddef.h>
 

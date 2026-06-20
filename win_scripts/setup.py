@@ -136,8 +136,6 @@ patches = [
     "other/disable-privacy-sandbox.patch",
     "other/win_updater.patch",
     "other/keyboard_shortcuts.patch",
-    # gz83: Temporarily skip i18n patch.
-    # "other/multi-language-translate.patch",
     "other/fix_disable_aero_crash.patch",
     "other/restore_download_shelf.patch",
     "other/allow_manifest_v2_extensions.patch",
@@ -217,12 +215,6 @@ print("\nPatching for mini_installer\n")
 # Change directory to cr_src_dir and run commands
 os.chdir(cr_src_dir)
 try_run(f"git apply --reject mini_installer.patch")
-
-# gz83: Temporarily skip i18n patch.
-# print("\nPatching Multi language translate...\n")
-# # Change directory to cr_src_dir and run commands
-# os.chdir(cr_src_dir)
-# try_run(f"git apply --reject multi-language-translate.patch")
 
 
 print("\nApplying other Misc. patches...\n")

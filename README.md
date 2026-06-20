@@ -29,7 +29,6 @@
 > - Various compiler flags that improve performance and target [AVX](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions) CPU's (read [PATCHES.md](https://github.com/Alex313031/thorium/blob/main/docs/PATCHES.md))
 > - Experimental [MPEG-DASH](https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP) support.
 > - Includes [Widevine](https://www.widevine.com/), [All Codecs](https://tools.woolyss.com/html5-audio-video-tester/), and proper HEVC/H.265 support on Linux and Windows.
-> - [JPEG XL](https://jpeg.org/jpegxl/) Image File Format support restored and turned on by default.
 > - [FTP](https://en.wikipedia.org/wiki/File_Transfer_Protocol) URL support restored and enabled by default.
 > - Restore the classic Chrome UI from before M124, instead of the new "Chrome Refresh 2023" UI. See the [Explainer](./docs/TH_24.md). Enable the flag `chrome://flags/#thorium-2024` to try it!
 > - Restore the classic "Download Shelf". Enable the flag `chrome://flags/#download-shelf` to use it.

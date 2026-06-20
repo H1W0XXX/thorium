@@ -21,6 +21,9 @@ or newer is the supported runtime.
 The files in `config/` are reviewed inputs, not generated setup output:
 
 - `file_allowlist.csv`: reviewed GRD/GRDP file scope and file ownership role.
+  `from_overlay` records the legacy source of the reviewed change; pure
+  `overlay_text_sync` files do not need to remain under `src/` once their
+  message IDs are covered by `message_allowlist.csv`.
 - `message_allowlist.csv`: reviewed message-level replacement scope.
 - `feature_patch_message_ownership.csv`: feature-patch and overlay-added
   message ownership; used to prevent feature-patch strings from being handled

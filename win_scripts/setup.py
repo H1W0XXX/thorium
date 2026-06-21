@@ -138,6 +138,7 @@ patches = [
     "other/add-flag-for-custom-ntp.patch",
     "other/force-disable-tab-outlines.patch",
     "other/disable-thorium-dns-config.patch",
+    "other/add-flag-to-keep-all-history.patch",
     "other/thorium_webui.patch",
     "other/disable-privacy-sandbox.patch",
     "other/disable-encryption.patch",
@@ -236,6 +237,7 @@ try_run(f"git apply --reject add-flag-to-scroll-tabs.patch")
 try_run(f"git apply --reject add-flag-for-custom-ntp.patch")
 try_run(f"git apply --reject force-disable-tab-outlines.patch")
 try_run(f"git apply --reject disable-thorium-dns-config.patch")
+try_run(f"git apply --reject add-flag-to-keep-all-history.patch")
 try_run(f"git apply --reject allow_manifest_v2_extensions.patch")
 try_run(f"git apply --reject thorium_webui.patch")
 try_run(f"git apply --reject win_updater.patch")

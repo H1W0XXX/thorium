@@ -103,6 +103,7 @@ patchThor () {
 	cp -v other/add-flag-for-custom-ntp.patch ${CR_SRC_DIR}/ &&
 	cp -v other/force-disable-tab-outlines.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-thorium-dns-config.patch ${CR_SRC_DIR}/ &&
+	cp -v other/add-flag-to-keep-all-history.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium_webui.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-privacy-sandbox.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-encryption.patch ${CR_SRC_DIR}/ &&
@@ -174,6 +175,8 @@ patchThor () {
 	git apply --reject ./force-disable-tab-outlines.patch &&
 	printf "${YEL}Disable Thorium DNS config patch...${c0}\n" &&
 	git apply --reject ./disable-thorium-dns-config.patch &&
+	printf "${YEL}Keep all history patch...${c0}\n" &&
+	git apply --reject ./add-flag-to-keep-all-history.patch &&
 	printf "${YEL}Allow Manifest V2 extensions...${c0}\n" &&
 	git apply --reject ./allow_manifest_v2_extensions.patch &&
 	printf "${YEL}Thorium WebUI patch...${c0}\n" &&

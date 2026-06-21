@@ -148,7 +148,7 @@ patches = [
     "other/thorium-install-static-branding.patch",
     "other/win_updater.patch",
     "other/keyboard_shortcuts.patch",
-    "other/fix_disable_aero_crash.patch",
+    "other/disable-aero.patch",
     "other/restore_download_shelf.patch",
     "other/allow_manifest_v2_extensions.patch",
     "other/android-disable-signin-without-account-manager.patch",
@@ -255,7 +255,7 @@ try_run(f"git apply --reject thorium-install-static-branding.patch")
 print("\nApplying crash fixes patches...\n")
 # Change directory to cr_src_dir and run commands
 os.chdir(cr_src_dir)
-try_run(f"git apply --reject fix_disable_aero_crash.patch")
+try_run(f"git apply --reject disable-aero.patch")
 try_run(f"git apply --reject android-disable-signin-without-account-manager.patch")
 
 

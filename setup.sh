@@ -116,7 +116,7 @@ patchThor () {
 
 	# The following patch could not be fixed upstream because it
 	# is related to our custom flags
-	cp -v other/fix_disable_aero_crash.patch ${CR_SRC_DIR}/ &&
+	cp -v other/disable-aero.patch ${CR_SRC_DIR}/ &&
 	
 	cp -v other/allow_manifest_v2_extensions.patch ${CR_SRC_DIR}/ &&
 	
@@ -200,7 +200,7 @@ patchThor () {
 	printf "${YEL}Thorium install/static branding patch...${c0}\n" &&
 	git apply --reject ./thorium-install-static-branding.patch &&
 	printf "${YEL}Some crashes fixes...${c0}\n" &&
-	git apply --reject ./fix_disable_aero_crash.patch &&
+	git apply --reject ./disable-aero.patch &&
     printf "${YEL}Disable signin without account manager...${c0}\n" &&
 	git apply --reject ./android-disable-signin-without-account-manager.patch &&
 	printf "${YEL}Android extensions support patch...${c0}\n" &&

@@ -134,8 +134,8 @@ patches = [
     "other/open_in_same_tab.patch",
     "other/thorium_webui.patch",
     "other/disable-privacy-sandbox.patch",
-    "other/disable_ntp_discover_feed_by_default.patch",
     "other/disable-encryption.patch",
+    "other/thorium-install-static-branding.patch",
     "other/win_updater.patch",
     "other/keyboard_shortcuts.patch",
     "other/fix_disable_aero_crash.patch",
@@ -228,8 +228,8 @@ try_run(f"git apply --reject thorium_webui.patch")
 try_run(f"git apply --reject win_updater.patch")
 try_run(f"git apply --reject keyboard_shortcuts.patch")
 try_run(f"git apply --reject disable-privacy-sandbox.patch")
-try_run(f"git apply --reject disable_ntp_discover_feed_by_default.patch")
 try_run(f"git apply --reject disable-encryption.patch")
+try_run(f"git apply --reject thorium-install-static-branding.patch")
 
 
 print("\nApplying crash fixes patches...\n")

@@ -100,6 +100,7 @@ patchThor () {
 	cp -v other/thorium_webui.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-privacy-sandbox.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-encryption.patch ${CR_SRC_DIR}/ &&
+	cp -v other/disable-feature-promos.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-install-static-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/win_updater.patch ${CR_SRC_DIR}/ &&
 	cp -v other/keyboard_shortcuts.patch ${CR_SRC_DIR}/ &&
@@ -167,6 +168,8 @@ patchThor () {
 	git apply --reject ./disable-privacy-sandbox.patch &&
 	printf "${YEL}Disable encryption patch...${c0}\n" &&
 	git apply --reject ./disable-encryption.patch &&
+	printf "${YEL}Disable feature promos patch...${c0}\n" &&
+	git apply --reject ./disable-feature-promos.patch &&
 	printf "${YEL}Thorium install/static branding patch...${c0}\n" &&
 	git apply --reject ./thorium-install-static-branding.patch &&
 	printf "${YEL}Some crashes fixes...${c0}\n" &&

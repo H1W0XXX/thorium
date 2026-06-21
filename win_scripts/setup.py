@@ -135,6 +135,7 @@ patches = [
     "other/thorium_webui.patch",
     "other/disable-privacy-sandbox.patch",
     "other/disable-encryption.patch",
+    "other/disable-feature-promos.patch",
     "other/thorium-install-static-branding.patch",
     "other/win_updater.patch",
     "other/keyboard_shortcuts.patch",
@@ -229,6 +230,7 @@ try_run(f"git apply --reject win_updater.patch")
 try_run(f"git apply --reject keyboard_shortcuts.patch")
 try_run(f"git apply --reject disable-privacy-sandbox.patch")
 try_run(f"git apply --reject disable-encryption.patch")
+try_run(f"git apply --reject disable-feature-promos.patch")
 try_run(f"git apply --reject thorium-install-static-branding.patch")
 
 

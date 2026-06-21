@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities_delegate.h"
 #include "chrome/browser/ui/browser_window_deleter.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
-#include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/unload_controller.h"
@@ -1148,17 +1147,11 @@ class Browser : public TabStripModelObserver,
   // Returns true if the window can close, false otherwise.
   bool CanCloseWithInProgressDownloads();
 
-  // Called when the window is closing to check if more than one tab is open.
-  bool CanCloseWithMultipleTabs();
-
   // Called when the user has decided whether to proceed or not with the browser
   // closure.  |cancel_downloads| is true if the downloads should be canceled
   // and the browser closed, false if the browser should stay open and the
   // downloads running.
   void InProgressDownloadResponse(bool cancel_downloads);
-
-  // MessageBox callback for closing a window with multiple tabs.
-  void MultitabResponse(chrome::MessageBoxResult result);
 
   // Called when the user has decided whether to proceed or not with the browser
   // closure, in case the cookie migration notice was shown. |proceed_closing|
@@ -1334,10 +1327,6 @@ class Browser : public TabStripModelObserver,
   // State used to figure-out whether we should prompt the user for confirmation
   // when the browser is closed with in-progress downloads.
   CancelDownloadConfirmationState cancel_download_confirmation_state_;
-
-  // State used to figure out whether we should prompt the user for confirmation
-  // when the browser is closed with multiple tabs open.
-  CancelDownloadConfirmationState close_multitab_confirmation_state_;
 
   /////////////////////////////////////////////////////////////////////////////
 

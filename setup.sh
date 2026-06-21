@@ -97,6 +97,7 @@ patchThor () {
 	cp -v other/GPC.patch ${CR_SRC_DIR}/ &&
 	cp -v other/mini_installer.patch ${CR_SRC_DIR}/ &&
 	cp -v other/open_in_same_tab.patch ${CR_SRC_DIR}/ &&
+	cp -v other/add-flag-for-close-confirmation.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium_webui.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-privacy-sandbox.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-encryption.patch ${CR_SRC_DIR}/ &&
@@ -156,6 +157,8 @@ patchThor () {
 	cd ${CR_SRC_DIR} &&
 	printf "${YEL}Open in same tab patch...${c0}\n" &&
 	git apply --reject ./open_in_same_tab.patch &&
+	printf "${YEL}Close confirmation flag patch...${c0}\n" &&
+	git apply --reject ./add-flag-for-close-confirmation.patch &&
 	printf "${YEL}Allow Manifest V2 extensions...${c0}\n" &&
 	git apply --reject ./allow_manifest_v2_extensions.patch &&
 	printf "${YEL}Thorium WebUI patch...${c0}\n" &&

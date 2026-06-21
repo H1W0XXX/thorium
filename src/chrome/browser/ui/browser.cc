@@ -142,7 +142,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
-#include "chrome/browser/ui/views/message_box_dialog.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -594,8 +593,6 @@ Browser::Browser(const CreateParams& params)
       should_trigger_session_restore_(params.should_trigger_session_restore),
       cancel_download_confirmation_state_(
           CancelDownloadConfirmationState::kNotPrompted),
-      close_multitab_confirmation_state_(
-          CancelDownloadConfirmationState::kNotPrompted),
       override_bounds_(params.initial_bounds),
       initial_show_state_(params.initial_show_state),
       initial_workspace_(params.initial_workspace),
@@ -983,22 +980,20 @@ Browser::WarnBeforeClosingResult Browser::MaybeWarnBeforeClosing(
     return WarnBeforeClosingResult::kOkToClose;
   }
 
-  if (CanCloseWithMultipleTabs()) {
-    // `CanCloseWithInProgressDownloads()` may trigger a modal dialog.
-    bool can_close_with_downloads = CanCloseWithInProgressDownloads();
-    if (can_close_with_downloads &&
-        !ShouldShowCookieMigrationNoticeForBrowser(*this)) {
-      return WarnBeforeClosingResult::kOkToClose;
-    }
+  // `CanCloseWithInProgressDownloads()` may trigger a modal dialog.
+  bool can_close_with_downloads = CanCloseWithInProgressDownloads();
+  if (can_close_with_downloads &&
+      !ShouldShowCookieMigrationNoticeForBrowser(*this)) {
+    return WarnBeforeClosingResult::kOkToClose;
+  }
 
-    // If there is no download warning, show the cookie migration notice now.
-    // Otherwise, the download warning is being shown. Cookie migration notice
-    // will be shown after, if needed.
-    if (can_close_with_downloads) {
-      ShowCookieClearOnExitMigrationNotice(
-          *this, base::BindOnce(&Browser::CookieMigrationNoticeResponse,
-                                weak_factory_.GetWeakPtr()));
-    }
+  // If there is no download warning, show the cookie migration notice now.
+  // Otherwise, the download warning is being shown. Cookie migration notice
+  // will be shown after, if needed.
+  if (can_close_with_downloads) {
+    ShowCookieClearOnExitMigrationNotice(
+        *this, base::BindOnce(&Browser::CookieMigrationNoticeResponse,
+                              weak_factory_.GetWeakPtr()));
   }
 
   DCHECK(!warn_before_closing_callback_)
@@ -1051,8 +1046,6 @@ bool Browser::TryToCloseWindow(
 
 void Browser::ResetTryToCloseWindow() {
   cancel_download_confirmation_state_ =
-      CancelDownloadConfirmationState::kNotPrompted;
-  close_multitab_confirmation_state_ =
       CancelDownloadConfirmationState::kNotPrompted;
   unload_controller_.ResetTryToCloseWindow();
 }
@@ -3532,75 +3525,6 @@ bool Browser::CanCloseWithInProgressDownloads() {
   return false;
 }
 
-bool Browser::CanCloseWithMultipleTabs() {
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "close-confirmation")) {
-    return true;
-  }
-
-  // If we've prompted, we need to hear from the user before we can close.
-  if (close_multitab_confirmation_state_ !=
-      CancelDownloadConfirmationState::kNotPrompted) {
-    return close_multitab_confirmation_state_ !=
-           CancelDownloadConfirmationState::kWaitingForResponse;
-  }
-
-  // If we're not running a full browser process with a profile manager
-  // (testing), it's ok to close the browser.
-  if (!g_browser_process->profile_manager()) {
-    return true;
-  }
-
-  // A browser with no tabs is being closed as part of an internal operation,
-  // such as moving its last tab to another window. It must not be kept alive
-  // for a close confirmation, since its window may already be hidden.
-  const int tab_count = tab_strip_model()->count();
-  if (tab_count == 0) {
-    return true;
-  }
-
-  // Figure out how many windows are open total.
-  int total_window_count = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Don't count this browser window or any other in the process of closing.
-    // Window closing may be delayed, and windows that are in the process of
-    // closing don't count against our totals.
-    if (browser == this || browser->IsAttemptingToCloseBrowser()) {
-      continue;
-    }
-    total_window_count++;
-  }
-
-  const auto flag_value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          "close-confirmation");
-  bool show_confirmation_last_window = flag_value == "last";
-
-  if (show_confirmation_last_window) {
-    if (total_window_count >= 1 || tab_count <= 1) {
-      return true;
-    }
-  } else {
-    if (total_window_count == 0) {
-      return true;
-    }
-  }
-
-  close_multitab_confirmation_state_ =
-      CancelDownloadConfirmationState::kWaitingForResponse;
-
-  auto callback =
-      base::BindOnce(&Browser::MultitabResponse, weak_factory_.GetWeakPtr());
-  MessageBoxDialog::Show(window_->GetNativeWindow(),
-                         u"Do you want to close this window?", std::u16string(),
-                         chrome::MESSAGE_BOX_TYPE_QUESTION, u"Close", u"Cancel",
-                         std::u16string(), std::move(callback));
-
-  // Return false so the browser does not close. We'll close if the user
-  // confirms in the dialog.
-  return false;
-}
-
 void Browser::InProgressDownloadResponse(bool cancel_downloads) {
   if (cancel_downloads) {
     cancel_download_confirmation_state_ =
@@ -3635,24 +3559,6 @@ void Browser::CookieMigrationNoticeResponse(bool proceed_closing) {
   std::move(warn_before_closing_callback_)
       .Run(proceed_closing ? WarnBeforeClosingResult::kOkToClose
                            : WarnBeforeClosingResult::kDoNotClose);
-}
-
-void Browser::MultitabResponse(chrome::MessageBoxResult result) {
-  if (result == chrome::MESSAGE_BOX_RESULT_YES) {
-    close_multitab_confirmation_state_ =
-        CancelDownloadConfirmationState::kResponseReceived;
-    std::move(warn_before_closing_callback_)
-        .Run(WarnBeforeClosingResult::kOkToClose);
-    return;
-  }
-
-  // Sets the confirmation state to kNotPrompted so that if the user tries to
-  // close again we'll show the warning again.
-  close_multitab_confirmation_state_ =
-      CancelDownloadConfirmationState::kNotPrompted;
-
-  std::move(warn_before_closing_callback_)
-      .Run(WarnBeforeClosingResult::kDoNotClose);
 }
 
 void Browser::FinishWarnBeforeClosing(WarnBeforeClosingResult result) {

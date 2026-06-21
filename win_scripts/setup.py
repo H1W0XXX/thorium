@@ -132,6 +132,7 @@ patches = [
     "other/GPC.patch",
     "other/mini_installer.patch",
     "other/open_in_same_tab.patch",
+    "other/add-flag-for-close-confirmation.patch",
     "other/thorium_webui.patch",
     "other/disable-privacy-sandbox.patch",
     "other/disable-encryption.patch",
@@ -224,6 +225,7 @@ print("\nApplying other Misc. patches...\n")
 # Change directory to cr_src_dir and run commands
 os.chdir(cr_src_dir)
 try_run(f"git apply --reject open_in_same_tab.patch")
+try_run(f"git apply --reject add-flag-for-close-confirmation.patch")
 try_run(f"git apply --reject allow_manifest_v2_extensions.patch")
 try_run(f"git apply --reject thorium_webui.patch")
 try_run(f"git apply --reject win_updater.patch")

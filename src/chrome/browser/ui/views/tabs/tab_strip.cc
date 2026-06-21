@@ -1388,18 +1388,9 @@ void TabStrip::OnSplitContentsChanged(const std::vector<int>& split_indices) {
 }
 
 bool TabStrip::ShouldDrawStrokes() const {
-  // Don't want to have to run a full feature query every time this function is
-  // called.
-  static const bool force_disable_tab_outlines =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          "force-disable-tab-outlines");
 #if BUILDFLAG(IS_CHROMEOS)
-  if (force_disable_tab_outlines) {
-    return false;
-  } else {
-    return true;
-  }
-  #else   // BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else   // BUILDFLAG(IS_CHROMEOS)
 
   // If the controller says we can't draw strokes, don't.
   if (!controller_->CanDrawStrokes()) {
@@ -1417,7 +1408,7 @@ bool TabStrip::ShouldDrawStrokes() const {
   // The Tabstrip in the refreshed style does not meet the contrast ratio
   // requirements listed below but does not have strokes for Tabs or the bottom
   // border.
-  if (!using_system_theme && force_disable_tab_outlines) {
+  if (!using_system_theme) {
     return false;
   }
 
@@ -1434,14 +1425,7 @@ bool TabStrip::ShouldDrawStrokes() const {
       controller_->GetFrameColor(BrowserFrameActiveState::kActive);
   const float contrast_ratio =
       color_utils::GetContrastRatio(background_color, frame_color);
-  if (contrast_ratio < kMinimumContrastRatioForOutlines) {
-    return true;
-  }
-
-  if (!force_disable_tab_outlines) {
-    return true;
-  }
-  return false;
+  return contrast_ratio < kMinimumContrastRatioForOutlines;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

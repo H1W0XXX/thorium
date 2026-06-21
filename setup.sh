@@ -101,6 +101,7 @@ patchThor () {
 	cp -v other/add-flag-to-close-window-with-last-tab.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-to-scroll-tabs.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-for-custom-ntp.patch ${CR_SRC_DIR}/ &&
+	cp -v other/force-disable-tab-outlines.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium_webui.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-privacy-sandbox.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-encryption.patch ${CR_SRC_DIR}/ &&
@@ -168,6 +169,8 @@ patchThor () {
 	git apply --reject ./add-flag-to-scroll-tabs.patch &&
 	printf "${YEL}Custom NTP patch...${c0}\n" &&
 	git apply --reject ./add-flag-for-custom-ntp.patch &&
+	printf "${YEL}Force disable tab outlines patch...${c0}\n" &&
+	git apply --reject ./force-disable-tab-outlines.patch &&
 	printf "${YEL}Allow Manifest V2 extensions...${c0}\n" &&
 	git apply --reject ./allow_manifest_v2_extensions.patch &&
 	printf "${YEL}Thorium WebUI patch...${c0}\n" &&

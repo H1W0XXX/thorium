@@ -38,24 +38,6 @@
      "Disable Thorium Top Bar Icons",
      "Disables the custom colored top bar icons in Thorium, and restores the default grey Chromium icon colors.",
      kOsDesktop, SINGLE_VALUE_TYPE("disable-thorium-icons")},
-    {"left-aligned-tab-search-button",
-     "Left Aligned Tab Search Button",
-     "The default placement of the tab search button was changed to the left of the tabstrip in M125, but Thorium has reverted this back "
-     "to the original righthand placement. This flag is for people who want the new CR23 left aligned behavior.",
-     kOsDesktop, SINGLE_VALUE_TYPE("left-aligned-tab-search-button")},
-    {"remove-tabsearch-button",
-     "Remove Tab Search Button",
-     "Removes the tabsearch button from the tabstrip.",
-     kOsDesktop, SINGLE_VALUE_TYPE("remove-tabsearch-button")},
-
-#if BUILDFLAG(IS_WIN)
-    {"tab-search-caption-button",
-     "Disable Windows Tab Search Caption Button",
-     "Disables the tab search caption button (i.e. the version of the button that's adjacent to, and mimics, the minimize/maximize/close buttons), and "
-     "restores the standard rounded tab search button on the right of the tabstrip.",
-     kOsDesktop, SINGLE_VALUE_TYPE("disable-caption-button")},
-#endif // BUILDFLAG(IS_WIN)
-
     {"classic-omnibox",
      "Classic Omnibox UI",
      "Changes the omnibox shape to be more square.",

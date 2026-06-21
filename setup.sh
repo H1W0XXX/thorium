@@ -99,6 +99,7 @@ patchThor () {
 	cp -v other/open_in_same_tab.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-for-close-confirmation.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-to-close-window-with-last-tab.patch ${CR_SRC_DIR}/ &&
+	cp -v other/add-flag-to-scroll-tabs.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium_webui.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-privacy-sandbox.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-encryption.patch ${CR_SRC_DIR}/ &&
@@ -162,6 +163,8 @@ patchThor () {
 	git apply --reject ./add-flag-for-close-confirmation.patch &&
 	printf "${YEL}Close window with last tab patch...${c0}\n" &&
 	git apply --reject ./add-flag-to-close-window-with-last-tab.patch &&
+	printf "${YEL}Scroll tabs patch...${c0}\n" &&
+	git apply --reject ./add-flag-to-scroll-tabs.patch &&
 	printf "${YEL}Allow Manifest V2 extensions...${c0}\n" &&
 	git apply --reject ./allow_manifest_v2_extensions.patch &&
 	printf "${YEL}Thorium WebUI patch...${c0}\n" &&

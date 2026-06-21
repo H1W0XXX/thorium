@@ -629,14 +629,6 @@ void InitLogging(const std::string& process_type) {
                  << chrome::kChromeVersion << " (not a warning)";
     LOG(WARNING) << "In Loving Memory of Linda Louise Frick: Grandma, Mother, and Sister.";
   }
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  static const bool is_forced_tab_scroll =
-      base::CommandLine::ForCurrentProcess()->HasSwitch("scroll-tabs=always");
-  if (is_forced_tab_scroll) {
-    LOG(WARNING) << "Warning: chrome://flags#scroll-tabs is enabled on this non-Linux machine. "
-                 << "Bugs are likely and should be reported to Alex313031.";
-  }
-#endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -1,0 +1,53 @@
+diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
+index edab63d18ffd007a94a159a545bec1d5fff67980..fee5e79b792f4bc6571868fbf77b8a7c038261e8 100644
+--- a/chrome/browser/chrome_content_browser_client.cc
++++ b/chrome/browser/chrome_content_browser_client.cc
+@@ -859,11 +859,22 @@ bool HandleNewTabPageLocationOverride(
+ 
+   // Don't change the URL when incognito mode.
+   if (profile->IsOffTheRecord()) {
+-    return false;
++    if (!base::CommandLine::ForCurrentProcess()->HasSwitch("custom-ntp")) {
++      return false;
++    }
+   }
+ 
+   std::string ntp_location =
+       profile->GetPrefs()->GetString(prefs::kNewTabPageLocationOverride);
++  if (base::CommandLine::ForCurrentProcess()->HasSwitch("custom-ntp")) {
++    ntp_location =
++        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
++            "custom-ntp");
++  }
++  if (profile->IsOffTheRecord() &&
++      ntp_location.find("chrome://") != std::string::npos) {
++    return false;
++  }
+   if (ntp_location.empty()) {
+     return false;
+   }
+diff --git a/components/webui/flags/flags_state.cc b/components/webui/flags/flags_state.cc
+index 981026d10a94687c962100c7e99fee1e3d250f73..20a0ea51e7feb6d296bb8cef011db84c8f793f4e 100644
+--- a/components/webui/flags/flags_state.cc
++++ b/components/webui/flags/flags_state.cc
+@@ -234,6 +234,9 @@ std::string GetCombinedOriginListValue(const FlagsStorage& flags_storage,
+       command_line.GetSwitchValueASCII(command_line_switch);
+   const std::string new_value =
+       flags_storage.GetOriginListFlag(internal_entry_name);
++  if (command_line_switch == "custom-ntp") {
++    return existing_value.empty() ? new_value : existing_value;
++  }
+   return CombineAndSanitizeOriginLists(existing_value, new_value);
+ }
+ 
+@@ -484,7 +487,9 @@ void FlagsState::SetOriginListFlag(const std::string& internal_name,
+                                    const std::string& value,
+                                    FlagsStorage* flags_storage) {
+   const std::string new_value =
+-      CombineAndSanitizeOriginLists(std::string(), value);
++      internal_name == "custom-ntp"
++          ? value
++          : CombineAndSanitizeOriginLists(std::string(), value);
+   flags_storage->SetOriginListFlag(internal_name, new_value);
+ 
+ #if BUILDFLAG(IS_CHROMEOS)

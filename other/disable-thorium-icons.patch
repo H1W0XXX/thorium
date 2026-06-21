@@ -1,0 +1,105 @@
+diff --git a/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc b/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc
+index 0869e1d788261..68b6ea2f2ff12 100644
+--- a/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc
++++ b/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2013 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -6,6 +6,7 @@
+ 
+ #include <set>
+ 
++#include "base/command_line.h"
+ #include "base/feature_list.h"
+ #include "base/functional/bind.h"
+ #include "base/location.h"
+@@ -140,13 +141,19 @@ void BrowserAppMenuButton::UpdateThemeBasedState() {
+ }
+ 
+ void BrowserAppMenuButton::UpdateIcon() {
++  static const bool disable_thorium_icons =
++      base::CommandLine::ForCurrentProcess()->HasSwitch(
++          "disable-thorium-icons");
+   const gfx::VectorIcon& icon =
+       ui::TouchUiController::Get()->touch_ui()
+           ? features::IsRoundedIconsEnabled() ? kMoreVertIcon
+                                               : kBrowserToolsTouchOldIcon
+-      : features::IsRoundedIconsEnabled() ? kMoreVertIcon
+-                                          : kBrowserToolsChromeRefreshOldIcon;
+-  const int icon_size = GetIconSize();
++      : features::IsRoundedIconsEnabled()
++          ? kMoreVertIcon
++          : disable_thorium_icons ? kBrowserToolsChromeRefreshOldIcon
++                                  : kBrowserToolsChromeRefreshThoriumIcon;
++  // Fix Thorium hamburger menu size.
++  constexpr int icon_size = 22;
+ 
+   for (auto state : kButtonStates) {
+     SkColor icon_color = GetForegroundColor(state);
+diff --git a/chrome/browser/ui/views/toolbar/home_button.cc b/chrome/browser/ui/views/toolbar/home_button.cc
+index d23ce42d48414..f3994c578a924 100644
+--- a/chrome/browser/ui/views/toolbar/home_button.cc
++++ b/chrome/browser/ui/views/toolbar/home_button.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2013 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -7,6 +7,7 @@
+ #include <memory>
+ #include <string_view>
+ 
++#include "base/command_line.h"
+ #include "base/feature_list.h"
+ #include "base/functional/bind.h"
+ #include "base/functional/callback_helpers.h"
+@@ -153,9 +154,14 @@ HomeButton::HomeButton(BrowserWindowInterface* browser_window_interface,
+   SetProperty(views::kElementIdentifierKey, kToolbarHomeButtonElementId);
+   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                            ui::EF_MIDDLE_MOUSE_BUTTON);
++  static const bool disable_thorium_icons =
++      base::CommandLine::ForCurrentProcess()->HasSwitch(
++          "disable-thorium-icons");
+   SetVectorIcons(features::IsRoundedIconsEnabled()
+                      ? kHomeIcon
+-                     : kNavigateHomeChromeRefreshOldIcon,
++                     : disable_thorium_icons
++                           ? kNavigateHomeChromeRefreshOldIcon
++                           : kNavigateHomeChromeRefreshThoriumIcon,
+                  features::IsRoundedIconsEnabled() ? kHomeIcon
+                                                    : kNavigateHomeTouchOldIcon);
+   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_HOME));
+diff --git a/chrome/browser/ui/views/toolbar/reload_button.cc b/chrome/browser/ui/views/toolbar/reload_button.cc
+index 2a6c40a06d128..fbabf7bf13cd4 100644
+--- a/chrome/browser/ui/views/toolbar/reload_button.cc
++++ b/chrome/browser/ui/views/toolbar/reload_button.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2013 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -6,6 +6,7 @@
+ 
+ #include <stddef.h>
+ 
++#include "base/command_line.h"
+ #include "base/strings/utf_string_conversions.h"
+ #include "build/build_config.h"
+ #include "chrome/app/chrome_command_ids.h"
+@@ -69,7 +70,10 @@ ReloadButton::ReloadButton(
+       command_updater_(command_updater),
+       reload_icon_(features::IsRoundedIconsEnabled()
+                        ? vector_icons::kRefreshIcon
+-                       : vector_icons::kReloadChromeRefreshOldIcon),
++                       : base::CommandLine::ForCurrentProcess()->HasSwitch(
++                             "disable-thorium-icons")
++                             ? vector_icons::kReloadChromeRefreshOldIcon
++                             : vector_icons::kReloadChromeRefreshThoriumIcon),
+       reload_touch_icon_(features::IsRoundedIconsEnabled()
+                              ? kRefreshIcon
+                              : kReloadTouchOldIcon),

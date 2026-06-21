@@ -106,6 +106,7 @@ patchThor () {
 	cp -v other/add-flag-to-keep-all-history.patch ${CR_SRC_DIR}/ &&
 	cp -v other/allow-insecure-downloads.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-for-auto-dark-mode.patch ${CR_SRC_DIR}/ &&
+	cp -v other/disable-thorium-icons.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium_webui.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-privacy-sandbox.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-encryption.patch ${CR_SRC_DIR}/ &&
@@ -183,6 +184,8 @@ patchThor () {
 	git apply --reject ./allow-insecure-downloads.patch &&
 	printf "${YEL}Auto dark mode patch...${c0}\n" &&
 	git apply --reject ./add-flag-for-auto-dark-mode.patch &&
+	printf "${YEL}Disable Thorium icons patch...${c0}\n" &&
+	git apply --reject ./disable-thorium-icons.patch &&
 	printf "${YEL}Allow Manifest V2 extensions...${c0}\n" &&
 	git apply --reject ./allow_manifest_v2_extensions.patch &&
 	printf "${YEL}Thorium WebUI patch...${c0}\n" &&

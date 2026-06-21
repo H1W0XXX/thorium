@@ -141,6 +141,7 @@ patches = [
     "other/add-flag-to-keep-all-history.patch",
     "other/allow-insecure-downloads.patch",
     "other/add-flag-for-auto-dark-mode.patch",
+    "other/disable-thorium-icons.patch",
     "other/thorium_webui.patch",
     "other/disable-privacy-sandbox.patch",
     "other/disable-encryption.patch",
@@ -242,6 +243,7 @@ try_run(f"git apply --reject disable-thorium-dns-config.patch")
 try_run(f"git apply --reject add-flag-to-keep-all-history.patch")
 try_run(f"git apply --reject allow-insecure-downloads.patch")
 try_run(f"git apply --reject add-flag-for-auto-dark-mode.patch")
+try_run(f"git apply --reject disable-thorium-icons.patch")
 try_run(f"git apply --reject allow_manifest_v2_extensions.patch")
 try_run(f"git apply --reject thorium_webui.patch")
 try_run(f"git apply --reject win_updater.patch")

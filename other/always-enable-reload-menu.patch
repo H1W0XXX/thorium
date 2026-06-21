@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/ui/views/toolbar/reload_button.cc b/chrome/browser/ui/views/toolbar/reload_button.cc
+index 2a6c40a06d128..7f729b790cc93 100644
+--- a/chrome/browser/ui/views/toolbar/reload_button.cc
++++ b/chrome/browser/ui/views/toolbar/reload_button.cc
+@@ -182,7 +182,7 @@ void ReloadButton::UpdateCachedTooltipText() {
+ }
+ 
+ bool ReloadButton::ShouldShowMenu() {
+-  return is_dev_tools_connected_ && (visible_mode_ == Mode::kReload);
++  return visible_mode_ == Mode::kReload;
+ }
+ 
+ void ReloadButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {

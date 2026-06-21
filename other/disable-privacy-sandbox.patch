@@ -1,8 +1,20 @@
+diff --git a/chrome/browser/resources/BUILD.gn b/chrome/browser/resources/BUILD.gn
+index 713625d2904c74db89fee7f36b36697444c24a3b..beb782124e695be14c7a5e691f6ab8f2f74577ff 100644
+--- a/chrome/browser/resources/BUILD.gn
++++ b/chrome/browser/resources/BUILD.gn
+@@ -128,7 +128,6 @@ group("resources") {
+     public_deps += [
+       "unexportable_keys_internals:resources",
+       "//chrome/browser/resources/media/mei_preload:component",
+-      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
+     ]
+   }
+ 
 diff --git a/components/browsing_data/content/browsing_data_model.cc b/components/browsing_data/content/browsing_data_model.cc
-index fe15cea461b41..a3cae97a5fd3e 100644
+index 8b130bc3a328f64db271518f114e6e1c0dc86dda..5d19636e4896707bd4af149c42a9b62d7587fc0d 100644
 --- a/components/browsing_data/content/browsing_data_model.cc
 +++ b/components/browsing_data/content/browsing_data_model.cc
-@@ -996,12 +996,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
+@@ -995,12 +995,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
        base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
    bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
        network::features::kCompressionDictionaryTransport);
@@ -15,7 +27,7 @@ index fe15cea461b41..a3cae97a5fd3e 100644
  
    base::RepeatingClosure completion =
        base::BindRepeating([](const base::OnceClosure&) {},
-@@ -1038,28 +1032,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
+@@ -1037,27 +1031,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
          base::BindOnce(&OnSharedDictionaryUsageLoaded, this, completion));
    }
  
@@ -40,12 +52,11 @@ index fe15cea461b41..a3cae97a5fd3e 100644
 -    storage_partition_->GetPrivateAggregationDataModel()->GetAllDataKeys(
 -        base::BindOnce(&OnPrivateAggregationLoaded, this, completion));
 -  }
--
+ 
  #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
    storage_partition_->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(
-       base::BindOnce(&OnCdmStorageLoaded, this, completion), base::Time::Min(),
 diff --git a/components/privacy_sandbox/privacy_sandbox_features.cc b/components/privacy_sandbox/privacy_sandbox_features.cc
-index c17f69cf62cd2..deba994355c06 100644
+index c2a7047d7559846481db9ca3f583b669cd3d4974..133f6ae227585e70510b25a40ff210958c094194 100644
 --- a/components/privacy_sandbox/privacy_sandbox_features.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_features.cc
 @@ -1,4 +1,4 @@
@@ -54,16 +65,16 @@ index c17f69cf62cd2..deba994355c06 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
-@@ -20,7 +20,7 @@ const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId{
-     kAndroidGoogleSearchAppIdName};
- #endif  // BUILDFLAG(IS_ANDROID)
+@@ -8,7 +8,7 @@
+ 
+ namespace privacy_sandbox {
  
 -BASE_FEATURE(kPrivacySandboxSettings4, base::FEATURE_ENABLED_BY_DEFAULT);
 +BASE_FEATURE(kPrivacySandboxSettings4, base::FEATURE_DISABLED_BY_DEFAULT);
  
  const char kPrivacySandboxSettings4ConsentRequiredName[] = "consent-required";
  const char kPrivacySandboxSettings4NoticeRequiredName[] = "notice-required";
-@@ -77,7 +77,7 @@ BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
+@@ -58,7 +58,7 @@ const base::FeatureParam<bool> kPrivacySandboxSettings4ShowSampleDataForTesting{
  BASE_FEATURE(kDisablePrivacySandboxPrompts, base::FEATURE_ENABLED_BY_DEFAULT);
  
  BASE_FEATURE(kEnforcePrivacySandboxAttestations,
@@ -73,7 +84,7 @@ index c17f69cf62cd2..deba994355c06 100644
  BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
               base::FEATURE_DISABLED_BY_DEFAULT);
 diff --git a/components/privacy_sandbox/privacy_sandbox_prefs.cc b/components/privacy_sandbox/privacy_sandbox_prefs.cc
-index 68c723791d5c6..0869674ba03f6 100644
+index c58d4cb4a9e539cd74e07f448d04f9e6adbbeb29..673a5aa24ed15c94022fe36060955882696850fd 100644
 --- a/components/privacy_sandbox/privacy_sandbox_prefs.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_prefs.cc
 @@ -1,4 +1,4 @@
@@ -82,7 +93,7 @@ index 68c723791d5c6..0869674ba03f6 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
-@@ -50,7 +50,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+@@ -51,7 +51,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
        prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized,
        false);
    registry->RegisterBooleanPref(
@@ -92,7 +103,7 @@ index 68c723791d5c6..0869674ba03f6 100644
  
    registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
 diff --git a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
-index 02a8d8fbbc6e0..2ba6e2617b8ac 100644
+index 90e887eef88c688eae9fec7a8ad6ad80eb8da9ec..688fd654b54498a13161c87e979d61add7cf2209 100644
 --- a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 @@ -1,4 +1,4 @@
@@ -101,7 +112,7 @@ index 02a8d8fbbc6e0..2ba6e2617b8ac 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
-@@ -134,7 +134,7 @@ std::set<browsing_topics::Topic> GetTopicsSetFromString(
+@@ -129,7 +129,7 @@ std::set<browsing_topics::Topic> GetTopicsSetFromString(
  
  // static
  bool PrivacySandboxSettingsImpl::IsAllowed(Status status) {
@@ -110,7 +121,7 @@ index 02a8d8fbbc6e0..2ba6e2617b8ac 100644
  }
  
  // static
-@@ -888,7 +888,7 @@ void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
+@@ -808,7 +808,7 @@ void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
  }
  
  bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {
@@ -119,10 +130,14 @@ index 02a8d8fbbc6e0..2ba6e2617b8ac 100644
  }
  
  bool PrivacySandboxSettingsImpl::IsPrivacySandboxCurrentlyUnrestricted() const {
-@@ -961,7 +961,8 @@ PrivacySandboxSettingsImpl::GetPrivacySandboxAllowedStatus(
-     return Status::kRestricted;
+@@ -877,11 +877,8 @@ PrivacySandboxSettingsImpl::GetPrivacySandboxAllowedStatus(
+     return Status::kIncognitoProfile;
    }
  
+-  if (IsPrivacySandboxRestricted() && !should_ignore_restriction) {
+-    return Status::kRestricted;
+-  }
+-
 -  return Status::kAllowed;
 +  // Always return restricted in Thorium
 +  return Status::kRestricted;
@@ -130,7 +145,7 @@ index 02a8d8fbbc6e0..2ba6e2617b8ac 100644
  
  PrivacySandboxSettingsImpl::Status
 diff --git a/content/browser/attribution_reporting/attribution_suitable_context.cc b/content/browser/attribution_reporting/attribution_suitable_context.cc
-index 12f09023269e2..3e75e63a5982d 100644
+index 12f09023269e277752757c6589b146902c8533cf..3e75e63a5982d5124eed753c02ac94a57fa86d67 100644
 --- a/content/browser/attribution_reporting/attribution_suitable_context.cc
 +++ b/content/browser/attribution_reporting/attribution_suitable_context.cc
 @@ -44,82 +44,13 @@ bool UkmSourceIdAllowed(RenderFrameHostImpl* rfh) {
@@ -219,10 +234,10 @@ index 12f09023269e2..3e75e63a5982d 100644
  
  // static
 diff --git a/content/browser/interest_group/ad_auction_service_impl.cc b/content/browser/interest_group/ad_auction_service_impl.cc
-index a700d1b4c2996..eeaca902975ae 100644
+index 0f75f7628248fcb1164f08241c19a0e246f7144a..330b99614c7378b74acf03a212ec358dda4d7d30 100644
 --- a/content/browser/interest_group/ad_auction_service_impl.cc
 +++ b/content/browser/interest_group/ad_auction_service_impl.cc
-@@ -192,11 +192,6 @@ AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
+@@ -190,11 +190,6 @@ AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
  void AdAuctionServiceImpl::CreateMojoService(
      RenderFrameHost* render_frame_host,
      mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver) {
@@ -235,10 +250,10 @@ index a700d1b4c2996..eeaca902975ae 100644
  
  void AdAuctionServiceImpl::JoinInterestGroup(
 diff --git a/content/browser/storage_partition_impl.cc b/content/browser/storage_partition_impl.cc
-index 6538653b55c1c..47b33319e297f 100644
+index 2a49d3a2e90b9c0efdc09b14d5c92cc8cf0cc042..0dfaa6c29d817b27e28418bae55ead984b509baa 100644
 --- a/content/browser/storage_partition_impl.cc
 +++ b/content/browser/storage_partition_impl.cc
-@@ -1512,38 +1512,7 @@ void StoragePartitionImpl::Initialize(
+@@ -1468,38 +1468,6 @@ void StoragePartitionImpl::Initialize(
  
    bucket_manager_ = std::make_unique<BucketManager>(this);
  
@@ -267,7 +282,7 @@ index 6538653b55c1c..47b33319e297f 100644
 -                            // context owns this storage partition.
 -                            base::Unretained(browser_context_)));
 -  }
- 
+-
 -  // The Topics API is not available in Incognito mode.
 -  if (!is_in_memory() &&
 -      base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
@@ -277,7 +292,7 @@ index 6538653b55c1c..47b33319e297f 100644
  
    GeneratedCodeCacheSettings settings =
        GetContentClient()->browser()->GetGeneratedCodeCacheSettings(
-@@ -1572,8 +1541,6 @@ void StoragePartitionImpl::Initialize(
+@@ -1528,8 +1496,6 @@ void StoragePartitionImpl::Initialize(
  
    font_access_manager_ = FontAccessManager::Create();
  
@@ -286,11 +301,10 @@ index 6538653b55c1c..47b33319e297f 100644
  
  #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
    if (is_in_memory()) {
-@@ -1596,12 +1563,6 @@ void StoragePartitionImpl::Initialize(
-     shared_storage_header_observer_ =
+@@ -1553,11 +1519,6 @@ void StoragePartitionImpl::Initialize(
          std::make_unique<SharedStorageHeaderObserver>(this);
    }
--
+ 
 -  if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi)) {
 -    private_aggregation_manager_ =
 -        std::make_unique<PrivateAggregationManagerImpl>(is_in_memory(), path,
@@ -300,10 +314,10 @@ index 6538653b55c1c..47b33319e297f 100644
  
  void StoragePartitionImpl::ResetSessionStorageConnections() {
 diff --git a/content/browser/web_contents/web_contents_impl.cc b/content/browser/web_contents/web_contents_impl.cc
-index dc9e636c1a64e..90fbfe1b21dbe 100644
+index 646327bee417d1988e31a9bc89cb6b6fa281a73b..586ff95749e417d9c48f0fa17388a07e185cc411 100644
 --- a/content/browser/web_contents/web_contents_impl.cc
 +++ b/content/browser/web_contents/web_contents_impl.cc
-@@ -4212,12 +4212,6 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
+@@ -4356,12 +4356,6 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
    DateTimeChooser::CreateDateTimeChooser(this);
  #endif
  
@@ -314,10 +328,10 @@ index dc9e636c1a64e..90fbfe1b21dbe 100644
 -    AttributionHost::CreateForWebContents(this);
 -  }
  
+   SchedulerLoopQuarantineWebContentsObserver::MaybeCreateForWebContents(this);
    RedirectChainDetector::CreateForWebContents(this);
-   BtmWebContentsObserver::MaybeCreateForWebContents(this);
 diff --git a/content/services/auction_worklet/private_aggregation_bindings.cc b/content/services/auction_worklet/private_aggregation_bindings.cc
-index 38ff1f3f2e6f9..019e78cdaef06 100644
+index 38ff1f3f2e6f99f87d95f7f42b40b47358240362..019e78cdaef069f9ee2afb94507b547044f3b5fd 100644
 --- a/content/services/auction_worklet/private_aggregation_bindings.cc
 +++ b/content/services/auction_worklet/private_aggregation_bindings.cc
 @@ -407,53 +407,6 @@ PrivateAggregationBindings::~PrivateAggregationBindings() = default;

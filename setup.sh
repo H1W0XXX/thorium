@@ -109,6 +109,7 @@ patchThor () {
 	cp -v other/disable-thorium-icons.patch ${CR_SRC_DIR}/ &&
 	cp -v other/always-enable-reload-menu.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium_webui.patch ${CR_SRC_DIR}/ &&
+	cp -v other/keep-expired-flags.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-privacy-sandbox.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-encryption.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-feature-promos.patch ${CR_SRC_DIR}/ &&
@@ -197,6 +198,8 @@ patchThor () {
 	git apply --reject ./win_updater.patch &&
 	printf "${YEL}Thorium Keyboard Shortcuts patch...${c0}\n" &&
 	git apply --reject ./keyboard_shortcuts.patch &&
+	printf "${YEL}Keep expired flags patch...${c0}\n" &&
+	git apply --reject ./keep-expired-flags.patch &&
 	printf "${YEL}Disable Privacy Sandbox patch...${c0}\n" &&
 	git apply --reject ./disable-privacy-sandbox.patch &&
 	printf "${YEL}Disable encryption patch...${c0}\n" &&

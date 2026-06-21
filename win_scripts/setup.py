@@ -144,6 +144,7 @@ patches = [
     "other/disable-thorium-icons.patch",
     "other/always-enable-reload-menu.patch",
     "other/thorium_webui.patch",
+    "other/keep-expired-flags.patch",
     "other/disable-privacy-sandbox.patch",
     "other/disable-encryption.patch",
     "other/disable-feature-promos.patch",
@@ -250,6 +251,7 @@ try_run(f"git apply --reject allow_manifest_v2_extensions.patch")
 try_run(f"git apply --reject thorium_webui.patch")
 try_run(f"git apply --reject win_updater.patch")
 try_run(f"git apply --reject keyboard_shortcuts.patch")
+try_run(f"git apply --reject keep-expired-flags.patch")
 try_run(f"git apply --reject disable-privacy-sandbox.patch")
 try_run(f"git apply --reject disable-encryption.patch")
 try_run(f"git apply --reject disable-feature-promos.patch")

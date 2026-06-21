@@ -1,0 +1,26 @@
+diff --git a/chrome/browser/ui/tabs/tab_strip_model.cc b/chrome/browser/ui/tabs/tab_strip_model.cc
+index 9f0ac1bd64489a432bbcff8da485dfa454c9dfd1..70cc0efefe77966da27d6aaef781b73cf127a5d1 100644
+--- a/chrome/browser/ui/tabs/tab_strip_model.cc
++++ b/chrome/browser/ui/tabs/tab_strip_model.cc
+@@ -19,6 +19,7 @@
+ 
+ #include "base/check.h"
+ #include "base/check_op.h"
++#include "base/command_line.h"
+ #include "base/containers/adapters.h"
+ #include "base/containers/flat_map.h"
+ #include "base/containers/span.h"
+@@ -3602,6 +3603,13 @@ void TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
+   }
+ 
+   const bool closing_all = static_cast<int>(filtered_items.size()) == count();
++  const std::string flag_value =
++      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
++          "close-window-with-last-tab");
++  if (flag_value == "never" && !closing_all_ && closing_all) {
++    delegate()->AddTabAt(GURL(), -1, true);
++  }
++
+   base::WeakPtr<TabStripModel> ref = weak_factory_.GetWeakPtr();
+   if (closing_all) {
+     for (auto& observer : observers_) {

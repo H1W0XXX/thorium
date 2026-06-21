@@ -19,7 +19,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -3600,14 +3599,6 @@ void TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
 
   if (filtered_items.empty()) {
     return;
-  }
-
-  const std::string flag_value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          "close-window-with-last-tab");
-  if (flag_value == "never" && !closing_all_ &&
-      static_cast<int>(filtered_items.size()) == count()) {
-    delegate()->AddTabAt(GURL(), -1, true);
   }
 
   const bool closing_all = static_cast<int>(filtered_items.size()) == count();

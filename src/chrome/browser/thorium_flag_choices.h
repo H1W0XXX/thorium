@@ -168,10 +168,8 @@ const FeatureEntry::Choice kPasswordStoreChoices[] = {
      password_manager::kPasswordStore, "kwallet"},
     {"Kwallet5",
      password_manager::kPasswordStore, "kwallet5"},
-    {"Gnome",
-     password_manager::kPasswordStore, "gnome"},
-    {"Gnome-Keyring",
-     password_manager::kPasswordStore, "gnome-keyring"},
+    {"Kwallet6",
+     password_manager::kPasswordStore, "kwallet6"},
     {"Gnome-LibSecret",
      password_manager::kPasswordStore, "gnome-libsecret"},
 };

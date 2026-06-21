@@ -47,13 +47,6 @@
      "Changes the look of browser tabs to appear with a rectangular shape, similar to Vivaldi or Cent Browser.",
      kOsDesktop, SINGLE_VALUE_TYPE("rectangular-tabs")},
 
-//#if BUILDFLAG(IS_WIN)
-    //{"transparent-tabs",
-     //"Thorium Semi-Transparent Tabs UI",
-     //"Reduces the opacity of tabs.",
-     //kOsWin, SINGLE_VALUE_TYPE("transparent-tabs")},
-//#endif // BUILDFLAG(IS_WIN)
-
     {"custom-tab-width",
      "Custom Tab Width",
      "Allows setting the default tab width, in DIP. Normally 1 DIP = 1 Pixel, and the standard width for tabs is 240.",
@@ -63,14 +56,6 @@
      "Disables the custom DNS configuration used by default in Thorium. Useful when this config breaks something, "
      "due to external apps or a non-standard system DNS config setting.",
      kOsDesktop, SINGLE_VALUE_TYPE("disable-thorium-dns-config")},
-    //{"side-panel-journeys",
-     //"Side Panel Journeys",
-     //"Enables Journeys within the Side Panel.",
-     //kOsDesktop, FEATURE_VALUE_TYPE(history_clusters::kSidePanelJourneys)},
-    // {"customize-chrome-side-panel-no-cr23",
-     // "Customize Chrome Side Panel (Non-Cr23 Variant)",
-     // "Enables the \"Customize Chrome\" item in the Side Panel, without the Cr23 UI, and without having to also enable Chrome Refresh 2023.",
-     // kOsDesktop, FEATURE_VALUE_TYPE(features::kCustomizeChromeSidePanelNoChromeRefresh2023)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"show-component-extension-options",
@@ -108,7 +93,11 @@
     {"middle-click-autoscroll",
      "Middle Click Autoscroll",
      "Enables autoscrolling when the middle mouse button is pressed.",
-     kOsDesktop, FEATURE_VALUE_TYPE(blink::features::kMiddleClickAutoscroll)},
+     kOsDesktop,
+     ENABLE_DISABLE_VALUE_TYPE_AND_VALUE(switches::kEnableBlinkFeatures,
+                                         "MiddleClickAutoscroll",
+                                         switches::kDisableBlinkFeatures,
+                                         "MiddleClickAutoscroll")},
 #endif // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
     {"autoplay-policy",
@@ -227,10 +216,6 @@
      "Disable WebGL 2",
      "Disable WebGL 2. Useful for certain GPU/OS combinations.",
      kOsAll, SINGLE_VALUE_TYPE(switches::kDisableWebGL2)},
-    {"enable-local-file-accesses",
-     "Enable Local File Accesses",
-     "Enable local file accesses. Useful for web development.",
-     kOsAll, SINGLE_VALUE_TYPE("enable-local-file-accesses")},
     {"allow-file-access-from-files",
      "Allow File URI Access from Files",
      "By default, file:// URIs cannot read other file:// URIs. This is an override for web developers who need this behavior for testing.",

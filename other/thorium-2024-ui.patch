@@ -260,18 +260,6 @@ index 04e1e8868ef79..4644ea31cb39d 100644
    "offline_enabled": true,
    "incognito": "split",
    "permissions": [
-diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
-index 6fa22a1e7ef1e..984ce0a661995 100644
---- a/chrome/browser/ui/BUILD.gn
-+++ b/chrome/browser/ui/BUILD.gn
-@@ -80,6 +80,7 @@ static_library("ui") {
-     "tab_modal_confirm_dialog.h",
-     "tab_ui_helper.cc",
-     "tab_ui_helper.h",
-+    "thorium_2024.h",
-     "uninstall_browser_prompt.h",
-     "view_ids.h",
-     "webui/browsing_topics/browsing_topics_internals_page_handler.cc",
 diff --git a/chrome/browser/ui/bookmarks/bookmark_utils.cc b/chrome/browser/ui/bookmarks/bookmark_utils.cc
 index 727cb3c1b8f95..aeeac975bc4b1 100644
 --- a/chrome/browser/ui/bookmarks/bookmark_utils.cc
@@ -560,15 +548,17 @@ diff --git a/chrome/browser/ui/layout_constants.cc b/chrome/browser/ui/layout_co
 index ae5091fe906a4..fd72752ab8d9a 100644
 --- a/chrome/browser/ui/layout_constants.cc
 +++ b/chrome/browser/ui/layout_constants.cc
-@@ -7,6 +7,7 @@
+@@ -7,7 +7,9 @@
  #include "base/feature_list.h"
  #include "base/notreached.h"
  #include "build/build_config.h"
-+#include "chrome/browser/ui/thorium_2024.h"
++#include "base/command_line.h"
  #include "chrome/browser/ui/tabs/features.h"
  #include "chrome/browser/ui/ui_features.h"
  #include "chrome/common/chrome_features.h"
-@@ -21,24 +22,31 @@
+ #include "ui/base/pointer/touch_ui_controller.h"
++#include "ui/base/ui_base_features.h"
+@@ -21,24 +23,31 @@
  
  int GetLayoutConstant(LayoutConstant constant) {
    const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
@@ -858,7 +848,7 @@ index 89a39983b04c3..8d67492ea068b 100644
  #include "build/build_config.h"
  #include "chrome/browser/shell_integration.h"
  #include "chrome/common/chrome_features.h"
-+#include "chrome/common/thorium_2024.h"
++#include "ui/base/ui_base_features.h"
  #include "chrome/common/webui_url_constants.h"
  #include "components/omnibox/browser/actions/omnibox_pedal.h"
  #include "components/omnibox/browser/autocomplete_input.h"
@@ -952,7 +942,7 @@ diff --git a/chrome/browser/ui/tabs/tab_style.cc b/chrome/browser/ui/tabs/tab_st
 index 6b71fd75e1d91..296bb2033928b 100644
 --- a/chrome/browser/ui/tabs/tab_style.cc
 +++ b/chrome/browser/ui/tabs/tab_style.cc
-@@ -5,9 +5,12 @@
+@@ -5,9 +5,11 @@
  #include "chrome/browser/ui/tabs/tab_style.h"
  
  #include <array>
@@ -961,11 +951,10 @@ index 6b71fd75e1d91..296bb2033928b 100644
 +#include "base/command_line.h"
  #include "chrome/browser/ui/layout_constants.h"
  #include "chrome/browser/ui/tabs/features.h"
-+#include "chrome/browser/ui/thorium_2024.h"
  #include "chrome/browser/ui/ui_features.h"
  #include "ui/base/ui_base_features.h"
  #include "ui/color/color_provider.h"
-@@ -18,18 +21,20 @@ namespace {
+@@ -18,18 +20,20 @@ namespace {
  
  // Thickness in DIPs of the separator painted on the left and right edges of
  // the tab.
@@ -1132,26 +1121,6 @@ index 6b71fd75e1d91..296bb2033928b 100644
  }
  
  float TabStyle::GetSelectedTabOpacity() const {
-diff --git a/chrome/browser/ui/thorium_2024.h b/chrome/browser/ui/thorium_2024.h
-new file mode 100644
-index 0000000000000..232bb04b813ef
---- /dev/null
-+++ b/chrome/browser/ui/thorium_2024.h
-@@ -0,0 +1,14 @@
-+// Copyright 2026 Alex313031
-+// Use of this source code is governed by a BSD-style license that can be
-+// found in the LICENSE file.
-+
-+#ifndef CHROME_BROWSER_UI_THORIUM_2024_UI_H_
-+#define CHROME_BROWSER_UI_THORIUM_2024_UI_H_
-+
-+#include "base/command_line.h"
-+#include "ui/base/ui_base_features.h"
-+
-+// Blanking out until moving file to //ui/base
-+//static const bool thor24 = features::IsThorium2024();
-+
-+#endif  // CHROME_BROWSER_UI_THORIUM_2024_UI_H_
 diff --git a/chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.cc b/chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.cc
 index 8b8e698b44b5c..cfabfe1c1babb 100644
 --- a/chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.cc
@@ -1222,7 +1191,7 @@ index be64de2a245bc..9b18a187d351f 100644
  #include "chrome/browser/ui/layout_constants.h"
  #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
  #include "chrome/browser/ui/tabs/tab_strip_model.h"
-+#include "chrome/browser/ui/thorium_2024.h"
++#include "ui/base/ui_base_features.h"
  #include "chrome/browser/ui/ui_features.h"
  #include "chrome/browser/ui/view_ids.h"
  #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_observer.h"
@@ -1278,11 +1247,10 @@ diff --git a/chrome/browser/ui/views/chrome_layout_provider.cc b/chrome/browser/
 index 16fbc7605acd6..68e0839e70864 100644
 --- a/chrome/browser/ui/views/chrome_layout_provider.cc
 +++ b/chrome/browser/ui/views/chrome_layout_provider.cc
-@@ -7,10 +7,12 @@
+@@ -7,10 +7,11 @@
  #include <algorithm>
  
  #include "base/feature_list.h"
-+#include "chrome/browser/ui/thorium_2024.h"
  #include "chrome/browser/ui/ui_features.h"
  #include "chrome/browser/ui/views/chrome_typography.h"
  #include "components/omnibox/common/omnibox_features.h"
@@ -1646,7 +1614,7 @@ diff --git a/chrome/browser/ui/views/frame/tab_strip_region_view.cc b/chrome/bro
 index 582855d6a9922..4ffeeae7ebee9 100644
 --- a/chrome/browser/ui/views/frame/tab_strip_region_view.cc
 +++ b/chrome/browser/ui/views/frame/tab_strip_region_view.cc
-@@ -1,13 +1,14 @@
+@@ -1,13 +1,15 @@
 -// Copyright 2019 The Chromium Authors
 +// Copyright 2026 The Chromium Authors and Alex313031
  // Use of this source code is governed by a BSD-style license that can be
@@ -1662,6 +1630,7 @@ index 582855d6a9922..4ffeeae7ebee9 100644
  #include "chrome/browser/glic/public/glic_enabling.h"
  #include "chrome/browser/themes/theme_properties.h"
  #include "chrome/browser/ui/browser_element_identifiers.h"
++#include "ui/base/ui_base_features.h"
 @@ -281,7 +282,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
              tab_strip_->controller(),
              base::BindRepeating(&TabStrip::NewTabButtonPressed,
@@ -2732,7 +2701,7 @@ index fe66c423ab248..4c97c212d34bd 100644
  #include "chrome/browser/ui/layout_constants.h"
  #include "chrome/browser/ui/tabs/tab_style.h"
  #include "chrome/browser/ui/tabs/tab_types.h"
-+#include "chrome/browser/ui/thorium_2024.h"
++#include "ui/base/ui_base_features.h"
  #include "chrome/browser/ui/ui_features.h"
  #include "chrome/browser/ui/views/frame/browser_frame_view.h"
  #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -3232,18 +3201,6 @@ index a35723a40c9b7..5a7e248f4ff9b 100644
  };
  
  // The chrome colors selected and ordered by |kCustomizeChromeColorIds|.
-diff --git a/chrome/common/BUILD.gn b/chrome/common/BUILD.gn
-index 001b9d536abf8..caaf491cdfd22 100644
---- a/chrome/common/BUILD.gn
-+++ b/chrome/common/BUILD.gn
-@@ -453,6 +453,7 @@ static_library("non_code_constants") {
-     "chrome_switches.cc",
-     "chrome_switches.h",
-     "env_vars.h",
-+    "thorium_2024.h"
-   ]
-   configs += [ "//build/config/compiler:wexit_time_destructors" ]
- 
 diff --git a/chrome/common/chrome_paths.cc b/chrome/common/chrome_paths.cc
 index 9c4d73b730baa..e239f29eb5ceb 100644
 --- a/chrome/common/chrome_paths.cc
@@ -3293,7 +3250,7 @@ index ed88895a1abf6..011d996a23559 100644
  #include "base/time/time.h"
  #include "build/branding_buildflags.h"
  #include "build/build_config.h"
-+#include "chrome/browser/ui/thorium_2024.h"
++#include "ui/base/ui_base_features.h"
  
  namespace lens::features {
  
@@ -3753,15 +3710,7 @@ diff --git a/ui/views/controls/menu/menu_config.cc b/ui/views/controls/menu/menu
 index a711c503287a7..ba0aef5301358 100644
 --- a/ui/views/controls/menu/menu_config.cc
 +++ b/ui/views/controls/menu/menu_config.cc
-@@ -6,6 +6,7 @@
- 
- #include "base/debug/dump_without_crashing.h"
- #include "base/no_destructor.h"
-+#include "chrome/browser/ui/thorium_2024.h"
- #include "ui/base/ui_base_features.h"
- #include "ui/views/controls/menu/menu_controller.h"
- #include "ui/views/controls/menu/menu_item_view.h"
-@@ -85,14 +86,16 @@ void MenuConfig::InitCommon() {
+@@ -85,14 +85,16 @@ void MenuConfig::InitCommon() {
    context_menu_font_list = font_list = TypographyProvider::Get().GetFont(
        style::CONTEXT_MENU, style::STYLE_BODY_3);
    reserve_dedicated_arrow_column = false;
@@ -3848,11 +3797,10 @@ diff --git a/ui/views/controls/menu/menu_config_linux.cc b/ui/views/controls/men
 index 09c03d1e87011..9e661b29b27e6 100644
 --- a/ui/views/controls/menu/menu_config_linux.cc
 +++ b/ui/views/controls/menu/menu_config_linux.cc
-@@ -4,12 +4,26 @@
+@@ -4,12 +4,25 @@
  
  #include "ui/views/controls/menu/menu_config.h"
  
-+#include "chrome/browser/ui/thorium_2024.h"
 +#include "ui/base/ui_base_features.h"
  #include "ui/ozone/public/ozone_platform.h"
  
@@ -3880,7 +3828,7 @@ diff --git a/ui/views/controls/menu/menu_config_mac.mm b/ui/views/controls/menu/
 index eabfb364890d3..c57c81e12eb7a 100644
 --- a/ui/views/controls/menu/menu_config_mac.mm
 +++ b/ui/views/controls/menu/menu_config_mac.mm
-@@ -1,17 +1,60 @@
+@@ -1,17 +1,59 @@
 -// Copyright 2014 The Chromium Authors
 +// Copyright 2026 The Chromium Authors and Alex313031
  // Use of this source code is governed by a BSD-style license that can be
@@ -3889,7 +3837,6 @@ index eabfb364890d3..c57c81e12eb7a 100644
 +#import <AppKit/AppKit.h>
 +
 +#include "base/mac/mac_util.h"
-+#include "chrome/browser/ui/thorium_2024.h"
 +#include "ui/base/ui_base_features.h"
  #include "ui/views/controls/menu/menu_config.h"
  
@@ -4028,15 +3975,7 @@ diff --git a/ui/views/controls/menu/menu_item_view.cc b/ui/views/controls/menu/m
 index ce1f10b8e7361..c97605d76513c 100644
 --- a/ui/views/controls/menu/menu_item_view.cc
 +++ b/ui/views/controls/menu/menu_item_view.cc
-@@ -28,6 +28,7 @@
- #include "ui/base/metadata/metadata_impl_macros.h"
- #include "ui/base/models/image_model.h"
- #include "ui/base/models/menu_model.h"
-+#include "chrome/browser/ui/thorium_2024.h"
- #include "ui/base/ui_base_features.h"
- #include "ui/color/color_id.h"
- #include "ui/color/color_provider.h"
-@@ -1564,7 +1565,10 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
+@@ -1564,7 +1564,10 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
    const Colors colors = CalculateColors(paint_as_selected);
    if (submenu_arrow_image_view_) {
      submenu_arrow_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
@@ -4175,15 +4114,7 @@ diff --git a/ui/views/layout/layout_provider.cc b/ui/views/layout/layout_provide
 index d424bec1e9773..b6bcc20e0e5d3 100644
 --- a/ui/views/layout/layout_provider.cc
 +++ b/ui/views/layout/layout_provider.cc
-@@ -8,6 +8,7 @@
- 
- #include "base/containers/fixed_flat_map.h"
- #include "base/logging.h"
-+#include "chrome/browser/ui/thorium_2024.h"
- #include "ui/base/ui_base_features.h"
- #include "ui/gfx/font_list.h"
- #include "ui/views/controls/focus_ring.h"
-@@ -82,6 +83,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
+@@ -82,6 +82,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
    DCHECK_GE(metric, VIEWS_DISTANCE_START);
    DCHECK_LT(metric, VIEWS_DISTANCE_END);
  
@@ -4191,7 +4122,7 @@ index d424bec1e9773..b6bcc20e0e5d3 100644
    switch (static_cast<DistanceMetric>(metric)) {
      case DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE:
        return 20;
-@@ -92,11 +94,11 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
+@@ -92,11 +93,11 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
      case DISTANCE_BUTTON_MAX_LINKABLE_WIDTH:
        return 112;
      case DISTANCE_CLOSE_BUTTON_MARGIN:

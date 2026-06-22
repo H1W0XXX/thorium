@@ -103,6 +103,7 @@ patchThor () {
 	cp -v other/add-flag-for-custom-ntp.patch ${CR_SRC_DIR}/ &&
 	cp -v other/force-disable-tab-outlines.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-thorium-dns-config.patch ${CR_SRC_DIR}/ &&
+	cp -v other/reduce-doh-request-headers.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-to-keep-all-history.patch ${CR_SRC_DIR}/ &&
 	cp -v other/allow-insecure-downloads.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-download-quarantine.patch ${CR_SRC_DIR}/ &&
@@ -181,6 +182,8 @@ patchThor () {
 	git apply --reject ./force-disable-tab-outlines.patch &&
 	printf "${YEL}Disable Thorium DNS config patch...${c0}\n" &&
 	git apply --reject ./disable-thorium-dns-config.patch &&
+	printf "${YEL}Reduce DoH request headers patch...${c0}\n" &&
+	git apply --reject ./reduce-doh-request-headers.patch &&
 	printf "${YEL}Keep all history patch...${c0}\n" &&
 	git apply --reject ./add-flag-to-keep-all-history.patch &&
 	printf "${YEL}Allow insecure downloads patch...${c0}\n" &&

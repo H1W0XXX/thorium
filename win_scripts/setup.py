@@ -138,6 +138,7 @@ patches = [
     "other/add-flag-for-custom-ntp.patch",
     "other/force-disable-tab-outlines.patch",
     "other/disable-thorium-dns-config.patch",
+    "other/reduce-doh-request-headers.patch",
     "other/add-flag-to-keep-all-history.patch",
     "other/allow-insecure-downloads.patch",
     "other/disable-download-quarantine.patch",
@@ -243,6 +244,7 @@ try_run(f"git apply --reject add-flag-to-scroll-tabs.patch")
 try_run(f"git apply --reject add-flag-for-custom-ntp.patch")
 try_run(f"git apply --reject force-disable-tab-outlines.patch")
 try_run(f"git apply --reject disable-thorium-dns-config.patch")
+try_run(f"git apply --reject reduce-doh-request-headers.patch")
 try_run(f"git apply --reject add-flag-to-keep-all-history.patch")
 try_run(f"git apply --reject allow-insecure-downloads.patch")
 try_run(f"git apply --reject disable-download-quarantine.patch")

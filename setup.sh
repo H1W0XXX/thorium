@@ -94,6 +94,9 @@ patchThor () {
 	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
 	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
 	cp -v other/v8-context-snapshot-rpath.patch ${CR_SRC_DIR}/ &&
+	cp -v other/linux-disable-custom-titlebar-default.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-ui-debug-shell.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-webui-image-resources.patch ${CR_SRC_DIR}/ &&
 	cp -v other/fix-policy-templates.patch ${CR_SRC_DIR}/ &&
 	cp -v other/ftp-support-thorium.patch ${CR_SRC_DIR}/ &&
 	cp -v other/restore_download_shelf.patch ${CR_SRC_DIR}/ &&
@@ -172,6 +175,12 @@ patchThor () {
 	git apply --reject ./llvm-optimized-avx2-build.patch &&
 	printf "${YEL}V8 context snapshot rpath patch...${c0}\n" &&
 	git apply --reject ./v8-context-snapshot-rpath.patch &&
+	printf "${YEL}Linux disable custom titlebar default patch...${c0}\n" &&
+	git apply --reject ./linux-disable-custom-titlebar-default.patch &&
+	printf "${YEL}Thorium UI debug shell patch...${c0}\n" &&
+	git apply --reject ./thorium-ui-debug-shell.patch &&
+	printf "${YEL}Thorium WebUI image resources patch...${c0}\n" &&
+	git apply --reject ./thorium-webui-image-resources.patch &&
 
 	printf "\n" &&
 	printf "${YEL}Patching policy templates...${c0}\n" &&

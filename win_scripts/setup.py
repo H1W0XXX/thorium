@@ -128,6 +128,9 @@ patches = [
     "other/thorium-v8-simd-opts.patch",
     "other/llvm-optimized-avx2-build.patch",
     "other/v8-context-snapshot-rpath.patch",
+    "other/linux-disable-custom-titlebar-default.patch",
+    "other/thorium-ui-debug-shell.patch",
+    "other/thorium-webui-image-resources.patch",
     "other/fix-policy-templates.patch",
     "other/ftp-support-thorium.patch",
     "other/thorium-2024-ui.patch",
@@ -233,6 +236,9 @@ try_run(f"git apply --reject ../thorium-v8-simd-opts.patch")
 os.chdir(cr_src_dir)
 try_run(f"git apply --reject llvm-optimized-avx2-build.patch")
 try_run(f"git apply --reject v8-context-snapshot-rpath.patch")
+try_run(f"git apply --reject linux-disable-custom-titlebar-default.patch")
+try_run(f"git apply --reject thorium-ui-debug-shell.patch")
+try_run(f"git apply --reject thorium-webui-image-resources.patch")
 
 print("\nPatching policy templates\n")
 # Change directory to cr_src_dir and run commands

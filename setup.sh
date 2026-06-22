@@ -74,7 +74,6 @@ cp -r -v src/media ${CR_SRC_DIR}/ &&
 cp -r -v src/net ${CR_SRC_DIR}/ &&
 cp -r -v src/services ${CR_SRC_DIR}/ &&
 cp -r -v src/third_party ${CR_SRC_DIR}/ &&
-cp -r -v src/tools ${CR_SRC_DIR}/ &&
 cp -r -v src/ui ${CR_SRC_DIR}/ &&
 
 cp -r -v thorium_shell/. ${CR_SRC_DIR}/out/thorium/ &&
@@ -93,6 +92,8 @@ patchThor () {
 	cp -v other/widevine-cdm-host-verification.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-default-api-keys.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
+	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
+	cp -v other/v8-context-snapshot-rpath.patch ${CR_SRC_DIR}/ &&
 	cp -v other/fix-policy-templates.patch ${CR_SRC_DIR}/ &&
 	cp -v other/ftp-support-thorium.patch ${CR_SRC_DIR}/ &&
 	cp -v other/restore_download_shelf.patch ${CR_SRC_DIR}/ &&
@@ -167,6 +168,10 @@ patchThor () {
 	cd ${CR_SRC_DIR}/v8 &&
 	git apply --reject ../thorium-v8-simd-opts.patch &&
 	cd ${CR_SRC_DIR} &&
+	printf "${YEL}LLVM optimized AVX2 build patch...${c0}\n" &&
+	git apply --reject ./llvm-optimized-avx2-build.patch &&
+	printf "${YEL}V8 context snapshot rpath patch...${c0}\n" &&
+	git apply --reject ./v8-context-snapshot-rpath.patch &&
 
 	printf "\n" &&
 	printf "${YEL}Patching policy templates...${c0}\n" &&

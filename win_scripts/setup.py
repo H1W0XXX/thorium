@@ -128,6 +128,7 @@ copy_directory(
 patches = [
     "other/enable-hevc-ffmpeg-decoding.patch",
     "other/enable-mpeg2-ac3-eac3-decoding.patch",
+    "other/thorium-media-switches.patch",
     "other/widevine-cdm-host-verification.patch",
     "other/fix-policy-templates.patch",
     "other/ftp-support-thorium.patch",
@@ -216,6 +217,7 @@ print("\nEnabling HEVC FFmpeg decoding\n")
 os.chdir(cr_src_dir)
 try_run(f"git apply --reject enable-hevc-ffmpeg-decoding.patch")
 try_run(f"git apply --reject enable-mpeg2-ac3-eac3-decoding.patch")
+try_run(f"git apply --reject thorium-media-switches.patch")
 try_run(f"git apply --reject --directory=third_party/widevine third_party/widevine/widevine-cdm-support.patch")
 try_run(f"git apply --reject widevine-cdm-host-verification.patch")
 

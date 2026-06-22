@@ -91,7 +91,6 @@ thorium_sources = [
     "src/chromeos",
     "src/components",
     "src/content",
-    "src/extensions",
     "src/media",
     "src/net",
     "src/sandbox",
@@ -161,6 +160,8 @@ patches = [
     "other/disable-aero.patch",
     "other/restore_download_shelf.patch",
     "other/allow_manifest_v2_extensions.patch",
+    "other/increase-dnr-limits.patch",
+    "other/show-hosted-apps-in-extensions.patch",
     "other/android-disable-signin-without-account-manager.patch",
     "other/android-extensions-support.patch",
     "other/chrome-web-store-protection.patch",
@@ -278,6 +279,8 @@ try_run(f"git apply --reject add-flag-for-auto-dark-mode.patch")
 try_run(f"git apply --reject disable-thorium-icons.patch")
 try_run(f"git apply --reject always-enable-reload-menu.patch")
 try_run(f"git apply --reject allow_manifest_v2_extensions.patch")
+try_run(f"git apply --reject increase-dnr-limits.patch")
+try_run(f"git apply --reject show-hosted-apps-in-extensions.patch")
 try_run(f"git apply --reject thorium_webui.patch")
 try_run(f"git apply --reject win_updater.patch")
 try_run(f"git apply --reject keyboard_shortcuts.patch")

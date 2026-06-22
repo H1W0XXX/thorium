@@ -71,7 +71,6 @@ cp -r -v src/chrome ${CR_SRC_DIR}/ &&
 cp -r -v src/chromeos ${CR_SRC_DIR}/ &&
 cp -r -v src/components ${CR_SRC_DIR}/ &&
 cp -r -v src/content ${CR_SRC_DIR}/ &&
-cp -r -v src/extensions ${CR_SRC_DIR}/ &&
 cp -r -v src/media ${CR_SRC_DIR}/ &&
 cp -r -v src/net ${CR_SRC_DIR}/ &&
 cp -r -v src/sandbox ${CR_SRC_DIR}/ &&
@@ -131,6 +130,8 @@ patchThor () {
 	cp -v other/disable-aero.patch ${CR_SRC_DIR}/ &&
 	
 	cp -v other/allow_manifest_v2_extensions.patch ${CR_SRC_DIR}/ &&
+	cp -v other/increase-dnr-limits.patch ${CR_SRC_DIR}/ &&
+	cp -v other/show-hosted-apps-in-extensions.patch ${CR_SRC_DIR}/ &&
 	
 	cp -v other/android-disable-signin-without-account-manager.patch ${CR_SRC_DIR}/ &&
 	cp -v other/android-extensions-support.patch ${CR_SRC_DIR}/ &&
@@ -222,6 +223,10 @@ patchThor () {
 	git apply --reject ./always-enable-reload-menu.patch &&
 	printf "${YEL}Allow Manifest V2 extensions...${c0}\n" &&
 	git apply --reject ./allow_manifest_v2_extensions.patch &&
+	printf "${YEL}Increase Declarative Net Request limits...${c0}\n" &&
+	git apply --reject ./increase-dnr-limits.patch &&
+	printf "${YEL}Show hosted apps in extensions settings...${c0}\n" &&
+	git apply --reject ./show-hosted-apps-in-extensions.patch &&
 	printf "${YEL}Thorium WebUI patch...${c0}\n" &&
 	git apply --reject ./thorium_webui.patch &&
 	printf "${YEL}Thorium Updater patch...${c0}\n" &&

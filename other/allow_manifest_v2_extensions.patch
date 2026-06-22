@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/extensions/api/developer_private/extension_info_generator.cc b/chrome/browser/extensions/api/developer_private/extension_info_generator.cc
-index 5d98ef92fea10..f59e1be2c4602 100644
+index 71c472aa201ad..d84010548ed49 100644
 --- a/chrome/browser/extensions/api/developer_private/extension_info_generator.cc
 +++ b/chrome/browser/extensions/api/developer_private/extension_info_generator.cc
-@@ -870,20 +870,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
+@@ -865,17 +865,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
          toolbar_actions_model->IsActionPinned(extension.id());
    }
  
@@ -12,22 +12,19 @@ index 5d98ef92fea10..f59e1be2c4602 100644
 -  CHECK(mv2_experiment_manager);
 -  info.is_affected_by_mv2_deprecation =
 -      mv2_experiment_manager->IsExtensionAffected(extension);
--  info.did_acknowledge_mv2_deprecation_notice =
--      mv2_experiment_manager->DidUserAcknowledgeNotice(extension.id());
 -  if (info.web_store_url.length() > 0) {
 -    info.recommendations_url =
 -        extension_urls::GetNewWebstoreItemRecommendationsUrl(extension.id())
 -            .spec();
 -  }
--
-   // Whether the extension can be uploaded as an account extension.
-   // `CanUploadAsAccountExtension` should already check for the feature flag
-   // somewhere but add another guard for it here just in case.
+ 
+   info.can_upload_as_account_extension =
+       AccountExtensionTracker::Get(profile)->CanUploadAsAccountExtension(
 diff --git a/chrome/browser/extensions/extension_management.cc b/chrome/browser/extensions/extension_management.cc
-index e3250a9d8fa8f..91aaf250f0063 100644
+index 5b96804e4d91c..bf956adc4678c 100644
 --- a/chrome/browser/extensions/extension_management.cc
 +++ b/chrome/browser/extensions/extension_management.cc
-@@ -367,31 +367,7 @@ bool ExtensionManagement::IsAllowedManifestVersion(
+@@ -371,33 +371,7 @@ bool ExtensionManagement::IsAllowedManifestVersion(
      int manifest_version,
      const std::string& extension_id,
      Manifest::Type manifest_type) {
@@ -36,10 +33,12 @@ index e3250a9d8fa8f..91aaf250f0063 100644
 -          extensions_features::kExtensionsManifestV3Only) ||
 -      manifest_version >= 3;
 -
--  // Manifest version policy only supports normal extensions and Chrome OS login
--  // screen extension.
--  if (manifest_type != Manifest::Type::TYPE_EXTENSION &&
--      manifest_type != Manifest::Type::TYPE_LOGIN_SCREEN_EXTENSION) {
+-  // Manifest version policy only supports normal extensions, Chrome OS login
+-  // screen extensions, and user scripts (which are largely treated as
+-  // extensions).
+-  if (manifest_type != Manifest::Type::kExtension &&
+-      manifest_type != Manifest::Type::kLoginScreenExtension &&
+-      manifest_type != Manifest::Type::kUserScript) {
 -    return enabled_by_default;
 -  }
 -  switch (global_settings_->manifest_v2_setting) {
@@ -60,10 +59,20 @@ index e3250a9d8fa8f..91aaf250f0063 100644
  }
  
  bool ExtensionManagement::IsAllowedManifestVersion(const Extension* extension) {
-@@ -412,26 +388,8 @@ bool ExtensionManagement::IsExemptFromMV2DeprecationByPolicy(
-     return false;
-   }
- 
+@@ -409,36 +383,8 @@ bool ExtensionManagement::IsExemptFromMV2DeprecationByPolicy(
+     int manifest_version,
+     const std::string& extension_id,
+     Manifest::Type manifest_type) {
+-  // This policy only affects MV2 extensions.
+-  if (manifest_version != 2) {
+-    return false;
+-  }
+-  if (manifest_type != Manifest::Type::kExtension &&
+-      manifest_type != Manifest::Type::kLoginScreenExtension &&
+-      manifest_type != Manifest::Type::kUserScript) {
+-    return false;
+-  }
+-
 -  switch (global_settings_->manifest_v2_setting) {
 -    case internal::GlobalSettings::ManifestV2Setting::kDefault:
 -      // Default browser behavior. Not exempt.
@@ -89,11 +98,46 @@ index e3250a9d8fa8f..91aaf250f0063 100644
  }
  
  bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
-diff --git a/chrome/browser/extensions/manifest_v2_experiment_manager.cc b/chrome/browser/extensions/manifest_v2_experiment_manager.cc
-index 571213419eafa..13f3dc8557980 100644
---- a/chrome/browser/extensions/manifest_v2_experiment_manager.cc
-+++ b/chrome/browser/extensions/manifest_v2_experiment_manager.cc
-@@ -147,17 +147,6 @@ bool ManifestV2ExperimentManagerFactory::ServiceIsCreatedWithBrowserContext()
+diff --git a/chrome/browser/ui/webui/extensions/extensions_ui.cc b/chrome/browser/ui/webui/extensions/extensions_ui.cc
+index 59abbb0f26757..ea4baca47db0a 100644
+--- a/chrome/browser/ui/webui/extensions/extensions_ui.cc
++++ b/chrome/browser/ui/webui/extensions/extensions_ui.cc
+@@ -484,9 +484,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
+       "enableUserPermittedSites",
+       base::FeatureList::IsEnabled(
+           extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
+-  source->AddBoolean(
+-      "safetyHubThreeDotDetails",
+-      base::FeatureList::IsEnabled(features::kSafetyHubThreeDotDetails));
++  source->AddBoolean("safetyHubThreeDotDetails", false);
+   source->AddBoolean("enableGlobalScopedShortcuts", IsGlobalShortcutEnabled());
+ 
+   // MV2 deprecation.
+diff --git a/extensions/browser/extension_prefs.cc b/extensions/browser/extension_prefs.cc
+index 5ef2bc3b2ac81..e0285a7edcea4 100644
+--- a/extensions/browser/extension_prefs.cc
++++ b/extensions/browser/extension_prefs.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2014 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -2219,7 +2219,8 @@ void ExtensionPrefs::RegisterProfilePrefs(
+   registry->RegisterDictionaryPref(pref_names::kExtensionManagement);
+   registry->RegisterDictionaryPref(pref_names::kOAuthRedirectUrls);
+   registry->RegisterListPref(pref_names::kAllowedTypes);
+-  registry->RegisterIntegerPref(pref_names::kManifestV2Availability, 0);
++  // Keep Manifest V2 extensions available by default in Thorium.
++  registry->RegisterIntegerPref(pref_names::kManifestV2Availability, 2);
+   registry->RegisterListPref(pref_names::kAllowedInstallSites);
+   registry->RegisterStringPref(pref_names::kLastChromeVersion, std::string());
+   registry->RegisterDictionaryPref(kInstallSignature);
+diff --git a/extensions/browser/manifest_v2_experiment_manager.cc b/extensions/browser/manifest_v2_experiment_manager.cc
+index e18d5a67b34b3..ab9fe6744c580 100644
+--- a/extensions/browser/manifest_v2_experiment_manager.cc
++++ b/extensions/browser/manifest_v2_experiment_manager.cc
+@@ -145,12 +145,6 @@ bool ManifestV2ExperimentManagerFactory::ServiceIsCreatedWithBrowserContext()
  
  // Determines the current stage of the MV2 deprecation experiments.
  MV2ExperimentStage CalculateCurrentExperimentStage() {
@@ -103,15 +147,10 @@ index 571213419eafa..13f3dc8557980 100644
 -    return MV2ExperimentStage::kUnsupported;
 -  }
 -
--  if (base::FeatureList::IsEnabled(
--          extensions_features::kExtensionManifestV2Disabled)) {
--    return MV2ExperimentStage::kDisableWithReEnable;
--  }
--
-   return MV2ExperimentStage::kWarning;
+   return MV2ExperimentStage::kDisableWithReEnable;
  }
  
-@@ -191,18 +180,7 @@ PrefMap GetGlobalNoticeAcknowledgedPrefFor(
+@@ -180,12 +174,7 @@ PrefMap GetGlobalNoticeAcknowledgedPrefFor(
  // Returns true if legacy extensions should be disabled, looking at both
  // experiment stage and global state.
  bool ShouldDisableLegacyExtensions(MV2ExperimentStage stage) {
@@ -120,37 +159,22 @@ index 571213419eafa..13f3dc8557980 100644
 -    return false;
 -  }
 -
--  switch (stage) {
--    case MV2ExperimentStage::kWarning:
--      return false;
--    case MV2ExperimentStage::kDisableWithReEnable:
--    case MV2ExperimentStage::kUnsupported:
--      return true;
--  }
+-  return true;
 +  return false;
  }
  
  // Returns true if the given `stage` is one in which extension enablement should
-diff --git a/chrome/browser/ui/webui/extensions/extensions_ui.cc b/chrome/browser/ui/webui/extensions/extensions_ui.cc
-index 641f3b237049a..cc1b8153bbb4b 100644
---- a/chrome/browser/ui/webui/extensions/extensions_ui.cc
-+++ b/chrome/browser/ui/webui/extensions/extensions_ui.cc
-@@ -482,9 +482,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
-       "enableUserPermittedSites",
-       base::FeatureList::IsEnabled(
-           extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
--  source->AddBoolean(
--      "safetyHubThreeDotDetails",
--      base::FeatureList::IsEnabled(features::kSafetyHubThreeDotDetails));
-+  source->AddBoolean("safetyHubThreeDotDetails", false);
- 
-   // MV2 deprecation.
-   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
 diff --git a/extensions/common/extension.cc b/extensions/common/extension.cc
-index 4626b2634c79b..12c849acf738a 100644
+index 921ca8867e952..1f079508ae5e4 100644
 --- a/extensions/common/extension.cc
 +++ b/extensions/common/extension.cc
-@@ -97,13 +97,6 @@ bool IsManifestSupported(int manifest_version,
+@@ -1,4 +1,4 @@
+-// Copyright 2013 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -103,13 +103,6 @@ bool IsManifestSupported(int manifest_version,
    // Supported versions are always safe.
    if (manifest_version >= kMinimumSupportedManifestVersion &&
        manifest_version <= kMaximumSupportedManifestVersion) {

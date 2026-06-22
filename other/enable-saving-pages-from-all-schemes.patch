@@ -1,0 +1,57 @@
+diff --git a/content/common/url_schemes.cc b/content/common/url_schemes.cc
+index 225e017909b88..f2eab738b0381 100644
+--- a/content/common/url_schemes.cc
++++ b/content/common/url_schemes.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2012 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -24,13 +24,22 @@ namespace {
+ bool g_registered_url_schemes = false;
+ 
+ const char* const kDefaultSavableSchemes[] = {
++  url::kAboutScheme,
++  url::kBlobScheme,
++  url::kContentScheme,
+   url::kHttpScheme,
+   url::kHttpsScheme,
+   url::kFileScheme,
+   url::kFileSystemScheme,
++  url::kFtpScheme,
+   kChromeDevToolsScheme,
+   kChromeUIScheme,
+-  url::kDataScheme
++  url::kDataScheme,
++  url::kJavaScriptScheme,
++  url::kMailToScheme,
++  url::kWsScheme,
++  url::kWssScheme,
++  kViewSourceScheme
+ };
+ 
+ // These lists are lazily initialized below and are leaked on shutdown to
+diff --git a/content/public/common/url_utils.cc b/content/public/common/url_utils.cc
+index 5812b103a6c12..53d6130007fe1 100644
+--- a/content/public/common/url_utils.cc
++++ b/content/public/common/url_utils.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2013 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -45,11 +45,7 @@ bool HasWebUIOrigin(const url::Origin& origin) {
+ }
+ 
+ bool IsSavableURL(const GURL& url) {
+-  for (auto& scheme : GetSavableSchemes()) {
+-    if (url.SchemeIs(scheme))
+-      return true;
+-  }
+-  return false;
++  return true;
+ }
+ 
+ bool IsURLHandledByNetworkStack(const GURL& url) {

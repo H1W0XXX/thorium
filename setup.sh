@@ -68,13 +68,13 @@ cp -r -v src/build ${CR_SRC_DIR}/ &&
 cp -r -v src/chrome ${CR_SRC_DIR}/ &&
 cp -r -v src/chromeos ${CR_SRC_DIR}/ &&
 cp -r -v src/components ${CR_SRC_DIR}/ &&
-cp -r -v src/content ${CR_SRC_DIR}/ &&
 cp -r -v src/media ${CR_SRC_DIR}/ &&
 cp -r -v src/net ${CR_SRC_DIR}/ &&
 cp -r -v src/services ${CR_SRC_DIR}/ &&
 cp -r -v src/third_party ${CR_SRC_DIR}/ &&
 cp -r -v src/ui ${CR_SRC_DIR}/ &&
 
+cp -v src/content/shell/app/thorium_shell.ico ${CR_SRC_DIR}/content/shell/app/ &&
 cp -r -v thorium_shell/. ${CR_SRC_DIR}/out/thorium/ &&
 cp -r -v pak_src/binaries/pak ${CR_SRC_DIR}/out/thorium/ &&
 cp -r -v pak_src/binaries/pak-win/. ${CR_SRC_DIR}/out/thorium/ &&
@@ -93,6 +93,9 @@ patchThor () {
 	cp -v other/thorium-search-engines-data.patch ${CR_SRC_DIR}/third_party/search_engines_data/resources/ &&
 	cp -v other/thorium-blink-feature-defaults.patch ${CR_SRC_DIR}/ &&
 	cp -v other/allow-webaudio-autoplay.patch ${CR_SRC_DIR}/ &&
+	cp -v other/enable-saving-pages-from-all-schemes.patch ${CR_SRC_DIR}/ &&
+	cp -v other/content-gpu-vaapi-libva-config.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-content-shell-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
 	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
@@ -178,6 +181,12 @@ patchThor () {
 	git apply --reject ./thorium-blink-feature-defaults.patch &&
 	printf "${YEL}Allow WebAudio autoplay patch...${c0}\n" &&
 	git apply --reject ./allow-webaudio-autoplay.patch &&
+	printf "${YEL}Enable saving pages from all schemes patch...${c0}\n" &&
+	git apply --reject ./enable-saving-pages-from-all-schemes.patch &&
+	printf "${YEL}Content GPU VAAPI libva config patch...${c0}\n" &&
+	git apply --reject ./content-gpu-vaapi-libva-config.patch &&
+	printf "${YEL}Thorium content shell branding patch...${c0}\n" &&
+	git apply --reject ./thorium-content-shell-branding.patch &&
 	printf "${YEL}Thorium root build targets patch...${c0}\n" &&
 	git apply --reject ./thorium-root-build-targets.patch &&
 	printf "${YEL}Thorium V8 SIMD opts patch...${c0}\n" &&

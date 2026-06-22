@@ -83,7 +83,6 @@ thorium_sources = [
     "src/chrome",
     "src/chromeos",
     "src/components",
-    "src/content",
     "src/media",
     "src/net",
     "src/services",
@@ -111,6 +110,11 @@ copy_directory(
         thor_src_dir, "pak_src", "binaries", "pak-win")),
     os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
 )
+copy(
+    os.path.normpath(os.path.join(
+        thor_src_dir, "src", "content", "shell", "app", "thorium_shell.ico")),
+    os.path.normpath(os.path.join(cr_src_dir, "content", "shell", "app")),
+)
 
 
 patches = [
@@ -121,6 +125,9 @@ patches = [
     "other/thorium-default-api-keys.patch",
     "other/thorium-blink-feature-defaults.patch",
     "other/allow-webaudio-autoplay.patch",
+    "other/enable-saving-pages-from-all-schemes.patch",
+    "other/content-gpu-vaapi-libva-config.patch",
+    "other/thorium-content-shell-branding.patch",
     "other/thorium-root-build-targets.patch",
     "other/thorium-v8-simd-opts.patch",
     "other/llvm-optimized-avx2-build.patch",
@@ -240,6 +247,9 @@ os.chdir(cr_src_dir)
 
 try_run(f"git apply --reject thorium-blink-feature-defaults.patch")
 try_run(f"git apply --reject allow-webaudio-autoplay.patch")
+try_run(f"git apply --reject enable-saving-pages-from-all-schemes.patch")
+try_run(f"git apply --reject content-gpu-vaapi-libva-config.patch")
+try_run(f"git apply --reject thorium-content-shell-branding.patch")
 try_run(f"git apply --reject thorium-root-build-targets.patch")
 
 print("\nThorium V8 SIMD opts patch\n")

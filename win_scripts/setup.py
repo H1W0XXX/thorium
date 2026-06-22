@@ -85,7 +85,6 @@ copy(
 
 # Copy Thorium sources
 thorium_sources = [
-    "src/ash",
     "src/build",
     "src/chrome",
     "src/chromeos",
@@ -146,6 +145,9 @@ patches = [
     "other/disable-download-quarantine.patch",
     "other/disable-vulkan-gpu-log-warnings.patch",
     "other/thorium-sandbox-compat.patch",
+    "other/thoriumos-ash-vector-icons.patch",
+    "other/thoriumos-help-app-discovery.patch",
+    "other/thoriumos-sample-system-web-app.patch",
     "other/add-flag-for-auto-dark-mode.patch",
     "other/disable-thorium-icons.patch",
     "other/always-enable-reload-menu.patch",
@@ -276,6 +278,9 @@ try_run(f"git apply --reject allow-insecure-downloads.patch")
 try_run(f"git apply --reject disable-download-quarantine.patch")
 try_run(f"git apply --reject disable-vulkan-gpu-log-warnings.patch")
 try_run(f"git apply --reject thorium-sandbox-compat.patch")
+try_run(f"git apply --reject thoriumos-ash-vector-icons.patch")
+try_run(f"git apply --reject thoriumos-help-app-discovery.patch")
+try_run(f"git apply --reject thoriumos-sample-system-web-app.patch")
 try_run(f"git apply --reject add-flag-for-auto-dark-mode.patch")
 try_run(f"git apply --reject disable-thorium-icons.patch")
 try_run(f"git apply --reject always-enable-reload-menu.patch")

@@ -65,7 +65,6 @@ printf "\n" &&
 
 # Copy Thorium sources
 cp -r -v src/BUILD.gn ${CR_SRC_DIR}/ &&
-cp -r -v src/ash ${CR_SRC_DIR}/ &&
 cp -r -v src/build ${CR_SRC_DIR}/ &&
 cp -r -v src/chrome ${CR_SRC_DIR}/ &&
 cp -r -v src/chromeos ${CR_SRC_DIR}/ &&
@@ -113,6 +112,9 @@ patchThor () {
 	cp -v other/disable-download-quarantine.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-vulkan-gpu-log-warnings.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-sandbox-compat.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thoriumos-ash-vector-icons.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thoriumos-help-app-discovery.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thoriumos-sample-system-web-app.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-for-auto-dark-mode.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-thorium-icons.patch ${CR_SRC_DIR}/ &&
 	cp -v other/always-enable-reload-menu.patch ${CR_SRC_DIR}/ &&
@@ -217,6 +219,12 @@ patchThor () {
 	git apply --reject ./disable-vulkan-gpu-log-warnings.patch &&
 	printf "${YEL}Thorium sandbox compatibility patch...${c0}\n" &&
 	git apply --reject ./thorium-sandbox-compat.patch &&
+	printf "${YEL}ThoriumOS Ash vector icons patch...${c0}\n" &&
+	git apply --reject ./thoriumos-ash-vector-icons.patch &&
+	printf "${YEL}ThoriumOS Help App discovery patch...${c0}\n" &&
+	git apply --reject ./thoriumos-help-app-discovery.patch &&
+	printf "${YEL}ThoriumOS Sample System Web App patch...${c0}\n" &&
+	git apply --reject ./thoriumos-sample-system-web-app.patch &&
 	printf "${YEL}Auto dark mode patch...${c0}\n" &&
 	git apply --reject ./add-flag-for-auto-dark-mode.patch &&
 	printf "${YEL}Disable Thorium icons patch...${c0}\n" &&

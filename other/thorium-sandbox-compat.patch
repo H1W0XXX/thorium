@@ -1,0 +1,72 @@
+diff --git a/sandbox/linux/BUILD.gn b/sandbox/linux/BUILD.gn
+index 1fe96111cefaa..6ce8b52a15fc0 100644
+--- a/sandbox/linux/BUILD.gn
++++ b/sandbox/linux/BUILD.gn
+@@ -1,4 +1,4 @@
+-# Copyright 2014 The Chromium Authors
++# Copyright 2026 The Chromium Authors and Alex313031
+ # Use of this source code is governed by a BSD-style license that can be
+ # found in the LICENSE file.
+ 
+@@ -298,6 +298,9 @@ if (is_linux || is_chromeos) {
+       "suid/process_util_linux.c",
+       "suid/sandbox.c",
+     ]
++
++    cflags = [ "-fPIE" ]
++    ldflags = [ "-pie" ]
+   }
+ }
+ 
+diff --git a/sandbox/policy/linux/bpf_audio_policy_linux.cc b/sandbox/policy/linux/bpf_audio_policy_linux.cc
+index e1716b97e8f21..675a5a402487a 100644
+--- a/sandbox/policy/linux/bpf_audio_policy_linux.cc
++++ b/sandbox/policy/linux/bpf_audio_policy_linux.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2018 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -71,6 +71,9 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
+ #endif
+ #if defined(__NR_uname)
+     case __NR_uname:
++#endif
++#if defined(__NR_sched_getaffinity)
++    case __NR_sched_getaffinity:
+ #endif
+       return Allow();
+ #if defined(__NR_futex)
+diff --git a/sandbox/win/src/sandbox_policy_base.cc b/sandbox/win/src/sandbox_policy_base.cc
+index 44ac929a341e6..83f5476316926 100644
+--- a/sandbox/win/src/sandbox_policy_base.cc
++++ b/sandbox/win/src/sandbox_policy_base.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2012 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -275,21 +275,6 @@ ResultCode ConfigBase::SetFakeGdiInit() {
+ }
+ 
+ ResultCode ConfigBase::AllowExtraDll(std::wstring_view path) {
+-  // Signed intercept rules only supported on Windows 10 TH2 and above. This
+-  // must match the version checks in process_mitigations.cc for
+-  // consistency.
+-  if (base::win::GetVersion() >= base::win::Version::WIN10_TH2) {
+-    DCHECK_EQ(MITIGATION_FORCE_MS_SIGNED_BINS,
+-              mitigations_ & MITIGATION_FORCE_MS_SIGNED_BINS)
+-        << "Enable MITIGATION_FORCE_MS_SIGNED_BINS before adding signed "
+-           "policy rules.";
+-    auto handle =
+-        SignedPolicy::GenerateRules(base::FilePath(path), PolicyMaker());
+-    if (!handle.is_valid()) {
+-      return SBOX_ERROR_BAD_PARAMS;
+-    }
+-    shared_handles_.emplace_back(std::move(handle));
+-  }
+   return SBOX_ALL_OK;
+ }
+ 

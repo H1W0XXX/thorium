@@ -73,7 +73,6 @@ cp -r -v src/components ${CR_SRC_DIR}/ &&
 cp -r -v src/content ${CR_SRC_DIR}/ &&
 cp -r -v src/media ${CR_SRC_DIR}/ &&
 cp -r -v src/net ${CR_SRC_DIR}/ &&
-cp -r -v src/sandbox ${CR_SRC_DIR}/ &&
 cp -r -v src/services ${CR_SRC_DIR}/ &&
 cp -r -v src/third_party ${CR_SRC_DIR}/ &&
 cp -r -v src/tools ${CR_SRC_DIR}/ &&
@@ -113,6 +112,7 @@ patchThor () {
 	cp -v other/allow-insecure-downloads.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-download-quarantine.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-vulkan-gpu-log-warnings.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-sandbox-compat.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-for-auto-dark-mode.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-thorium-icons.patch ${CR_SRC_DIR}/ &&
 	cp -v other/always-enable-reload-menu.patch ${CR_SRC_DIR}/ &&
@@ -215,6 +215,8 @@ patchThor () {
 	git apply --reject ./disable-download-quarantine.patch &&
 	printf "${YEL}Disable Vulkan GPU log warnings patch...${c0}\n" &&
 	git apply --reject ./disable-vulkan-gpu-log-warnings.patch &&
+	printf "${YEL}Thorium sandbox compatibility patch...${c0}\n" &&
+	git apply --reject ./thorium-sandbox-compat.patch &&
 	printf "${YEL}Auto dark mode patch...${c0}\n" &&
 	git apply --reject ./add-flag-for-auto-dark-mode.patch &&
 	printf "${YEL}Disable Thorium icons patch...${c0}\n" &&

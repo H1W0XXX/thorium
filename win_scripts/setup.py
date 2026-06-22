@@ -93,7 +93,6 @@ thorium_sources = [
     "src/content",
     "src/media",
     "src/net",
-    "src/sandbox",
     "src/services",
     "src/third_party",
     "src/tools",
@@ -146,6 +145,7 @@ patches = [
     "other/allow-insecure-downloads.patch",
     "other/disable-download-quarantine.patch",
     "other/disable-vulkan-gpu-log-warnings.patch",
+    "other/thorium-sandbox-compat.patch",
     "other/add-flag-for-auto-dark-mode.patch",
     "other/disable-thorium-icons.patch",
     "other/always-enable-reload-menu.patch",
@@ -275,6 +275,7 @@ try_run(f"git apply --reject add-flag-to-keep-all-history.patch")
 try_run(f"git apply --reject allow-insecure-downloads.patch")
 try_run(f"git apply --reject disable-download-quarantine.patch")
 try_run(f"git apply --reject disable-vulkan-gpu-log-warnings.patch")
+try_run(f"git apply --reject thorium-sandbox-compat.patch")
 try_run(f"git apply --reject add-flag-for-auto-dark-mode.patch")
 try_run(f"git apply --reject disable-thorium-icons.patch")
 try_run(f"git apply --reject always-enable-reload-menu.patch")

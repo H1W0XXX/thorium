@@ -92,7 +92,6 @@ thorium_sources = [
     "src/components",
     "src/content",
     "src/extensions",
-    "src/google_apis",
     "src/media",
     "src/net",
     "src/sandbox",
@@ -130,6 +129,7 @@ patches = [
     "other/enable-mpeg2-ac3-eac3-decoding.patch",
     "other/thorium-media-switches.patch",
     "other/widevine-cdm-host-verification.patch",
+    "other/thorium-default-api-keys.patch",
     "other/fix-policy-templates.patch",
     "other/ftp-support-thorium.patch",
     "other/thorium-2024-ui.patch",
@@ -220,6 +220,7 @@ try_run(f"git apply --reject enable-mpeg2-ac3-eac3-decoding.patch")
 try_run(f"git apply --reject thorium-media-switches.patch")
 try_run(f"git apply --reject --directory=third_party/widevine third_party/widevine/widevine-cdm-support.patch")
 try_run(f"git apply --reject widevine-cdm-host-verification.patch")
+try_run(f"git apply --reject thorium-default-api-keys.patch")
 
 
 print("\nPatching policy templates\n")

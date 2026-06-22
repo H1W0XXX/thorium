@@ -72,7 +72,6 @@ cp -r -v src/chromeos ${CR_SRC_DIR}/ &&
 cp -r -v src/components ${CR_SRC_DIR}/ &&
 cp -r -v src/content ${CR_SRC_DIR}/ &&
 cp -r -v src/extensions ${CR_SRC_DIR}/ &&
-cp -r -v src/google_apis ${CR_SRC_DIR}/ &&
 cp -r -v src/media ${CR_SRC_DIR}/ &&
 cp -r -v src/net ${CR_SRC_DIR}/ &&
 cp -r -v src/sandbox ${CR_SRC_DIR}/ &&
@@ -96,6 +95,7 @@ patchThor () {
 	cp -v other/enable-mpeg2-ac3-eac3-decoding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-media-switches.patch ${CR_SRC_DIR}/ &&
 	cp -v other/widevine-cdm-host-verification.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-default-api-keys.patch ${CR_SRC_DIR}/ &&
 	cp -v other/fix-policy-templates.patch ${CR_SRC_DIR}/ &&
 	cp -v other/ftp-support-thorium.patch ${CR_SRC_DIR}/ &&
 	cp -v other/restore_download_shelf.patch ${CR_SRC_DIR}/ &&
@@ -158,6 +158,8 @@ patchThor () {
 	git apply --reject --directory=third_party/widevine ./third_party/widevine/widevine-cdm-support.patch &&
 	printf "${YEL}Widevine CDM host verification patch...${c0}\n" &&
 	git apply --reject ./widevine-cdm-host-verification.patch &&
+	printf "${YEL}Thorium default Google API keys patch...${c0}\n" &&
+	git apply --reject ./thorium-default-api-keys.patch &&
 
 	printf "\n" &&
 	printf "${YEL}Patching policy templates...${c0}\n" &&

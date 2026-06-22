@@ -90,6 +90,8 @@ patchThor () {
 	cp -v other/thorium-media-switches.patch ${CR_SRC_DIR}/ &&
 	cp -v other/widevine-cdm-host-verification.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-default-api-keys.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-blink-feature-defaults.patch ${CR_SRC_DIR}/ &&
+	cp -v other/allow-webaudio-autoplay.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
 	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
@@ -167,6 +169,10 @@ patchThor () {
 	git apply --reject ./widevine-cdm-host-verification.patch &&
 	printf "${YEL}Thorium default Google API keys patch...${c0}\n" &&
 	git apply --reject ./thorium-default-api-keys.patch &&
+	printf "${YEL}Thorium Blink feature defaults patch...${c0}\n" &&
+	git apply --reject ./thorium-blink-feature-defaults.patch &&
+	printf "${YEL}Allow WebAudio autoplay patch...${c0}\n" &&
+	git apply --reject ./allow-webaudio-autoplay.patch &&
 	printf "${YEL}Thorium root build targets patch...${c0}\n" &&
 	git apply --reject ./thorium-root-build-targets.patch &&
 	printf "${YEL}Thorium V8 SIMD opts patch...${c0}\n" &&

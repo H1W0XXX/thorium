@@ -119,6 +119,8 @@ patches = [
     "other/thorium-media-switches.patch",
     "other/widevine-cdm-host-verification.patch",
     "other/thorium-default-api-keys.patch",
+    "other/thorium-blink-feature-defaults.patch",
+    "other/allow-webaudio-autoplay.patch",
     "other/thorium-root-build-targets.patch",
     "other/thorium-v8-simd-opts.patch",
     "other/llvm-optimized-avx2-build.patch",
@@ -223,6 +225,8 @@ try_run(f"git apply --reject thorium-media-switches.patch")
 try_run(f"git apply --reject --directory=third_party/widevine third_party/widevine/widevine-cdm-support.patch")
 try_run(f"git apply --reject widevine-cdm-host-verification.patch")
 try_run(f"git apply --reject thorium-default-api-keys.patch")
+try_run(f"git apply --reject thorium-blink-feature-defaults.patch")
+try_run(f"git apply --reject allow-webaudio-autoplay.patch")
 try_run(f"git apply --reject thorium-root-build-targets.patch")
 
 print("\nThorium V8 SIMD opts patch\n")

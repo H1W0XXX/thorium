@@ -96,7 +96,6 @@ thorium_sources = [
     "src/third_party",
     "src/tools",
     "src/ui",
-    "src/v8",
 ]
 
 for source in thorium_sources:
@@ -127,6 +126,7 @@ patches = [
     "other/thorium-media-switches.patch",
     "other/widevine-cdm-host-verification.patch",
     "other/thorium-default-api-keys.patch",
+    "other/thorium-v8-simd-opts.patch",
     "other/fix-policy-templates.patch",
     "other/ftp-support-thorium.patch",
     "other/thorium-2024-ui.patch",
@@ -225,6 +225,11 @@ try_run(f"git apply --reject --directory=third_party/widevine third_party/widevi
 try_run(f"git apply --reject widevine-cdm-host-verification.patch")
 try_run(f"git apply --reject thorium-default-api-keys.patch")
 
+print("\nThorium V8 SIMD opts patch\n")
+v8_dir = os.path.join(cr_src_dir, "v8")
+os.chdir(v8_dir)
+try_run(f"git apply --reject ../thorium-v8-simd-opts.patch")
+os.chdir(cr_src_dir)
 
 print("\nPatching policy templates\n")
 # Change directory to cr_src_dir and run commands

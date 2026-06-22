@@ -140,6 +140,7 @@ patches = [
     "other/disable-thorium-dns-config.patch",
     "other/add-flag-to-keep-all-history.patch",
     "other/allow-insecure-downloads.patch",
+    "other/disable-download-quarantine.patch",
     "other/add-flag-for-auto-dark-mode.patch",
     "other/disable-thorium-icons.patch",
     "other/always-enable-reload-menu.patch",
@@ -244,6 +245,7 @@ try_run(f"git apply --reject force-disable-tab-outlines.patch")
 try_run(f"git apply --reject disable-thorium-dns-config.patch")
 try_run(f"git apply --reject add-flag-to-keep-all-history.patch")
 try_run(f"git apply --reject allow-insecure-downloads.patch")
+try_run(f"git apply --reject disable-download-quarantine.patch")
 try_run(f"git apply --reject add-flag-for-auto-dark-mode.patch")
 try_run(f"git apply --reject disable-thorium-icons.patch")
 try_run(f"git apply --reject always-enable-reload-menu.patch")

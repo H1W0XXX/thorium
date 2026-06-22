@@ -207,6 +207,10 @@ copy(
     os.path.normpath(os.path.join(thor_src_dir, "other", "widevine-cdm-support.patch")),
     os.path.normpath(os.path.join(cr_src_dir, "third_party", "widevine")),
 )
+copy(
+    os.path.normpath(os.path.join(thor_src_dir, "other", "thorium-search-engines-data.patch")),
+    os.path.normpath(os.path.join(cr_src_dir, "third_party", "search_engines_data", "resources")),
+)
 # Change directory to ffmpeg_dir and run commands
 ffmpeg_dir = os.path.join(cr_src_dir, "third_party", "ffmpeg")
 os.chdir(ffmpeg_dir)
@@ -225,6 +229,15 @@ try_run(f"git apply --reject thorium-media-switches.patch")
 try_run(f"git apply --reject --directory=third_party/widevine third_party/widevine/widevine-cdm-support.patch")
 try_run(f"git apply --reject widevine-cdm-host-verification.patch")
 try_run(f"git apply --reject thorium-default-api-keys.patch")
+
+print("\nThorium search engines data patch\n")
+search_engines_data_dir = os.path.join(
+    cr_src_dir, "third_party", "search_engines_data", "resources"
+)
+os.chdir(search_engines_data_dir)
+try_run(f"git apply --reject thorium-search-engines-data.patch")
+os.chdir(cr_src_dir)
+
 try_run(f"git apply --reject thorium-blink-feature-defaults.patch")
 try_run(f"git apply --reject allow-webaudio-autoplay.patch")
 try_run(f"git apply --reject thorium-root-build-targets.patch")

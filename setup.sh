@@ -90,6 +90,7 @@ patchThor () {
 	cp -v other/thorium-media-switches.patch ${CR_SRC_DIR}/ &&
 	cp -v other/widevine-cdm-host-verification.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-default-api-keys.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-search-engines-data.patch ${CR_SRC_DIR}/third_party/search_engines_data/resources/ &&
 	cp -v other/thorium-blink-feature-defaults.patch ${CR_SRC_DIR}/ &&
 	cp -v other/allow-webaudio-autoplay.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
@@ -169,6 +170,10 @@ patchThor () {
 	git apply --reject ./widevine-cdm-host-verification.patch &&
 	printf "${YEL}Thorium default Google API keys patch...${c0}\n" &&
 	git apply --reject ./thorium-default-api-keys.patch &&
+	printf "${YEL}Thorium search engines data patch...${c0}\n" &&
+	cd ${CR_SRC_DIR}/third_party/search_engines_data/resources &&
+	git apply --reject ./thorium-search-engines-data.patch &&
+	cd ${CR_SRC_DIR} &&
 	printf "${YEL}Thorium Blink feature defaults patch...${c0}\n" &&
 	git apply --reject ./thorium-blink-feature-defaults.patch &&
 	printf "${YEL}Allow WebAudio autoplay patch...${c0}\n" &&

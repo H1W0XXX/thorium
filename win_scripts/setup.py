@@ -128,6 +128,7 @@ copy_directory(
 patches = [
     "other/enable-hevc-ffmpeg-decoding.patch",
     "other/enable-mpeg2-ac3-eac3-decoding.patch",
+    "other/widevine-cdm-host-verification.patch",
     "other/fix-policy-templates.patch",
     "other/ftp-support-thorium.patch",
     "other/thorium-2024-ui.patch",
@@ -193,12 +194,21 @@ copy(
     ),
     os.path.normpath(os.path.join(cr_src_dir, "third_party", "ffmpeg")),
 )
+copy(
+    os.path.normpath(os.path.join(thor_src_dir, "other", "ffmpeg-branding.patch")),
+    os.path.normpath(os.path.join(cr_src_dir, "third_party", "ffmpeg")),
+)
+copy(
+    os.path.normpath(os.path.join(thor_src_dir, "other", "widevine-cdm-support.patch")),
+    os.path.normpath(os.path.join(cr_src_dir, "third_party", "widevine")),
+)
 # Change directory to ffmpeg_dir and run commands
 ffmpeg_dir = os.path.join(cr_src_dir, "third_party", "ffmpeg")
 os.chdir(ffmpeg_dir)
 try_run(f"git apply --reject add-hevc-ffmpeg-decoder-parser.patch")
 try_run(f"git apply --reject change-libavcodec-header.patch")
 try_run(f"git apply --reject fix-ffmpeg-android-x86-disable-hevc-nasm.patch")
+try_run(f"git apply --reject ffmpeg-branding.patch")
 
 
 print("\nEnabling HEVC FFmpeg decoding\n")
@@ -206,6 +216,8 @@ print("\nEnabling HEVC FFmpeg decoding\n")
 os.chdir(cr_src_dir)
 try_run(f"git apply --reject enable-hevc-ffmpeg-decoding.patch")
 try_run(f"git apply --reject enable-mpeg2-ac3-eac3-decoding.patch")
+try_run(f"git apply --reject --directory=third_party/widevine third_party/widevine/widevine-cdm-support.patch")
+try_run(f"git apply --reject widevine-cdm-host-verification.patch")
 
 
 print("\nPatching policy templates\n")

@@ -89,8 +89,9 @@ cp -r -v pak_src/binaries/pak-win/. ${CR_SRC_DIR}/out/thorium/ &&
 patchThor () {
 	cp -v other/add-hevc-ffmpeg-decoder-parser.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
 	cp -v other/change-libavcodec-header.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
-    cp -v other/fix-ffmpeg-android-x86-disable-hevc-nasm.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
+	cp -v other/fix-ffmpeg-android-x86-disable-hevc-nasm.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
 	cp -v other/enable-hevc-ffmpeg-decoding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/enable-mpeg2-ac3-eac3-decoding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/fix-policy-templates.patch ${CR_SRC_DIR}/ &&
 	cp -v other/ftp-support-thorium.patch ${CR_SRC_DIR}/ &&
 	cp -v other/restore_download_shelf.patch ${CR_SRC_DIR}/ &&
@@ -143,6 +144,8 @@ patchThor () {
 	printf "${YEL}Enable HEVC FFMPEG decoding patch...${c0}\n" &&
 	cd ${CR_SRC_DIR} &&
 	git apply --reject ./enable-hevc-ffmpeg-decoding.patch &&
+	printf "${YEL}Enable MPEG2 and AC3/EAC3 decoding patch...${c0}\n" &&
+	git apply --reject ./enable-mpeg2-ac3-eac3-decoding.patch &&
 
 	printf "\n" &&
 	printf "${YEL}Patching policy templates...${c0}\n" &&

@@ -127,6 +127,7 @@ copy_directory(
 
 patches = [
     "other/enable-hevc-ffmpeg-decoding.patch",
+    "other/enable-mpeg2-ac3-eac3-decoding.patch",
     "other/fix-policy-templates.patch",
     "other/ftp-support-thorium.patch",
     "other/thorium-2024-ui.patch",
@@ -204,6 +205,7 @@ print("\nEnabling HEVC FFmpeg decoding\n")
 # Change directory to cr_src_dir and run commands
 os.chdir(cr_src_dir)
 try_run(f"git apply --reject enable-hevc-ffmpeg-decoding.patch")
+try_run(f"git apply --reject enable-mpeg2-ac3-eac3-decoding.patch")
 
 
 print("\nPatching policy templates\n")

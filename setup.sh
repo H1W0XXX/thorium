@@ -107,6 +107,7 @@ patchThor () {
 	cp -v other/add-flag-to-keep-all-history.patch ${CR_SRC_DIR}/ &&
 	cp -v other/allow-insecure-downloads.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-download-quarantine.patch ${CR_SRC_DIR}/ &&
+	cp -v other/disable-vulkan-gpu-log-warnings.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-for-auto-dark-mode.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-thorium-icons.patch ${CR_SRC_DIR}/ &&
 	cp -v other/always-enable-reload-menu.patch ${CR_SRC_DIR}/ &&
@@ -190,6 +191,8 @@ patchThor () {
 	git apply --reject ./allow-insecure-downloads.patch &&
 	printf "${YEL}Disable download quarantine patch...${c0}\n" &&
 	git apply --reject ./disable-download-quarantine.patch &&
+	printf "${YEL}Disable Vulkan GPU log warnings patch...${c0}\n" &&
+	git apply --reject ./disable-vulkan-gpu-log-warnings.patch &&
 	printf "${YEL}Auto dark mode patch...${c0}\n" &&
 	git apply --reject ./add-flag-for-auto-dark-mode.patch &&
 	printf "${YEL}Disable Thorium icons patch...${c0}\n" &&

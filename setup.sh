@@ -90,6 +90,7 @@ patchThor () {
 	cp -v other/add-hevc-ffmpeg-decoder-parser.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
 	cp -v other/change-libavcodec-header.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
     cp -v other/fix-ffmpeg-android-x86-disable-hevc-nasm.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
+	cp -v other/enable-hevc-ffmpeg-decoding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/fix-policy-templates.patch ${CR_SRC_DIR}/ &&
 	cp -v other/ftp-support-thorium.patch ${CR_SRC_DIR}/ &&
 	cp -v other/restore_download_shelf.patch ${CR_SRC_DIR}/ &&
@@ -139,6 +140,9 @@ patchThor () {
 	git apply --reject ./change-libavcodec-header.patch &&
 	printf "${YEL}Fix FFMPEG Android x86 HEVC NASM disable patch...${c0}\n" &&
 	git apply --reject ./fix-ffmpeg-android-x86-disable-hevc-nasm.patch &&
+	printf "${YEL}Enable HEVC FFMPEG decoding patch...${c0}\n" &&
+	cd ${CR_SRC_DIR} &&
+	git apply --reject ./enable-hevc-ffmpeg-decoding.patch &&
 
 	printf "\n" &&
 	printf "${YEL}Patching policy templates...${c0}\n" &&

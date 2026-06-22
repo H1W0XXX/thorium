@@ -126,6 +126,7 @@ copy_directory(
 
 
 patches = [
+    "other/enable-hevc-ffmpeg-decoding.patch",
     "other/fix-policy-templates.patch",
     "other/ftp-support-thorium.patch",
     "other/thorium-2024-ui.patch",
@@ -197,6 +198,12 @@ os.chdir(ffmpeg_dir)
 try_run(f"git apply --reject add-hevc-ffmpeg-decoder-parser.patch")
 try_run(f"git apply --reject change-libavcodec-header.patch")
 try_run(f"git apply --reject fix-ffmpeg-android-x86-disable-hevc-nasm.patch")
+
+
+print("\nEnabling HEVC FFmpeg decoding\n")
+# Change directory to cr_src_dir and run commands
+os.chdir(cr_src_dir)
+try_run(f"git apply --reject enable-hevc-ffmpeg-decoding.patch")
 
 
 print("\nPatching policy templates\n")

@@ -64,7 +64,6 @@ cd ~/thorium &&
 printf "\n" &&
 
 # Copy Thorium sources
-cp -r -v src/BUILD.gn ${CR_SRC_DIR}/ &&
 cp -r -v src/build ${CR_SRC_DIR}/ &&
 cp -r -v src/chrome ${CR_SRC_DIR}/ &&
 cp -r -v src/chromeos ${CR_SRC_DIR}/ &&
@@ -91,6 +90,7 @@ patchThor () {
 	cp -v other/thorium-media-switches.patch ${CR_SRC_DIR}/ &&
 	cp -v other/widevine-cdm-host-verification.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-default-api-keys.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
 	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
 	cp -v other/v8-context-snapshot-rpath.patch ${CR_SRC_DIR}/ &&
@@ -167,6 +167,8 @@ patchThor () {
 	git apply --reject ./widevine-cdm-host-verification.patch &&
 	printf "${YEL}Thorium default Google API keys patch...${c0}\n" &&
 	git apply --reject ./thorium-default-api-keys.patch &&
+	printf "${YEL}Thorium root build targets patch...${c0}\n" &&
+	git apply --reject ./thorium-root-build-targets.patch &&
 	printf "${YEL}Thorium V8 SIMD opts patch...${c0}\n" &&
 	cd ${CR_SRC_DIR}/v8 &&
 	git apply --reject ../thorium-v8-simd-opts.patch &&

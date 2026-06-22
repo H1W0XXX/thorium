@@ -77,12 +77,6 @@ os.makedirs(f"{cr_src_dir}/out/thorium/", exist_ok=True)
 
 print("\nCopying Thorium source files over the Chromium tree\n")
 
-# Copy src/BUILD.gn
-copy(
-    os.path.normpath(os.path.join(thor_src_dir, "src", "BUILD.gn")),
-    os.path.normpath(os.path.join(cr_src_dir)),
-)
-
 # Copy Thorium sources
 thorium_sources = [
     "src/build",
@@ -125,6 +119,7 @@ patches = [
     "other/thorium-media-switches.patch",
     "other/widevine-cdm-host-verification.patch",
     "other/thorium-default-api-keys.patch",
+    "other/thorium-root-build-targets.patch",
     "other/thorium-v8-simd-opts.patch",
     "other/llvm-optimized-avx2-build.patch",
     "other/v8-context-snapshot-rpath.patch",
@@ -228,6 +223,7 @@ try_run(f"git apply --reject thorium-media-switches.patch")
 try_run(f"git apply --reject --directory=third_party/widevine third_party/widevine/widevine-cdm-support.patch")
 try_run(f"git apply --reject widevine-cdm-host-verification.patch")
 try_run(f"git apply --reject thorium-default-api-keys.patch")
+try_run(f"git apply --reject thorium-root-build-targets.patch")
 
 print("\nThorium V8 SIMD opts patch\n")
 v8_dir = os.path.join(cr_src_dir, "v8")

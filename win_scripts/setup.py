@@ -79,7 +79,6 @@ print("\nCopying Thorium source files over the Chromium tree\n")
 
 # Copy Thorium sources
 thorium_sources = [
-    "src/build",
     "src/chrome",
     "src/chromeos",
     "src/components",
@@ -141,6 +140,8 @@ patches = [
     "other/dom-distiller-reader-mode.patch",
     "other/thorium-root-build-targets.patch",
     "other/thorium-chrome-build-targets.patch",
+    "other/thorium-build-config-and-simd.patch",
+    "other/thorium-build-platform-tools.patch",
     "other/thorium-v8-simd-opts.patch",
     "other/llvm-optimized-avx2-build.patch",
     "other/v8-context-snapshot-rpath.patch",
@@ -305,6 +306,8 @@ try_run(f"git apply --reject thorium-browser-ui-default-prefs.patch")
 try_run(f"git apply --reject dom-distiller-reader-mode.patch")
 try_run(f"git apply --reject thorium-root-build-targets.patch")
 try_run(f"git apply --reject thorium-chrome-build-targets.patch")
+try_run(f"git apply --reject thorium-build-config-and-simd.patch")
+try_run(f"git apply --reject thorium-build-platform-tools.patch")
 
 print("\nThorium V8 SIMD opts patch\n")
 v8_dir = os.path.join(cr_src_dir, "v8")

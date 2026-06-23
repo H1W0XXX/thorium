@@ -171,6 +171,11 @@ declare_args() {
       is_debug && current_os != "ios" && current_os != "watchos"
 }
 
+declare_args() {
+  # True for Thorium overlay builds. This gates Thorium-only generated assets.
+  is_thorium_build = true
+}
+
 assert(!(is_debug && is_official_build), "Can't do official debug builds")
 assert(!(current_os == "ios" && is_component_build),
        "Can't use component build on iOS")

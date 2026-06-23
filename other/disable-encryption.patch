@@ -1,3 +1,45 @@
+diff --git a/components/metrics/machine_id_provider_nonwin.cc b/components/metrics/machine_id_provider_nonwin.cc
+index 283f4dccbd538..42dcf74ecd876 100644
+--- a/components/metrics/machine_id_provider_nonwin.cc
++++ b/components/metrics/machine_id_provider_nonwin.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2020 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -6,6 +6,7 @@
+ 
+ #include <stdint.h>
+ 
++#include "base/command_line.h"
+ #include "base/check.h"
+ #include "base/system/sys_info.h"
+ 
+@@ -17,12 +18,23 @@ MachineIdProvider::~MachineIdProvider() = default;
+ 
+ // Checks if hardware model name is available.
+ bool MachineIdProvider::HasId() const {
++  static const bool disable_machine_id =
++      base::CommandLine::ForCurrentProcess()->HasSwitch("disable-machine-id");
++  if (disable_machine_id) {
++    return false;
++  }
+   return !base::SysInfo::HardwareModelName().empty();
+ }
+ 
+ // On non-windows, the machine id is based on the hardware model name.
+ // This will suffice as users are unlikely to change to the same machine model.
+ std::string MachineIdProvider::GetMachineId() const {
++  static const bool disable_machine_id =
++      base::CommandLine::ForCurrentProcess()->HasSwitch("disable-machine-id");
++  if (disable_machine_id) {
++    return std::string();
++  }
++
+   // Gets hardware model name. (e.g. 'Macbook Pro 16,1', 'iPhone 9,3')
+   std::string hardware_model_name = base::SysInfo::HardwareModelName();
+ 
 diff --git a/components/metrics/machine_id_provider_win.cc b/components/metrics/machine_id_provider_win.cc
 index 937cd3b1e4b84..5951f1dc7e59e 100644
 --- a/components/metrics/machine_id_provider_win.cc

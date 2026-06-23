@@ -123,11 +123,14 @@ patches = [
     "other/thorium-media-switches.patch",
     "other/widevine-cdm-host-verification.patch",
     "other/thorium-default-api-keys.patch",
+    "other/disable-fetching-field-trials.patch",
     "other/thorium-blink-feature-defaults.patch",
     "other/allow-webaudio-autoplay.patch",
     "other/enable-saving-pages-from-all-schemes.patch",
     "other/content-gpu-vaapi-libva-config.patch",
     "other/thorium-content-shell-branding.patch",
+    "other/bookmark-default-prefs.patch",
+    "other/dom-distiller-reader-mode.patch",
     "other/thorium-root-build-targets.patch",
     "other/thorium-v8-simd-opts.patch",
     "other/llvm-optimized-avx2-build.patch",
@@ -135,6 +138,10 @@ patches = [
     "other/linux-disable-custom-titlebar-default.patch",
     "other/thorium-ui-debug-shell.patch",
     "other/thorium-webui-image-resources.patch",
+    "other/thorium-chrome-urls-page.patch",
+    "other/thorium-flags-page-branding.patch",
+    "other/thorium-version-page-branding.patch",
+    "other/thorium-vector-icons.patch",
     "other/fix-policy-templates.patch",
     "other/ftp-support-thorium.patch",
     "other/thorium-2024-ui.patch",
@@ -149,6 +156,8 @@ patches = [
     "other/disable-thorium-dns-config.patch",
     "other/reduce-doh-request-headers.patch",
     "other/add-flag-to-keep-all-history.patch",
+    "other/enable-parallel-downloading-by-default.patch",
+    "other/thorium-dino-game.patch",
     "other/allow-insecure-downloads.patch",
     "other/disable-download-quarantine.patch",
     "other/disable-vulkan-gpu-log-warnings.patch",
@@ -236,6 +245,7 @@ try_run(f"git apply --reject thorium-media-switches.patch")
 try_run(f"git apply --reject --directory=third_party/widevine third_party/widevine/widevine-cdm-support.patch")
 try_run(f"git apply --reject widevine-cdm-host-verification.patch")
 try_run(f"git apply --reject thorium-default-api-keys.patch")
+try_run(f"git apply --reject disable-fetching-field-trials.patch")
 
 print("\nThorium search engines data patch\n")
 search_engines_data_dir = os.path.join(
@@ -250,6 +260,8 @@ try_run(f"git apply --reject allow-webaudio-autoplay.patch")
 try_run(f"git apply --reject enable-saving-pages-from-all-schemes.patch")
 try_run(f"git apply --reject content-gpu-vaapi-libva-config.patch")
 try_run(f"git apply --reject thorium-content-shell-branding.patch")
+try_run(f"git apply --reject bookmark-default-prefs.patch")
+try_run(f"git apply --reject dom-distiller-reader-mode.patch")
 try_run(f"git apply --reject thorium-root-build-targets.patch")
 
 print("\nThorium V8 SIMD opts patch\n")
@@ -262,6 +274,10 @@ try_run(f"git apply --reject v8-context-snapshot-rpath.patch")
 try_run(f"git apply --reject linux-disable-custom-titlebar-default.patch")
 try_run(f"git apply --reject thorium-ui-debug-shell.patch")
 try_run(f"git apply --reject thorium-webui-image-resources.patch")
+try_run(f"git apply --reject thorium-chrome-urls-page.patch")
+try_run(f"git apply --reject thorium-flags-page-branding.patch")
+try_run(f"git apply --reject thorium-version-page-branding.patch")
+try_run(f"git apply --reject thorium-vector-icons.patch")
 
 print("\nPatching policy templates\n")
 # Change directory to cr_src_dir and run commands
@@ -311,6 +327,8 @@ try_run(f"git apply --reject force-disable-tab-outlines.patch")
 try_run(f"git apply --reject disable-thorium-dns-config.patch")
 try_run(f"git apply --reject reduce-doh-request-headers.patch")
 try_run(f"git apply --reject add-flag-to-keep-all-history.patch")
+try_run(f"git apply --reject enable-parallel-downloading-by-default.patch")
+try_run(f"git apply --reject thorium-dino-game.patch")
 try_run(f"git apply --reject allow-insecure-downloads.patch")
 try_run(f"git apply --reject disable-download-quarantine.patch")
 try_run(f"git apply --reject disable-vulkan-gpu-log-warnings.patch")

@@ -90,12 +90,15 @@ patchThor () {
 	cp -v other/thorium-media-switches.patch ${CR_SRC_DIR}/ &&
 	cp -v other/widevine-cdm-host-verification.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-default-api-keys.patch ${CR_SRC_DIR}/ &&
+	cp -v other/disable-fetching-field-trials.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-search-engines-data.patch ${CR_SRC_DIR}/third_party/search_engines_data/resources/ &&
 	cp -v other/thorium-blink-feature-defaults.patch ${CR_SRC_DIR}/ &&
 	cp -v other/allow-webaudio-autoplay.patch ${CR_SRC_DIR}/ &&
 	cp -v other/enable-saving-pages-from-all-schemes.patch ${CR_SRC_DIR}/ &&
 	cp -v other/content-gpu-vaapi-libva-config.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-content-shell-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/bookmark-default-prefs.patch ${CR_SRC_DIR}/ &&
+	cp -v other/dom-distiller-reader-mode.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
 	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
@@ -103,6 +106,10 @@ patchThor () {
 	cp -v other/linux-disable-custom-titlebar-default.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-ui-debug-shell.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-webui-image-resources.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-chrome-urls-page.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-flags-page-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-version-page-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-vector-icons.patch ${CR_SRC_DIR}/ &&
 	cp -v other/fix-policy-templates.patch ${CR_SRC_DIR}/ &&
 	cp -v other/ftp-support-thorium.patch ${CR_SRC_DIR}/ &&
 	cp -v other/restore_download_shelf.patch ${CR_SRC_DIR}/ &&
@@ -118,6 +125,8 @@ patchThor () {
 	cp -v other/disable-thorium-dns-config.patch ${CR_SRC_DIR}/ &&
 	cp -v other/reduce-doh-request-headers.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-to-keep-all-history.patch ${CR_SRC_DIR}/ &&
+	cp -v other/enable-parallel-downloading-by-default.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-dino-game.patch ${CR_SRC_DIR}/ &&
 	cp -v other/allow-insecure-downloads.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-download-quarantine.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-vulkan-gpu-log-warnings.patch ${CR_SRC_DIR}/ &&
@@ -173,6 +182,8 @@ patchThor () {
 	git apply --reject ./widevine-cdm-host-verification.patch &&
 	printf "${YEL}Thorium default Google API keys patch...${c0}\n" &&
 	git apply --reject ./thorium-default-api-keys.patch &&
+	printf "${YEL}Disable fetching field trials patch...${c0}\n" &&
+	git apply --reject ./disable-fetching-field-trials.patch &&
 	printf "${YEL}Thorium search engines data patch...${c0}\n" &&
 	cd ${CR_SRC_DIR}/third_party/search_engines_data/resources &&
 	git apply --reject ./thorium-search-engines-data.patch &&
@@ -187,6 +198,10 @@ patchThor () {
 	git apply --reject ./content-gpu-vaapi-libva-config.patch &&
 	printf "${YEL}Thorium content shell branding patch...${c0}\n" &&
 	git apply --reject ./thorium-content-shell-branding.patch &&
+	printf "${YEL}Bookmark default prefs patch...${c0}\n" &&
+	git apply --reject ./bookmark-default-prefs.patch &&
+	printf "${YEL}Dom Distiller reader mode patch...${c0}\n" &&
+	git apply --reject ./dom-distiller-reader-mode.patch &&
 	printf "${YEL}Thorium root build targets patch...${c0}\n" &&
 	git apply --reject ./thorium-root-build-targets.patch &&
 	printf "${YEL}Thorium V8 SIMD opts patch...${c0}\n" &&
@@ -203,6 +218,14 @@ patchThor () {
 	git apply --reject ./thorium-ui-debug-shell.patch &&
 	printf "${YEL}Thorium WebUI image resources patch...${c0}\n" &&
 	git apply --reject ./thorium-webui-image-resources.patch &&
+	printf "${YEL}Thorium chrome:// URLs page patch...${c0}\n" &&
+	git apply --reject ./thorium-chrome-urls-page.patch &&
+	printf "${YEL}Thorium flags page branding patch...${c0}\n" &&
+	git apply --reject ./thorium-flags-page-branding.patch &&
+	printf "${YEL}Thorium version page branding patch...${c0}\n" &&
+	git apply --reject ./thorium-version-page-branding.patch &&
+	printf "${YEL}Thorium vector icons patch...${c0}\n" &&
+	git apply --reject ./thorium-vector-icons.patch &&
 
 	printf "\n" &&
 	printf "${YEL}Patching policy templates...${c0}\n" &&
@@ -251,6 +274,10 @@ patchThor () {
 	git apply --reject ./reduce-doh-request-headers.patch &&
 	printf "${YEL}Keep all history patch...${c0}\n" &&
 	git apply --reject ./add-flag-to-keep-all-history.patch &&
+	printf "${YEL}Enable parallel downloading by default patch...${c0}\n" &&
+	git apply --reject ./enable-parallel-downloading-by-default.patch &&
+	printf "${YEL}Thorium Dino game patch...${c0}\n" &&
+	git apply --reject ./thorium-dino-game.patch &&
 	printf "${YEL}Allow insecure downloads patch...${c0}\n" &&
 	git apply --reject ./allow-insecure-downloads.patch &&
 	printf "${YEL}Disable download quarantine patch...${c0}\n" &&

@@ -142,9 +142,13 @@ patches = [
     "other/llvm-optimized-avx2-build.patch",
     "other/v8-context-snapshot-rpath.patch",
     "other/linux-disable-custom-titlebar-default.patch",
+    "other/linux-obsolete-system-policy.patch",
+    "other/linux-memory-details-branding.patch",
+    "other/linux-shell-integration-branding.patch",
     "other/thorium-ui-debug-shell.patch",
     "other/thorium-webui-image-resources.patch",
     "other/thorium-chrome-urls-page.patch",
+    "other/thorium-flags-registration.patch",
     "other/thorium-flags-page-branding.patch",
     "other/thorium-version-page-branding.patch",
     "other/thorium-vector-icons.patch",
@@ -159,10 +163,14 @@ patches = [
     "other/add-flag-to-scroll-tabs.patch",
     "other/add-flag-for-custom-ntp.patch",
     "other/force-disable-tab-outlines.patch",
+    "other/quiet-notification-defaults.patch",
     "other/disable-thorium-dns-config.patch",
+    "other/secure-dns-defaults.patch",
     "other/reduce-doh-request-headers.patch",
+    "other/disable-alternate-error-pages-by-default.patch",
     "other/add-flag-to-keep-all-history.patch",
     "other/enable-parallel-downloading-by-default.patch",
+    "other/disable-background-mode-by-default.patch",
     "other/thorium-dino-game.patch",
     "other/allow-insecure-downloads.patch",
     "other/disable-download-quarantine.patch",
@@ -171,6 +179,7 @@ patches = [
     "other/thoriumos-ash-vector-icons.patch",
     "other/thoriumos-help-app-discovery.patch",
     "other/thoriumos-sample-system-web-app.patch",
+    "other/thoriumos-disable-stats-reporting.patch",
     "other/add-flag-for-auto-dark-mode.patch",
     "other/disable-thorium-icons.patch",
     "other/always-enable-reload-menu.patch",
@@ -180,11 +189,13 @@ patches = [
     "other/disable-encryption.patch",
     "other/disable-feature-promos.patch",
     "other/thorium-install-static-branding.patch",
+    "other/windows-profile-shortcut-icon-version.patch",
     "other/win_updater.patch",
     "other/keyboard_shortcuts.patch",
     "other/disable-aero.patch",
     "other/restore_download_shelf.patch",
     "other/allow_manifest_v2_extensions.patch",
+    "other/thorium-component-extension-allowlist.patch",
     "other/increase-dnr-limits.patch",
     "other/show-hosted-apps-in-extensions.patch",
     "other/android-disable-signin-without-account-manager.patch",
@@ -284,9 +295,13 @@ os.chdir(cr_src_dir)
 try_run(f"git apply --reject llvm-optimized-avx2-build.patch")
 try_run(f"git apply --reject v8-context-snapshot-rpath.patch")
 try_run(f"git apply --reject linux-disable-custom-titlebar-default.patch")
+try_run(f"git apply --reject linux-obsolete-system-policy.patch")
+try_run(f"git apply --reject linux-memory-details-branding.patch")
+try_run(f"git apply --reject linux-shell-integration-branding.patch")
 try_run(f"git apply --reject thorium-ui-debug-shell.patch")
 try_run(f"git apply --reject thorium-webui-image-resources.patch")
 try_run(f"git apply --reject thorium-chrome-urls-page.patch")
+try_run(f"git apply --reject thorium-flags-registration.patch")
 try_run(f"git apply --reject thorium-flags-page-branding.patch")
 try_run(f"git apply --reject thorium-version-page-branding.patch")
 try_run(f"git apply --reject thorium-vector-icons.patch")
@@ -336,10 +351,14 @@ try_run(f"git apply --reject add-flag-to-close-window-with-last-tab.patch")
 try_run(f"git apply --reject add-flag-to-scroll-tabs.patch")
 try_run(f"git apply --reject add-flag-for-custom-ntp.patch")
 try_run(f"git apply --reject force-disable-tab-outlines.patch")
+try_run(f"git apply --reject quiet-notification-defaults.patch")
 try_run(f"git apply --reject disable-thorium-dns-config.patch")
+try_run(f"git apply --reject secure-dns-defaults.patch")
 try_run(f"git apply --reject reduce-doh-request-headers.patch")
+try_run(f"git apply --reject disable-alternate-error-pages-by-default.patch")
 try_run(f"git apply --reject add-flag-to-keep-all-history.patch")
 try_run(f"git apply --reject enable-parallel-downloading-by-default.patch")
+try_run(f"git apply --reject disable-background-mode-by-default.patch")
 try_run(f"git apply --reject thorium-dino-game.patch")
 try_run(f"git apply --reject allow-insecure-downloads.patch")
 try_run(f"git apply --reject disable-download-quarantine.patch")
@@ -348,10 +367,12 @@ try_run(f"git apply --reject thorium-sandbox-compat.patch")
 try_run(f"git apply --reject thoriumos-ash-vector-icons.patch")
 try_run(f"git apply --reject thoriumos-help-app-discovery.patch")
 try_run(f"git apply --reject thoriumos-sample-system-web-app.patch")
+try_run(f"git apply --reject thoriumos-disable-stats-reporting.patch")
 try_run(f"git apply --reject add-flag-for-auto-dark-mode.patch")
 try_run(f"git apply --reject disable-thorium-icons.patch")
 try_run(f"git apply --reject always-enable-reload-menu.patch")
 try_run(f"git apply --reject allow_manifest_v2_extensions.patch")
+try_run(f"git apply --reject thorium-component-extension-allowlist.patch")
 try_run(f"git apply --reject increase-dnr-limits.patch")
 try_run(f"git apply --reject show-hosted-apps-in-extensions.patch")
 try_run(f"git apply --reject thorium_webui.patch")
@@ -362,6 +383,7 @@ try_run(f"git apply --reject disable-privacy-sandbox.patch")
 try_run(f"git apply --reject disable-encryption.patch")
 try_run(f"git apply --reject disable-feature-promos.patch")
 try_run(f"git apply --reject thorium-install-static-branding.patch")
+try_run(f"git apply --reject windows-profile-shortcut-icon-version.patch")
 
 
 print("\nApplying crash fixes patches...\n")

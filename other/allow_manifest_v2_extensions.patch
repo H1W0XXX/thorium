@@ -98,6 +98,25 @@ index 5b96804e4d91c..bf956adc4678c 100644
  }
  
  bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
+diff --git a/chrome/browser/extensions/extension_management_internal.h b/chrome/browser/extensions/extension_management_internal.h
+index 43941aae7c368..6b96ab3c057c8 100644
+--- a/chrome/browser/extensions/extension_management_internal.h
++++ b/chrome/browser/extensions/extension_management_internal.h
+@@ -1,4 +1,4 @@
+-// Copyright 2014 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_MANAGEMENT_INTERNAL_H_
+@@ -189,7 +189,7 @@ struct GlobalSettings {
+   std::optional<std::vector<Manifest::Type>> allowed_types;
+ 
+   // An enum setting indicates if manifest v2 is allowed.
+-  ManifestV2Setting manifest_v2_setting = ManifestV2Setting::kDefault;
++  ManifestV2Setting manifest_v2_setting = ManifestV2Setting::kEnabled;
+ 
+   UnpublishedAvailability unpublished_availability_setting =
+       UnpublishedAvailability::kAllowUnpublished;
 diff --git a/chrome/browser/ui/webui/extensions/extensions_ui.cc b/chrome/browser/ui/webui/extensions/extensions_ui.cc
 index 59abbb0f26757..ea4baca47db0a 100644
 --- a/chrome/browser/ui/webui/extensions/extensions_ui.cc

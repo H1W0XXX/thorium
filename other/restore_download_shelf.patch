@@ -913,26 +913,131 @@ index 0000000000000..ae7d4e70c2bae
 +  chrome::CloseWindow(browser());
 +}
 diff --git a/chrome/browser/download/download_ui_controller.cc b/chrome/browser/download/download_ui_controller.cc
-index 1c5f7e0507475..51b383e5ed1d0 100644
+index fa41c5a2..a6081634 100644
 --- a/chrome/browser/download/download_ui_controller.cc
 +++ b/chrome/browser/download/download_ui_controller.cc
-@@ -15,6 +15,7 @@
- #include "chrome/browser/download/bubble/download_bubble_utils.h"
- #include "chrome/browser/download/download_crx_util.h"
- #include "chrome/browser/download/download_item_model.h"
+@@ -1,4 +1,4 @@
+-// Copyright 2013 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -33,6 +33,8 @@
+ #include "content/public/common/content_features.h"
+ #else
+ #include "chrome/browser/profiles/profile.h"
++#include "chrome/browser/ui/browser.h"
++#include "chrome/browser/ui/browser_finder.h"
+ #include "chrome/browser/ui/browser_tabstrip.h"
+ #include "chrome/browser/ui/browser_window.h"
+ #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+@@ -43,8 +45,10 @@
+ #endif
+ 
+ #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
++#include "chrome/browser/download/bubble/download_bubble_prefs.h"
+ #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+ #include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 +#include "chrome/browser/download/download_shelf.h"
- #include "chrome/browser/download/download_stats.h"
- #include "chrome/common/pref_names.h"
- #include "components/download/public/common/download_item.h"
-@@ -151,7 +152,7 @@ void DownloadShelfUIControllerDelegate::OnNewDownloadReady(
-   }
+ #endif
  
-   if (browser && browser->window() && browser->window()->GetDownloadShelf() &&
--      DownloadItemModel(item).ShouldShowInShelf()) {
+ #if BUILDFLAG(IS_CHROMEOS)
+@@ -58,6 +62,8 @@
+ 
+ namespace {
+ 
++// DownloadShelfUIControllerDelegate{Android,} is used when a
++// DownloadUIController is constructed without specifying an explicit Delegate.
+ #if BUILDFLAG(IS_ANDROID)
+ 
+ class AndroidUIControllerDelegate : public DownloadUIController::Delegate {
+@@ -87,6 +93,71 @@ void InitializeDownloadBubbleUpdateService(Profile* profile,
+   download_bubble_update_service->Initialize(manager);
+ }
+ 
++class DownloadShelfUIControllerDelegate : public DownloadUIController::Delegate {
++ public:
++  // `profile` is required to outlive DownloadShelfUIControllerDelegate.
++  explicit DownloadShelfUIControllerDelegate(Profile* profile)
++      : profile_(profile) {
++    // Match DownloadBubbleUIControllerDelegate behavior: in incognito mode,
++    // prompt for download location.
++    if (profile_->IsOffTheRecord()) {
++      profile_->GetPrefs()->SetBoolean(prefs::kPromptForDownload, true);
++    }
++  }
++  ~DownloadShelfUIControllerDelegate() override = default;
++
++ private:
++  // DownloadUIController::Delegate:
++  void OnNewDownloadReady(download::DownloadItem* item) override;
++
++  raw_ptr<Profile> profile_;
++};
++
++void DownloadShelfUIControllerDelegate::OnNewDownloadReady(
++    download::DownloadItem* item) {
++  // Here the item will be surfaced to the shelf UI and should
++  // subject to the auto resumption logic.
++#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
++  if (download::features::IsBackoffInDownloadingEnabled()) {
++    auto* handler = download::DesktopAutoResumptionHandler::Get();
++    item->RemoveObserver(handler);
++    item->AddObserver(handler);
++  }
++#endif
++
++  content::WebContents* web_contents =
++      content::DownloadItemUtils::GetWebContents(item);
++  // For the case of DevTools web contents, we'd like to use target browser
++  // shelf although saving from the DevTools web contents.
++  if (web_contents && DevToolsWindow::IsDevToolsWindow(web_contents)) {
++    DevToolsWindow* devtools_window =
++        DevToolsWindow::AsDevToolsWindow(web_contents);
++    content::WebContents* inspected =
++        devtools_window->GetInspectedWebContents();
++    // Do not overwrite web contents for the case of remote debugging.
++    if (inspected) {
++      web_contents = inspected;
++    }
++  }
++
++  Browser* browser =
++      web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
++
++  // As a last resort, use the last active browser for this profile. Not ideal,
++  // but better than not showing the download at all.
++  if (browser == nullptr) {
++    browser = chrome::FindLastActiveWithProfile(profile_);
++  }
++
++  if (browser && browser->window() && browser->window()->GetDownloadShelf() &&
 +      DownloadItemModel(item).ShouldShowInUi()) {
-     DownloadUIModel::DownloadUIModelPtr model = DownloadItemModel::Wrap(item);
- 
-     // GetDownloadShelf creates the download shelf if it was not yet created.
++    DownloadUIModel::DownloadUIModelPtr model = DownloadItemModel::Wrap(item);
++
++    // GetDownloadShelf creates the download shelf if it was not yet created.
++    browser->window()->GetDownloadShelf()->AddDownload(std::move(model));
++  }
++}
++
+ class DownloadBubbleUIControllerDelegate
+     : public DownloadUIController::Delegate {
+  public:
+@@ -173,8 +244,12 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
+ #if BUILDFLAG(IS_CHROMEOS)
+     delegate_ = std::make_unique<DownloadNotificationManager>(profile);
+ #else
+-    delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(profile);
+-    InitializeDownloadBubbleUpdateService(profile, manager);
++    if (download::ShouldShowDownloadBubble(profile)) {
++      delegate_ = std::make_unique<DownloadBubbleUIControllerDelegate>(profile);
++      InitializeDownloadBubbleUpdateService(profile, manager);
++    } else {
++      delegate_ = std::make_unique<DownloadShelfUIControllerDelegate>(profile);
++    }
+ #endif
+   }
+ #endif  // BUILDFLAG(IS_ANDROID)
 diff --git a/chrome/browser/download/download_ui_model.cc b/chrome/browser/download/download_ui_model.cc
 index cb19386b35f7c..ef34bf9e88778 100644
 --- a/chrome/browser/download/download_ui_model.cc

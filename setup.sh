@@ -110,9 +110,13 @@ patchThor () {
 	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
 	cp -v other/v8-context-snapshot-rpath.patch ${CR_SRC_DIR}/ &&
 	cp -v other/linux-disable-custom-titlebar-default.patch ${CR_SRC_DIR}/ &&
+	cp -v other/linux-obsolete-system-policy.patch ${CR_SRC_DIR}/ &&
+	cp -v other/linux-memory-details-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/linux-shell-integration-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-ui-debug-shell.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-webui-image-resources.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-chrome-urls-page.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-flags-registration.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-flags-page-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-version-page-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-vector-icons.patch ${CR_SRC_DIR}/ &&
@@ -128,10 +132,14 @@ patchThor () {
 	cp -v other/add-flag-to-scroll-tabs.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-for-custom-ntp.patch ${CR_SRC_DIR}/ &&
 	cp -v other/force-disable-tab-outlines.patch ${CR_SRC_DIR}/ &&
+	cp -v other/quiet-notification-defaults.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-thorium-dns-config.patch ${CR_SRC_DIR}/ &&
+	cp -v other/secure-dns-defaults.patch ${CR_SRC_DIR}/ &&
 	cp -v other/reduce-doh-request-headers.patch ${CR_SRC_DIR}/ &&
+	cp -v other/disable-alternate-error-pages-by-default.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-to-keep-all-history.patch ${CR_SRC_DIR}/ &&
 	cp -v other/enable-parallel-downloading-by-default.patch ${CR_SRC_DIR}/ &&
+	cp -v other/disable-background-mode-by-default.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-dino-game.patch ${CR_SRC_DIR}/ &&
 	cp -v other/allow-insecure-downloads.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-download-quarantine.patch ${CR_SRC_DIR}/ &&
@@ -140,6 +148,7 @@ patchThor () {
 	cp -v other/thoriumos-ash-vector-icons.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thoriumos-help-app-discovery.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thoriumos-sample-system-web-app.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thoriumos-disable-stats-reporting.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-for-auto-dark-mode.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-thorium-icons.patch ${CR_SRC_DIR}/ &&
 	cp -v other/always-enable-reload-menu.patch ${CR_SRC_DIR}/ &&
@@ -149,6 +158,7 @@ patchThor () {
 	cp -v other/disable-encryption.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-feature-promos.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-install-static-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/windows-profile-shortcut-icon-version.patch ${CR_SRC_DIR}/ &&
 	cp -v other/win_updater.patch ${CR_SRC_DIR}/ &&
 	cp -v other/keyboard_shortcuts.patch ${CR_SRC_DIR}/ &&
 
@@ -157,6 +167,7 @@ patchThor () {
 	cp -v other/disable-aero.patch ${CR_SRC_DIR}/ &&
 	
 	cp -v other/allow_manifest_v2_extensions.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-component-extension-allowlist.patch ${CR_SRC_DIR}/ &&
 	cp -v other/increase-dnr-limits.patch ${CR_SRC_DIR}/ &&
 	cp -v other/show-hosted-apps-in-extensions.patch ${CR_SRC_DIR}/ &&
 	
@@ -232,12 +243,20 @@ patchThor () {
 	git apply --reject ./v8-context-snapshot-rpath.patch &&
 	printf "${YEL}Linux disable custom titlebar default patch...${c0}\n" &&
 	git apply --reject ./linux-disable-custom-titlebar-default.patch &&
+	printf "${YEL}Linux obsolete system policy patch...${c0}\n" &&
+	git apply --reject ./linux-obsolete-system-policy.patch &&
+	printf "${YEL}Linux memory details branding patch...${c0}\n" &&
+	git apply --reject ./linux-memory-details-branding.patch &&
+	printf "${YEL}Linux shell integration branding patch...${c0}\n" &&
+	git apply --reject ./linux-shell-integration-branding.patch &&
 	printf "${YEL}Thorium UI debug shell patch...${c0}\n" &&
 	git apply --reject ./thorium-ui-debug-shell.patch &&
 	printf "${YEL}Thorium WebUI image resources patch...${c0}\n" &&
 	git apply --reject ./thorium-webui-image-resources.patch &&
 	printf "${YEL}Thorium chrome:// URLs page patch...${c0}\n" &&
 	git apply --reject ./thorium-chrome-urls-page.patch &&
+	printf "${YEL}Thorium flags registration patch...${c0}\n" &&
+	git apply --reject ./thorium-flags-registration.patch &&
 	printf "${YEL}Thorium flags page branding patch...${c0}\n" &&
 	git apply --reject ./thorium-flags-page-branding.patch &&
 	printf "${YEL}Thorium version page branding patch...${c0}\n" &&
@@ -286,14 +305,22 @@ patchThor () {
 	git apply --reject ./add-flag-for-custom-ntp.patch &&
 	printf "${YEL}Force disable tab outlines patch...${c0}\n" &&
 	git apply --reject ./force-disable-tab-outlines.patch &&
+	printf "${YEL}Quiet notification defaults patch...${c0}\n" &&
+	git apply --reject ./quiet-notification-defaults.patch &&
 	printf "${YEL}Disable Thorium DNS config patch...${c0}\n" &&
 	git apply --reject ./disable-thorium-dns-config.patch &&
+	printf "${YEL}Secure DNS defaults patch...${c0}\n" &&
+	git apply --reject ./secure-dns-defaults.patch &&
 	printf "${YEL}Reduce DoH request headers patch...${c0}\n" &&
 	git apply --reject ./reduce-doh-request-headers.patch &&
+	printf "${YEL}Disable alternate error pages by default patch...${c0}\n" &&
+	git apply --reject ./disable-alternate-error-pages-by-default.patch &&
 	printf "${YEL}Keep all history patch...${c0}\n" &&
 	git apply --reject ./add-flag-to-keep-all-history.patch &&
 	printf "${YEL}Enable parallel downloading by default patch...${c0}\n" &&
 	git apply --reject ./enable-parallel-downloading-by-default.patch &&
+	printf "${YEL}Disable background mode by default patch...${c0}\n" &&
+	git apply --reject ./disable-background-mode-by-default.patch &&
 	printf "${YEL}Thorium Dino game patch...${c0}\n" &&
 	git apply --reject ./thorium-dino-game.patch &&
 	printf "${YEL}Allow insecure downloads patch...${c0}\n" &&
@@ -310,6 +337,8 @@ patchThor () {
 	git apply --reject ./thoriumos-help-app-discovery.patch &&
 	printf "${YEL}ThoriumOS Sample System Web App patch...${c0}\n" &&
 	git apply --reject ./thoriumos-sample-system-web-app.patch &&
+	printf "${YEL}ThoriumOS disable stats reporting patch...${c0}\n" &&
+	git apply --reject ./thoriumos-disable-stats-reporting.patch &&
 	printf "${YEL}Auto dark mode patch...${c0}\n" &&
 	git apply --reject ./add-flag-for-auto-dark-mode.patch &&
 	printf "${YEL}Disable Thorium icons patch...${c0}\n" &&
@@ -318,6 +347,8 @@ patchThor () {
 	git apply --reject ./always-enable-reload-menu.patch &&
 	printf "${YEL}Allow Manifest V2 extensions...${c0}\n" &&
 	git apply --reject ./allow_manifest_v2_extensions.patch &&
+	printf "${YEL}Thorium component extension allowlist patch...${c0}\n" &&
+	git apply --reject ./thorium-component-extension-allowlist.patch &&
 	printf "${YEL}Increase Declarative Net Request limits...${c0}\n" &&
 	git apply --reject ./increase-dnr-limits.patch &&
 	printf "${YEL}Show hosted apps in extensions settings...${c0}\n" &&
@@ -338,6 +369,8 @@ patchThor () {
 	git apply --reject ./disable-feature-promos.patch &&
 	printf "${YEL}Thorium install/static branding patch...${c0}\n" &&
 	git apply --reject ./thorium-install-static-branding.patch &&
+	printf "${YEL}Windows profile shortcut icon version patch...${c0}\n" &&
+	git apply --reject ./windows-profile-shortcut-icon-version.patch &&
 	printf "${YEL}Some crashes fixes...${c0}\n" &&
 	git apply --reject ./disable-aero.patch &&
     printf "${YEL}Disable signin without account manager...${c0}\n" &&

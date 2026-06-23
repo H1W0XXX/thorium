@@ -97,6 +97,7 @@ patchThor () {
 	cp -v other/enable-saving-pages-from-all-schemes.patch ${CR_SRC_DIR}/ &&
 	cp -v other/content-gpu-vaapi-libva-config.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-content-shell-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-common-branding-paths.patch ${CR_SRC_DIR}/ &&
 	cp -v other/android-thorium-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-startup-logging.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-app-metadata-branding.patch ${CR_SRC_DIR}/ &&
@@ -107,6 +108,7 @@ patchThor () {
 	cp -v other/thorium-browser-ui-default-prefs.patch ${CR_SRC_DIR}/ &&
 	cp -v other/dom-distiller-reader-mode.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-chrome-build-targets.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
 	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
 	cp -v other/v8-context-snapshot-rpath.patch ${CR_SRC_DIR}/ &&
@@ -114,6 +116,7 @@ patchThor () {
 	cp -v other/linux-obsolete-system-policy.patch ${CR_SRC_DIR}/ &&
 	cp -v other/linux-memory-details-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/linux-shell-integration-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-linux-installer-packaging.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-ui-debug-shell.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-webui-image-resources.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-browser-resource-branding.patch ${CR_SRC_DIR}/ &&
@@ -136,6 +139,7 @@ patchThor () {
 	cp -v other/thorium-2024-ui.patch ${CR_SRC_DIR}/ &&
 	cp -v other/GPC.patch ${CR_SRC_DIR}/ &&
 	cp -v other/mini_installer.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-mini-installer-manifest.patch ${CR_SRC_DIR}/ &&
 	cp -v other/open_in_same_tab.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-for-close-confirmation.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-to-close-window-with-last-tab.patch ${CR_SRC_DIR}/ &&
@@ -169,6 +173,7 @@ patchThor () {
 	cp -v other/disable-encryption.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-feature-promos.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-install-static-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/windows-chrome-proxy-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/windows-profile-shortcut-icon-version.patch ${CR_SRC_DIR}/ &&
 	cp -v other/win_updater.patch ${CR_SRC_DIR}/ &&
 	cp -v other/keyboard_shortcuts.patch ${CR_SRC_DIR}/ &&
@@ -226,6 +231,8 @@ patchThor () {
 	git apply --reject ./content-gpu-vaapi-libva-config.patch &&
 	printf "${YEL}Thorium content shell branding patch...${c0}\n" &&
 	git apply --reject ./thorium-content-shell-branding.patch &&
+	printf "${YEL}Thorium common branding paths patch...${c0}\n" &&
+	git apply --reject ./thorium-common-branding-paths.patch &&
 	printf "${YEL}Android Thorium branding patch...${c0}\n" &&
 	git apply --reject ./android-thorium-branding.patch &&
 	printf "${YEL}Thorium startup logging patch...${c0}\n" &&
@@ -246,6 +253,8 @@ patchThor () {
 	git apply --reject ./dom-distiller-reader-mode.patch &&
 	printf "${YEL}Thorium root build targets patch...${c0}\n" &&
 	git apply --reject ./thorium-root-build-targets.patch &&
+	printf "${YEL}Thorium chrome build targets patch...${c0}\n" &&
+	git apply --reject ./thorium-chrome-build-targets.patch &&
 	printf "${YEL}Thorium V8 SIMD opts patch...${c0}\n" &&
 	cd ${CR_SRC_DIR}/v8 &&
 	git apply --reject ../thorium-v8-simd-opts.patch &&
@@ -262,6 +271,8 @@ patchThor () {
 	git apply --reject ./linux-memory-details-branding.patch &&
 	printf "${YEL}Linux shell integration branding patch...${c0}\n" &&
 	git apply --reject ./linux-shell-integration-branding.patch &&
+	printf "${YEL}Thorium Linux installer packaging patch...${c0}\n" &&
+	git apply --reject ./thorium-linux-installer-packaging.patch &&
 	printf "${YEL}Thorium UI debug shell patch...${c0}\n" &&
 	git apply --reject ./thorium-ui-debug-shell.patch &&
 	printf "${YEL}Thorium WebUI image resources patch...${c0}\n" &&
@@ -320,6 +331,8 @@ patchThor () {
 	printf "${YEL}Patching mini_installer...${c0}\n" &&
 	cd ${CR_SRC_DIR} &&
 	git apply --reject ./mini_installer.patch &&
+	printf "${YEL}Thorium mini_installer manifest patch...${c0}\n" &&
+	git apply --reject ./thorium-mini-installer-manifest.patch &&
 
 	printf "\n" &&
 	printf "${YEL}Applying other Misc. patches...${c0}\n" &&
@@ -402,6 +415,8 @@ patchThor () {
 	git apply --reject ./disable-feature-promos.patch &&
 	printf "${YEL}Thorium install/static branding patch...${c0}\n" &&
 	git apply --reject ./thorium-install-static-branding.patch &&
+	printf "${YEL}Windows chrome proxy branding patch...${c0}\n" &&
+	git apply --reject ./windows-chrome-proxy-branding.patch &&
 	printf "${YEL}Windows profile shortcut icon version patch...${c0}\n" &&
 	git apply --reject ./windows-profile-shortcut-icon-version.patch &&
 	printf "${YEL}Some crashes fixes...${c0}\n" &&

@@ -129,6 +129,7 @@ patches = [
     "other/enable-saving-pages-from-all-schemes.patch",
     "other/content-gpu-vaapi-libva-config.patch",
     "other/thorium-content-shell-branding.patch",
+    "other/thorium-common-branding-paths.patch",
     "other/android-thorium-branding.patch",
     "other/thorium-startup-logging.patch",
     "other/thorium-app-metadata-branding.patch",
@@ -139,6 +140,7 @@ patches = [
     "other/thorium-browser-ui-default-prefs.patch",
     "other/dom-distiller-reader-mode.patch",
     "other/thorium-root-build-targets.patch",
+    "other/thorium-chrome-build-targets.patch",
     "other/thorium-v8-simd-opts.patch",
     "other/llvm-optimized-avx2-build.patch",
     "other/v8-context-snapshot-rpath.patch",
@@ -146,6 +148,7 @@ patches = [
     "other/linux-obsolete-system-policy.patch",
     "other/linux-memory-details-branding.patch",
     "other/linux-shell-integration-branding.patch",
+    "other/thorium-linux-installer-packaging.patch",
     "other/thorium-ui-debug-shell.patch",
     "other/thorium-webui-image-resources.patch",
     "other/thorium-browser-resource-branding.patch",
@@ -167,6 +170,7 @@ patches = [
     "other/thorium-2024-ui.patch",
     "other/GPC.patch",
     "other/mini_installer.patch",
+    "other/thorium-mini-installer-manifest.patch",
     "other/open_in_same_tab.patch",
     "other/add-flag-for-close-confirmation.patch",
     "other/add-flag-to-close-window-with-last-tab.patch",
@@ -200,6 +204,7 @@ patches = [
     "other/disable-encryption.patch",
     "other/disable-feature-promos.patch",
     "other/thorium-install-static-branding.patch",
+    "other/windows-chrome-proxy-branding.patch",
     "other/windows-profile-shortcut-icon-version.patch",
     "other/win_updater.patch",
     "other/keyboard_shortcuts.patch",
@@ -288,6 +293,7 @@ try_run(f"git apply --reject allow-webaudio-autoplay.patch")
 try_run(f"git apply --reject enable-saving-pages-from-all-schemes.patch")
 try_run(f"git apply --reject content-gpu-vaapi-libva-config.patch")
 try_run(f"git apply --reject thorium-content-shell-branding.patch")
+try_run(f"git apply --reject thorium-common-branding-paths.patch")
 try_run(f"git apply --reject android-thorium-branding.patch")
 try_run(f"git apply --reject thorium-startup-logging.patch")
 try_run(f"git apply --reject thorium-app-metadata-branding.patch")
@@ -298,6 +304,7 @@ try_run(f"git apply --reject bookmark-default-prefs.patch")
 try_run(f"git apply --reject thorium-browser-ui-default-prefs.patch")
 try_run(f"git apply --reject dom-distiller-reader-mode.patch")
 try_run(f"git apply --reject thorium-root-build-targets.patch")
+try_run(f"git apply --reject thorium-chrome-build-targets.patch")
 
 print("\nThorium V8 SIMD opts patch\n")
 v8_dir = os.path.join(cr_src_dir, "v8")
@@ -310,6 +317,7 @@ try_run(f"git apply --reject linux-disable-custom-titlebar-default.patch")
 try_run(f"git apply --reject linux-obsolete-system-policy.patch")
 try_run(f"git apply --reject linux-memory-details-branding.patch")
 try_run(f"git apply --reject linux-shell-integration-branding.patch")
+try_run(f"git apply --reject thorium-linux-installer-packaging.patch")
 try_run(f"git apply --reject thorium-ui-debug-shell.patch")
 try_run(f"git apply --reject thorium-webui-image-resources.patch")
 try_run(f"git apply --reject thorium-browser-resource-branding.patch")
@@ -361,6 +369,7 @@ print("\nPatching for mini_installer\n")
 # Change directory to cr_src_dir and run commands
 os.chdir(cr_src_dir)
 try_run(f"git apply --reject mini_installer.patch")
+try_run(f"git apply --reject thorium-mini-installer-manifest.patch")
 
 
 print("\nApplying other Misc. patches...\n")
@@ -405,6 +414,7 @@ try_run(f"git apply --reject disable-privacy-sandbox.patch")
 try_run(f"git apply --reject disable-encryption.patch")
 try_run(f"git apply --reject disable-feature-promos.patch")
 try_run(f"git apply --reject thorium-install-static-branding.patch")
+try_run(f"git apply --reject windows-chrome-proxy-branding.patch")
 try_run(f"git apply --reject windows-profile-shortcut-icon-version.patch")
 
 

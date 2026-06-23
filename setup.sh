@@ -98,6 +98,11 @@ patchThor () {
 	cp -v other/content-gpu-vaapi-libva-config.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-content-shell-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/android-thorium-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-startup-logging.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-app-metadata-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-theme-resources.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-app-vector-icons.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-app-grd-registration.patch ${CR_SRC_DIR}/ &&
 	cp -v other/bookmark-default-prefs.patch ${CR_SRC_DIR}/ &&
 	cp -v other/dom-distiller-reader-mode.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
@@ -201,6 +206,16 @@ patchThor () {
 	git apply --reject ./thorium-content-shell-branding.patch &&
 	printf "${YEL}Android Thorium branding patch...${c0}\n" &&
 	git apply --reject ./android-thorium-branding.patch &&
+	printf "${YEL}Thorium startup logging patch...${c0}\n" &&
+	git apply --reject ./thorium-startup-logging.patch &&
+	printf "${YEL}Thorium app metadata branding patch...${c0}\n" &&
+	git apply --reject ./thorium-app-metadata-branding.patch &&
+	printf "${YEL}Thorium theme resources patch...${c0}\n" &&
+	git apply --reject ./thorium-theme-resources.patch &&
+	printf "${YEL}Thorium app vector icons patch...${c0}\n" &&
+	git apply --reject ./thorium-app-vector-icons.patch &&
+	printf "${YEL}Thorium app GRD registration patch...${c0}\n" &&
+	git apply --reject ./thorium-app-grd-registration.patch &&
 	printf "${YEL}Bookmark default prefs patch...${c0}\n" &&
 	git apply --reject ./bookmark-default-prefs.patch &&
 	printf "${YEL}Dom Distiller reader mode patch...${c0}\n" &&

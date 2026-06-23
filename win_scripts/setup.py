@@ -130,6 +130,11 @@ patches = [
     "other/content-gpu-vaapi-libva-config.patch",
     "other/thorium-content-shell-branding.patch",
     "other/android-thorium-branding.patch",
+    "other/thorium-startup-logging.patch",
+    "other/thorium-app-metadata-branding.patch",
+    "other/thorium-theme-resources.patch",
+    "other/thorium-app-vector-icons.patch",
+    "other/thorium-app-grd-registration.patch",
     "other/bookmark-default-prefs.patch",
     "other/dom-distiller-reader-mode.patch",
     "other/thorium-root-build-targets.patch",
@@ -262,6 +267,11 @@ try_run(f"git apply --reject enable-saving-pages-from-all-schemes.patch")
 try_run(f"git apply --reject content-gpu-vaapi-libva-config.patch")
 try_run(f"git apply --reject thorium-content-shell-branding.patch")
 try_run(f"git apply --reject android-thorium-branding.patch")
+try_run(f"git apply --reject thorium-startup-logging.patch")
+try_run(f"git apply --reject thorium-app-metadata-branding.patch")
+try_run(f"git apply --reject thorium-theme-resources.patch")
+try_run(f"git apply --reject thorium-app-vector-icons.patch")
+try_run(f"git apply --reject thorium-app-grd-registration.patch")
 try_run(f"git apply --reject bookmark-default-prefs.patch")
 try_run(f"git apply --reject dom-distiller-reader-mode.patch")
 try_run(f"git apply --reject thorium-root-build-targets.patch")

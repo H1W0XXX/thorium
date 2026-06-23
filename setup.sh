@@ -115,6 +115,7 @@ patchThor () {
 	cp -v other/linux-shell-integration-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-ui-debug-shell.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-webui-image-resources.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-browser-resource-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-chrome-urls-page.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-flags-registration.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-flags-page-branding.patch ${CR_SRC_DIR}/ &&
@@ -253,6 +254,8 @@ patchThor () {
 	git apply --reject ./thorium-ui-debug-shell.patch &&
 	printf "${YEL}Thorium WebUI image resources patch...${c0}\n" &&
 	git apply --reject ./thorium-webui-image-resources.patch &&
+	printf "${YEL}Thorium browser resource branding patch...${c0}\n" &&
+	git apply --reject ./thorium-browser-resource-branding.patch &&
 	printf "${YEL}Thorium chrome:// URLs page patch...${c0}\n" &&
 	git apply --reject ./thorium-chrome-urls-page.patch &&
 	printf "${YEL}Thorium flags registration patch...${c0}\n" &&

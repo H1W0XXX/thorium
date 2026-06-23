@@ -147,6 +147,7 @@ patches = [
     "other/linux-shell-integration-branding.patch",
     "other/thorium-ui-debug-shell.patch",
     "other/thorium-webui-image-resources.patch",
+    "other/thorium-browser-resource-branding.patch",
     "other/thorium-chrome-urls-page.patch",
     "other/thorium-flags-registration.patch",
     "other/thorium-flags-page-branding.patch",
@@ -300,6 +301,7 @@ try_run(f"git apply --reject linux-memory-details-branding.patch")
 try_run(f"git apply --reject linux-shell-integration-branding.patch")
 try_run(f"git apply --reject thorium-ui-debug-shell.patch")
 try_run(f"git apply --reject thorium-webui-image-resources.patch")
+try_run(f"git apply --reject thorium-browser-resource-branding.patch")
 try_run(f"git apply --reject thorium-chrome-urls-page.patch")
 try_run(f"git apply --reject thorium-flags-registration.patch")
 try_run(f"git apply --reject thorium-flags-page-branding.patch")

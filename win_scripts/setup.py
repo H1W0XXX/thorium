@@ -129,6 +129,7 @@ patches = [
     "other/enable-saving-pages-from-all-schemes.patch",
     "other/content-gpu-vaapi-libva-config.patch",
     "other/thorium-content-shell-branding.patch",
+    "other/android-thorium-branding.patch",
     "other/bookmark-default-prefs.patch",
     "other/dom-distiller-reader-mode.patch",
     "other/thorium-root-build-targets.patch",
@@ -260,6 +261,7 @@ try_run(f"git apply --reject allow-webaudio-autoplay.patch")
 try_run(f"git apply --reject enable-saving-pages-from-all-schemes.patch")
 try_run(f"git apply --reject content-gpu-vaapi-libva-config.patch")
 try_run(f"git apply --reject thorium-content-shell-branding.patch")
+try_run(f"git apply --reject android-thorium-branding.patch")
 try_run(f"git apply --reject bookmark-default-prefs.patch")
 try_run(f"git apply --reject dom-distiller-reader-mode.patch")
 try_run(f"git apply --reject thorium-root-build-targets.patch")

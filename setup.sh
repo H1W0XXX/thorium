@@ -97,6 +97,7 @@ patchThor () {
 	cp -v other/enable-saving-pages-from-all-schemes.patch ${CR_SRC_DIR}/ &&
 	cp -v other/content-gpu-vaapi-libva-config.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-content-shell-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/android-thorium-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/bookmark-default-prefs.patch ${CR_SRC_DIR}/ &&
 	cp -v other/dom-distiller-reader-mode.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
@@ -198,6 +199,8 @@ patchThor () {
 	git apply --reject ./content-gpu-vaapi-libva-config.patch &&
 	printf "${YEL}Thorium content shell branding patch...${c0}\n" &&
 	git apply --reject ./thorium-content-shell-branding.patch &&
+	printf "${YEL}Android Thorium branding patch...${c0}\n" &&
+	git apply --reject ./android-thorium-branding.patch &&
 	printf "${YEL}Bookmark default prefs patch...${c0}\n" &&
 	git apply --reject ./bookmark-default-prefs.patch &&
 	printf "${YEL}Dom Distiller reader mode patch...${c0}\n" &&

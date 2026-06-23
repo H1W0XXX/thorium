@@ -55,7 +55,7 @@ export CHROME_DESKTOP="thorium-browser.desktop"
 # DIST=`cat /etc/debian_version`
 export CHROME_VERSION_EXTRA="@@CHANNEL@@, built on Ubuntu (arm64)"
 
-# We don't want bug-buddy intercepting our crashes. http://crbug.com/24120
+# We don't want bug-buddy intercepting our crashes. http://crbug.com/41012584
 export GNOME_DISABLE_CRASH_DIALOG=SET_BY_THORIUM
 
 # Set config home.
@@ -100,7 +100,7 @@ if [[ -f $XDG_CONFIG_HOME/thorium/thorium-flags.conf ]]; then
 fi
 
 # Sanitize std{in,out,err} because they'll be shared with untrusted child
-# processes (http://crbug.com/376567).
+# processes (http://crbug.com/40079595).
 exec < /dev/null
 exec > >(exec cat)
 exec 2> >(exec cat >&2)

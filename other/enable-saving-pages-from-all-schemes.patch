@@ -1,3 +1,43 @@
+diff --git a/chrome/browser/ui/browser_commands.cc b/chrome/browser/ui/browser_commands.cc
+index 5a4ab8862df3d..d3ca60917fe5f 100644
+--- a/chrome/browser/ui/browser_commands.cc
++++ b/chrome/browser/ui/browser_commands.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2012 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -189,7 +189,6 @@
+ #include "content/public/browser/web_contents.h"
+ #include "content/public/common/content_switches.h"
+ #include "content/public/common/url_constants.h"
+-#include "content/public/common/url_utils.h"
+ #include "extensions/buildflags/buildflags.h"
+ #include "pdf/buildflags.h"
+ #include "printing/buildflags/buildflags.h"
+@@ -757,11 +756,6 @@ int GetContentRestrictions(const BrowserWindowInterface* browser) {
+     CoreTabHelper* core_tab_helper =
+         CoreTabHelper::FromWebContents(current_tab);
+     content_restrictions = core_tab_helper->content_restrictions();
+-    NavigationEntry* last_committed_entry =
+-        current_tab->GetController().GetLastCommittedEntry();
+-    if (!content::IsSavableURL(last_committed_entry->GetURL())) {
+-      content_restrictions |= CONTENT_RESTRICTION_SAVE;
+-    }
+   }
+   return content_restrictions;
+ }
+@@ -2207,8 +2201,7 @@ bool CanSavePage(const BrowserWindowInterface* browser) {
+       policy::DownloadRestriction::ALL_FILES) {
+     return false;
+   }
+-  return (browser->GetType() != BrowserWindowInterface::Type::TYPE_DEVTOOLS) &&
+-         !(GetContentRestrictions(browser) & CONTENT_RESTRICTION_SAVE);
++  return true;
+ }
+ 
+ void Print(BrowserWindowInterface* browser) {
 diff --git a/components/offline_pages/core/offline_page_model.cc b/components/offline_pages/core/offline_page_model.cc
 index cbeac3f80bd8b..55a2b4bbacbf2 100644
 --- a/components/offline_pages/core/offline_page_model.cc

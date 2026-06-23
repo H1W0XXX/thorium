@@ -104,6 +104,7 @@ patchThor () {
 	cp -v other/thorium-app-vector-icons.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-app-grd-registration.patch ${CR_SRC_DIR}/ &&
 	cp -v other/bookmark-default-prefs.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-browser-ui-default-prefs.patch ${CR_SRC_DIR}/ &&
 	cp -v other/dom-distiller-reader-mode.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
@@ -116,11 +117,19 @@ patchThor () {
 	cp -v other/thorium-ui-debug-shell.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-webui-image-resources.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-browser-resource-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/omnibox-search-engine-icon-branding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/relax-bad-flags-warning.patch ${CR_SRC_DIR}/ &&
+	cp -v other/disable-startup-warning-infobars.patch ${CR_SRC_DIR}/ &&
+	cp -v other/disable-default-browser-prompt.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-chrome-urls-page.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-flags-registration.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-flags-page-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-version-page-branding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-vector-icons.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-app-menu-icons.patch ${CR_SRC_DIR}/ &&
+	cp -v other/prevent-url-elisions-by-default.patch ${CR_SRC_DIR}/ &&
+	cp -v other/enable-chrome-labs-by-default.patch ${CR_SRC_DIR}/ &&
+	cp -v other/enable-whats-new-by-default.patch ${CR_SRC_DIR}/ &&
 	cp -v other/fix-policy-templates.patch ${CR_SRC_DIR}/ &&
 	cp -v other/ftp-support-thorium.patch ${CR_SRC_DIR}/ &&
 	cp -v other/restore_download_shelf.patch ${CR_SRC_DIR}/ &&
@@ -132,6 +141,7 @@ patchThor () {
 	cp -v other/add-flag-to-close-window-with-last-tab.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-to-scroll-tabs.patch ${CR_SRC_DIR}/ &&
 	cp -v other/add-flag-for-custom-ntp.patch ${CR_SRC_DIR}/ &&
+	cp -v other/add-flag-for-tab-hover-cards.patch ${CR_SRC_DIR}/ &&
 	cp -v other/force-disable-tab-outlines.patch ${CR_SRC_DIR}/ &&
 	cp -v other/quiet-notification-defaults.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-thorium-dns-config.patch ${CR_SRC_DIR}/ &&
@@ -230,6 +240,8 @@ patchThor () {
 	git apply --reject ./thorium-app-grd-registration.patch &&
 	printf "${YEL}Bookmark default prefs patch...${c0}\n" &&
 	git apply --reject ./bookmark-default-prefs.patch &&
+	printf "${YEL}Thorium browser UI default prefs patch...${c0}\n" &&
+	git apply --reject ./thorium-browser-ui-default-prefs.patch &&
 	printf "${YEL}Dom Distiller reader mode patch...${c0}\n" &&
 	git apply --reject ./dom-distiller-reader-mode.patch &&
 	printf "${YEL}Thorium root build targets patch...${c0}\n" &&
@@ -256,6 +268,14 @@ patchThor () {
 	git apply --reject ./thorium-webui-image-resources.patch &&
 	printf "${YEL}Thorium browser resource branding patch...${c0}\n" &&
 	git apply --reject ./thorium-browser-resource-branding.patch &&
+	printf "${YEL}Omnibox search engine icon branding patch...${c0}\n" &&
+	git apply --reject ./omnibox-search-engine-icon-branding.patch &&
+	printf "${YEL}Relax bad flags warning patch...${c0}\n" &&
+	git apply --reject ./relax-bad-flags-warning.patch &&
+	printf "${YEL}Disable startup warning infobars patch...${c0}\n" &&
+	git apply --reject ./disable-startup-warning-infobars.patch &&
+	printf "${YEL}Disable default browser prompt patch...${c0}\n" &&
+	git apply --reject ./disable-default-browser-prompt.patch &&
 	printf "${YEL}Thorium chrome:// URLs page patch...${c0}\n" &&
 	git apply --reject ./thorium-chrome-urls-page.patch &&
 	printf "${YEL}Thorium flags registration patch...${c0}\n" &&
@@ -266,6 +286,14 @@ patchThor () {
 	git apply --reject ./thorium-version-page-branding.patch &&
 	printf "${YEL}Thorium vector icons patch...${c0}\n" &&
 	git apply --reject ./thorium-vector-icons.patch &&
+	printf "${YEL}Thorium app menu icons patch...${c0}\n" &&
+	git apply --reject ./thorium-app-menu-icons.patch &&
+	printf "${YEL}Prevent URL elisions by default patch...${c0}\n" &&
+	git apply --reject ./prevent-url-elisions-by-default.patch &&
+	printf "${YEL}Enable Chrome Labs by default patch...${c0}\n" &&
+	git apply --reject ./enable-chrome-labs-by-default.patch &&
+	printf "${YEL}Enable What's New by default patch...${c0}\n" &&
+	git apply --reject ./enable-whats-new-by-default.patch &&
 
 	printf "\n" &&
 	printf "${YEL}Patching policy templates...${c0}\n" &&
@@ -306,6 +334,8 @@ patchThor () {
 	git apply --reject ./add-flag-to-scroll-tabs.patch &&
 	printf "${YEL}Custom NTP patch...${c0}\n" &&
 	git apply --reject ./add-flag-for-custom-ntp.patch &&
+	printf "${YEL}Tab hover cards flag patch...${c0}\n" &&
+	git apply --reject ./add-flag-for-tab-hover-cards.patch &&
 	printf "${YEL}Force disable tab outlines patch...${c0}\n" &&
 	git apply --reject ./force-disable-tab-outlines.patch &&
 	printf "${YEL}Quiet notification defaults patch...${c0}\n" &&

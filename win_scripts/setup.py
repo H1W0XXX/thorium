@@ -136,6 +136,7 @@ patches = [
     "other/thorium-app-vector-icons.patch",
     "other/thorium-app-grd-registration.patch",
     "other/bookmark-default-prefs.patch",
+    "other/thorium-browser-ui-default-prefs.patch",
     "other/dom-distiller-reader-mode.patch",
     "other/thorium-root-build-targets.patch",
     "other/thorium-v8-simd-opts.patch",
@@ -148,11 +149,19 @@ patches = [
     "other/thorium-ui-debug-shell.patch",
     "other/thorium-webui-image-resources.patch",
     "other/thorium-browser-resource-branding.patch",
+    "other/omnibox-search-engine-icon-branding.patch",
+    "other/relax-bad-flags-warning.patch",
+    "other/disable-startup-warning-infobars.patch",
+    "other/disable-default-browser-prompt.patch",
     "other/thorium-chrome-urls-page.patch",
     "other/thorium-flags-registration.patch",
     "other/thorium-flags-page-branding.patch",
     "other/thorium-version-page-branding.patch",
     "other/thorium-vector-icons.patch",
+    "other/thorium-app-menu-icons.patch",
+    "other/prevent-url-elisions-by-default.patch",
+    "other/enable-chrome-labs-by-default.patch",
+    "other/enable-whats-new-by-default.patch",
     "other/fix-policy-templates.patch",
     "other/ftp-support-thorium.patch",
     "other/thorium-2024-ui.patch",
@@ -163,6 +172,7 @@ patches = [
     "other/add-flag-to-close-window-with-last-tab.patch",
     "other/add-flag-to-scroll-tabs.patch",
     "other/add-flag-for-custom-ntp.patch",
+    "other/add-flag-for-tab-hover-cards.patch",
     "other/force-disable-tab-outlines.patch",
     "other/quiet-notification-defaults.patch",
     "other/disable-thorium-dns-config.patch",
@@ -285,6 +295,7 @@ try_run(f"git apply --reject thorium-theme-resources.patch")
 try_run(f"git apply --reject thorium-app-vector-icons.patch")
 try_run(f"git apply --reject thorium-app-grd-registration.patch")
 try_run(f"git apply --reject bookmark-default-prefs.patch")
+try_run(f"git apply --reject thorium-browser-ui-default-prefs.patch")
 try_run(f"git apply --reject dom-distiller-reader-mode.patch")
 try_run(f"git apply --reject thorium-root-build-targets.patch")
 
@@ -302,11 +313,19 @@ try_run(f"git apply --reject linux-shell-integration-branding.patch")
 try_run(f"git apply --reject thorium-ui-debug-shell.patch")
 try_run(f"git apply --reject thorium-webui-image-resources.patch")
 try_run(f"git apply --reject thorium-browser-resource-branding.patch")
+try_run(f"git apply --reject omnibox-search-engine-icon-branding.patch")
+try_run(f"git apply --reject relax-bad-flags-warning.patch")
+try_run(f"git apply --reject disable-startup-warning-infobars.patch")
+try_run(f"git apply --reject disable-default-browser-prompt.patch")
 try_run(f"git apply --reject thorium-chrome-urls-page.patch")
 try_run(f"git apply --reject thorium-flags-registration.patch")
 try_run(f"git apply --reject thorium-flags-page-branding.patch")
 try_run(f"git apply --reject thorium-version-page-branding.patch")
 try_run(f"git apply --reject thorium-vector-icons.patch")
+try_run(f"git apply --reject thorium-app-menu-icons.patch")
+try_run(f"git apply --reject prevent-url-elisions-by-default.patch")
+try_run(f"git apply --reject enable-chrome-labs-by-default.patch")
+try_run(f"git apply --reject enable-whats-new-by-default.patch")
 
 print("\nPatching policy templates\n")
 # Change directory to cr_src_dir and run commands
@@ -352,6 +371,7 @@ try_run(f"git apply --reject add-flag-for-close-confirmation.patch")
 try_run(f"git apply --reject add-flag-to-close-window-with-last-tab.patch")
 try_run(f"git apply --reject add-flag-to-scroll-tabs.patch")
 try_run(f"git apply --reject add-flag-for-custom-ntp.patch")
+try_run(f"git apply --reject add-flag-for-tab-hover-cards.patch")
 try_run(f"git apply --reject force-disable-tab-outlines.patch")
 try_run(f"git apply --reject quiet-notification-defaults.patch")
 try_run(f"git apply --reject disable-thorium-dns-config.patch")

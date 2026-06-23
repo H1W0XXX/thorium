@@ -1,0 +1,30 @@
+diff --git a/chrome/browser/ui/views/tabs/tab_strip.cc b/chrome/browser/ui/views/tabs/tab_strip.cc
+index dc2fe4f2e1f7e..1b67f9147dc27 100644
+--- a/chrome/browser/ui/views/tabs/tab_strip.cc
++++ b/chrome/browser/ui/views/tabs/tab_strip.cc
+@@ -1,4 +1,4 @@
+-// Copyright 2017 The Chromium Authors
++// Copyright 2026 The Chromium Authors and Alex313031
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+@@ -18,6 +18,7 @@
+ #include <vector>
+ 
+ #include "base/check.h"
++#include "base/command_line.h"
+ #include "base/compiler_specific.h"
+ #include "base/containers/adapters.h"
+ #include "base/containers/flat_map.h"
+@@ -1997,6 +1998,11 @@ void TabStrip::OnGroupContentsChanged(const tab_groups::TabGroupId& group) {
+ 
+ void TabStrip::UpdateHoverCard(HoverCardAnchorTarget* anchor_target,
+                                HoverCardUpdateType update_type) {
++  static const bool disable_hover_cards =
++      base::CommandLine::ForCurrentProcess()->HasSwitch("tab-hover-cards");
++  if (disable_hover_cards) {
++    return;
++  }
+   if (tab_container_) {
+     tab_container_->UpdateHoverCard(anchor_target, update_type);
+   }

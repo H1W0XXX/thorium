@@ -85,14 +85,13 @@ index 0f331c3e0f2a3..86b241f5044bc 100644
  
  #
  # VisualElements sub-dir.
-@@ -71,7 +111,10 @@ IwaKeyDistribution\manifest.json: %(VersionDir)s\IwaKeyDistribution\
+@@ -71,7 +111,9 @@ IwaKeyDistribution\manifest.json: %(VersionDir)s\IwaKeyDistribution\
  
  [HIDPI]
  chrome_200_percent.pak: %(VersionDir)s\
 +thorium.ico: %(VersionDir)s\
 +thorium.svg: %(VersionDir)s\
  
-+# Add component ffmpeg to Thorium.
  [FFMPEG]
  ffmpeg.dll: %(VersionDir)s\
  

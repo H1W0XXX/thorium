@@ -112,7 +112,7 @@ __clang_use_chrome_plugins__ &#35; Whether to use Chromium specific plugins in t
 
 __enable_ffmpeg_video_decoders__ &#35; Set whether software ffmpeg video decoders are enabled. Should be set to true. Used in Thorium as a fallback for all platforms when a hardware decoder, I.E. VAAPI or VDPAU cannot be used.
 
-__is_component_ffmpeg__ &#35; Builds ffmpeg as a shared library even when is_component_build is false or is_official build is true. Enabled on Linux, so users can swap out libffmpeg.so for a FOSS one or different one, I.E a different version or from something like Opera or Vivaldi for extra Codec support. &#35; NOTE: Should be disabled on Mac, because building the installer will fail.
+__is_component_ffmpeg__ &#35; Builds ffmpeg as a shared library even when is_component_build is false or is_official_build is true. Disabled in Thorium to keep ffmpeg linked into the browser/framework and avoid platform-specific packaging problems with standalone libffmpeg/ffmpeg.dll files. Codec support is controlled by ffmpeg branding and media codec patches instead.
 
 __use_webaudio_pffft__ &#35; Use the pffft library for computing FFT's in audio streams. Enabled in Thorium for performance EXCEPT on MacOS, because the native FFT library there is much faster. See > https://bitbucket.org/jpommier/pffft/src
 

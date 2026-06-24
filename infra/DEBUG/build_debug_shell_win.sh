@@ -62,7 +62,6 @@ cp -r -f -v ${CR_SRC_DIR}/out/thorium/vk_swiftshader.dll ${CR_SRC_DIR}/out/thori
 cp -r -f -v ${CR_SRC_DIR}/out/thorium/vulkan-1.dll ${CR_SRC_DIR}/out/thorium/Thorium_UI_Debug_Shell/ &&
 cp -r -f -v ${CR_SRC_DIR}/out/thorium/vk_swiftshader_icd.json ${CR_SRC_DIR}/out/thorium/Thorium_UI_Debug_Shell/ &&
 cp -r -f -v ${CR_SRC_DIR}/out/thorium/v8_context_snapshot.bin ${CR_SRC_DIR}/out/thorium/Thorium_UI_Debug_Shell/ &&
-cp -r -f -v ${CR_SRC_DIR}/out/thorium/ffmpeg.dll ${CR_SRC_DIR}/out/thorium/Thorium_UI_Debug_Shell/ &&
 cp -r -f -v ${CR_SRC_DIR}/out/thorium/ui_resources_100_percent.pak ${CR_SRC_DIR}/out/thorium/Thorium_UI_Debug_Shell/ &&
 cp -r -f -v ${CR_SRC_DIR}/out/thorium/ui_test.pak ${CR_SRC_DIR}/out/thorium/Thorium_UI_Debug_Shell/ &&
 cp -r -f -v ${CR_SRC_DIR}/out/thorium/ui_test_200_percent.pak ${CR_SRC_DIR}/out/thorium/Thorium_UI_Debug_Shell/ &&

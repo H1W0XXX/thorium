@@ -146,7 +146,6 @@ patches = [
     "other/thorium-build-platform-tools.patch",
     "other/thorium-v8-simd-opts.patch",
     "other/llvm-optimized-avx2-build.patch",
-    "other/v8-context-snapshot-rpath.patch",
     "other/linux-disable-custom-titlebar-default.patch",
     "other/linux-obsolete-system-policy.patch",
     "other/linux-memory-details-branding.patch",
@@ -322,7 +321,6 @@ os.chdir(v8_dir)
 try_run(f"git apply --reject ../thorium-v8-simd-opts.patch")
 os.chdir(cr_src_dir)
 try_run(f"git apply --reject llvm-optimized-avx2-build.patch")
-try_run(f"git apply --reject v8-context-snapshot-rpath.patch")
 try_run(f"git apply --reject linux-disable-custom-titlebar-default.patch")
 try_run(f"git apply --reject linux-obsolete-system-policy.patch")
 try_run(f"git apply --reject linux-memory-details-branding.patch")

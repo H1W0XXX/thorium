@@ -3014,7 +3014,7 @@ index 5ee3f9ff0f521..85f7f4785e40d 100755
 +fi
  
 -export CHROME_VERSION_EXTRA="@@channel"
-+# Always use our versions of ffmpeg libs.
++# Prefer Thorium's bundled libraries.
 +# This also makes RPMs find the compatibly-named library symlinks.
 +if [[ -n "$LD_LIBRARY_PATH" ]]; then
 +  LD_LIBRARY_PATH="$HERE/lib:$LD_LIBRARY_PATH"
@@ -4033,7 +4033,7 @@ new file mode 100644
 index 0000000000000..49a5914db6a8e
 --- /dev/null
 +++ b/chrome/installer/linux/rpm/thorium.spec.template
-@@ -0,0 +1,234 @@
+@@ -0,0 +1,222 @@
 +#------------------------------------------------------------------------------
 +#   Thorium RPM spec
 +#   chrome.spec
@@ -4076,18 +4076,6 @@ index 0000000000000..49a5914db6a8e
 +#   Build rule - How to make the package
 +#------------------------------------------------------------------------------
 +%build
-+
-+#------------------------------------------------------------------------------
-+#   Ignore libffmpeg.so
-+#------------------------------------------------------------------------------
-+%global _privatelibs libffmpeg.so
-+%global __provides_exclude ^(%{_privatelibs})$
-+%global __requires_exclude ^(%{_privatelibs})$
-+%global __requires_exclude ^libffmpeg\\((autotest|basetest)
-+
-+# %define __requires_exclude libffmpeg.so
-+%define _requires_exceptions libffmpeg.so()(64bit)
-+
 +#------------------------------------------------------------------------------
 +#       Installation rule - how to install it (note that it
 +#   gets installed into a temp directory given by $RPM_BUILD_ROOT)

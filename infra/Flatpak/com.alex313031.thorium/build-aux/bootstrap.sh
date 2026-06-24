@@ -40,7 +40,7 @@ tools/gn/bootstrap/bootstrap.py -v --no-clean --gn-gen-args='
     treat_warnings_as_errors=false
     proprietary_codecs=true
     ffmpeg_branding="Chrome"
-    is_component_ffmpeg=true
+    is_component_ffmpeg=false
     use_vaapi=true
     enable_widevine=true
     rtc_use_pipewire=true
@@ -52,7 +52,3 @@ tools/gn/bootstrap/bootstrap.py -v --no-clean --gn-gen-args='
     use_qt=false
     enable_remoting=false
 '
-mkdir -p out/ReleaseFree
-cp out/Release{,Free}/args.gn
-echo -e 'proprietary_codecs = false\nffmpeg_branding = "Chromium"' >> out/ReleaseFree/args.gn
-out/Release/gn gen out/ReleaseFree

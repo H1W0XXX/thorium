@@ -114,7 +114,6 @@ patchThor () {
 	cp -v other/thorium-build-platform-tools.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
 	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
-	cp -v other/v8-context-snapshot-rpath.patch ${CR_SRC_DIR}/ &&
 	cp -v other/linux-disable-custom-titlebar-default.patch ${CR_SRC_DIR}/ &&
 	cp -v other/linux-obsolete-system-policy.patch ${CR_SRC_DIR}/ &&
 	cp -v other/linux-memory-details-branding.patch ${CR_SRC_DIR}/ &&
@@ -273,8 +272,6 @@ patchThor () {
 	cd ${CR_SRC_DIR} &&
 	printf "${YEL}LLVM optimized AVX2 build patch...${c0}\n" &&
 	git apply --reject ./llvm-optimized-avx2-build.patch &&
-	printf "${YEL}V8 context snapshot rpath patch...${c0}\n" &&
-	git apply --reject ./v8-context-snapshot-rpath.patch &&
 	printf "${YEL}Linux disable custom titlebar default patch...${c0}\n" &&
 	git apply --reject ./linux-disable-custom-titlebar-default.patch &&
 	printf "${YEL}Linux obsolete system policy patch...${c0}\n" &&

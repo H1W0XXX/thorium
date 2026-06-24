@@ -83,7 +83,7 @@ ffmpeg_branding &#35;&#35; Sets the internal BRANDING header in ffmpeg. Must be 
 
 enable_ffmpeg_video_decoders &#35;&#35; Set whether software ffmpeg video decoders are enabled. Should be set to true. Used in Thorium as a fallback for all platforms when a hardware decoder, I.E. VAAPI or VDPAU cannot be used.
 
-is_component_ffmpeg &#35;&#35; Builds ffmpeg as a shared library even when is_component_build is false or is_official build is true. Enabled on Linux, so users can swap out libffmpeg.so for a FOSS one or different one, I.E a different version or from something like Opera or Vivaldi for extra Codec support. &#35;&#35; NOTE: Should be disabled on Mac, because building the installer will fail. Also, should be disabled on Windows, as it causes the compatibility mode bug on Win 10/11. &#35;&#35; TODO: Look into fixing on Windows, so that users can swap out ffmpeg.dll for another one.
+is_component_ffmpeg &#35;&#35; Builds ffmpeg as a shared library even when is_component_build is false or is_official_build is true. Disabled in Thorium to keep ffmpeg linked into the browser/framework and avoid platform-specific packaging problems with standalone libffmpeg/ffmpeg.dll files. Codec support is controlled by ffmpeg branding and media codec patches instead.
 
 use_webaudio_ffmpeg &#35;&#35; Use ffmpeg for computing FFT's (Fast Fourier Transform) in audio streams. Disabled in Thorium for performance, and because of bugs when building for AVX.
 

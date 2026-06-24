@@ -11,7 +11,6 @@ finish-args:
   - --filesystem=/run/.heim_org.h5l.kcm-socket
   - --device=all
   - --env=GTK_PATH=/app/lib/gtkmodules
-  - --env=LD_LIBRARY_PATH=/app/chromium/nonfree-codecs/lib
   - --share=ipc
   - --share=network
   - --socket=cups
@@ -31,12 +30,6 @@ finish-args:
   - --own-name=org.mpris.MediaPlayer2.chromium.*
 
 add-extensions:
-  org.chromium.Chromium.Codecs:
-    directory: chromium/nonfree-codecs
-    add-ld-path: lib
-    bundle: true
-    autodelete: true
-
   org.chromium.Chromium.NativeMessagingHost:
     version: '1'
     directory: chromium/native-messaging-hosts

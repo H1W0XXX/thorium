@@ -23,10 +23,6 @@ printf "${BOLD}\n" &&
 # Set executable permissions
 cd .. &&
 
-sudo chmod -v +x depot_tools/autoninja &&
-
-sudo chmod -v +x depot_tools/win_toolchain/package_from_installed.py &&
-
 sudo chmod -v +x build.sh &&
 
 sudo chmod -v +x g &&

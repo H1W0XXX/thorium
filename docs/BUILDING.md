@@ -203,8 +203,8 @@ You could also manually issue the command (where -j is the number of jobs):
 $ autoninja -C ~/chromium/src/out/thorium thorium chrome_sandbox chromedriver thorium_shell -j8
 ```
 
-`autoninja` is a wrapper that automatically provides optimal values for the
-arguments passed to `ninja`. `build.sh` uses a [custom autoninja](https://github.com/Alex313031/thorium/blob/main/depot_tools/autoninja) in the *depot_tools* directory in Thorium.
+`autoninja` is a wrapper from depot_tools that automatically provides optimal
+values for the arguments passed to `ninja`.
 
 You can get a list of all of the other build targets from GN by running `gn ls
 out/thorium` from the command line. To compile one, pass the GN label to Ninja

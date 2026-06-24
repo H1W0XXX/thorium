@@ -13,11 +13,11 @@
 
  - Check Chromium's new `AppIcon.icon` / `Assets.car` flow from 46f3b93b5c074e0535d2dc13cadaa8c38e96f1de / https://chromium-review.googlesource.com/c/chromium/src/+/6792589 before replacing the existing `app.icns`.
 
-&#45; Adopt a better approach to i18n.
-
 &#45; Update API and KEY (possibly?).
 
-&#45; Clean up the main Thorium repository and find ways to speed up rebasing (automation scripts may be introduced as appropriate).
+&#45; Clean up the main Thorium repository.
+
+&#45; Update Flatpak directory.
 
 ### Notes to self
 

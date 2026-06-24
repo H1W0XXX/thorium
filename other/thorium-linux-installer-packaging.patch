@@ -1,5 +1,5 @@
 diff --git a/chrome/installer/linux/BUILD.gn b/chrome/installer/linux/BUILD.gn
-index e1aca5fd6ecd1..529f36a750415 100644
+index e1aca5fd6ecd1..5cf847664bdbb 100644
 --- a/chrome/installer/linux/BUILD.gn
 +++ b/chrome/installer/linux/BUILD.gn
 @@ -1,17 +1,16 @@
@@ -357,7 +357,7 @@ index e1aca5fd6ecd1..529f36a750415 100644
 +      } else if (current_cpu == "arm") {
 +        rpm_arch = "armhf"
 +      } else if (current_cpu == "arm64") {
-+        rpm_arch = "arm64"
++        rpm_arch = "aarch64"
 +      } else if (current_cpu == "mipsel") {
 +        rpm_arch = "mipsel"
 +      } else if (current_cpu == "mips64el") {
@@ -1748,7 +1748,7 @@ index a9bbec28188c9..8c8647273366a 100644
 +                    os.chmod(os.path.join(root, d), 0o755)
 +                for f in files:
 +                    path = os.path.join(root, f)
-+                    if f == "libwidevinecdm.so":
++                    if f in ["libwidevinecdm.so", "libwidevinecdm_real.so"]:
 +                        os.chmod(path, self.shlib_perms)
 +                    else:
 +                        os.chmod(path, 0o644)

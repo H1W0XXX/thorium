@@ -141,6 +141,8 @@ patches = [
     "other/thorium-root-build-targets.patch",
     "other/thorium-chrome-build-targets.patch",
     "other/thorium-build-config-and-simd.patch",
+    "other/arm-third-party-simd-compat.patch",
+    "other/libyuv-arm-simd-compat.patch",
     "other/thorium-build-platform-tools.patch",
     "other/thorium-v8-simd-opts.patch",
     "other/llvm-optimized-avx2-build.patch",
@@ -307,6 +309,11 @@ try_run(f"git apply --reject dom-distiller-reader-mode.patch")
 try_run(f"git apply --reject thorium-root-build-targets.patch")
 try_run(f"git apply --reject thorium-chrome-build-targets.patch")
 try_run(f"git apply --reject thorium-build-config-and-simd.patch")
+try_run(f"git apply --reject arm-third-party-simd-compat.patch")
+libyuv_dir = os.path.join(cr_src_dir, "third_party", "libyuv")
+os.chdir(libyuv_dir)
+try_run(f"git apply --reject ../../libyuv-arm-simd-compat.patch")
+os.chdir(cr_src_dir)
 try_run(f"git apply --reject thorium-build-platform-tools.patch")
 
 print("\nThorium V8 SIMD opts patch\n")
@@ -476,10 +483,6 @@ else:
 # Copy Windows on Arm files
 def copy_woa():
     print("\nCopying Windows on Arm build files\n")
-    copy_directory(
-        os.path.normpath(os.path.join(thor_src_dir, "arm", "third_party")),
-        os.path.normpath(os.path.join(cr_src_dir, "third_party")),
-    )
     copy(
         os.path.normpath(os.path.join(thor_src_dir, "arm", "thorium_version.txt")),
         os.path.normpath(os.path.join(cr_src_dir, "ui", "webui", "resources", "text")),

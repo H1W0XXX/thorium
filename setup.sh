@@ -109,6 +109,8 @@ patchThor () {
 	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-chrome-build-targets.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-build-config-and-simd.patch ${CR_SRC_DIR}/ &&
+	cp -v other/arm-third-party-simd-compat.patch ${CR_SRC_DIR}/ &&
+	cp -v other/libyuv-arm-simd-compat.patch ${CR_SRC_DIR}/third_party/libyuv/ &&
 	cp -v other/thorium-build-platform-tools.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
 	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
@@ -258,6 +260,11 @@ patchThor () {
 	git apply --reject ./thorium-chrome-build-targets.patch &&
 	printf "${YEL}Thorium build config and SIMD patch...${c0}\n" &&
 	git apply --reject ./thorium-build-config-and-simd.patch &&
+	printf "${YEL}ARM third_party SIMD compatibility patch...${c0}\n" &&
+	git apply --reject ./arm-third-party-simd-compat.patch &&
+	cd ${CR_SRC_DIR}/third_party/libyuv &&
+	git apply --reject ./libyuv-arm-simd-compat.patch &&
+	cd ${CR_SRC_DIR} &&
 	printf "${YEL}Thorium build platform tools patch...${c0}\n" &&
 	git apply --reject ./thorium-build-platform-tools.patch &&
 	printf "${YEL}Thorium V8 SIMD opts patch...${c0}\n" &&
@@ -474,9 +481,7 @@ cp -v infra/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
 copyMacOS () {
 	printf "\n" &&
 	printf "${YEL}Copying files for MacOS...${c0}\n" &&
-	cp -v arm/mac_arm.gni ${CR_SRC_DIR}/build/config/arm.gni &&
 	cp -v other/Mac/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
-	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=mac update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	python3 tools/update_pgo_profiles.py --target=mac-arm update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
@@ -495,14 +500,18 @@ esac
 copyRaspi () {
 	printf "\n" &&
 	printf "${YEL}Copying Raspberry Pi build files...${c0}\n" &&
-	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
-	cp -r -v arm/raspi/* ${CR_SRC_DIR}/ &&
+	cp -v arm/raspi/raspi_args.gn ${CR_SRC_DIR}/ &&
+	cp -r -v arm/third_party/widevine/* ${CR_SRC_DIR}/third_party/widevine/ &&
 	cp -v arm/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -v other/thor_ver_linux/wrapper-raspi ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
 	cp -v pak_src/binaries/pak_arm64 ${CR_SRC_DIR}/out/thorium/pak &&
+	cp -v other/linux-widevine-cdm-locations.patch ${CR_SRC_DIR}/ &&
+	cp -v other/raspi-netflix-chromeos-ua.patch ${CR_SRC_DIR}/ &&
+	cd ${CR_SRC_DIR} &&
+	git apply --reject ./linux-widevine-cdm-locations.patch &&
+	git apply --reject ./raspi-netflix-chromeos-ua.patch &&
+	cd ~/thorium &&
 	#./infra/fix_libaom.sh &&
-	printf "\n" &&
-	cp -r -v arm/raspi/build/config/* ${CR_SRC_DIR}/build/config/ &&
 	printf "\n" &&
 	# Display raspi ascii art
 	cat logos/raspi_ascii_art.txt
@@ -519,12 +528,9 @@ copyWOA () {
 	printf "\n" &&
 	printf "${YEL}Copying Windows on ARM build files...${c0}\n" &&
 	cp -v arm/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
-	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=win-arm64 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	cd ~/thorium &&
-	# Use regular arm.gni from src, pending further testing
-	# cp -v arm/woa_arm.gni ${CR_SRC_DIR}/build/config/arm.gni &&
 	printf "\n"
 }
 case $1 in
@@ -612,8 +618,6 @@ esac
 copyAndroid () {
 	printf "\n" &&
 	printf "${YEL}Copying Android (ARM64 and ARM32) build files...${c0}\n" &&
-	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
-	printf "\n" &&
 	cp -r -v arm/android/* ${CR_SRC_DIR}/ &&
 	printf "\n" &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_base/drawable-v26/ic_launcher.xml &&

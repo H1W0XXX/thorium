@@ -112,7 +112,7 @@ index 5ba1536435d46..1d805b1887fb0 100644
        # Linking objects without GNU_PROPERTY_AARCH64_FEATURE_1_BTI
        # in their .gnu.note section implicitly results in the final
 diff --git a/build/config/arm.gni b/build/config/arm.gni
-index cf21113480fd6..745451431a3b5 100644
+index cf21113480fd6..48d79430c349f 100644
 --- a/build/config/arm.gni
 +++ b/build/config/arm.gni
 @@ -1,15 +1,10 @@
@@ -187,7 +187,7 @@ index cf21113480fd6..745451431a3b5 100644
    } else if (arm_version == 7) {
      if (arm_arch == "") {
        arm_arch = "armv7-a"
-@@ -57,18 +90,36 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
+@@ -57,18 +90,44 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
          arm_float_abi = "hard"
        }
      }
@@ -201,11 +201,20 @@ index cf21113480fd6..745451431a3b5 100644
 +    }
    } else if (arm_version == 8) {
      if (arm_arch == "") {
-       arm_arch = "armv8-a"
-     }
-+    if (arm_tune == "") {
-+      arm_tune = "generic-armv8-a"
+-      arm_arch = "armv8-a"
++      if (is_mac) {
++        arm_arch = "armv8.3-a"
++      } else {
++        arm_arch = "armv8-a"
++      }
 +    }
++    if (arm_tune == "") {
++      if (is_mac) {
++        arm_tune = "generic-armv8.3-a"
++      } else {
++        arm_tune = "generic-armv8-a"
++      }
+     }
 +
      if (arm_float_abi == "") {
        arm_float_abi = "hard"
@@ -226,7 +235,7 @@ index cf21113480fd6..745451431a3b5 100644
    declare_args() {
      # Enables the new Armv8 branch protection features. Valid strings are:
      # - "pac": Enables Pointer Authentication Code (PAC, featured in Armv8.3)
-@@ -76,6 +127,36 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
+@@ -76,6 +135,44 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
      # - "none": No branch protection.
      arm_control_flow_integrity = "none"
  
@@ -239,12 +248,20 @@ index cf21113480fd6..745451431a3b5 100644
 +
 +    # The ARM64 architecture. This will be a string like "armv8-a" or "armv8.5-a.
 +    # An empty string means to use the default for the arm_version.
-+    arm_arch = "armv8-a"
++    if (is_mac) {
++      arm_arch = "armv8.3-a"
++    } else {
++      arm_arch = "armv8-a"
++    }
 +
 +    # The ARM variant-specific tuning mode. This will be a string like "armv6"
 +    # or "cortex-a15". An empty string means to use the default for the
 +    # arm_version.
-+    arm_tune = "generic-armv8-a"
++    if (is_mac) {
++      arm_tune = "generic-armv8.3-a"
++    } else {
++      arm_tune = "generic-armv8-a"
++    }
 +
 +    # The ARM64 floating point hardware. This will be a string like "neon" or
 +    # "vfpv3-d16". An empty string means to use the default for the arm_version.
@@ -263,7 +280,7 @@ index cf21113480fd6..745451431a3b5 100644
      if ((is_android || is_linux) && target_cpu == "arm64") {
        # Enable PAC and BTI on AArch64 Linux/Android systems.
        # target_cpu == "arm64" filters out some cases (e.g. the ChromeOS x64
-@@ -83,7 +164,6 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
+@@ -83,7 +180,6 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
        # use the arm64 simulator.
        arm_control_flow_integrity = "standard"
      }
@@ -271,7 +288,7 @@ index cf21113480fd6..745451431a3b5 100644
      if (host_os == "mac" && host_cpu == "arm64") {
        # Disable ARM integrity flow or build
        # will fail because of this issue
-@@ -91,8 +171,13 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
+@@ -91,8 +187,13 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
        arm_control_flow_integrity = "none"
      }
    }

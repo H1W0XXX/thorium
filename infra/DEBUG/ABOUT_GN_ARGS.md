@@ -105,7 +105,7 @@ enable_media_drm_storage &#35;&#35; Enable whether Widevine can use LocalStorage
 
 enable_media_overlay &#35;&#35; Set whether certain media overlays, I.E. volume bar, etc. are enabled. Enabled in Thorium for useability.
 
-enable_hangout_services_extension &#35;&#35; Enables building the Hangouts component Extension on Chromium/ChromiumOS. Enabled in Thorium for feature parity with Chrome. Should be enabled on ThoriumOS.
+enable_hangout_services_extension &#35;&#35; Enables building the legacy Hangouts component extension for Chromium/ChromiumOS. Disabled in Thorium because Google Hangouts has been retired and the extension is no longer needed.
 
 rtc_use_h264 &#35;&#35; Enable WebRTC (Real-Time Communication) to use H.264 for transmission/demuxing. Must be used with proprietary_codecs = true and ffmpeg_branding set to "Chrome" or "Chromeos". Enabled in Thorium for useability.
 

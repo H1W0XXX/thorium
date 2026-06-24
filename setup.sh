@@ -185,7 +185,6 @@ patchThor () {
 	cp -v other/disable-aero.patch ${CR_SRC_DIR}/ &&
 	
 	cp -v other/allow_manifest_v2_extensions.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-component-extension-allowlist.patch ${CR_SRC_DIR}/ &&
 	cp -v other/increase-dnr-limits.patch ${CR_SRC_DIR}/ &&
 	cp -v other/show-hosted-apps-in-extensions.patch ${CR_SRC_DIR}/ &&
 	
@@ -402,8 +401,6 @@ patchThor () {
 	git apply --reject ./always-enable-reload-menu.patch &&
 	printf "${YEL}Allow Manifest V2 extensions...${c0}\n" &&
 	git apply --reject ./allow_manifest_v2_extensions.patch &&
-	printf "${YEL}Thorium component extension allowlist patch...${c0}\n" &&
-	git apply --reject ./thorium-component-extension-allowlist.patch &&
 	printf "${YEL}Increase Declarative Net Request limits...${c0}\n" &&
 	git apply --reject ./increase-dnr-limits.patch &&
 	printf "${YEL}Show hosted apps in extensions settings...${c0}\n" &&

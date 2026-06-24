@@ -59,8 +59,6 @@ sudo chmod -v +x infra/arch-prerequisites.sh &&
 
 sudo chmod -v +x infra/fetch_api_keys.sh &&
 
-sudo chmod -v +x infra/fix_libaom.sh &&
-
 sudo chmod -v +x infra/build_dmg_cr.sh &&
 
 sudo chmod -v +x infra/build_polly.sh &&

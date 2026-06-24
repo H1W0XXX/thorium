@@ -505,7 +505,6 @@ copyRaspi () {
 	git apply --reject ./linux-widevine-cdm-locations.patch &&
 	git apply --reject ./raspi-netflix-chromeos-ua.patch &&
 	cd ~/thorium &&
-	#./infra/fix_libaom.sh &&
 	printf "\n" &&
 	# Display raspi ascii art
 	cat logos/raspi_ascii_art.txt
@@ -627,7 +626,6 @@ copyAndroid () {
 	#rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon.png &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon_background.png &&
 	#rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon.png &&
-	#./infra/fix_libaom.sh &&
 	printf "\n" &&
 	printf "${YEL}Downloading PGO profiles...${c0}\n" &&
 	cd ${CR_SRC_DIR} &&

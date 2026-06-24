@@ -85,6 +85,7 @@ patchThor () {
 	cp -v other/ffmpeg-branding.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
 	cp -v other/widevine-cdm-support.patch ${CR_SRC_DIR}/third_party/widevine/ &&
 	cp -v other/enable-hevc-ffmpeg-decoding.patch ${CR_SRC_DIR}/ &&
+	cp -v other/enable-webrtc-h265-l1t2-l1t3-by-default.patch ${CR_SRC_DIR}/ &&
 	cp -v other/enable-mpeg2-ac3-eac3-decoding.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium-media-switches.patch ${CR_SRC_DIR}/ &&
 	cp -v other/widevine-cdm-host-verification.patch ${CR_SRC_DIR}/ &&
@@ -206,6 +207,8 @@ patchThor () {
 	printf "${YEL}Enable HEVC FFMPEG decoding patch...${c0}\n" &&
 	cd ${CR_SRC_DIR} &&
 	git apply --reject ./enable-hevc-ffmpeg-decoding.patch &&
+	printf "${YEL}Enable WebRTC H.265 L1T2/L1T3 by default patch...${c0}\n" &&
+	git apply --reject ./enable-webrtc-h265-l1t2-l1t3-by-default.patch &&
 	printf "${YEL}Enable MPEG2 and AC3/EAC3 decoding patch...${c0}\n" &&
 	git apply --reject ./enable-mpeg2-ac3-eac3-decoding.patch &&
 	printf "${YEL}Thorium media switches patch...${c0}\n" &&

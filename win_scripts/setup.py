@@ -504,11 +504,6 @@ if "--woa" in sys.argv:
 # Copy AVX512 build files
 def copy_avx512():
     print("\nCopying AVX-512 build files\n")
-    copy_directory(
-        os.path.normpath(os.path.join(
-            thor_src_dir, "other", "AVX2", "third_party")),
-        os.path.normpath(os.path.join(cr_src_dir, "third_party")),
-    )
     copy(
         os.path.normpath(os.path.join(
             thor_src_dir, "other", "AVX512", "thor_ver")),
@@ -538,11 +533,6 @@ if "--avx512" in sys.argv:
 # Copy AVX2 build files
 def copy_avx2():
     print("\nCopying AVX2 build files\n")
-    copy_directory(
-        os.path.normpath(os.path.join(
-            thor_src_dir, "other", "AVX2", "third_party")),
-        os.path.normpath(os.path.join(cr_src_dir, "third_party")),
-    )
     copy(
         os.path.normpath(os.path.join(
             thor_src_dir, "other", "AVX2", "thor_ver")),

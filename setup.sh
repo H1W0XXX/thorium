@@ -470,7 +470,7 @@ cp -r -v infra/default_apps/. ${CR_SRC_DIR}/out/thorium/default_apps/ &&
 cp -v infra/initial_preferences ${CR_SRC_DIR}/out/thorium/ &&
 cp -v infra/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
 
-# MacOS ARMv8.3-A optimizations
+# MacOS optimizations
 copyMacOS () {
 	printf "\n" &&
 	printf "${YEL}Copying files for MacOS...${c0}\n" &&
@@ -535,7 +535,6 @@ esac
 copyAVX512 () {
 	printf "\n" &&
 	printf "${YEL}Copying AVX-512 build files...${c0}\n" &&
-	cp -r -v other/AVX2/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	cp -v other/AVX512/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
 	cp -v other/AVX512/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -v other/thor_ver_linux/wrapper-avx512 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
@@ -550,7 +549,6 @@ esac
 copyAVX2 () {
 	printf "\n" &&
 	printf "${YEL}Copying AVX2 build files...${c0}\n" &&
-	cp -r -v other/AVX2/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	cp -v other/AVX2/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
 	cp -v other/AVX2/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -v other/thor_ver_linux/wrapper-avx2 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
@@ -648,7 +646,6 @@ esac
 copyCros () {
 	printf "\n" &&
 	printf "${YEL}Copying ChromiumOS build files...${c0}\n" &&
-	cp -r -v other/CrOS/* ${CR_SRC_DIR}/ &&
 	cp -v other/CrOS/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"

@@ -19,6 +19,8 @@
 
 &#45; Update Flatpak directory.
 
+&#45; Re-add ffmpeg AC3/EAC3 patch.
+
 ### Notes to self
 
 ## .grd text replacements (search with grep), because there are a few places we want to tweak some strings.

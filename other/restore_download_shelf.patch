@@ -39,12 +39,18 @@ index 1a6eba9ee69db..d5ccfaad1d14c 100644
        <message name="IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING"
          desc="Message shown in the download shelf when a download contains sensitive content, and the admin has chosen to warn the user">
          Your organization's policies aren't met
-@@ -2527,6 +2543,9 @@ are declared in tools/grit/grit_args.gni.
+@@ -2527,6 +2543,15 @@ are declared in tools/grit/grit_args.gni.
        <message name="IDS_DOWNLOAD_NO_DOWNLOADS" desc="A message shown when the user has no downloads to show on chrome://downloads.">
          Files you download appear here
        </message>
++      <message name="IDS_ACCNAME_DOWNLOADS_BAR" desc="Accessible name for the downloads bar.">
++        Downloads bar
++      </message>
 +      <message name="IDS_DOWNLOAD_ITEM_DROPDOWN_BUTTON_ACCESSIBLE_TEXT" desc="Text for the dropdown button that opens the download item options menu">
 +        Options menu
++      </message>
++      <message name="IDS_SHOW_ALL_DOWNLOADS" desc="The text of the button which opens the full downloads page from the downloads bar.">
++        Show all downloads
 +      </message>
        <message name="IDS_DOWNLOAD_LINK_RESUME"
                 desc="In the download view, 'Resume' link text">

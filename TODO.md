@@ -21,6 +21,12 @@
 
 &#45; Re-add ffmpeg AC3/EAC3 patch.
 
+&#45; Convert *.sh scripts to *.py.
+
+&#45; Resolve issues raised on GitHub.
+
+&#45; Inspect M150 finished products and i18n workflow.
+
 ### Notes to self
 
 ## .grd text replacements (search with grep), because there are a few places we want to tweak some strings.

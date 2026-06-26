@@ -244,7 +244,6 @@ TEXT_SYNC_FILE_ROLES = frozenset(
     }
 )
 THORIUM_ADDED_FILE_ROLES = frozenset({"thorium_added_file"})
-THORIUM_ADDED_MESSAGE_CATEGORIES = frozenset({"overlay_added_message"})
 
 
 @dataclass(frozen=True)
@@ -326,6 +325,20 @@ class XtbTranslationConflict:
     rejected_block: str
 
 
+def _sample_values(values: Iterable[str], limit: int = 8) -> str:
+    unique = sorted(set(values))
+    sample = unique[:limit]
+    suffix = "" if len(unique) <= limit else f";...+{len(unique) - limit}"
+    return ";".join(sample) + suffix
+
+
+def xtb_locale_from_path(chromium_path: str) -> str:
+    """Best-effort locale extraction from Chromium XTB resource paths."""
+    filename = Path(chromium_path).name
+    match = re.search(r"_([A-Za-z-]+)\.xtb$", filename)
+    return match.group(1) if match else ""
+
+
 def readable_file(path: str) -> Path:
     resolved = Path(path).resolve()
     if not resolved.is_file():
@@ -403,21 +416,6 @@ def select_thorium_added_file_rows(
     ]
 
 
-def partition_message_allowlist_rows(
-    message_allowlist_rows: list[dict[str, str]],
-) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
-    """Separate upstream replacements from Thorium-added messages."""
-    replacement_rows: list[dict[str, str]] = []
-    added_rows: list[dict[str, str]] = []
-    for row in message_allowlist_rows:
-        category = row.get("allowlist_category", "").strip()
-        if category in THORIUM_ADDED_MESSAGE_CATEGORIES:
-            added_rows.append(row)
-        else:
-            replacement_rows.append(row)
-    return replacement_rows, added_rows
-
-
 def build_message_keys(
     rows: list[dict[str, str]],
 ) -> set[tuple[str, str]]:
@@ -475,14 +473,12 @@ def validate_feature_message_ownership(
         raise ValueError(f"added message ownership is unresolved: {formatted}")
 
 
-def build_message_allowlist(
-    message_allowlist_rows: list[dict[str, str]],
+def _build_message_allowlist_from_keys(
+    message_keys: Iterable[tuple[str, str]],
 ) -> dict[str, set[str]]:
-    """Map source-relative paths to allowlisted message IDs."""
+    """Map source-relative paths to message IDs from normalized keys."""
     allowlist: dict[str, set[str]] = {}
-    for row in message_allowlist_rows:
-        chromium_path = row.get("chromium_path", "").strip()
-        message_id = row.get("message_id", "").strip()
+    for chromium_path, message_id in message_keys:
         if not chromium_path or not message_id:
             continue
         allowlist.setdefault(chromium_path, set()).add(message_id)
@@ -555,6 +551,57 @@ def _apply_source_message_body_overrides(
     return body
 
 
+def build_branding_replacement_block(
+    message_id: str,
+    attrs: str,
+    body: str,
+    *,
+    apply_source_overrides: bool,
+) -> str:
+    """Build a replaced message block for standard branding sync."""
+    new_attrs = _replace_attr(attrs, DESC_RE)
+    new_attrs = _replace_attr(new_attrs, MEANING_RE)
+    new_body = _replace_message_body(body)
+    if apply_source_overrides:
+        new_body = _apply_source_message_body_overrides(
+            message_id,
+            new_body,
+        )
+    new_body = _apply_message_specific_body_exceptions(
+        message_id,
+        new_body,
+    )
+    return f'<message{new_attrs}>{new_body}</message>'
+
+
+def discover_auto_branding_message_keys(
+    source_contents: dict[str, str],
+    feature_message_keys: set[tuple[str, str]],
+) -> set[tuple[str, str]]:
+    """Find plain branding replacements in allowed source files.
+
+    Explicit special rows still live in message_allowlist.csv. Auto discovery
+    intentionally skips feature-owned messages, because those strings are owned
+    by the feature patch that introduces them.
+    """
+    message_keys: set[tuple[str, str]] = set()
+    for chromium_path, contents in source_contents.items():
+        for match in MESSAGE_RE.finditer(contents):
+            message_id = match.group(1)
+            key = (chromium_path, message_id)
+            if key in feature_message_keys:
+                continue
+            new_block = build_branding_replacement_block(
+                message_id,
+                match.group(2),
+                match.group(3),
+                apply_source_overrides=False,
+            )
+            if new_block != match.group(0):
+                message_keys.add(key)
+    return message_keys
+
+
 def _apply_translation_specific_replacements(
     message_id: str,
     body: str,
@@ -599,18 +646,12 @@ def apply_message_replacements(
                 return match.group(0)
             attrs = match.group(2)
             body = match.group(3)
-            new_attrs = _replace_attr(attrs, DESC_RE)
-            new_attrs = _replace_attr(new_attrs, MEANING_RE)
-            new_body = _replace_message_body(body)
-            new_body = _apply_source_message_body_overrides(
+            new_block = build_branding_replacement_block(
                 message_id,
-                new_body,
+                attrs,
+                body,
+                apply_source_overrides=True,
             )
-            new_body = _apply_message_specific_body_exceptions(
-                message_id,
-                new_body,
-            )
-            new_block = f'<message{new_attrs}>{new_body}</message>'
             old_block = match.group(0)
             if new_block != old_block:
                 changes.append(
@@ -904,45 +945,92 @@ def insert_new_translations(
     return updated_contents, conflicts
 
 
-def write_xtb_conflict_report(
+def write_xtb_conflict_summary_report(
     conflicts: list[XtbTranslationConflict],
     output_path: Path,
 ) -> None:
-    """Write converged-ID translation conflicts as an auditable TSV."""
+    """Write a compact summary of converged-ID translation conflicts."""
+    grouped: dict[tuple[str, str, str, str, str], list[XtbTranslationConflict]] = {}
+    for conflict in conflicts:
+        key = (
+            conflict.new_translation_id,
+            conflict.selected_message_id,
+            conflict.selected_old_translation_id,
+            conflict.rejected_message_id,
+            conflict.rejected_old_translation_id,
+        )
+        grouped.setdefault(key, []).append(conflict)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8", newline="") as report_file:
         writer = csv.writer(report_file, delimiter="\t", lineterminator="\n")
         writer.writerow(
             [
-                "chromium_path",
                 "new_translation_id",
                 "selected_message_id",
                 "selected_old_translation_id",
-                "selected_block",
                 "rejected_message_id",
                 "rejected_old_translation_id",
-                "rejected_block",
+                "conflict_count",
+                "affected_locale_count",
+                "sample_locales",
+                "sample_chromium_paths",
+                "sample_selected_block",
+                "sample_rejected_block",
+                "risk",
             ]
         )
-        for conflict in conflicts:
+        for (
+            new_translation_id,
+            selected_message_id,
+            selected_old_translation_id,
+            rejected_message_id,
+            rejected_old_translation_id,
+        ), items in sorted(grouped.items()):
+            locales = [
+                locale
+                for locale in (xtb_locale_from_path(item.chromium_path) for item in items)
+                if locale
+            ]
+            risk = (
+                "review_different_message_ids"
+                if selected_message_id != rejected_message_id
+                else "low_same_message_converged_ids"
+            )
             writer.writerow(
                 [
-                    conflict.chromium_path,
-                    conflict.new_translation_id,
-                    conflict.selected_message_id,
-                    conflict.selected_old_translation_id,
-                    conflict.selected_block,
-                    conflict.rejected_message_id,
-                    conflict.rejected_old_translation_id,
-                    conflict.rejected_block,
+                    new_translation_id,
+                    selected_message_id,
+                    selected_old_translation_id,
+                    rejected_message_id,
+                    rejected_old_translation_id,
+                    str(len(items)),
+                    str(len(set(locales))),
+                    _sample_values(locales),
+                    _sample_values(item.chromium_path for item in items),
+                    items[0].selected_block,
+                    items[0].rejected_block,
+                    risk,
                 ]
             )
 
 
-def write_xtb_missing_report(
+def write_xtb_missing_summary_report(
     missing: list[XtbTranslationMissing],
     output_path: Path,
 ) -> None:
-    """Write missing old-ID lookups as an auditable TSV."""
+    """Write a compact summary of missing old-ID translation lookups."""
+    grouped: dict[tuple[str, str, str, str], list[XtbTranslationMissing]] = {}
+    for item in missing:
+        key = (
+            item.source_chromium_path,
+            item.message_id,
+            item.old_translation_id,
+            item.new_translation_id,
+        )
+        grouped.setdefault(key, []).append(item)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8", newline="") as report_file:
         writer = csv.writer(report_file, delimiter="\t", lineterminator="\n")
         writer.writerow(
@@ -951,64 +1039,32 @@ def write_xtb_missing_report(
                 "message_id",
                 "old_translation_id",
                 "new_translation_id",
-                "lang",
-                "xtb_chromium_path",
+                "missing_locale_count",
+                "sample_locales",
+                "sample_xtb_paths",
+                "strategy",
+                "risk",
             ]
         )
-        for item in missing:
+        for (
+            source_chromium_path,
+            message_id,
+            old_translation_id,
+            new_translation_id,
+        ), items in sorted(grouped.items()):
+            locales = [item.lang for item in items if item.lang]
+            risk = "review_many_missing_locales" if len(set(locales)) >= 40 else "low"
             writer.writerow(
                 [
-                    item.source_chromium_path,
-                    item.message_id,
-                    item.old_translation_id,
-                    item.new_translation_id,
-                    item.lang,
-                    item.xtb_chromium_path,
-                ]
-            )
-
-
-def write_thorium_added_report(
-    added_file_rows: list[dict[str, str]],
-    added_message_rows: list[dict[str, str]],
-    output_path: Path,
-) -> None:
-    """Write strings routed away from the upstream replacement workflow."""
-    with output_path.open("w", encoding="utf-8", newline="") as report_file:
-        writer = csv.writer(report_file, delimiter="\t", lineterminator="\n")
-        writer.writerow(
-            [
-                "record_type",
-                "chromium_path",
-                "message_id",
-                "classification",
-                "translation_strategy",
-                "source",
-                "notes",
-            ]
-        )
-        for row in added_file_rows:
-            writer.writerow(
-                [
-                    "file",
-                    row.get("chromium_path", ""),
-                    "",
-                    row.get("role", ""),
-                    "keep_as_overlay_or_dedicated_patch",
-                    "overlay",
-                    row.get("notes", ""),
-                ]
-            )
-        for row in added_message_rows:
-            writer.writerow(
-                [
-                    "message",
-                    row.get("chromium_path", ""),
-                    row.get("message_id", ""),
-                    row.get("allowlist_category", ""),
-                    row.get("translation_required", ""),
-                    row.get("source", ""),
-                    row.get("notes", ""),
+                    source_chromium_path,
+                    message_id,
+                    old_translation_id,
+                    new_translation_id,
+                    str(len(set(locales))),
+                    _sample_values(locales),
+                    _sample_values(item.xtb_chromium_path for item in items),
+                    "missing_old_id_no_translation_inserted",
+                    risk,
                 ]
             )
 
@@ -1081,12 +1137,6 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="CSV file listing message IDs allowed for processing.",
     )
     parser.add_argument(
-        "--skiplist",
-        type=readable_file,
-        default=None,
-        help="Optional CSV file listing message IDs to skip.",
-    )
-    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Report planned changes without modifying files.",
@@ -1095,19 +1145,13 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--xtb-conflict-report",
         type=Path,
         default=None,
-        help="Optional TSV path for converged new-ID translation conflicts.",
+        help="Optional TSV path for summarized converged new-ID conflicts.",
     )
     parser.add_argument(
         "--xtb-missing-report",
         type=Path,
         default=None,
-        help="Optional TSV path for mapped XTB files missing an old ID.",
-    )
-    parser.add_argument(
-        "--thorium-added-report",
-        type=Path,
-        default=None,
-        help="Optional TSV path for Thorium-added files and messages.",
+        help="Optional TSV path for summarized missing old-ID lookups.",
     )
     parser.add_argument(
         "--feature-message-ownership",
@@ -1139,8 +1183,6 @@ def main() -> int:
             "translation_required",
         },
     )
-    if args.skiplist is not None:
-        load_csv_rows(args.skiplist)
     feature_message_ownership_path = args.feature_message_ownership
     if feature_message_ownership_path is None:
         feature_message_ownership_path = (
@@ -1165,11 +1207,8 @@ def main() -> int:
 
     text_sync_file_rows = select_text_sync_file_rows(file_allowlist_rows)
     added_file_rows = select_thorium_added_file_rows(file_allowlist_rows)
-    replacement_message_rows, added_message_rows = partition_message_allowlist_rows(
-        message_allowlist_rows
-    )
     validate_feature_messages_excluded(
-        replacement_message_rows,
+        message_allowlist_rows,
         feature_message_rows,
     )
     if not text_sync_file_rows:
@@ -1178,7 +1217,15 @@ def main() -> int:
         args.source_root,
         text_sync_file_rows,
     )
-    message_allowlist = build_message_allowlist(replacement_message_rows)
+    explicit_message_keys = build_message_keys(message_allowlist_rows)
+    feature_message_keys = build_message_keys(feature_message_rows)
+    auto_branding_message_keys = discover_auto_branding_message_keys(
+        source_contents,
+        feature_message_keys,
+    )
+    message_allowlist = _build_message_allowlist_from_keys(
+        auto_branding_message_keys | explicit_message_keys
+    )
     updated_contents, changes = apply_message_replacements(
         source_contents,
         message_allowlist,
@@ -1209,17 +1256,11 @@ def main() -> int:
         xtb_cache,
     )
     if args.xtb_conflict_report is not None:
-        write_xtb_conflict_report(xtb_conflicts, args.xtb_conflict_report)
+        write_xtb_conflict_summary_report(xtb_conflicts, args.xtb_conflict_report)
     if args.xtb_missing_report is not None:
-        write_xtb_missing_report(
+        write_xtb_missing_summary_report(
             missing_old_translations,
             args.xtb_missing_report,
-        )
-    if args.thorium_added_report is not None:
-        write_thorium_added_report(
-            added_file_rows,
-            added_message_rows,
-            args.thorium_added_report,
         )
     if xtb_conflicts:
         print(
@@ -1227,12 +1268,11 @@ def main() -> int:
             f"{len(xtb_conflicts)} converged XTB conflicts",
             file=sys.stderr,
         )
-    if added_file_rows or added_message_rows:
+    if added_file_rows:
         print(
             "info: routed "
-            f"{len(added_file_rows)} Thorium-added files and "
-            f"{len(added_message_rows)} Thorium-added messages to the "
-            "separate additions workflow",
+            f"{len(added_file_rows)} Thorium-added files to the separate "
+            "additions workflow",
             file=sys.stderr,
         )
     if missing_old_translations:

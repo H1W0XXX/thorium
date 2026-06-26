@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Alex313031 and gz83.
 """Check or apply the Thorium patch series."""
-
-from __future__ import annotations
 
 import argparse
 import dataclasses
@@ -170,10 +169,11 @@ def main(argv: list[str]) -> int:
         help="Chromium source tree. Defaults to CR_DIR, CR_SRC_DIR, CHROMIUM_SRC, or CHROMIUM_SRC_DIR; then falls back to C:\\src\\chromium\\src on Windows or ~/chromium/src elsewhere.",
     )
     parser.add_argument("--series", type=Path, default=default_root / "patch_scripts" / "series" / "series")
-    parser.add_argument("--condition", action="append", default=[], help="Enable a conditional entry, e.g. raspi or sse2.")
+    parser.add_argument("--condition", action="append", default=[], help="Enable one conditional entry, e.g. raspi or sse2.")
     parser.add_argument("--apply", action="store_true", help="Apply patches with git apply --reject.")
-    parser.add_argument("--check", action="store_true", help="Only run git apply --check. This is the default.")
     args = parser.parse_args(argv)
+    if len(args.condition) > 1:
+        parser.error("only one --condition value is supported per run")
 
     thorium_root = args.thorium_root.resolve()
     source_tree = (args.source_tree or default_source_tree()).resolve()

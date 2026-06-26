@@ -30,19 +30,18 @@ third_party/ffmpeg: other/ffmpeg-branding.patch
 Windows:
 
 ```powershell
-py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src --check
+py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src
 ```
 
 Linux/macOS:
 
 ```sh
-python3 patch_scripts/series/apply_series.py --source-tree /path/to/chromium/src --check
+python3 patch_scripts/series/apply_series.py --source-tree /path/to/chromium/src
 ```
 
-`--check` is the default mode. It validates ordered patch dependencies by
-applying each patch cumulatively to temporary Git indexes with
-`git apply --cached`. This does not modify the Chromium worktree or its real
-index.
+Check mode is the default. It validates ordered patch dependencies by applying
+each patch cumulatively to temporary Git indexes with `git apply --cached`.
+This does not modify the Chromium worktree or its real index.
 
 If `--source-tree` is omitted, the runner follows the same convention as
 Thorium's setup scripts:
@@ -65,28 +64,17 @@ Conditional entries are skipped unless explicitly enabled:
 Windows:
 
 ```powershell
-py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src --check --condition sse2
+py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src --condition sse2
 ```
 
 Linux/macOS:
 
 ```sh
-python3 patch_scripts/series/apply_series.py --source-tree /path/to/chromium/src --check --condition sse2
+python3 patch_scripts/series/apply_series.py --source-tree /path/to/chromium/src --condition sse2
 ```
 
-Multiple conditions can be supplied, for example:
-
-Windows:
-
-```powershell
-py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src --check --condition sse2 --condition raspi
-```
-
-Linux/macOS:
-
-```sh
-python3 patch_scripts/series/apply_series.py --source-tree /path/to/chromium/src --check --condition sse2 --condition raspi
-```
+Only one condition is supported per run. Conditions represent mutually
+exclusive build variants such as `sse2` or `raspi`.
 
 ## Apply
 

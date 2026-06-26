@@ -98,64 +98,6 @@ def group_inventory(
     return dict(grouped)
 
 
-def parse_translation_blocks(text: str, source_name: str) -> list[XtbAddition]:
-    """Parse and validate complete translation blocks from an add file."""
-    additions: list[XtbAddition] = []
-    seen_ids: set[str] = set()
-    cursor = 0
-    for match in TRANSLATION_RE.finditer(text):
-        if text[cursor : match.start()].strip():
-            raise ValueError(
-                f"unexpected content outside translation blocks in {source_name}"
-            )
-        translation_id = match.group(1)
-        if translation_id in seen_ids:
-            raise ValueError(
-                f"duplicate translation ID {translation_id} in {source_name}"
-            )
-        seen_ids.add(translation_id)
-        additions.append(
-            XtbAddition(
-                translation_id=translation_id,
-                block=match.group(0),
-            )
-        )
-        cursor = match.end()
-    if text[cursor:].strip():
-        raise ValueError(
-            f"unexpected content outside translation blocks in {source_name}"
-        )
-    if not additions:
-        raise ValueError(f"no translation blocks in {source_name}")
-    return additions
-
-
-def target_path_for_addition(additions_root: Path, add_path: Path) -> str:
-    """Return the Chromium-relative XTB target for one `.xtb.add` file."""
-    relative_path = add_path.relative_to(additions_root).as_posix()
-    if not relative_path.endswith(".xtb.add"):
-        raise ValueError(f"not an XTB addition file: {relative_path}")
-    return relative_path.removesuffix(".add")
-
-
-def discover_addition_files(additions_root: Path) -> list[Path]:
-    """Find all mirrored XTB addition files in stable path order."""
-    return sorted(additions_root.rglob("*.xtb.add"))
-
-
-def group_addition_files(additions_root: Path) -> list[tuple[str, list[XtbAddition]]]:
-    """Load mirrored `.xtb.add` files in stable target path order."""
-    grouped: list[tuple[str, list[XtbAddition]]] = []
-    for add_path in discover_addition_files(additions_root):
-        target_path = target_path_for_addition(additions_root, add_path)
-        additions = parse_translation_blocks(
-            add_path.read_text(encoding="utf-8"),
-            add_path.as_posix(),
-        )
-        grouped.append((target_path, additions))
-    return grouped
-
-
 def merge_additions_into_text(
     target_text: str,
     additions: list[XtbAddition],
@@ -250,16 +192,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
         type=readable_directory,
         help="Chromium source root containing the target XTB files.",
     )
-    source_group = parser.add_mutually_exclusive_group()
-    source_group.add_argument(
+    parser.add_argument(
         "--inventory",
         type=readable_file,
         help="Normalized TSV inventory; defaults to the reviewed M150 inventory.",
-    )
-    source_group.add_argument(
-        "--additions-root",
-        type=readable_directory,
-        help="Optional directory of generated mirrored `.xtb.add` files.",
     )
     parser.add_argument(
         "--dry-run",
@@ -271,17 +207,14 @@ def build_arg_parser() -> argparse.ArgumentParser:
 
 def main() -> int:
     args = build_arg_parser().parse_args()
-    if args.additions_root is not None:
-        additions_by_target = group_addition_files(args.additions_root)
-    else:
-        inventory = args.inventory or (
-            Path(__file__).resolve().parent / "config/m150_xtb_additions.tsv"
-        )
-        inventory_groups = group_inventory(load_inventory(inventory))
-        additions_by_target = [
-            (target_path, additions)
-            for target_path, additions in sorted(inventory_groups.items())
-        ]
+    inventory = args.inventory or (
+        Path(__file__).resolve().parent / "config/m150_xtb_additions.tsv"
+    )
+    inventory_groups = group_inventory(load_inventory(inventory))
+    additions_by_target = [
+        (target_path, additions)
+        for target_path, additions in sorted(inventory_groups.items())
+    ]
     results = build_merge_results(args.chromium_root, additions_by_target)
     total_additions = sum(result.addition_count for result in results)
     inserted_count = sum(result.inserted_count for result in results)

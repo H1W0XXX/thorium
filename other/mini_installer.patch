@@ -1525,7 +1525,7 @@ diff --git a/chrome/installer/util/util_constants.h b/chrome/installer/util/util
 index ce173b497ab46..6d6b6d6514ebc 100644
 --- a/chrome/installer/util/util_constants.h
 +++ b/chrome/installer/util/util_constants.h
-@@ -203,6 +203,7 @@ extern const char kUncompressedArchive[];
+@@ -203,5 +203,6 @@ extern const char kUncompressedArchive[];
  extern const char kUninstall[];
  extern const char kUpdateSetupExe[];
  extern const char kVerboseLogging[];

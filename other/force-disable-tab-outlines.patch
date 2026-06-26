@@ -1,11 +1,8 @@
-diff --git a/chrome/browser/ui/views/tabs/tab_strip.cc b/chrome/browser/ui/views/tabs/tab_strip.cc
-index b90c536bbf25a1eb2635431453f104d4b36e2d32..202866d75a82b2795f321eb840361d5ab6fa282b 100644
---- a/chrome/browser/ui/views/tabs/tab_strip.cc
-+++ b/chrome/browser/ui/views/tabs/tab_strip.cc
-@@ -1388,8 +1388,17 @@ void TabStrip::OnSplitContentsChanged(const std::vector<int>& split_indices) {
- }
- 
- bool TabStrip::ShouldDrawStrokes() const {
+diff --git a/chrome/browser/ui/views/frame/browser_view.cc b/chrome/browser/ui/views/frame/browser_view.cc
+index 70554a9e2a20b..12a3f1fdfd93c 100644
+--- a/chrome/browser/ui/views/frame/browser_view.cc
++++ b/chrome/browser/ui/views/frame/browser_view.cc
+@@ -1301,5 +1301,14 @@ bool BrowserView::ShouldDrawTabStrokes() const {
 +  // Don't want to have to run a full feature query every time this function is
 +  // called.
 +  static const bool force_disable_tab_outlines =
@@ -20,18 +17,19 @@ index b90c536bbf25a1eb2635431453f104d4b36e2d32..202866d75a82b2795f321eb840361d5a
 +  }
  #else   // BUILDFLAG(IS_CHROMEOS)
  
-   // If the controller says we can't draw strokes, don't.
-@@ -1408,7 +1417,7 @@ bool TabStrip::ShouldDrawStrokes() const {
-   // The Tabstrip in the refreshed style does not meet the contrast ratio
-   // requirements listed below but does not have strokes for Tabs or the bottom
-   // border.
--  if (!using_system_theme) {
-+  if (!using_system_theme && force_disable_tab_outlines) {
-     return false;
+   if (browser()->app_controller() &&
+@@ -1325,8 +1334,8 @@ bool BrowserView::ShouldDrawTabStrokes() const {
+         theme_service->IsSystemThemeDistinctFromDefaultTheme() &&
+         theme_service->UsingSystemTheme();
    }
  
-@@ -1425,7 +1434,14 @@ bool TabStrip::ShouldDrawStrokes() const {
-       controller_->GetFrameColor(BrowserFrameActiveState::kActive);
+-  if (!using_system_theme) {
++  if (!using_system_theme && force_disable_tab_outlines) {
+     // Strokes are only supported for system themes.
+     return false;
+   }
+@@ -1340,6 +1349,13 @@ bool BrowserView::ShouldDrawTabStrokes() const {
+       GetFrameView()->GetFrameColor(BrowserFrameActiveState::kActive);
    const float contrast_ratio =
        color_utils::GetContrastRatio(background_color, frame_color);
 -  return contrast_ratio < kMinimumContrastRatioForOutlines;
@@ -43,6 +41,5 @@ index b90c536bbf25a1eb2635431453f104d4b36e2d32..202866d75a82b2795f321eb840361d5a
 +    return true;
 +  }
 +  return false;
- #endif  // BUILDFLAG(IS_CHROMEOS)
+ #endif  // !BUILDFLAG(IS_CHROMEOS)
  }
- 

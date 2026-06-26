@@ -1,280 +1,206 @@
-<img src="https://github.com/Alex313031/thorium/blob/main/logos/STAGING/Thorium90_504.jpg" width="200">
+﻿<img src="https://github.com/Alex313031/thorium/blob/main/logos/STAGING/Thorium90_504.jpg" width="200">
 
 ## List of patches/changes/features included in Thorium <img src="https://raw.githubusercontent.com/Alex313031/thorium/main/logos/NEW/patches.png" width="32">
 
-Compiler modifications include SSE4.2, AVX, AES, and CFLAGS, LTO flags, and import_instr_limit flags set to /03, 3, and 30, respectively. \
-NEW > Added some LLVM LOOP optimizations as -mllvm flags. See here > https://github.com/RobRich999/Chromium_Clang/issues/26#issuecomment-976883814
-
-FTP Support - Thorium is the only current browser that still supports [ftp:// sites](https://github.com/pegvin/w64devkit-extended/blob/13ea4c213e89db20ccd74a32763b31a85052cdb6/.github/workflows/build.yml).
-See [the patch](../patches/ftp-support-thorium.patch) I use. See https://www.vogons.org/viewtopic.php?t=66653 for fun FTP sites.
-
-.desktop files are created for Thorium itself and content-shell (named thorium-shell).
-
-There are also additional desktop actions: when right clicking the Thorium launcher it gives three additional desktop actions, one to open thorium-shell, another to open in Safe Mode which disables any flags one has set in chrome://flags until the next launch, and lastly to open in Dark Mode which appends the --force-dark-mode flag.
-
-Ink > https://chromium.googlesource.com/chromium/src/third_party/+/c4f7a938fcdc796ad9fead3ab01e0508c129b831/ink NOTE: Disabled for now due to bugs!
-  - Implemented with the args.gn flag "enable_ink = true" Adds PDF annotation features present in CrOS.
-
-MPEG-DASH > https://en.wikipedia.org/wiki/Dynamic_Adaptive_Streaming_over_HTTP
-  - Implemented via the args.gn flags "enable_hls_demuxer = true" and "enable_mse_mpeg2ts_stream_parser = true"
-
-Enable Live Caption (SODA) on all builds Patch
-  - Made by me.
-
-Enable AutoPlay of WebAudio, when AutoPlay is normally disallowed
-  - Made by me.
-
-Reversion of some Chrome Refresh 2023 UI elements (most notably the restoration of the tab search button to the right side of the tabstrip)
-  - Made by me.
-
- REMOVED ~~V8 Font Rendering Patch > https://github.com/saiarcot895/chromium-ubuntu-build/blob/master/debian/patches/fix-font-rendering.patch~~
-  - Fixes font rendering in certain instances.
-
-VAAPI Patch > https://github.com/saiarcot895/chromium-ubuntu-build/blob/master/debian/patches/enable-vaapi-on-linux.diff
-  - Modified by me.
-
- REMOVED ~~VAAPI on Wayland Patch > https://github.com/ungoogled-software/ungoogled-chromium-archlinux/blob/master/ozone-add-va-api-support-to-wayland.patch~~
-  - From Arch AUR ~~
-
-Use default search icon instead of search engine icon in omnibox patch > https://github.com/ungoogled-software/contrib/blob/master/tweaks/visual/default-search-icon.patch
-
-Intel HD Support Patch > https://github.com/saiarcot895/chromium-ubuntu-build/blob/master/debian/patches/ihd-support.patch
-
-Nicer Native Notifications Patch > https://github.com/saiarcot895/chromium-ubuntu-build/blob/master/debian/patches/notifications-nicer
-
-Enable Quiet Notifications Patch > https://github.com/Alex313031/thorium/blob/main/src/chrome/browser/permissions/quiet_notification_permission_ui_state.cc
-  - Made by me.
-
-Title Bar Patch > https://github.com/saiarcot895/chromium-ubuntu-build/blob/master/debian/patches/title-bar-default-system.patch-v35
-
-REMOVED ~~VDPAU Patch > https://github.com/saiarcot895/chromium-ubuntu-build/blob/master/debian/patches/vdpau-support.patch~~
-  - Modified by me.
-
-Audio Sandbox Patch > https://github.com/saiarcot895/chromium-ubuntu-build/blob/master/debian/patches/fix-audio-sandbox.patch
-
-DNS Over HTTPS (DoH) Secure Mode Patch > https://github.com/uazo/cromite/blob/master/build/patches/DoH-improvements.patch
-  - Made by uazo
-
-DNS Over HTTPS (DoH) Bare Minimum HTTP Headers Patch > https://github.com/uazo/cromite/blob/master/build/patches/Reduce-HTTP-headers-in-DoH-requests-to-bare-minimum.patch
-  - Made by uazo
-
-Disable Captive Portals Detection > https://github.com/uazo/cromite/blob/master/build/patches/Remove-detection-of-captive-portals.patch
-  - Made by uazo
-
-Enable Do Not Track By Default Patch > https://github.com/GrapheneOS/Vanadium/blob/main/patches/0045-enable-dubious-Do-Not-Track-feature-by-default.patch
-
-Enable Fingerprinting Protection Patch
-  - Made by me.
-
-Show full URLs by Default Patch > https://github.com/Alex313031/thorium/blob/74219f27911e133483c3ab85c70ba4360ea98423/src/chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.cc#L292
-  - Made by me.
-
-Disable Privacy Sandbox (previously known as FLOC) Patch > https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/core/ungoogled-chromium/disable-privacy-sandbox.patch
-  - Modified from UnGoogled patch
-
-Disable Google API Key Warning Infobar Patch > https://github.com/Eloston/ungoogled-chromium/blob/master/patches/extra/debian/disable/google-api-warning.patch & https://github.com/Eloston/ungoogled-chromium/blob/master/patches/extra/inox-patchset/0013-disable-missing-key-warning.patch
-  - Modified by me.
-
-Disable Default Browser Infobar Patch
-  - Made by me.
-
-Always Lazy Load Advertisement iFrames
-  - Made by me.
-
-Search Engines Patch > https://github.com/saiarcot895/chromium-ubuntu-build/blob/master/debian/patches/additional-search-engines.patch
-  - Modified by me. Adds DuckDuckGo, Brave Search, Ecosia, Ask, and Yandex, with DuckDuckGo being set to "canonical" so that canonical gets a small amount of money when using it.
-
-Always use the local NTP (New Tab Page) Patch > https://github.com/GrapheneOS/Vanadium/blob/main/patches/0052-always-use-local-new-tab-page.patch
-
-Chromium Sandbox Patch (enables PIE) > https://github.com/Eloston/ungoogled-chromium/blob/master/patches/extra/inox-patchset/0016-chromium-sandbox-pie.patch
-  - Increases security for the chrome-sandbox executable.
-
-Fix Distilled Page Icons Patch > https://github.com/Eloston/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/fix-distilled-icons.patch#L6
-  - Fixes some issues with material design icons.
-
-Enable Menu UI on Reload Button > https://github.com/Eloston/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/enable-menu-on-reload-button.patch
-  - Adds new right click menu to the reload button.
-
-Show Home Button by Default Patch
-  - Made by me.
-
-Prefetch Privacy enabled by Default Patch > https://github.com/Eloston/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/enable-default-prefetch-privacy-changes.patch
-
-GN Respect number of --jobs patch > https://github.com/Eloston/ungoogled-chromium/blob/master/patches/extra/debian/gn/parallel.patch
-  - Useful when building.
-
-V8 SEGV Patch > https://github.com/FydeOS/chromium_os-raspberry_pi/blob/84ad1a83388bd57a9f1bc318c3057b10eb3101d2/project-cros-pi/chromeos-base/chromeos-chrome/files/patches/001-workaround-for-v8-SEGV-issue.patch
-  - Modified by me.
-
-Disable Vulkan GPU Log warnings > https://github.com/RobRich999/Chromium_Clang/blob/e2af0594fb73b482864980551bc0ceb14a349986/Linux/linux64-avx.patch#L303
-  - Made by RobRich999
-
-Widevine CDM CU Patch > https://launchpad.net/ubuntu/bionic/+source/chromium-browser
-
-Enable Parallel Downloading by Default Patch
-  - Made by me.
-
-RPATH for libffmpeg.so Patch > https://github.com/saiarcot895/chromium-ubuntu-build/blob/master/debian/patches/set-rpath-on-chromium-executables.patch
-
-Always Show Component Extensions Patch > https://github.com/iridium-browser/iridium-browser/commit/f8e1b5f19862867b2736ca0a25f6979fcc2d7d71
-  - Modified by me.
-
-Increase default key length for newly-generated RSA keys from 1024 to 2048 Patch > https://github.com/iridium-browser/iridium-browser/commit/d016769081706d591188b5b2929c5fc2efd8ef20
-
-Enable UI Features: Side Search, Side Panel Journeys, Chrome Labs, Extensions Access Menu, Tab Hover Cards, WebUI Tab Strip, Drag and Drop Tabs on Wayland, Tab Groups Saving > https://github.com/Alex313031/thorium/blob/main/chrome/browser/ui/ui_features.cc
-  - Made by me.
-
-Tab Outlines in Low Contrast Themes, More Prominent Active Tab Title in Dark Mode: Restore after they removed it in M113 > 
-https://chromium-review.googlesource.com/c/chromium/src/+/4578380 
-https://chromium-review.googlesource.com/c/chromium/src/+/4578188 
-https://github.com/Alex313031/thorium/commit/17a3074d3f2cd32a05b71cdcb57942d5319845f0
- - Made by me.
-
-Disable History Expiration Patch > https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/add-flag-to-disable-local-history-expiration.patch
- - Modified by me.
-
-Toggle Tab Scrolling (for Non-Linux Platforms) Patch > https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/add-flag-to-scroll-tabs.patch
- - Modified by me.
-
-Enable Precompiling of Inline Scripts in HTML - https://github.com/Alex313031/thorium/commit/8d237b76adff2ab4e89147b18ee1d0ab7bb29fb6
-  - Modified by me.
-
-Patch Windows installer to close previous browser instance > https://github.com/Hibbiki/chromium-win64/blob/master/patch/0001-Patch-installer-to-close-previous-browser-instance-o.patch
-
-Disable the addition of the Google-Chrome sources.list in /etc/apt/sources.list.d/ during installation, and prevents apt from complaining about removing the nonexistent file during an apt remove --purge. - Created by me.
-
-Enable Dark Mode flag Patch
-  - Made by me.
-  
-Enable GTK Auto Dark Mode Patch - https://github.com/qcasey/chromium-patches/blob/main/patches/gtk-dark-mode-switch-fix.patch
-  - Modified by me. > https://github.com/Alex313031/thorium/issues/74#issuecomment-1270435944
-
-Disable AutoPlay flag Patch
-  - Made by me.
-
-Enable Saving pages from all Schemes Patch > https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/enable-page-saving-on-more-pages.patch
-
-Allow setting a custom NTP flag Patch > https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/add-flag-for-custom-ntp.patch
-
-Allow removing the Side Panel button flag Patch > https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/add-flag-to-hide-side-panel-button.patch
-
-Show/Hide Avatar Button Patch > https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/add-flag-to-show-avatar-button.patch
-
-Unexpire Flags by Default Patch > https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/keep-expired-flags.patch
-  - Modified by me.
-
-Disable Download Quarantine Patch > https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/disable-download-quarantine.patch
-
-Enable Reader Mode Patch - Made by me.
-
-Disable WebGL2, WebGL Anti-Aliasing Mode, WebGL MSAA Sample Count, and Native GPU Rasterization MSAA Sample Count chrome://flags Patches - Made by me.
-
-Number of Raster Threads chrome://flags Patch - Made by me.
-
-Enable Native UI Inspection in DevTools chrome://flags Patch - Made by me.
-
-Enable High Contrast mode Patch - Made by me.
-
-Enable Local File Accesses, Allow File URI Access from Files, and Disable Web Security chrome://flags Patches
-  - Made by me.
-
-Enable HEVC/H.265 Decoding Patch - https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/blob/main/add-hevc-ffmpeg-decoder-parser.patch
-  - Modified by me.
-
-Allow all HEVC Video Profiles to Play Patch - https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding/blob/main/remove-main-main10-profile-limit.patch
-
-Enable multi-threaded HEVC decoding - https://github.com/RobRich999/Chromium_Clang/blob/649f66dc041a72467c02d76e8d1fe00ee06d8276/Linux/linux64-avx.patch#L295
-  - Made by RobRich999
-
-Enable AC3 and EAC3 for HEVC Patch - https://github.com/Muril-o/electron-chromium-codecs/tree/main/v29.1.4
-  - Modified by midzer and me.
-  - https://github.com/Alex313031/thorium/commit/a2e49dd2fe00e4c6fa882a41e8a1a27f93bedfff AND
-  - https://github.com/Alex313031/thorium/commit/7d0b4f045ce0e16ea9edb05a4dc056a1d4583752#diff-09b3d55a8198fc42186bfd6bf5869fe78b8edad6f67e75b78228446f1d7cf66f
-
-Show the Apps button in Bookmarks Bar by Default Patch - Made by me. NOTE: Now only enabled in the legacy builds after M120.
-
-Add autocomplete for chrome://flags > https://github.com/bromite/bromite/blob/master/build/patches/Offer-builtin-autocomplete-for-chrome-flags.patch
-
-Disable fetching Field Trials/Variations Patch - https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/core/bromite/disable-fetching-field-trials.patch
-
-Enable double click to close tab flag - https://github.com/bigfoxtail/brave-core/commit/acec5efcbaa98722611f551712f051fb343af120
-  - Found by @gz83, modified by me.
-
-Enable disabling tab hover cards flag - https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/add-flag-for-tab-hover-cards.patch
-  - Credit to win32ss for alerting me to this patch.
-
-Enable close confirmation flag - https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/add-flag-for-close-confirmation.patch
-  - Modified by me.
-
-Disable window exit on closing last tab flag - https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/extra/ungoogled-chromium/add-flag-to-close-window-with-last-tab.patch
-  - Modified by me.
-
-Disable Download Bubble Flag > https://github.com/Alex313031/thorium/commit/e2ed50459d9f27e705ba9d3b6ae2106e260b5ac2
-  - Made by me.
-
-Allow Insecure Downloads > https://github.com/Alex313031/thorium/commit/333a2154d6066b1243a7a02d24001e166fd78002
-  - Made by me.
-
-Block annoying Promo Toasts > https://github.com/Alex313031/thorium/commit/2abe24c0db83c3cb5884535830036abe61953c46
-  - Made by me.
-
-CFI Ignores Patch - https://github.com/RobRich999/Chromium_Clang/blob/150e755bdb3f2c389ab3d485f38d62a36414e73a/Linux/linux64-avx.patch#L386
-  - Made by RobRich999
-
-Warn instead of Error on V8 PGO Profile Mismatch Patch - https://github.com/RobRich999/Chromium_Clang/blob/main/V8/v8.patch
-  - Made by RobRich999
-
-Enable Middle Click Autoscroll on ALL Platforms - https://github.com/Alex313031/thorium/issues/199
-  - Made by me.
-
-Patches to enable truly Portable usage > Disable Encryption and Machine ID
-  - https://github.com/ungoogled-software/ungoogled-chromium-windows/blob/master/patches/ungoogled-chromium/windows/windows-disable-encryption.patch
-  - https://github.com/ungoogled-software/ungoogled-chromium-windows/blob/master/patches/ungoogled-chromium/windows/windows-disable-machine-id.patch
- > Also added a patch by win32ss from Supermium to allow reversion of a portable profile back to a normal, encrypted one: 
-  - https://github.com/win32ss/supermium/commit/697055c2e65074bf50d30c58e124ddfe293c3f8c AND
-  - https://github.com/win32ss/supermium/commit/1e2e02118f5f014cb1761f6ae05e86ab4304f924
-
-Android Patches from Bromite:
-  - https://github.com/bromite/bromite/blob/master/build/patches/do-not-add-suffix-to-package-name.patch
-  - https://github.com/bromite/bromite/blob/master/build/patches/Enable-fwrapv-in-Clang-for-non-UBSan-builds.patch
- > TODO:
-  - https://github.com/bromite/bromite/blob/master/build/patches/Do-not-link-with-libatomic.patch
-  - https://github.com/bromite/bromite/blob/master/build/patches/Disable-media-router-and-remoting-by-default.patch
-  - https://github.com/bromite/bromite/blob/master/build/patches/Enable-darken-websites-checkbox-in-themes.patch
-  - https://github.com/bromite/bromite/blob/master/build/patches/Disable-feeds-support-by-default.patch
-  - https://github.com/bromite/bromite/blob/master/build/patches/Add-exit-menu-item.patch
-
-Installer patches to include unstripped and RPATH binaries, with chrome_sandbox (needed for older distros), chromedriver and content-shell being added along with an icon and .desktop file for content-shell.
-  - Created by me.
-
-Windows mini_installer GUI, with buttons and progress bar/error handling, instead of the silent, no GUI installer Chromium has.
-  - Created by me, see https://github.com/Alex313031/thorium/blob/main/other/mini_installer.patch
-
-Patches for mini_installer and abseil when using AVX on Windows. Credit goes to @RobRich999
-
-"Ctrl+Shift+Q" to close all windows (exit) "Ctrl+Shift+K" to open a new tab to the right "Ctrl+Shift+D" to duplicate the current tab "Ctrl+Shift+P" to pop out the current tab into a new window
-  - https://github.com/Alex313031/thorium/blob/main/src/chrome/browser/ui/views/accelerator_table.cc
-
-Use Super + Arrow Keys to manage Windows on ThoriumOS > https://github.com/Alex313031/thorium/blob/main/src/ash/public/cpp/accelerators.cc
-  - Made by me
-
-The Thorium .desktop file and content-shell .desktop file have flags added for experimental and useful features, namely: Disabling the Default Browser check and InfoBar, Experimental web platform features, and Experimental Canvas2D.
-  - Modified by me.
-
-Remove discovery module from NTP on Android
-  - Made by @gz83.
-
-Allow Manifest V2 extensions patch
-  - https://github.com/ungoogled-software/ungoogled-chromium/blob/master/patches/core/ungoogled-chromium/extensions-manifestv2.patch
-
-Android Extensions Support patch
-  - https://github.com/uazo/cromite/blob/master/build/patches/Experimental-support-for-extensions-on-Android.patch
-
-Chrome Web Store Protection patch
-  - https://github.com/uazo/cromite/blob/master/build/patches/Chrome-web-store-protection.patch
-
-Enable extensions in incognito patch
-  - https://github.com/uazo/cromite/blob/master/build/patches/Enable-extension-in-incognito.patch
-
-
-- Any other code/patches are written from scratch by me.
+# Thorium Patch Inventory
+
+This document tracks the current patch files under `other/`. The authoritative application order is `patch_scripts/series/series`; this page mirrors that series so reviewers can quickly audit which patches are active.
+
+All `other/**/*.patch` files are currently represented in the series. Conditional entries are applied only when the matching setup variant is selected.
+
+## Known Origins
+
+This table intentionally lists only patches with clear upstream, reference, or
+compliance-significant origins. Patches not listed here are Thorium-maintained,
+overlay-derived, or still need separate provenance review.
+
+| Patch | Origin / reference |
+| --- | --- |
+| [`add-hevc-ffmpeg-decoder-parser.patch`](../other/add-hevc-ffmpeg-decoder-parser.patch) | [StaZhu/enable-chromium-hevc-hardware-decoding](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding) HEVC FFmpeg decoder/parser patch |
+| [`enable-hevc-ffmpeg-decoding.patch`](../other/enable-hevc-ffmpeg-decoding.patch) | [StaZhu/enable-chromium-hevc-hardware-decoding](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding) Chromium-side HEVC enablement |
+| [`enable-mpeg2-ac3-eac3-decoding.patch`](../other/enable-mpeg2-ac3-eac3-decoding.patch) | MPEG2/AC3/EAC3 codec enablement derived from Chromium/Electron codec patch references, including [Muril-o/electron-chromium-codecs](https://github.com/Muril-o/electron-chromium-codecs); keep license review with FFmpeg changes |
+| [`ffmpeg-branding.patch`](../other/ffmpeg-branding.patch) | Thorium FFmpeg branding/config patch; relevant to bundled codec/license review |
+| [`widevine-cdm-support.patch`](../other/widevine-cdm-support.patch) | Widevine CDM support adapted from Chromium/Linux packaging references, including Ubuntu Chromium packaging |
+| [`widevine-cdm-host-verification.patch`](../other/widevine-cdm-host-verification.patch) | Thorium Widevine host verification behavior; relevant to bundled Widevine support |
+| [`linux-widevine-cdm-locations.patch`](../other/linux-widevine-cdm-locations.patch) | Raspberry Pi / Linux Widevine location compatibility |
+| [`raspi-netflix-chromeos-ua.patch`](../other/raspi-netflix-chromeos-ua.patch) | Raspberry Pi Netflix ChromeOS UA compatibility |
+| [`llvm-optimized-avx2-build.patch`](../other/llvm-optimized-avx2-build.patch) | [RobRich999/Chromium_Clang](https://github.com/RobRich999/Chromium_Clang) LLVM optimized AVX2 build script work |
+| [`disable-vulkan-gpu-log-warnings.patch`](../other/disable-vulkan-gpu-log-warnings.patch) | [RobRich999/Chromium_Clang](https://github.com/RobRich999/Chromium_Clang) Linux patch reference |
+| [`thorium-v8-simd-opts.patch`](../other/thorium-v8-simd-opts.patch) | Thorium SIMD/V8 optimization work, with historical FydeOS/Raspberry Pi V8 workaround references |
+| [`linux-disable-custom-titlebar-default.patch`](../other/linux-disable-custom-titlebar-default.patch) | [saiarcot895/chromium-ubuntu-build](https://github.com/saiarcot895/chromium-ubuntu-build) title-bar default system patch reference |
+| [`content-gpu-vaapi-libva-config.patch`](../other/content-gpu-vaapi-libva-config.patch) | Linux VAAPI/libva behavior adapted from Linux Chromium packaging patch references |
+| [`thorium-sandbox-compat.patch`](../other/thorium-sandbox-compat.patch) | Chromium sandbox compatibility; related to ungoogled/inox sandbox PIE patch family |
+| [`omnibox-search-engine-icon-branding.patch`](../other/omnibox-search-engine-icon-branding.patch) | [ungoogled-software/contrib](https://github.com/ungoogled-software/contrib) default search icon tweak |
+| [`secure-dns-defaults.patch`](../other/secure-dns-defaults.patch) | [uazo/Cromite](https://github.com/uazo/cromite) DoH improvements reference |
+| [`reduce-doh-request-headers.patch`](../other/reduce-doh-request-headers.patch) | [uazo/Cromite](https://github.com/uazo/cromite) reduce DoH request headers patch |
+| [`disable-privacy-sandbox.patch`](../other/disable-privacy-sandbox.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) core privacy sandbox disable patch |
+| [`disable-fetching-field-trials.patch`](../other/disable-fetching-field-trials.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) / Bromite disable field-trials fetching patch |
+| [`disable-encryption.patch`](../other/disable-encryption.patch) | [ungoogled-chromium-windows](https://github.com/ungoogled-software/ungoogled-chromium-windows) portable encryption/machine-id patches plus Supermium portable-profile reversion commits |
+| [`enable-saving-pages-from-all-schemes.patch`](../other/enable-saving-pages-from-all-schemes.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) enable page saving on more schemes patch |
+| [`add-flag-for-close-confirmation.patch`](../other/add-flag-for-close-confirmation.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) close confirmation flag patch |
+| [`add-flag-to-close-window-with-last-tab.patch`](../other/add-flag-to-close-window-with-last-tab.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) close-window-with-last-tab flag patch, adapted to Thorium behavior |
+| [`add-flag-to-scroll-tabs.patch`](../other/add-flag-to-scroll-tabs.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) scroll-tabs flag patch |
+| [`add-flag-for-custom-ntp.patch`](../other/add-flag-for-custom-ntp.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) custom NTP flag patch |
+| [`add-flag-for-tab-hover-cards.patch`](../other/add-flag-for-tab-hover-cards.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) tab hover cards flag patch |
+| [`add-flag-to-keep-all-history.patch`](../other/add-flag-to-keep-all-history.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) disable local history expiration flag patch |
+| [`disable-download-quarantine.patch`](../other/disable-download-quarantine.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) disable download quarantine patch |
+| [`keep-expired-flags.patch`](../other/keep-expired-flags.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) keep expired flags patch |
+| [`allow_manifest_v2_extensions.patch`](../other/allow_manifest_v2_extensions.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) Manifest V2 extension support patch |
+| [`android-extensions-support.patch`](../other/android-extensions-support.patch) | [uazo/Cromite](https://github.com/uazo/cromite) experimental Android extensions support patch |
+| [`chrome-web-store-protection.patch`](../other/chrome-web-store-protection.patch) | [uazo/Cromite](https://github.com/uazo/cromite) Chrome Web Store protection patch |
+| [`enable-extension-in-incognito.patch`](../other/enable-extension-in-incognito.patch) | [uazo/Cromite](https://github.com/uazo/cromite) enable extension in incognito patch |
+| [`GPC.patch`](../other/GPC.patch) | Global Privacy Control behavior adapted from privacy-focused Chromium patch references |
+| [`mini_installer.patch`](../other/mini_installer.patch) | Thorium Windows mini_installer GUI patch; related installer-close-instance behavior references from Hibbiki Chromium builds |
+
+## Series Patches
+
+
+### 05 - Child repositories and generated third_party data.
+
+- [`add-hevc-ffmpeg-decoder-parser.patch`](../other/add-hevc-ffmpeg-decoder-parser.patch) (apply root: `third_party/ffmpeg`)
+- [`change-libavcodec-header.patch`](../other/change-libavcodec-header.patch) (apply root: `third_party/ffmpeg`)
+- [`fix-ffmpeg-android-x86-disable-hevc-nasm.patch`](../other/fix-ffmpeg-android-x86-disable-hevc-nasm.patch) (apply root: `third_party/ffmpeg`)
+- [`ffmpeg-branding.patch`](../other/ffmpeg-branding.patch) (apply root: `third_party/ffmpeg`)
+- [`widevine-cdm-support.patch`](../other/widevine-cdm-support.patch) (apply root: `third_party/widevine`)
+- [`thorium-search-engines-data.patch`](../other/thorium-search-engines-data.patch) (apply root: `third_party/search_engines_data/resources`)
+- [`libyuv-arm-simd-compat.patch`](../other/libyuv-arm-simd-compat.patch) (apply root: `third_party/libyuv`)
+- [`thorium-v8-simd-opts.patch`](../other/thorium-v8-simd-opts.patch) (apply root: `v8`)
+- [`angle-lockfree.patch`](../other/SSE2/angle-lockfree.patch) (apply root: `third_party/angle/src`; condition: `sse2`)
+
+### 10 - Media, codecs, and third_party-facing browser glue.
+
+- [`enable-hevc-ffmpeg-decoding.patch`](../other/enable-hevc-ffmpeg-decoding.patch)
+- [`enable-webrtc-h265-l1t2-l1t3-by-default.patch`](../other/enable-webrtc-h265-l1t2-l1t3-by-default.patch)
+- [`enable-mpeg2-ac3-eac3-decoding.patch`](../other/enable-mpeg2-ac3-eac3-decoding.patch)
+- [`thorium-media-switches.patch`](../other/thorium-media-switches.patch)
+- [`widevine-cdm-host-verification.patch`](../other/widevine-cdm-host-verification.patch)
+
+### 20 - Identity, API keys, resources, and branding.
+
+- [`thorium-default-api-keys.patch`](../other/thorium-default-api-keys.patch)
+- [`disable-fetching-field-trials.patch`](../other/disable-fetching-field-trials.patch)
+- [`thorium-blink-feature-defaults.patch`](../other/thorium-blink-feature-defaults.patch)
+- [`allow-webaudio-autoplay.patch`](../other/allow-webaudio-autoplay.patch)
+- [`enable-saving-pages-from-all-schemes.patch`](../other/enable-saving-pages-from-all-schemes.patch)
+- [`content-gpu-vaapi-libva-config.patch`](../other/content-gpu-vaapi-libva-config.patch)
+- [`thorium-content-shell-branding.patch`](../other/thorium-content-shell-branding.patch)
+- [`thorium-common-branding-paths.patch`](../other/thorium-common-branding-paths.patch)
+- [`android-thorium-branding.patch`](../other/android-thorium-branding.patch)
+- [`thorium-startup-logging.patch`](../other/thorium-startup-logging.patch)
+- [`thorium-app-metadata-branding.patch`](../other/thorium-app-metadata-branding.patch)
+- [`thorium-theme-resources.patch`](../other/thorium-theme-resources.patch)
+- [`thorium-app-vector-icons.patch`](../other/thorium-app-vector-icons.patch)
+- [`thorium-app-grd-registration.patch`](../other/thorium-app-grd-registration.patch)
+- [`default-apps-ublock-origin.patch`](../other/default-apps-ublock-origin.patch)
+- [`bookmark-default-prefs.patch`](../other/bookmark-default-prefs.patch)
+- [`thorium-browser-ui-default-prefs.patch`](../other/thorium-browser-ui-default-prefs.patch)
+- [`dom-distiller-reader-mode.patch`](../other/dom-distiller-reader-mode.patch)
+
+### 30 - Build graph, toolchain, and platform build behavior.
+
+- [`thorium-root-build-targets.patch`](../other/thorium-root-build-targets.patch)
+- [`thorium-chrome-build-targets.patch`](../other/thorium-chrome-build-targets.patch)
+- [`thorium-build-config-and-simd.patch`](../other/thorium-build-config-and-simd.patch)
+- [`arm-third-party-simd-compat.patch`](../other/arm-third-party-simd-compat.patch)
+- [`thorium-build-platform-tools.patch`](../other/thorium-build-platform-tools.patch)
+- [`llvm-optimized-avx2-build.patch`](../other/llvm-optimized-avx2-build.patch)
+
+### 40 - Linux and installer/platform integration.
+
+- [`linux-disable-custom-titlebar-default.patch`](../other/linux-disable-custom-titlebar-default.patch)
+- [`linux-obsolete-system-policy.patch`](../other/linux-obsolete-system-policy.patch)
+- [`linux-memory-details-branding.patch`](../other/linux-memory-details-branding.patch)
+- [`linux-shell-integration-branding.patch`](../other/linux-shell-integration-branding.patch)
+- [`thorium-linux-installer-packaging.patch`](../other/thorium-linux-installer-packaging.patch)
+- [`thorium-ui-debug-shell.patch`](../other/thorium-ui-debug-shell.patch)
+- [`thorium-webui-image-resources.patch`](../other/thorium-webui-image-resources.patch)
+- [`thorium-browser-resource-branding.patch`](../other/thorium-browser-resource-branding.patch)
+
+### 50 - UI defaults, flags, WebUI, policy, FTP, and broad UI restoration.
+
+- [`omnibox-search-engine-icon-branding.patch`](../other/omnibox-search-engine-icon-branding.patch)
+- [`relax-bad-flags-warning.patch`](../other/relax-bad-flags-warning.patch)
+- [`disable-startup-warning-infobars.patch`](../other/disable-startup-warning-infobars.patch)
+- [`disable-default-browser-prompt.patch`](../other/disable-default-browser-prompt.patch)
+- [`thorium-chrome-urls-page.patch`](../other/thorium-chrome-urls-page.patch)
+- [`thorium-flags-registration.patch`](../other/thorium-flags-registration.patch)
+- [`thorium-flags-page-branding.patch`](../other/thorium-flags-page-branding.patch)
+- [`thorium-version-page-branding.patch`](../other/thorium-version-page-branding.patch)
+- [`thorium-vector-icons.patch`](../other/thorium-vector-icons.patch)
+- [`thorium-app-menu-icons.patch`](../other/thorium-app-menu-icons.patch)
+- [`prevent-url-elisions-by-default.patch`](../other/prevent-url-elisions-by-default.patch)
+- [`enable-chrome-labs-by-default.patch`](../other/enable-chrome-labs-by-default.patch)
+- [`enable-whats-new-by-default.patch`](../other/enable-whats-new-by-default.patch)
+- [`fix-policy-templates.patch`](../other/fix-policy-templates.patch)
+- [`ftp-support-thorium.patch`](../other/ftp-support-thorium.patch)
+- [`GPC.patch`](../other/GPC.patch)
+- [`thorium-2024-ui.patch`](../other/thorium-2024-ui.patch)
+- [`restore_download_shelf.patch`](../other/restore_download_shelf.patch)
+
+### 60 - Windows installer and shell integration.
+
+- [`mini_installer.patch`](../other/mini_installer.patch)
+- [`thorium-mini-installer-manifest.patch`](../other/thorium-mini-installer-manifest.patch)
+- [`open_in_same_tab.patch`](../other/open_in_same_tab.patch)
+
+### 70 - Thorium user-facing flags and feature behavior.
+
+- [`add-flag-for-close-confirmation.patch`](../other/add-flag-for-close-confirmation.patch)
+- [`add-flag-to-close-window-with-last-tab.patch`](../other/add-flag-to-close-window-with-last-tab.patch)
+- [`add-flag-to-scroll-tabs.patch`](../other/add-flag-to-scroll-tabs.patch)
+- [`add-flag-for-custom-ntp.patch`](../other/add-flag-for-custom-ntp.patch)
+- [`add-flag-for-tab-hover-cards.patch`](../other/add-flag-for-tab-hover-cards.patch)
+- [`force-disable-tab-outlines.patch`](../other/force-disable-tab-outlines.patch)
+- [`quiet-notification-defaults.patch`](../other/quiet-notification-defaults.patch)
+- [`disable-thorium-dns-config.patch`](../other/disable-thorium-dns-config.patch)
+- [`secure-dns-defaults.patch`](../other/secure-dns-defaults.patch)
+- [`reduce-doh-request-headers.patch`](../other/reduce-doh-request-headers.patch)
+- [`disable-alternate-error-pages-by-default.patch`](../other/disable-alternate-error-pages-by-default.patch)
+- [`add-flag-to-keep-all-history.patch`](../other/add-flag-to-keep-all-history.patch)
+- [`enable-parallel-downloading-by-default.patch`](../other/enable-parallel-downloading-by-default.patch)
+- [`disable-background-mode-by-default.patch`](../other/disable-background-mode-by-default.patch)
+- [`thorium-dino-game.patch`](../other/thorium-dino-game.patch)
+- [`allow-insecure-downloads.patch`](../other/allow-insecure-downloads.patch)
+- [`disable-download-quarantine.patch`](../other/disable-download-quarantine.patch)
+- [`disable-vulkan-gpu-log-warnings.patch`](../other/disable-vulkan-gpu-log-warnings.patch)
+- [`thorium-sandbox-compat.patch`](../other/thorium-sandbox-compat.patch)
+- [`thoriumos-ash-vector-icons.patch`](../other/thoriumos-ash-vector-icons.patch)
+- [`thoriumos-help-app-discovery.patch`](../other/thoriumos-help-app-discovery.patch)
+- [`thoriumos-sample-system-web-app.patch`](../other/thoriumos-sample-system-web-app.patch)
+- [`thoriumos-disable-stats-reporting.patch`](../other/thoriumos-disable-stats-reporting.patch)
+- [`add-flag-for-auto-dark-mode.patch`](../other/add-flag-for-auto-dark-mode.patch)
+- [`disable-thorium-icons.patch`](../other/disable-thorium-icons.patch)
+- [`always-enable-reload-menu.patch`](../other/always-enable-reload-menu.patch)
+
+### 80 - Extensions and Android extensions.
+
+- [`allow_manifest_v2_extensions.patch`](../other/allow_manifest_v2_extensions.patch)
+- [`increase-dnr-limits.patch`](../other/increase-dnr-limits.patch)
+- [`show-hosted-apps-in-extensions.patch`](../other/show-hosted-apps-in-extensions.patch)
+- [`thorium_webui.patch`](../other/thorium_webui.patch)
+- [`win_updater.patch`](../other/win_updater.patch)
+- [`keyboard_shortcuts.patch`](../other/keyboard_shortcuts.patch)
+- [`keep-expired-flags.patch`](../other/keep-expired-flags.patch)
+- [`disable-privacy-sandbox.patch`](../other/disable-privacy-sandbox.patch)
+- [`disable-encryption.patch`](../other/disable-encryption.patch)
+- [`disable-feature-promos.patch`](../other/disable-feature-promos.patch)
+- [`thorium-install-static-branding.patch`](../other/thorium-install-static-branding.patch)
+- [`windows-chrome-proxy-branding.patch`](../other/windows-chrome-proxy-branding.patch)
+- [`windows-profile-shortcut-icon-version.patch`](../other/windows-profile-shortcut-icon-version.patch)
+- [`disable-aero.patch`](../other/disable-aero.patch)
+- [`android-disable-signin-without-account-manager.patch`](../other/android-disable-signin-without-account-manager.patch)
+- [`android-extensions-support.patch`](../other/android-extensions-support.patch)
+- [`chrome-web-store-protection.patch`](../other/chrome-web-store-protection.patch)
+- [`enable-extension-in-incognito.patch`](../other/enable-extension-in-incognito.patch)
+
+### 95 - Conditional / platform-specific overlays that are still active.
+
+- [`linux-widevine-cdm-locations.patch`](../other/linux-widevine-cdm-locations.patch) (condition: `raspi`)
+- [`raspi-netflix-chromeos-ua.patch`](../other/raspi-netflix-chromeos-ua.patch) (condition: `raspi`)
+
+## Maintenance Notes
+
+- Add, remove, and reorder active patches in `patch_scripts/series/series` first.
+- Keep patch files under `other/`; use an apply root in the series for child repositories such as `third_party/ffmpeg`, `third_party/widevine`, `third_party/libyuv`, `third_party/search_engines_data/resources`, and `v8`.
+- Use one `--condition` per run for mutually exclusive build variants such as `sse2` or `raspi`.
+- After changing patch inventory, run `py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src` to validate the ordered series without modifying the Chromium checkout.

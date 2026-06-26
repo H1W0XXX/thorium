@@ -10,7 +10,7 @@ c0='\033[0m' # Reset Text
 bold='\033[1m' # Bold Text
 underline='\033[4m' # Underline Text
 
-# Error handling
+# Error handling.
 yell() { echo "$0: $*" >&2; }
 die() { yell "$*"; exit 111; }
 try() { "$@" || die "${RED}Failed $*"; }
@@ -44,7 +44,7 @@ case $1 in
 	-h) displayHelp; exit 0;;
 esac
 
-# chromium/src dir env variable
+# chromium/src dir env variable.
 if [ -z "${CR_DIR}" ]; then 
     CR_SRC_DIR="$HOME/chromium/src"
     export CR_SRC_DIR
@@ -63,418 +63,48 @@ printf "${YEL}Copying Thorium source files over the Chromium tree...${c0}\n" &&
 cd ~/thorium &&
 printf "\n" &&
 
-# Copy Thorium sources
+# Copy Thorium sources.
 cp -r -v src/chrome ${CR_SRC_DIR}/ &&
-cp -r -v src/chromeos ${CR_SRC_DIR}/ &&
 cp -r -v src/components ${CR_SRC_DIR}/ &&
-cp -r -v src/media ${CR_SRC_DIR}/ &&
-cp -r -v src/net ${CR_SRC_DIR}/ &&
-cp -r -v src/services ${CR_SRC_DIR}/ &&
+cp -r -v src/content ${CR_SRC_DIR}/ &&
 cp -r -v src/third_party ${CR_SRC_DIR}/ &&
 cp -r -v src/ui ${CR_SRC_DIR}/ &&
 
-cp -v src/content/shell/app/thorium_shell.ico ${CR_SRC_DIR}/content/shell/app/ &&
 cp -r -v thorium_shell/. ${CR_SRC_DIR}/out/thorium/ &&
 cp -r -v pak_src/binaries/pak ${CR_SRC_DIR}/out/thorium/ &&
 cp -r -v pak_src/binaries/pak-win/. ${CR_SRC_DIR}/out/thorium/ &&
 
-patchThor () {
-	cp -v other/add-hevc-ffmpeg-decoder-parser.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
-	cp -v other/change-libavcodec-header.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
-	cp -v other/fix-ffmpeg-android-x86-disable-hevc-nasm.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
-	cp -v other/ffmpeg-branding.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
-	cp -v other/widevine-cdm-support.patch ${CR_SRC_DIR}/third_party/widevine/ &&
-	cp -v other/enable-hevc-ffmpeg-decoding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/enable-webrtc-h265-l1t2-l1t3-by-default.patch ${CR_SRC_DIR}/ &&
-	cp -v other/enable-mpeg2-ac3-eac3-decoding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-media-switches.patch ${CR_SRC_DIR}/ &&
-	cp -v other/widevine-cdm-host-verification.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-default-api-keys.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-fetching-field-trials.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-search-engines-data.patch ${CR_SRC_DIR}/third_party/search_engines_data/resources/ &&
-	cp -v other/thorium-blink-feature-defaults.patch ${CR_SRC_DIR}/ &&
-	cp -v other/allow-webaudio-autoplay.patch ${CR_SRC_DIR}/ &&
-	cp -v other/enable-saving-pages-from-all-schemes.patch ${CR_SRC_DIR}/ &&
-	cp -v other/content-gpu-vaapi-libva-config.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-content-shell-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-common-branding-paths.patch ${CR_SRC_DIR}/ &&
-	cp -v other/android-thorium-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-startup-logging.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-app-metadata-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-theme-resources.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-app-vector-icons.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-app-grd-registration.patch ${CR_SRC_DIR}/ &&
-	cp -v other/bookmark-default-prefs.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-browser-ui-default-prefs.patch ${CR_SRC_DIR}/ &&
-	cp -v other/dom-distiller-reader-mode.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-root-build-targets.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-chrome-build-targets.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-build-config-and-simd.patch ${CR_SRC_DIR}/ &&
-	cp -v other/arm-third-party-simd-compat.patch ${CR_SRC_DIR}/ &&
-	cp -v other/libyuv-arm-simd-compat.patch ${CR_SRC_DIR}/third_party/libyuv/ &&
-	cp -v other/thorium-build-platform-tools.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-v8-simd-opts.patch ${CR_SRC_DIR}/ &&
-	cp -v other/llvm-optimized-avx2-build.patch ${CR_SRC_DIR}/ &&
-	cp -v other/linux-disable-custom-titlebar-default.patch ${CR_SRC_DIR}/ &&
-	cp -v other/linux-obsolete-system-policy.patch ${CR_SRC_DIR}/ &&
-	cp -v other/linux-memory-details-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/linux-shell-integration-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-linux-installer-packaging.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-ui-debug-shell.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-webui-image-resources.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-browser-resource-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/omnibox-search-engine-icon-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/relax-bad-flags-warning.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-startup-warning-infobars.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-default-browser-prompt.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-chrome-urls-page.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-flags-registration.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-flags-page-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-version-page-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-vector-icons.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-app-menu-icons.patch ${CR_SRC_DIR}/ &&
-	cp -v other/prevent-url-elisions-by-default.patch ${CR_SRC_DIR}/ &&
-	cp -v other/enable-chrome-labs-by-default.patch ${CR_SRC_DIR}/ &&
-	cp -v other/enable-whats-new-by-default.patch ${CR_SRC_DIR}/ &&
-	cp -v other/fix-policy-templates.patch ${CR_SRC_DIR}/ &&
-	cp -v other/ftp-support-thorium.patch ${CR_SRC_DIR}/ &&
-	cp -v other/restore_download_shelf.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-2024-ui.patch ${CR_SRC_DIR}/ &&
-	cp -v other/GPC.patch ${CR_SRC_DIR}/ &&
-	cp -v other/mini_installer.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-mini-installer-manifest.patch ${CR_SRC_DIR}/ &&
-	cp -v other/open_in_same_tab.patch ${CR_SRC_DIR}/ &&
-	cp -v other/add-flag-for-close-confirmation.patch ${CR_SRC_DIR}/ &&
-	cp -v other/add-flag-to-close-window-with-last-tab.patch ${CR_SRC_DIR}/ &&
-	cp -v other/add-flag-to-scroll-tabs.patch ${CR_SRC_DIR}/ &&
-	cp -v other/add-flag-for-custom-ntp.patch ${CR_SRC_DIR}/ &&
-	cp -v other/add-flag-for-tab-hover-cards.patch ${CR_SRC_DIR}/ &&
-	cp -v other/force-disable-tab-outlines.patch ${CR_SRC_DIR}/ &&
-	cp -v other/quiet-notification-defaults.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-thorium-dns-config.patch ${CR_SRC_DIR}/ &&
-	cp -v other/secure-dns-defaults.patch ${CR_SRC_DIR}/ &&
-	cp -v other/reduce-doh-request-headers.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-alternate-error-pages-by-default.patch ${CR_SRC_DIR}/ &&
-	cp -v other/add-flag-to-keep-all-history.patch ${CR_SRC_DIR}/ &&
-	cp -v other/enable-parallel-downloading-by-default.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-background-mode-by-default.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-dino-game.patch ${CR_SRC_DIR}/ &&
-	cp -v other/allow-insecure-downloads.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-download-quarantine.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-vulkan-gpu-log-warnings.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-sandbox-compat.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thoriumos-ash-vector-icons.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thoriumos-help-app-discovery.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thoriumos-sample-system-web-app.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thoriumos-disable-stats-reporting.patch ${CR_SRC_DIR}/ &&
-	cp -v other/add-flag-for-auto-dark-mode.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-thorium-icons.patch ${CR_SRC_DIR}/ &&
-	cp -v other/always-enable-reload-menu.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium_webui.patch ${CR_SRC_DIR}/ &&
-	cp -v other/keep-expired-flags.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-privacy-sandbox.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-encryption.patch ${CR_SRC_DIR}/ &&
-	cp -v other/disable-feature-promos.patch ${CR_SRC_DIR}/ &&
-	cp -v other/thorium-install-static-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/windows-chrome-proxy-branding.patch ${CR_SRC_DIR}/ &&
-	cp -v other/windows-profile-shortcut-icon-version.patch ${CR_SRC_DIR}/ &&
-	cp -v other/win_updater.patch ${CR_SRC_DIR}/ &&
-	cp -v other/keyboard_shortcuts.patch ${CR_SRC_DIR}/ &&
+applyThoriumSeries () {
+	local condition_args=()
 
-	# The following patch could not be fixed upstream because it
-	# is related to our custom flags
-	cp -v other/disable-aero.patch ${CR_SRC_DIR}/ &&
-	
-	cp -v other/allow_manifest_v2_extensions.patch ${CR_SRC_DIR}/ &&
-	cp -v other/increase-dnr-limits.patch ${CR_SRC_DIR}/ &&
-	cp -v other/show-hosted-apps-in-extensions.patch ${CR_SRC_DIR}/ &&
-	
-	cp -v other/android-disable-signin-without-account-manager.patch ${CR_SRC_DIR}/ &&
-	cp -v other/android-extensions-support.patch ${CR_SRC_DIR}/ &&
-	cp -v other/chrome-web-store-protection.patch ${CR_SRC_DIR}/ &&
-	cp -v other/enable-extension-in-incognito.patch ${CR_SRC_DIR}/ &&
+	for arg in "$@"; do
+		case "${arg}" in
+			--woa)
+				condition_args+=(--condition woa)
+				;;
+			--raspi|--arm64)
+				condition_args+=(--condition raspi)
+				;;
+			--sse2)
+				condition_args+=(--condition sse2)
+				;;
+		esac
+	done
 
 	printf "\n" &&
-	printf "${YEL}Patching FFMPEG for HEVC...${c0}\n" &&
-	cd ${CR_SRC_DIR}/third_party/ffmpeg &&
-	git apply --reject ./add-hevc-ffmpeg-decoder-parser.patch &&
-    printf "${YEL}libavcodec header patch for HEVC...${c0}\n" &&
-	git apply --reject ./change-libavcodec-header.patch &&
-	printf "${YEL}Fix FFMPEG Android x86 HEVC NASM disable patch...${c0}\n" &&
-	git apply --reject ./fix-ffmpeg-android-x86-disable-hevc-nasm.patch &&
-	printf "${YEL}FFmpeg branding patch...${c0}\n" &&
-	git apply --reject ./ffmpeg-branding.patch &&
-	printf "${YEL}Enable HEVC FFMPEG decoding patch...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./enable-hevc-ffmpeg-decoding.patch &&
-	printf "${YEL}Enable WebRTC H.265 L1T2/L1T3 by default patch...${c0}\n" &&
-	git apply --reject ./enable-webrtc-h265-l1t2-l1t3-by-default.patch &&
-	printf "${YEL}Enable MPEG2 and AC3/EAC3 decoding patch...${c0}\n" &&
-	git apply --reject ./enable-mpeg2-ac3-eac3-decoding.patch &&
-	printf "${YEL}Thorium media switches patch...${c0}\n" &&
-	git apply --reject ./thorium-media-switches.patch &&
-	printf "${YEL}Widevine CDM support patch...${c0}\n" &&
-	git apply --reject --directory=third_party/widevine ./third_party/widevine/widevine-cdm-support.patch &&
-	printf "${YEL}Widevine CDM host verification patch...${c0}\n" &&
-	git apply --reject ./widevine-cdm-host-verification.patch &&
-	printf "${YEL}Thorium default Google API keys patch...${c0}\n" &&
-	git apply --reject ./thorium-default-api-keys.patch &&
-	printf "${YEL}Disable fetching field trials patch...${c0}\n" &&
-	git apply --reject ./disable-fetching-field-trials.patch &&
-	printf "${YEL}Thorium search engines data patch...${c0}\n" &&
-	cd ${CR_SRC_DIR}/third_party/search_engines_data/resources &&
-	git apply --reject ./thorium-search-engines-data.patch &&
-	cd ${CR_SRC_DIR} &&
-	printf "${YEL}Thorium Blink feature defaults patch...${c0}\n" &&
-	git apply --reject ./thorium-blink-feature-defaults.patch &&
-	printf "${YEL}Allow WebAudio autoplay patch...${c0}\n" &&
-	git apply --reject ./allow-webaudio-autoplay.patch &&
-	printf "${YEL}Enable saving pages from all schemes patch...${c0}\n" &&
-	git apply --reject ./enable-saving-pages-from-all-schemes.patch &&
-	printf "${YEL}Content GPU VAAPI libva config patch...${c0}\n" &&
-	git apply --reject ./content-gpu-vaapi-libva-config.patch &&
-	printf "${YEL}Thorium content shell branding patch...${c0}\n" &&
-	git apply --reject ./thorium-content-shell-branding.patch &&
-	printf "${YEL}Thorium common branding paths patch...${c0}\n" &&
-	git apply --reject ./thorium-common-branding-paths.patch &&
-	printf "${YEL}Android Thorium branding patch...${c0}\n" &&
-	git apply --reject ./android-thorium-branding.patch &&
-	printf "${YEL}Thorium startup logging patch...${c0}\n" &&
-	git apply --reject ./thorium-startup-logging.patch &&
-	printf "${YEL}Thorium app metadata branding patch...${c0}\n" &&
-	git apply --reject ./thorium-app-metadata-branding.patch &&
-	printf "${YEL}Thorium theme resources patch...${c0}\n" &&
-	git apply --reject ./thorium-theme-resources.patch &&
-	printf "${YEL}Thorium app vector icons patch...${c0}\n" &&
-	git apply --reject ./thorium-app-vector-icons.patch &&
-	printf "${YEL}Thorium app GRD registration patch...${c0}\n" &&
-	git apply --reject ./thorium-app-grd-registration.patch &&
-	printf "${YEL}Bookmark default prefs patch...${c0}\n" &&
-	git apply --reject ./bookmark-default-prefs.patch &&
-	printf "${YEL}Thorium browser UI default prefs patch...${c0}\n" &&
-	git apply --reject ./thorium-browser-ui-default-prefs.patch &&
-	printf "${YEL}Dom Distiller reader mode patch...${c0}\n" &&
-	git apply --reject ./dom-distiller-reader-mode.patch &&
-	printf "${YEL}Thorium root build targets patch...${c0}\n" &&
-	git apply --reject ./thorium-root-build-targets.patch &&
-	printf "${YEL}Thorium chrome build targets patch...${c0}\n" &&
-	git apply --reject ./thorium-chrome-build-targets.patch &&
-	printf "${YEL}Thorium build config and SIMD patch...${c0}\n" &&
-	git apply --reject ./thorium-build-config-and-simd.patch &&
-	printf "${YEL}ARM third_party SIMD compatibility patch...${c0}\n" &&
-	git apply --reject ./arm-third-party-simd-compat.patch &&
-	cd ${CR_SRC_DIR}/third_party/libyuv &&
-	git apply --reject ./libyuv-arm-simd-compat.patch &&
-	cd ${CR_SRC_DIR} &&
-	printf "${YEL}Thorium build platform tools patch...${c0}\n" &&
-	git apply --reject ./thorium-build-platform-tools.patch &&
-	printf "${YEL}Thorium V8 SIMD opts patch...${c0}\n" &&
-	cd ${CR_SRC_DIR}/v8 &&
-	git apply --reject ../thorium-v8-simd-opts.patch &&
-	cd ${CR_SRC_DIR} &&
-	printf "${YEL}LLVM optimized AVX2 build patch...${c0}\n" &&
-	git apply --reject ./llvm-optimized-avx2-build.patch &&
-	printf "${YEL}Linux disable custom titlebar default patch...${c0}\n" &&
-	git apply --reject ./linux-disable-custom-titlebar-default.patch &&
-	printf "${YEL}Linux obsolete system policy patch...${c0}\n" &&
-	git apply --reject ./linux-obsolete-system-policy.patch &&
-	printf "${YEL}Linux memory details branding patch...${c0}\n" &&
-	git apply --reject ./linux-memory-details-branding.patch &&
-	printf "${YEL}Linux shell integration branding patch...${c0}\n" &&
-	git apply --reject ./linux-shell-integration-branding.patch &&
-	printf "${YEL}Thorium Linux installer packaging patch...${c0}\n" &&
-	git apply --reject ./thorium-linux-installer-packaging.patch &&
-	printf "${YEL}Thorium UI debug shell patch...${c0}\n" &&
-	git apply --reject ./thorium-ui-debug-shell.patch &&
-	printf "${YEL}Thorium WebUI image resources patch...${c0}\n" &&
-	git apply --reject ./thorium-webui-image-resources.patch &&
-	printf "${YEL}Thorium browser resource branding patch...${c0}\n" &&
-	git apply --reject ./thorium-browser-resource-branding.patch &&
-	printf "${YEL}Omnibox search engine icon branding patch...${c0}\n" &&
-	git apply --reject ./omnibox-search-engine-icon-branding.patch &&
-	printf "${YEL}Relax bad flags warning patch...${c0}\n" &&
-	git apply --reject ./relax-bad-flags-warning.patch &&
-	printf "${YEL}Disable startup warning infobars patch...${c0}\n" &&
-	git apply --reject ./disable-startup-warning-infobars.patch &&
-	printf "${YEL}Disable default browser prompt patch...${c0}\n" &&
-	git apply --reject ./disable-default-browser-prompt.patch &&
-	printf "${YEL}Thorium chrome:// URLs page patch...${c0}\n" &&
-	git apply --reject ./thorium-chrome-urls-page.patch &&
-	printf "${YEL}Thorium flags registration patch...${c0}\n" &&
-	git apply --reject ./thorium-flags-registration.patch &&
-	printf "${YEL}Thorium flags page branding patch...${c0}\n" &&
-	git apply --reject ./thorium-flags-page-branding.patch &&
-	printf "${YEL}Thorium version page branding patch...${c0}\n" &&
-	git apply --reject ./thorium-version-page-branding.patch &&
-	printf "${YEL}Thorium vector icons patch...${c0}\n" &&
-	git apply --reject ./thorium-vector-icons.patch &&
-	printf "${YEL}Thorium app menu icons patch...${c0}\n" &&
-	git apply --reject ./thorium-app-menu-icons.patch &&
-	printf "${YEL}Prevent URL elisions by default patch...${c0}\n" &&
-	git apply --reject ./prevent-url-elisions-by-default.patch &&
-	printf "${YEL}Enable Chrome Labs by default patch...${c0}\n" &&
-	git apply --reject ./enable-chrome-labs-by-default.patch &&
-	printf "${YEL}Enable What's New by default patch...${c0}\n" &&
-	git apply --reject ./enable-whats-new-by-default.patch &&
-
-	printf "\n" &&
-	printf "${YEL}Patching policy templates...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./fix-policy-templates.patch &&
-
-	printf "\n" &&
-	printf "${YEL}Patching FTP support...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./ftp-support-thorium.patch &&
-
-	printf "\n" &&
-	printf "${YEL}Patching in GPC support...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./GPC.patch &&
-
-	printf "\n" &&
-	printf "${YEL}Patching for Thorium 2024 UI...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./thorium-2024-ui.patch &&
-	printf "${YEL}Download Shelf patch...${c0}\n" &&
-	git apply --reject ./restore_download_shelf.patch &&
-
-	printf "${YEL}Patching mini_installer...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./mini_installer.patch &&
-	printf "${YEL}Thorium mini_installer manifest patch...${c0}\n" &&
-	git apply --reject ./thorium-mini-installer-manifest.patch &&
-
-	printf "\n" &&
-	printf "${YEL}Applying other Misc. patches...${c0}\n" &&
-	cd ${CR_SRC_DIR} &&
-	printf "${YEL}Open in same tab patch...${c0}\n" &&
-	git apply --reject ./open_in_same_tab.patch &&
-	printf "${YEL}Close confirmation flag patch...${c0}\n" &&
-	git apply --reject ./add-flag-for-close-confirmation.patch &&
-	printf "${YEL}Close window with last tab patch...${c0}\n" &&
-	git apply --reject ./add-flag-to-close-window-with-last-tab.patch &&
-	printf "${YEL}Scroll tabs patch...${c0}\n" &&
-	git apply --reject ./add-flag-to-scroll-tabs.patch &&
-	printf "${YEL}Custom NTP patch...${c0}\n" &&
-	git apply --reject ./add-flag-for-custom-ntp.patch &&
-	printf "${YEL}Tab hover cards flag patch...${c0}\n" &&
-	git apply --reject ./add-flag-for-tab-hover-cards.patch &&
-	printf "${YEL}Force disable tab outlines patch...${c0}\n" &&
-	git apply --reject ./force-disable-tab-outlines.patch &&
-	printf "${YEL}Quiet notification defaults patch...${c0}\n" &&
-	git apply --reject ./quiet-notification-defaults.patch &&
-	printf "${YEL}Disable Thorium DNS config patch...${c0}\n" &&
-	git apply --reject ./disable-thorium-dns-config.patch &&
-	printf "${YEL}Secure DNS defaults patch...${c0}\n" &&
-	git apply --reject ./secure-dns-defaults.patch &&
-	printf "${YEL}Reduce DoH request headers patch...${c0}\n" &&
-	git apply --reject ./reduce-doh-request-headers.patch &&
-	printf "${YEL}Disable alternate error pages by default patch...${c0}\n" &&
-	git apply --reject ./disable-alternate-error-pages-by-default.patch &&
-	printf "${YEL}Keep all history patch...${c0}\n" &&
-	git apply --reject ./add-flag-to-keep-all-history.patch &&
-	printf "${YEL}Enable parallel downloading by default patch...${c0}\n" &&
-	git apply --reject ./enable-parallel-downloading-by-default.patch &&
-	printf "${YEL}Disable background mode by default patch...${c0}\n" &&
-	git apply --reject ./disable-background-mode-by-default.patch &&
-	printf "${YEL}Thorium Dino game patch...${c0}\n" &&
-	git apply --reject ./thorium-dino-game.patch &&
-	printf "${YEL}Allow insecure downloads patch...${c0}\n" &&
-	git apply --reject ./allow-insecure-downloads.patch &&
-	printf "${YEL}Disable download quarantine patch...${c0}\n" &&
-	git apply --reject ./disable-download-quarantine.patch &&
-	printf "${YEL}Disable Vulkan GPU log warnings patch...${c0}\n" &&
-	git apply --reject ./disable-vulkan-gpu-log-warnings.patch &&
-	printf "${YEL}Thorium sandbox compatibility patch...${c0}\n" &&
-	git apply --reject ./thorium-sandbox-compat.patch &&
-	printf "${YEL}ThoriumOS Ash vector icons patch...${c0}\n" &&
-	git apply --reject ./thoriumos-ash-vector-icons.patch &&
-	printf "${YEL}ThoriumOS Help App discovery patch...${c0}\n" &&
-	git apply --reject ./thoriumos-help-app-discovery.patch &&
-	printf "${YEL}ThoriumOS Sample System Web App patch...${c0}\n" &&
-	git apply --reject ./thoriumos-sample-system-web-app.patch &&
-	printf "${YEL}ThoriumOS disable stats reporting patch...${c0}\n" &&
-	git apply --reject ./thoriumos-disable-stats-reporting.patch &&
-	printf "${YEL}Auto dark mode patch...${c0}\n" &&
-	git apply --reject ./add-flag-for-auto-dark-mode.patch &&
-	printf "${YEL}Disable Thorium icons patch...${c0}\n" &&
-	git apply --reject ./disable-thorium-icons.patch &&
-	printf "${YEL}Always enable reload menu patch...${c0}\n" &&
-	git apply --reject ./always-enable-reload-menu.patch &&
-	printf "${YEL}Allow Manifest V2 extensions...${c0}\n" &&
-	git apply --reject ./allow_manifest_v2_extensions.patch &&
-	printf "${YEL}Increase Declarative Net Request limits...${c0}\n" &&
-	git apply --reject ./increase-dnr-limits.patch &&
-	printf "${YEL}Show hosted apps in extensions settings...${c0}\n" &&
-	git apply --reject ./show-hosted-apps-in-extensions.patch &&
-	printf "${YEL}Thorium WebUI patch...${c0}\n" &&
-	git apply --reject ./thorium_webui.patch &&
-	printf "${YEL}Thorium Updater patch...${c0}\n" &&
-	git apply --reject ./win_updater.patch &&
-	printf "${YEL}Thorium Keyboard Shortcuts patch...${c0}\n" &&
-	git apply --reject ./keyboard_shortcuts.patch &&
-	printf "${YEL}Keep expired flags patch...${c0}\n" &&
-	git apply --reject ./keep-expired-flags.patch &&
-	printf "${YEL}Disable Privacy Sandbox patch...${c0}\n" &&
-	git apply --reject ./disable-privacy-sandbox.patch &&
-	printf "${YEL}Disable encryption patch...${c0}\n" &&
-	git apply --reject ./disable-encryption.patch &&
-	printf "${YEL}Disable feature promos patch...${c0}\n" &&
-	git apply --reject ./disable-feature-promos.patch &&
-	printf "${YEL}Thorium install/static branding patch...${c0}\n" &&
-	git apply --reject ./thorium-install-static-branding.patch &&
-	printf "${YEL}Windows chrome proxy branding patch...${c0}\n" &&
-	git apply --reject ./windows-chrome-proxy-branding.patch &&
-	printf "${YEL}Windows profile shortcut icon version patch...${c0}\n" &&
-	git apply --reject ./windows-profile-shortcut-icon-version.patch &&
-	printf "${YEL}Some crashes fixes...${c0}\n" &&
-	git apply --reject ./disable-aero.patch &&
-    printf "${YEL}Disable signin without account manager...${c0}\n" &&
-	git apply --reject ./android-disable-signin-without-account-manager.patch &&
-	printf "${YEL}Android extensions support patch...${c0}\n" &&
-	git apply --reject ./android-extensions-support.patch &&
-	printf "${YEL}Chrome Web Store protection patch...${c0}\n" &&
-	git apply --reject ./chrome-web-store-protection.patch &&
-	printf "${YEL}Enable extension in incognito patch...${c0}\n" &&
-	git apply --reject ./enable-extension-in-incognito.patch
+	printf "${YEL}Applying Thorium patch series...${c0}\n" &&
+	python3 patch_scripts/series/apply_series.py --source-tree "${CR_SRC_DIR}" --apply "${condition_args[@]}"
 }
-[ -f ${CR_SRC_DIR}/fix-policy-templates.patch ] || patchThor;
-
-patchAC3 () {
-	#cp -v other/ffmpeg_hevc_ac3.patch ${CR_SRC_DIR}/third_party/ffmpeg/ &&
-
-	#printf "\n" &&
-	#printf "${YEL}Patching FFMPEG for AC3 & E-AC3...${c0}\n" &&
-	#cd ${CR_SRC_DIR}/third_party/ffmpeg &&
-	#git apply --reject ./ffmpeg_hevc_ac3.patch &&
-	cd ~/thorium
-}
-
-patchSSE2 () {
-	cp -v other/SSE2/angle-lockfree.patch ${CR_SRC_DIR}/third_party/angle/src/ &&
-
-	printf "\n" &&
-	printf "${YEL}Patching ANGLE for SSE2...${c0}\n" &&
-	cd ${CR_SRC_DIR}/third_party/angle/src &&
-	git apply --reject ./angle-lockfree.patch &&
-	cd ~/thorium
-}
+applyThoriumSeries "$@";
 
 cd ~/thorium &&
 
 printf "\n" &&
 echo "Copying other files to \`out/thorium\`" &&
 
-# Add default_apps dir for uBlock Origin extension.
-mkdir -v -p ${CR_SRC_DIR}/out/thorium/default_apps &&
-cp -r -v infra/default_apps/. ${CR_SRC_DIR}/out/thorium/default_apps/ &&
-
-# Add initial preferences file to open Thorium welcome page on first run.
-cp -v infra/initial_preferences ${CR_SRC_DIR}/out/thorium/ &&
 cp -v infra/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
 
-# MacOS optimizations
+# MacOS optimizations.
 copyMacOS () {
 	printf "\n" &&
 	printf "${YEL}Copying files for MacOS...${c0}\n" &&
@@ -483,7 +113,6 @@ copyMacOS () {
 	python3 tools/update_pgo_profiles.py --target=mac update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	python3 tools/update_pgo_profiles.py --target=mac-arm update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	cd ~/thorium &&
-	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
 case $1 in
@@ -493,7 +122,7 @@ case $1 in
 	--macos) copyMacOS;
 esac
 
-# Raspberry Pi Source Files
+# Raspberry Pi Source Files.
 copyRaspi () {
 	printf "\n" &&
 	printf "${YEL}Copying Raspberry Pi build files...${c0}\n" &&
@@ -502,14 +131,9 @@ copyRaspi () {
 	cp -v arm/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -v other/thor_ver_linux/wrapper-raspi ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
 	cp -v pak_src/binaries/pak_arm64 ${CR_SRC_DIR}/out/thorium/pak &&
-	cp -v other/linux-widevine-cdm-locations.patch ${CR_SRC_DIR}/ &&
-	cp -v other/raspi-netflix-chromeos-ua.patch ${CR_SRC_DIR}/ &&
-	cd ${CR_SRC_DIR} &&
-	git apply --reject ./linux-widevine-cdm-locations.patch &&
-	git apply --reject ./raspi-netflix-chromeos-ua.patch &&
 	cd ~/thorium &&
 	printf "\n" &&
-	# Display raspi ascii art
+	# Display raspi ascii art.
 	cat logos/raspi_ascii_art.txt
 }
 case $1 in
@@ -519,7 +143,7 @@ case $1 in
 	--arm64) copyRaspi;
 esac
 
-# Windows on ARM64 files
+# Windows on ARM64 files.
 copyWOA () {
 	printf "\n" &&
 	printf "${YEL}Copying Windows on ARM build files...${c0}\n" &&
@@ -533,49 +157,46 @@ case $1 in
 	--woa) copyWOA;
 esac
 
-# Copy AVX512 files
+# Copy AVX512 files.
 copyAVX512 () {
 	printf "\n" &&
 	printf "${YEL}Copying AVX-512 build files...${c0}\n" &&
 	cp -v other/AVX512/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
 	cp -v other/AVX512/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -v other/thor_ver_linux/wrapper-avx512 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
-	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
 case $1 in
 	--avx512) copyAVX512;
 esac
 
-# Copy AVX2 files
+# Copy AVX2 files.
 copyAVX2 () {
 	printf "\n" &&
 	printf "${YEL}Copying AVX2 build files...${c0}\n" &&
 	cp -v other/AVX2/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
 	cp -v other/AVX2/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -v other/thor_ver_linux/wrapper-avx2 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
-	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
 case $1 in
 	--avx2) copyAVX2;
 esac
 
-# Copy SSE4.1 files
+# Copy SSE4.1 files.
 copySSE4 () {
 	printf "\n" &&
 	printf "${YEL}Copying SSE4.1 build files...${c0}\n" &&
 	cp -v other/SSE4.1/thor_ver ${CR_SRC_DIR}/out/thorium/ &&
 	cp -v other/SSE4.1/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -v other/thor_ver_linux/wrapper-sse4 ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&
-	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
 case $1 in
 	--sse4) copySSE4;
 esac
 
-# Copy SSE3 files
+# Copy SSE3 files.
 copySSE3 () {
 	printf "\n" &&
 	printf "${YEL}Copying SSE3 build files...${c0}\n" &&
@@ -585,14 +206,13 @@ copySSE3 () {
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=win32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	cd ~/thorium &&
-	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
 case $1 in
 	--sse3) copySSE3;
 esac
 
-# Copy SSE2 files
+# Copy SSE2 files.
 copySSE2 () {
 	printf "\n" &&
 	printf "${YEL}Copying SSE2 (32-bit) build files...${c0}\n" &&
@@ -602,37 +222,25 @@ copySSE2 () {
 	cd ${CR_SRC_DIR} &&
 	python3 tools/update_pgo_profiles.py --target=win32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	cd ~/thorium &&
-	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
-	[ -f ${CR_SRC_DIR}/third_party/angle/src/angle-lockfree.patch ] || patchSSE2;
 	printf "\n"
 }
 case $1 in
 	--sse2) copySSE2;
 esac
 
-# Copy Android files
+# Copy Android files.
 copyAndroid () {
-	printf "\n" &&
-	printf "${YEL}Copying Android (ARM64 and ARM32) build files...${c0}\n" &&
-	cp -r -v arm/android/* ${CR_SRC_DIR}/ &&
-	printf "\n" &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_base/drawable-v26/ic_launcher.xml &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_base/drawable-v26/ic_launcher_round.xml &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon_background.png &&
-	#rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-mdpi/layered_app_icon.png &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-xhdpi/layered_app_icon_background.png &&
-	#rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-xhdpi/layered_app_icon.png &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon_background.png &&
-	#rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon.png &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-nodpi/layered_app_icon_foreground.xml &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon_background.png &&
-	#rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-hdpi/layered_app_icon.png &&
 	rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon_background.png &&
-	#rm -v -f ${CR_SRC_DIR}/chrome/android/java/res_chromium_base/mipmap-xxhdpi/layered_app_icon.png &&
 	printf "\n" &&
 	printf "${YEL}Downloading PGO profiles...${c0}\n" &&
 	cd ${CR_SRC_DIR} &&
-	# python3 tools/update_pgo_profiles.py --target=android-desktop-arm64 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	python3 tools/update_pgo_profiles.py --target=android-arm32 update --gs-url-base=chromium-optimization-profiles/pgo_profiles &&
 	cd ~/thorium &&
 	printf "\n"
@@ -641,12 +249,11 @@ case $1 in
 	--android) copyAndroid;
 esac
 
-# Copy CrOS files
+# Copy CrOS files.
 copyCros () {
 	printf "\n" &&
 	printf "${YEL}Copying ChromiumOS build files...${c0}\n" &&
 	cp -v other/CrOS/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
-	[ -f ${CR_SRC_DIR}/third_party/ffmpeg/ffmpeg_hevc_ac3.patch ] || patchAC3;
 	printf "\n"
 }
 case $1 in
@@ -656,34 +263,11 @@ esac
 printf "\n" &&
 printf "${GRE}Done!${c0}\n" &&
 
-#. ~/thorium/aliases.txt &&
-
-#printf "\n" &&
-#printf "export ${CYA}NINJA_SUMMARIZE_BUILD=1${c0}\n" &&
-#printf "export ${CYA}EDITOR=nano${c0}\n" &&
-#printf "export ${CYA}VISUAL=nano${c0}\n" &&
-#printf "\n" &&
-#printf "alias ${YEL}origin${c0} = ${CYA}git checkout -f origin/main${c0}\n" &&
-#printf "alias ${YEL}gfetch${c0} = ${CYA}git fetch --tags${c0}\n" &&
-#printf "alias ${YEL}rebase${c0} = ${CYA}git rebase-update${c0}\n" &&
-#printf "alias ${YEL}gsync${c0} = ${CYA}gclient sync --with_branch_heads --with_tags -f -R -D${c0}\n" &&
-#printf "alias ${YEL}args${c0} = ${CYA}gn args out/thorium${c0}\n" &&
-#printf "alias ${YEL}gnls${c0} = ${CYA}gn ls out/thorium${c0}\n" &&
-#printf "alias ${YEL}show${c0} = ${CYA}git show-ref${c0}\n" &&
-#printf "alias ${YEL}runhooks${c0} = ${CYA}gclient runhooks${c0}\n" &&
-#printf "alias ${YEL}pgo${c0} = ${CYA}python3 tools/update_pgo_profiles.py --target=linux update --gs-url-base=chromium-optimization-profiles/pgo_profiles${c0}\n" &&
-#printf "alias ${YEL}pgow${c0} = ${CYA}python3 tools/update_pgo_profiles.py --target=win64 update --gs-url-base=chromium-optimization-profiles/pgo_profiles${c0}\n" &&
-#printf "alias ${YEL}pgom${c0} = ${CYA}python3 tools/update_pgo_profiles.py --target=mac update --gs-url-base=chromium-optimization-profiles/pgo_profiles${c0}\n" &&
-#printf "alias ${YEL}pgomac-arm${c0} = ${CYA}python3 tools/update_pgo_profiles.py --target=mac-arm update --gs-url-base=chromium-optimization-profiles/pgo_profiles${c0}\n" &&
-#printf "\n" &&
-
 cd ~/thorium &&
 cat ./logos/thorium_ascii_art.txt &&
 
 printf "${YEL}Tip: See the ${CYA}aliases.txt${YEL} file for some handy bash aliases.${c0}\n" &&
 printf "\n" &&
-printf "${RED} IMPORTANT: If you ran setup.sh without any flags, you must also run ./patch_ac3.sh for AC3/E-AC3 support.\n" &&
-printf "\n" &&
-printf "${GRE}  Enjoy Thorium!\n" &&
+printf "${GRE}Enjoy Thorium!\n" &&
 printf "\n" &&
 tput sgr0

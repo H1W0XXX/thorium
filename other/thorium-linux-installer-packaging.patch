@@ -92,11 +92,10 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
    "$root_out_dir/chrome_crashpad_handler",
    "$root_out_dir/chrome_management_service",
    "$root_out_dir/chrome_sandbox",
-@@ -99,6 +95,13 @@ packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
+@@ -99,6 +95,12 @@ packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
  # (e.g. all locales, resources, etc.)
  packaging_files = packaging_files_binaries + [
                      "common/installer.py",
-+                    "$root_out_dir/initial_preferences",
 +                    "$root_out_dir/resources/inspector_overlay/inspector_overlay_resources.grd",
 +                    "$root_out_dir/resources/inspector_overlay/main.js",
 +                    "$root_out_dir/thorium.svg",
@@ -106,7 +105,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
                      "$root_out_dir/locales/en-US.pak",
                      "$root_out_dir/MEIPreload/manifest.json",
                      "$root_out_dir/MEIPreload/preloaded_data.pb",
-@@ -198,7 +201,7 @@ action("merge_rpm_dependencies") {
+@@ -198,7 +200,7 @@ action("merge_rpm_dependencies") {
  }
  
  strip_binary("strip_chrome_binary") {
@@ -221,7 +220,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
      "common/postinst.include",
      "common/prerm.include",
      "common/repo.cron",
-@@ -357,16 +339,24 @@ copy("deb_packaging_files") {
+@@ -357,16 +339,19 @@ copy("deb_packaging_files") {
    sources = [
      "debian/changelog.template",
      "debian/control.template",
@@ -236,11 +235,6 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
    outputs = [ "$root_out_dir/installer/debian/{{source_file_part}}" ]
  }
  
-+generated_file("thorium_initial_preferences") {
-+  outputs = [ "$root_out_dir/initial_preferences" ]
-+  contents = "{\n}\n"
-+}
-+
 +copy("thorium_svg") {
 +  sources = [ "//chrome/app/theme/chromium/product_logo.svg" ]
 +  outputs = [ "$root_out_dir/thorium.svg" ]
@@ -258,11 +252,10 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
      outputs = [ "$root_out_dir/installer/rpm/{{source_file_part}}" ]
    }
  }
-@@ -442,6 +432,8 @@ group("installer_deps") {
+@@ -442,6 +432,7 @@ group("installer_deps") {
      ":strip_chrome_management_service",
      ":strip_chrome_sandbox",
      ":theme_files",
-+    ":thorium_initial_preferences",
 +    ":thorium_svg",
      "//chrome",
      "//chrome:packed_resources",
@@ -1275,7 +1268,7 @@ index a9bbec28188c9..8c8647273366a 100644
      input_file = pathlib.Path(input_file)
      if input_file in include_stack:
          print(
-@@ -249,429 +152,460 @@ def _process_template_includes(input_file: pathlib.Path,
+@@ -249,429 +152,458 @@ def _process_template_includes(input_file: pathlib.Path,
      return "".join(output_lines)
  
  
@@ -1814,7 +1807,6 @@ index a9bbec28188c9..8c8647273366a 100644
 +        required_files = [
 +            "chromedriver",
 +            "content_shell.pak",
-+            "initial_preferences",
 +            "resources/inspector_overlay/inspector_overlay_resources.grd",
 +            "resources/inspector_overlay/main.js",
 +            "shell_resources.pak",
@@ -1856,7 +1848,6 @@ index a9bbec28188c9..8c8647273366a 100644
 +
 +        for filename in [
 +            "content_shell.pak",
-+            "initial_preferences",
 +            "shell_resources.pak",
 +            "thorium.svg",
 +            "thorium_shell.png",

@@ -12,13 +12,13 @@ import sys
 
 
 def fail(msg):
-    # Print error message and exit
+    # Print error message and exit.
     print(f"{sys.argv[0]}: {msg}", file=sys.stderr)
     sys.exit(111)
 
 
 def try_run(command):
-    # Execute a command and die on failure
+    # Execute a command and die on failure.
     try:
         subprocess.run(command, shell=True, check=True)
     except subprocess.CalledProcessError:
@@ -26,7 +26,7 @@ def try_run(command):
 
 
 def copy(src, dst):
-    # Copy a file and print verbose output like cp -v
+    # Copy a file and print verbose output like cp -v.
     try:
         print(f"Copying {src} to {dst}")
         shutil.copy(src, dst)
@@ -65,9 +65,9 @@ if "--help" in sys.argv:
     display_help()
     sys.exit(0)
 
-# Set chromium/src dir from Windows environment variable
+# Set chromium/src dir from Windows environment variable.
 cr_src_dir = os.getenv("CR_DIR", r"C:/src/chromium/src")
-# Set Thorium dir from Windows environment variable
+# Set Thorium dir from Windows environment variable.
 thor_src_dir = os.path.expandvars(
     os.getenv("THOR_DIR", r"%USERPROFILE%/thorium"))
 
@@ -77,14 +77,11 @@ os.makedirs(f"{cr_src_dir}/out/thorium/", exist_ok=True)
 
 print("\nCopying Thorium source files over the Chromium tree\n")
 
-# Copy Thorium sources
+# Copy Thorium sources.
 thorium_sources = [
     "src/chrome",
-    "src/chromeos",
     "src/components",
-    "src/media",
-    "src/net",
-    "src/services",
+    "src/content",
     "src/third_party",
     "src/ui",
 ]
@@ -109,351 +106,38 @@ copy_directory(
         thor_src_dir, "pak_src", "binaries", "pak-win")),
     os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
 )
-copy(
-    os.path.normpath(os.path.join(
-        thor_src_dir, "src", "content", "shell", "app", "thorium_shell.ico")),
-    os.path.normpath(os.path.join(cr_src_dir, "content", "shell", "app")),
-)
 
 
-patches = [
-    "other/enable-hevc-ffmpeg-decoding.patch",
-    "other/enable-webrtc-h265-l1t2-l1t3-by-default.patch",
-    "other/enable-mpeg2-ac3-eac3-decoding.patch",
-    "other/thorium-media-switches.patch",
-    "other/widevine-cdm-host-verification.patch",
-    "other/thorium-default-api-keys.patch",
-    "other/disable-fetching-field-trials.patch",
-    "other/thorium-blink-feature-defaults.patch",
-    "other/allow-webaudio-autoplay.patch",
-    "other/enable-saving-pages-from-all-schemes.patch",
-    "other/content-gpu-vaapi-libva-config.patch",
-    "other/thorium-content-shell-branding.patch",
-    "other/thorium-common-branding-paths.patch",
-    "other/android-thorium-branding.patch",
-    "other/thorium-startup-logging.patch",
-    "other/thorium-app-metadata-branding.patch",
-    "other/thorium-theme-resources.patch",
-    "other/thorium-app-vector-icons.patch",
-    "other/thorium-app-grd-registration.patch",
-    "other/bookmark-default-prefs.patch",
-    "other/thorium-browser-ui-default-prefs.patch",
-    "other/dom-distiller-reader-mode.patch",
-    "other/thorium-root-build-targets.patch",
-    "other/thorium-chrome-build-targets.patch",
-    "other/thorium-build-config-and-simd.patch",
-    "other/arm-third-party-simd-compat.patch",
-    "other/libyuv-arm-simd-compat.patch",
-    "other/thorium-build-platform-tools.patch",
-    "other/thorium-v8-simd-opts.patch",
-    "other/llvm-optimized-avx2-build.patch",
-    "other/linux-disable-custom-titlebar-default.patch",
-    "other/linux-obsolete-system-policy.patch",
-    "other/linux-memory-details-branding.patch",
-    "other/linux-shell-integration-branding.patch",
-    "other/thorium-linux-installer-packaging.patch",
-    "other/thorium-ui-debug-shell.patch",
-    "other/thorium-webui-image-resources.patch",
-    "other/thorium-browser-resource-branding.patch",
-    "other/omnibox-search-engine-icon-branding.patch",
-    "other/relax-bad-flags-warning.patch",
-    "other/disable-startup-warning-infobars.patch",
-    "other/disable-default-browser-prompt.patch",
-    "other/thorium-chrome-urls-page.patch",
-    "other/thorium-flags-registration.patch",
-    "other/thorium-flags-page-branding.patch",
-    "other/thorium-version-page-branding.patch",
-    "other/thorium-vector-icons.patch",
-    "other/thorium-app-menu-icons.patch",
-    "other/prevent-url-elisions-by-default.patch",
-    "other/enable-chrome-labs-by-default.patch",
-    "other/enable-whats-new-by-default.patch",
-    "other/fix-policy-templates.patch",
-    "other/ftp-support-thorium.patch",
-    "other/thorium-2024-ui.patch",
-    "other/GPC.patch",
-    "other/mini_installer.patch",
-    "other/thorium-mini-installer-manifest.patch",
-    "other/open_in_same_tab.patch",
-    "other/add-flag-for-close-confirmation.patch",
-    "other/add-flag-to-close-window-with-last-tab.patch",
-    "other/add-flag-to-scroll-tabs.patch",
-    "other/add-flag-for-custom-ntp.patch",
-    "other/add-flag-for-tab-hover-cards.patch",
-    "other/force-disable-tab-outlines.patch",
-    "other/quiet-notification-defaults.patch",
-    "other/disable-thorium-dns-config.patch",
-    "other/secure-dns-defaults.patch",
-    "other/reduce-doh-request-headers.patch",
-    "other/disable-alternate-error-pages-by-default.patch",
-    "other/add-flag-to-keep-all-history.patch",
-    "other/enable-parallel-downloading-by-default.patch",
-    "other/disable-background-mode-by-default.patch",
-    "other/thorium-dino-game.patch",
-    "other/allow-insecure-downloads.patch",
-    "other/disable-download-quarantine.patch",
-    "other/disable-vulkan-gpu-log-warnings.patch",
-    "other/thorium-sandbox-compat.patch",
-    "other/thoriumos-ash-vector-icons.patch",
-    "other/thoriumos-help-app-discovery.patch",
-    "other/thoriumos-sample-system-web-app.patch",
-    "other/thoriumos-disable-stats-reporting.patch",
-    "other/add-flag-for-auto-dark-mode.patch",
-    "other/disable-thorium-icons.patch",
-    "other/always-enable-reload-menu.patch",
-    "other/thorium_webui.patch",
-    "other/keep-expired-flags.patch",
-    "other/disable-privacy-sandbox.patch",
-    "other/disable-encryption.patch",
-    "other/disable-feature-promos.patch",
-    "other/thorium-install-static-branding.patch",
-    "other/windows-chrome-proxy-branding.patch",
-    "other/windows-profile-shortcut-icon-version.patch",
-    "other/win_updater.patch",
-    "other/keyboard_shortcuts.patch",
-    "other/disable-aero.patch",
-    "other/restore_download_shelf.patch",
-    "other/allow_manifest_v2_extensions.patch",
-    "other/increase-dnr-limits.patch",
-    "other/show-hosted-apps-in-extensions.patch",
-    "other/android-disable-signin-without-account-manager.patch",
-    "other/android-extensions-support.patch",
-    "other/chrome-web-store-protection.patch",
-    "other/enable-extension-in-incognito.patch",
-]
-for patch in patches:
-    relative_path = patch.replace("other/", "", 1)
-    os.path.normpath(os.path.join(cr_src_dir, os.path.dirname(relative_path)))
-    copy(
-        os.path.normpath(os.path.join(thor_src_dir, patch)),
-        os.path.normpath(os.path.join(cr_src_dir, relative_path)),
-    )
+def apply_patch_series():
+    condition_args = []
+    if "--woa" in sys.argv:
+        condition_args.extend(["--condition", "woa"])
+    if "--sse2" in sys.argv:
+        condition_args.extend(["--condition", "sse2"])
+
+    print("\nApplying Thorium patch series\n")
+    script = os.path.join(
+        thor_src_dir, "patch_scripts", "series", "apply_series.py")
+    command = [
+        sys.executable,
+        script,
+        "--thorium-root",
+        thor_src_dir,
+        "--source-tree",
+        cr_src_dir,
+        "--apply",
+        *condition_args,
+    ]
+    try:
+        subprocess.run(command, check=True)
+    except subprocess.CalledProcessError:
+        fail("Failed applying Thorium patch series")
 
 
-print("\nPatching FFMPEG for HEVC\n")
-copy(
-    os.path.normpath(
-        os.path.join(thor_src_dir, "other",
-                     "add-hevc-ffmpeg-decoder-parser.patch")
-    ),
-    os.path.normpath(os.path.join(cr_src_dir, "third_party", "ffmpeg")),
-)
-copy(
-    os.path.normpath(
-        os.path.join(thor_src_dir, "other", "change-libavcodec-header.patch")
-    ),
-    os.path.normpath(os.path.join(cr_src_dir, "third_party", "ffmpeg")),
-)
-copy(
-    os.path.normpath(
-        os.path.join(thor_src_dir, "other", "fix-ffmpeg-android-x86-disable-hevc-nasm.patch")
-    ),
-    os.path.normpath(os.path.join(cr_src_dir, "third_party", "ffmpeg")),
-)
-copy(
-    os.path.normpath(os.path.join(thor_src_dir, "other", "ffmpeg-branding.patch")),
-    os.path.normpath(os.path.join(cr_src_dir, "third_party", "ffmpeg")),
-)
-copy(
-    os.path.normpath(os.path.join(thor_src_dir, "other", "widevine-cdm-support.patch")),
-    os.path.normpath(os.path.join(cr_src_dir, "third_party", "widevine")),
-)
-copy(
-    os.path.normpath(os.path.join(thor_src_dir, "other", "thorium-search-engines-data.patch")),
-    os.path.normpath(os.path.join(cr_src_dir, "third_party", "search_engines_data", "resources")),
-)
-# Change directory to ffmpeg_dir and run commands
-ffmpeg_dir = os.path.join(cr_src_dir, "third_party", "ffmpeg")
-os.chdir(ffmpeg_dir)
-try_run(f"git apply --reject add-hevc-ffmpeg-decoder-parser.patch")
-try_run(f"git apply --reject change-libavcodec-header.patch")
-try_run(f"git apply --reject fix-ffmpeg-android-x86-disable-hevc-nasm.patch")
-try_run(f"git apply --reject ffmpeg-branding.patch")
-
-
-print("\nEnabling HEVC FFmpeg decoding\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject enable-hevc-ffmpeg-decoding.patch")
-try_run(f"git apply --reject enable-webrtc-h265-l1t2-l1t3-by-default.patch")
-try_run(f"git apply --reject enable-mpeg2-ac3-eac3-decoding.patch")
-try_run(f"git apply --reject thorium-media-switches.patch")
-try_run(f"git apply --reject --directory=third_party/widevine third_party/widevine/widevine-cdm-support.patch")
-try_run(f"git apply --reject widevine-cdm-host-verification.patch")
-try_run(f"git apply --reject thorium-default-api-keys.patch")
-try_run(f"git apply --reject disable-fetching-field-trials.patch")
-
-print("\nThorium search engines data patch\n")
-search_engines_data_dir = os.path.join(
-    cr_src_dir, "third_party", "search_engines_data", "resources"
-)
-os.chdir(search_engines_data_dir)
-try_run(f"git apply --reject thorium-search-engines-data.patch")
-os.chdir(cr_src_dir)
-
-try_run(f"git apply --reject thorium-blink-feature-defaults.patch")
-try_run(f"git apply --reject allow-webaudio-autoplay.patch")
-try_run(f"git apply --reject enable-saving-pages-from-all-schemes.patch")
-try_run(f"git apply --reject content-gpu-vaapi-libva-config.patch")
-try_run(f"git apply --reject thorium-content-shell-branding.patch")
-try_run(f"git apply --reject thorium-common-branding-paths.patch")
-try_run(f"git apply --reject android-thorium-branding.patch")
-try_run(f"git apply --reject thorium-startup-logging.patch")
-try_run(f"git apply --reject thorium-app-metadata-branding.patch")
-try_run(f"git apply --reject thorium-theme-resources.patch")
-try_run(f"git apply --reject thorium-app-vector-icons.patch")
-try_run(f"git apply --reject thorium-app-grd-registration.patch")
-try_run(f"git apply --reject bookmark-default-prefs.patch")
-try_run(f"git apply --reject thorium-browser-ui-default-prefs.patch")
-try_run(f"git apply --reject dom-distiller-reader-mode.patch")
-try_run(f"git apply --reject thorium-root-build-targets.patch")
-try_run(f"git apply --reject thorium-chrome-build-targets.patch")
-try_run(f"git apply --reject thorium-build-config-and-simd.patch")
-try_run(f"git apply --reject arm-third-party-simd-compat.patch")
-libyuv_dir = os.path.join(cr_src_dir, "third_party", "libyuv")
-os.chdir(libyuv_dir)
-try_run(f"git apply --reject ../../libyuv-arm-simd-compat.patch")
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject thorium-build-platform-tools.patch")
-
-print("\nThorium V8 SIMD opts patch\n")
-v8_dir = os.path.join(cr_src_dir, "v8")
-os.chdir(v8_dir)
-try_run(f"git apply --reject ../thorium-v8-simd-opts.patch")
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject llvm-optimized-avx2-build.patch")
-try_run(f"git apply --reject linux-disable-custom-titlebar-default.patch")
-try_run(f"git apply --reject linux-obsolete-system-policy.patch")
-try_run(f"git apply --reject linux-memory-details-branding.patch")
-try_run(f"git apply --reject linux-shell-integration-branding.patch")
-try_run(f"git apply --reject thorium-linux-installer-packaging.patch")
-try_run(f"git apply --reject thorium-ui-debug-shell.patch")
-try_run(f"git apply --reject thorium-webui-image-resources.patch")
-try_run(f"git apply --reject thorium-browser-resource-branding.patch")
-try_run(f"git apply --reject omnibox-search-engine-icon-branding.patch")
-try_run(f"git apply --reject relax-bad-flags-warning.patch")
-try_run(f"git apply --reject disable-startup-warning-infobars.patch")
-try_run(f"git apply --reject disable-default-browser-prompt.patch")
-try_run(f"git apply --reject thorium-chrome-urls-page.patch")
-try_run(f"git apply --reject thorium-flags-registration.patch")
-try_run(f"git apply --reject thorium-flags-page-branding.patch")
-try_run(f"git apply --reject thorium-version-page-branding.patch")
-try_run(f"git apply --reject thorium-vector-icons.patch")
-try_run(f"git apply --reject thorium-app-menu-icons.patch")
-try_run(f"git apply --reject prevent-url-elisions-by-default.patch")
-try_run(f"git apply --reject enable-chrome-labs-by-default.patch")
-try_run(f"git apply --reject enable-whats-new-by-default.patch")
-
-print("\nPatching policy templates\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject fix-policy-templates.patch")
-
-
-print("\nPatching FTP support\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject ftp-support-thorium.patch")
-
-
-print("\nPatching in GPC support\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject GPC.patch")
-
-
-print("\nPatching for Thorium 2024 UI\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject thorium-2024-ui.patch")
-
-
-print("\nDownload Shelf patch...\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject restore_download_shelf.patch")
-
-
-print("\nPatching for mini_installer\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject mini_installer.patch")
-try_run(f"git apply --reject thorium-mini-installer-manifest.patch")
-
-
-print("\nApplying other Misc. patches...\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject open_in_same_tab.patch")
-try_run(f"git apply --reject add-flag-for-close-confirmation.patch")
-try_run(f"git apply --reject add-flag-to-close-window-with-last-tab.patch")
-try_run(f"git apply --reject add-flag-to-scroll-tabs.patch")
-try_run(f"git apply --reject add-flag-for-custom-ntp.patch")
-try_run(f"git apply --reject add-flag-for-tab-hover-cards.patch")
-try_run(f"git apply --reject force-disable-tab-outlines.patch")
-try_run(f"git apply --reject quiet-notification-defaults.patch")
-try_run(f"git apply --reject disable-thorium-dns-config.patch")
-try_run(f"git apply --reject secure-dns-defaults.patch")
-try_run(f"git apply --reject reduce-doh-request-headers.patch")
-try_run(f"git apply --reject disable-alternate-error-pages-by-default.patch")
-try_run(f"git apply --reject add-flag-to-keep-all-history.patch")
-try_run(f"git apply --reject enable-parallel-downloading-by-default.patch")
-try_run(f"git apply --reject disable-background-mode-by-default.patch")
-try_run(f"git apply --reject thorium-dino-game.patch")
-try_run(f"git apply --reject allow-insecure-downloads.patch")
-try_run(f"git apply --reject disable-download-quarantine.patch")
-try_run(f"git apply --reject disable-vulkan-gpu-log-warnings.patch")
-try_run(f"git apply --reject thorium-sandbox-compat.patch")
-try_run(f"git apply --reject thoriumos-ash-vector-icons.patch")
-try_run(f"git apply --reject thoriumos-help-app-discovery.patch")
-try_run(f"git apply --reject thoriumos-sample-system-web-app.patch")
-try_run(f"git apply --reject thoriumos-disable-stats-reporting.patch")
-try_run(f"git apply --reject add-flag-for-auto-dark-mode.patch")
-try_run(f"git apply --reject disable-thorium-icons.patch")
-try_run(f"git apply --reject always-enable-reload-menu.patch")
-try_run(f"git apply --reject allow_manifest_v2_extensions.patch")
-try_run(f"git apply --reject increase-dnr-limits.patch")
-try_run(f"git apply --reject show-hosted-apps-in-extensions.patch")
-try_run(f"git apply --reject thorium_webui.patch")
-try_run(f"git apply --reject win_updater.patch")
-try_run(f"git apply --reject keyboard_shortcuts.patch")
-try_run(f"git apply --reject keep-expired-flags.patch")
-try_run(f"git apply --reject disable-privacy-sandbox.patch")
-try_run(f"git apply --reject disable-encryption.patch")
-try_run(f"git apply --reject disable-feature-promos.patch")
-try_run(f"git apply --reject thorium-install-static-branding.patch")
-try_run(f"git apply --reject windows-chrome-proxy-branding.patch")
-try_run(f"git apply --reject windows-profile-shortcut-icon-version.patch")
-
-
-print("\nApplying crash fixes patches...\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject disable-aero.patch")
-try_run(f"git apply --reject android-disable-signin-without-account-manager.patch")
-
-
-print("\nApplying extension support and protection patches...\n")
-# Change directory to cr_src_dir and run commands
-os.chdir(cr_src_dir)
-try_run(f"git apply --reject android-extensions-support.patch")
-try_run(f"git apply --reject chrome-web-store-protection.patch")
-try_run(f"git apply --reject enable-extension-in-incognito.patch")
-
+apply_patch_series()
 
 print("\nCopying other files to out/thorium\n")
-# Copying additional files
-os.makedirs(f"{cr_src_dir}/out/thorium/default_apps", exist_ok=True)
-copy_directory(
-    os.path.normpath(os.path.join(thor_src_dir, "infra", "default_apps")),
-    os.path.normpath(os.path.join(
-        cr_src_dir, "out", "thorium", "default_apps")),
-)
-copy(
-    os.path.normpath(os.path.join(
-        thor_src_dir, "infra", "initial_preferences")),
-    os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
-)
+# Copying additional files.
 copy(
     os.path.normpath(os.path.join(thor_src_dir, "infra", "thor_ver")),
     os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
@@ -478,7 +162,7 @@ else:
     )
 
 
-# Copy Windows on Arm files
+# Copy Windows on Arm files.
 def copy_woa():
     print("\nCopying Windows on Arm build files\n")
     copy(
@@ -502,7 +186,7 @@ if "--woa" in sys.argv:
     copy_woa()
 
 
-# Copy AVX512 build files
+# Copy AVX512 build files.
 def copy_avx512():
     print("\nCopying AVX-512 build files\n")
     copy(
@@ -531,7 +215,7 @@ if "--avx512" in sys.argv:
     copy_avx512()
 
 
-# Copy AVX2 build files
+# Copy AVX2 build files.
 def copy_avx2():
     print("\nCopying AVX2 build files\n")
     copy(
@@ -560,7 +244,7 @@ if "--avx2" in sys.argv:
     copy_avx2()
 
 
-# Copy SSE4.1 build files
+# Copy SSE4.1 build files.
 def copy_sse4():
     print("\nCopying SSE4.1 build files\n")
     copy(
@@ -589,7 +273,7 @@ if "--sse4" in sys.argv:
     copy_sse4()
 
 
-# Copy SSE3 build files
+# Copy SSE3 build files.
 def copy_sse3():
     print("\nCopying SSE3 build files\n")
     copy(
@@ -623,7 +307,7 @@ if "--sse3" in sys.argv:
     copy_sse3()
 
 
-# Copy SSE2 build files
+# Copy SSE2 build files.
 def copy_sse2():
     print("\nCopying SSE2 build files\n")
     copy(
@@ -650,20 +334,6 @@ def copy_sse2():
 
 if "--sse2" in sys.argv:
     copy_sse2()
-
-    print("\nPatching ANGLE for SSE2\n")
-    copy(
-        os.path.normpath(
-            os.path.join(thor_src_dir, "other", "SSE2", "angle-lockfree.patch")
-        ),
-        os.path.normpath(os.path.join(
-            cr_src_dir, "third_party", "angle", "src")),
-    )
-
-    # Change directory to angle_dir and run commands
-    angle_dir = os.path.join(cr_src_dir, "third_party", "angle", "src")
-    os.chdir(angle_dir)
-    try_run(f"git apply --reject angle-lockfree.patch")
 
 
 print("\nDone!\n")

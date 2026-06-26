@@ -930,12 +930,11 @@ index 59679ed4c8b5d..ab1d1da74339b 100644
  #include "chrome/install_static/buildflags.h"
  #include "chrome/install_static/install_details.h"
  #include "chrome/install_static/install_modes.h"
-@@ -82,6 +85,10 @@ namespace installer {
+@@ -82,6 +85,9 @@ namespace installer {
  
  namespace {
  
 +// Thorium Application dir files
-+const wchar_t kInitPref[] = L"initial_preferences";
 +const wchar_t kThorVer[] = L"thor_ver";
 +
  void AddInstallerCopyTasks(const InstallParams& install_params,
@@ -1008,14 +1007,11 @@ index 59679ed4c8b5d..ab1d1da74339b 100644
    if (current_version.IsValid()) {
      // TODO(crbug.com/441478433): Delete this cleanup some time in 2027.
      // Delete the archive from an existing install to save some disk space.
-@@ -308,12 +361,22 @@ void AddChromeWorkItems(const InstallParams& install_params,
+@@ -308,12 +361,19 @@ void AddChromeWorkItems(const InstallParams& install_params,
    // Copy installer in install directory.
    AddInstallerCopyTasks(install_params, install_list);
  
 +  // Add Thorium-specific files.
-+  install_list->AddCopyTreeWorkItem(src_path.Append(kInitPref),
-+                                    target_path.Append(kInitPref), temp_path,
-+                                    WorkItem::ALWAYS);
 +  install_list->AddCopyTreeWorkItem(src_path.Append(kThorVer),
 +                                    target_path.Append(kThorVer), temp_path,
 +                                    WorkItem::ALWAYS);

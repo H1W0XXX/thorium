@@ -99,7 +99,7 @@ index 5b96804e4d91c..bf956adc4678c 100644
  
  bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
 diff --git a/chrome/browser/extensions/extension_management_internal.h b/chrome/browser/extensions/extension_management_internal.h
-index 43941aae7c368..6b96ab3c057c8 100644
+index 43941aae7c368..acda5eb6b7e45 100644
 --- a/chrome/browser/extensions/extension_management_internal.h
 +++ b/chrome/browser/extensions/extension_management_internal.h
 @@ -1,4 +1,4 @@
@@ -206,4 +206,3 @@ index 921ca8867e952..1f079508ae5e4 100644
 -    }
      return true;
    }
- 

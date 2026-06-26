@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/resources/BUILD.gn b/chrome/browser/resources/BUILD.gn
-index 713625d2904c74db89fee7f36b36697444c24a3b..beb782124e695be14c7a5e691f6ab8f2f74577ff 100644
+index 713625d2904c7..beb782124e695 100644
 --- a/chrome/browser/resources/BUILD.gn
 +++ b/chrome/browser/resources/BUILD.gn
 @@ -128,7 +128,6 @@ group("resources") {
@@ -11,7 +11,7 @@ index 713625d2904c74db89fee7f36b36697444c24a3b..beb782124e695be14c7a5e691f6ab8f2
    }
  
 diff --git a/components/browsing_data/content/browsing_data_model.cc b/components/browsing_data/content/browsing_data_model.cc
-index 8b130bc3a328f64db271518f114e6e1c0dc86dda..5d19636e4896707bd4af149c42a9b62d7587fc0d 100644
+index 8b130bc3a328f..5d19636e48967 100644
 --- a/components/browsing_data/content/browsing_data_model.cc
 +++ b/components/browsing_data/content/browsing_data_model.cc
 @@ -995,12 +995,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
@@ -56,7 +56,7 @@ index 8b130bc3a328f64db271518f114e6e1c0dc86dda..5d19636e4896707bd4af149c42a9b62d
  #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
    storage_partition_->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(
 diff --git a/components/privacy_sandbox/privacy_sandbox_features.cc b/components/privacy_sandbox/privacy_sandbox_features.cc
-index c2a7047d7559846481db9ca3f583b669cd3d4974..133f6ae227585e70510b25a40ff210958c094194 100644
+index c2a7047d75598..133f6ae227585 100644
 --- a/components/privacy_sandbox/privacy_sandbox_features.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_features.cc
 @@ -1,4 +1,4 @@
@@ -84,7 +84,7 @@ index c2a7047d7559846481db9ca3f583b669cd3d4974..133f6ae227585e70510b25a40ff21095
  BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
               base::FEATURE_DISABLED_BY_DEFAULT);
 diff --git a/components/privacy_sandbox/privacy_sandbox_prefs.cc b/components/privacy_sandbox/privacy_sandbox_prefs.cc
-index c58d4cb4a9e539cd74e07f448d04f9e6adbbeb29..673a5aa24ed15c94022fe36060955882696850fd 100644
+index 51c4d9b781ec5..08e546664ef4e 100644
 --- a/components/privacy_sandbox/privacy_sandbox_prefs.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_prefs.cc
 @@ -1,4 +1,4 @@
@@ -103,7 +103,7 @@ index c58d4cb4a9e539cd74e07f448d04f9e6adbbeb29..673a5aa24ed15c94022fe36060955882
  
    registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
 diff --git a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
-index 90e887eef88c688eae9fec7a8ad6ad80eb8da9ec..688fd654b54498a13161c87e979d61add7cf2209 100644
+index 90e887eef88c6..688fd654b5449 100644
 --- a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 @@ -1,4 +1,4 @@
@@ -145,7 +145,7 @@ index 90e887eef88c688eae9fec7a8ad6ad80eb8da9ec..688fd654b54498a13161c87e979d61ad
  
  PrivacySandboxSettingsImpl::Status
 diff --git a/content/browser/attribution_reporting/attribution_suitable_context.cc b/content/browser/attribution_reporting/attribution_suitable_context.cc
-index 12f09023269e277752757c6589b146902c8533cf..3e75e63a5982d5124eed753c02ac94a57fa86d67 100644
+index 12f09023269e2..3e75e63a5982d 100644
 --- a/content/browser/attribution_reporting/attribution_suitable_context.cc
 +++ b/content/browser/attribution_reporting/attribution_suitable_context.cc
 @@ -44,82 +44,13 @@ bool UkmSourceIdAllowed(RenderFrameHostImpl* rfh) {
@@ -234,7 +234,7 @@ index 12f09023269e277752757c6589b146902c8533cf..3e75e63a5982d5124eed753c02ac94a5
  
  // static
 diff --git a/content/browser/interest_group/ad_auction_service_impl.cc b/content/browser/interest_group/ad_auction_service_impl.cc
-index 0f75f7628248fcb1164f08241c19a0e246f7144a..330b99614c7378b74acf03a212ec358dda4d7d30 100644
+index 0f75f7628248f..330b99614c737 100644
 --- a/content/browser/interest_group/ad_auction_service_impl.cc
 +++ b/content/browser/interest_group/ad_auction_service_impl.cc
 @@ -190,11 +190,6 @@ AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
@@ -250,7 +250,7 @@ index 0f75f7628248fcb1164f08241c19a0e246f7144a..330b99614c7378b74acf03a212ec358d
  
  void AdAuctionServiceImpl::JoinInterestGroup(
 diff --git a/content/browser/storage_partition_impl.cc b/content/browser/storage_partition_impl.cc
-index 2a49d3a2e90b9c0efdc09b14d5c92cc8cf0cc042..0dfaa6c29d817b27e28418bae55ead984b509baa 100644
+index 2a49d3a2e90b9..0dfaa6c29d817 100644
 --- a/content/browser/storage_partition_impl.cc
 +++ b/content/browser/storage_partition_impl.cc
 @@ -1468,38 +1468,6 @@ void StoragePartitionImpl::Initialize(
@@ -314,7 +314,7 @@ index 2a49d3a2e90b9c0efdc09b14d5c92cc8cf0cc042..0dfaa6c29d817b27e28418bae55ead98
  
  void StoragePartitionImpl::ResetSessionStorageConnections() {
 diff --git a/content/browser/web_contents/web_contents_impl.cc b/content/browser/web_contents/web_contents_impl.cc
-index 646327bee417d1988e31a9bc89cb6b6fa281a73b..586ff95749e417d9c48f0fa17388a07e185cc411 100644
+index 646327bee417d..586ff95749e41 100644
 --- a/content/browser/web_contents/web_contents_impl.cc
 +++ b/content/browser/web_contents/web_contents_impl.cc
 @@ -4356,12 +4356,6 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
@@ -331,7 +331,7 @@ index 646327bee417d1988e31a9bc89cb6b6fa281a73b..586ff95749e417d9c48f0fa17388a07e
    SchedulerLoopQuarantineWebContentsObserver::MaybeCreateForWebContents(this);
    RedirectChainDetector::CreateForWebContents(this);
 diff --git a/content/services/auction_worklet/private_aggregation_bindings.cc b/content/services/auction_worklet/private_aggregation_bindings.cc
-index 38ff1f3f2e6f99f87d95f7f42b40b47358240362..019e78cdaef069f9ee2afb94507b547044f3b5fd 100644
+index 38ff1f3f2e6f9..019e78cdaef06 100644
 --- a/content/services/auction_worklet/private_aggregation_bindings.cc
 +++ b/content/services/auction_worklet/private_aggregation_bindings.cc
 @@ -407,53 +407,6 @@ PrivateAggregationBindings::~PrivateAggregationBindings() = default;

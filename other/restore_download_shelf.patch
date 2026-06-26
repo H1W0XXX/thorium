@@ -1,8 +1,8 @@
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 21146974a2884..1c2656814106a 100644
+index 1a6eba9ee69db..d5ccfaad1d14c 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -2211,6 +2211,10 @@ are declared in tools/grit/grit_args.gni.
+@@ -2288,6 +2288,10 @@ are declared in tools/grit/grit_args.gni.
           desc="Status that the file download will be opened when the download completes.">
          Opening when complete
        </message>
@@ -13,7 +13,7 @@ index 21146974a2884..1c2656814106a 100644
        <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_SHORT" desc="Short status text that appears on unknown-sized downloads in progress.">
          In progress
        </message>
-@@ -2264,6 +2268,14 @@ are declared in tools/grit/grit_args.gni.
+@@ -2332,6 +2336,14 @@ are declared in tools/grit/grit_args.gni.
           desc="Message shown to the user to validate the download when the download content is classified as uncommon by safebrowsing. This variant is shown when the user is enrolled in the Advanced Protection program.">
          <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> was blocked by Advanced Protection.
        </message>
@@ -28,7 +28,7 @@ index 21146974a2884..1c2656814106a 100644
        <message name="IDS_PROMPT_DEEP_SCANNING_APP_DOWNLOAD"
          desc="Message shown in the download shelf when a download is being scanned for an Advanced Protection user">
          <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is being scanned.
-@@ -2280,6 +2292,10 @@ are declared in tools/grit/grit_args.gni.
+@@ -2348,6 +2360,10 @@ are declared in tools/grit/grit_args.gni.
          desc="Message shown in the download shelf when a download is blocked for being encrypted">
          <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is encrypted. Ask its owner to decrypt.
        </message>
@@ -39,7 +39,7 @@ index 21146974a2884..1c2656814106a 100644
        <message name="IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING"
          desc="Message shown in the download shelf when a download contains sensitive content, and the admin has chosen to warn the user">
          Your organization's policies aren't met
-@@ -2455,6 +2471,9 @@ are declared in tools/grit/grit_args.gni.
+@@ -2527,6 +2543,9 @@ are declared in tools/grit/grit_args.gni.
        <message name="IDS_DOWNLOAD_NO_DOWNLOADS" desc="A message shown when the user has no downloads to show on chrome://downloads.">
          Files you download appear here
        </message>
@@ -49,7 +49,7 @@ index 21146974a2884..1c2656814106a 100644
        <message name="IDS_DOWNLOAD_LINK_RESUME"
                 desc="In the download view, 'Resume' link text">
          Resume
-@@ -18521,6 +18540,37 @@ Please help our engineers fix this problem. Tell us what happened right before y
+@@ -18354,6 +18373,37 @@ Please help our engineers fix this problem. Tell us what happened right before y
        Data Sharing
      </message>
  
@@ -87,102 +87,26 @@ index 21146974a2884..1c2656814106a 100644
      <!-- In product help bubble dialog for users referred from ESB promotions -->
      <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_IPH_BUBBLE_TEXT" desc="The text on an In-Product-Help bubble that is shown when a user navigates to the security settings page from an ESB promotion">
        Get more protection against dangerous websites and downloads
-diff --git a/chrome/app/generated_resources_grd/IDS_APP_DEEP_SCANNING_INFO_DIALOG_MESSAGE.png.sha1 b/chrome/app/generated_resources_grd/IDS_APP_DEEP_SCANNING_INFO_DIALOG_MESSAGE.png.sha1
-new file mode 100644
-index 0000000000000..aeb72fdc7dbd8
---- /dev/null
-+++ b/chrome/app/generated_resources_grd/IDS_APP_DEEP_SCANNING_INFO_DIALOG_MESSAGE.png.sha1
-@@ -0,0 +1 @@
-+63671a605bc328e12a6f733df6f7c5bb649657f8
-\ No newline at end of file
-diff --git a/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_ACCEPT_BUTTON.png.sha1 b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_ACCEPT_BUTTON.png.sha1
-new file mode 100644
-index 0000000000000..6f6791967843b
---- /dev/null
-+++ b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_ACCEPT_BUTTON.png.sha1
-@@ -0,0 +1 @@
-+7121884ac8e096779608d66e1c407a5186befef9
-\ No newline at end of file
-diff --git a/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_MESSAGE.png.sha1 b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_MESSAGE.png.sha1
-new file mode 100644
-index 0000000000000..6f6791967843b
---- /dev/null
-+++ b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_MESSAGE.png.sha1
-@@ -0,0 +1 @@
-+7121884ac8e096779608d66e1c407a5186befef9
-\ No newline at end of file
-diff --git a/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_TITLE.png.sha1 b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_TITLE.png.sha1
-new file mode 100644
-index 0000000000000..6f6791967843b
---- /dev/null
-+++ b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_DIALOG_OPEN_NOW_TITLE.png.sha1
-@@ -0,0 +1 @@
-+7121884ac8e096779608d66e1c407a5186befef9
-\ No newline at end of file
-diff --git a/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_INFO_DIALOG_ACCEPT_BUTTON.png.sha1 b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_INFO_DIALOG_ACCEPT_BUTTON.png.sha1
-new file mode 100644
-index 0000000000000..3cb5288cd7055
---- /dev/null
-+++ b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_INFO_DIALOG_ACCEPT_BUTTON.png.sha1
-@@ -0,0 +1 @@
-+755af5bf941da316b067368c667f41e691a7cc81
-\ No newline at end of file
-diff --git a/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE.png.sha1 b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE.png.sha1
-new file mode 100644
-index 0000000000000..03e0d4fbd4ec8
---- /dev/null
-+++ b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_INFO_DIALOG_MESSAGE.png.sha1
-@@ -0,0 +1 @@
-+e1e6b403111ec35e581f18734ef3833d29d9eda0
-\ No newline at end of file
-diff --git a/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_INFO_DIALOG_TITLE.png.sha1 b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_INFO_DIALOG_TITLE.png.sha1
-new file mode 100644
-index 0000000000000..c4eb38b672e65
---- /dev/null
-+++ b/chrome/app/generated_resources_grd/IDS_DEEP_SCANNING_INFO_DIALOG_TITLE.png.sha1
-@@ -0,0 +1 @@
-+cc52b0a4dee010bfd826bbd4c91d0b02b0630ac5
-\ No newline at end of file
-diff --git a/chrome/app/generated_resources_grd/IDS_PROMPT_DEEP_SCANNING_DOWNLOAD.png.sha1 b/chrome/app/generated_resources_grd/IDS_PROMPT_DEEP_SCANNING_DOWNLOAD.png.sha1
-new file mode 100644
-index 0000000000000..876b031c6a705
---- /dev/null
-+++ b/chrome/app/generated_resources_grd/IDS_PROMPT_DEEP_SCANNING_DOWNLOAD.png.sha1
-@@ -0,0 +1 @@
-+de31a4365c5cbb01632ed6bce1ce555e5ceda62c
-\ No newline at end of file
-diff --git a/chrome/app/generated_resources_grd/IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_SAFE.png.sha1 b/chrome/app/generated_resources_grd/IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_SAFE.png.sha1
-new file mode 100644
-index 0000000000000..b111f157c9083
---- /dev/null
-+++ b/chrome/app/generated_resources_grd/IDS_PROMPT_DOWNLOAD_DEEP_SCANNED_SAFE.png.sha1
-@@ -0,0 +1 @@
-+0d6f983af6d5461860b0d0d950a0ab13763dcdd7
-\ No newline at end of file
-diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 393dad48a2155..d13fd6d59375d 100644
---- a/chrome/browser/BUILD.gn
-+++ b/chrome/browser/BUILD.gn
-@@ -3811,6 +3811,10 @@ static_library("browser") {
-       "download/download_dir_policy_handler.h",
-       "download/download_dir_util.cc",
-       "download/download_dir_util.h",
-+      "download/download_item_web_app_data.cc",
-+      "download/download_item_web_app_data.h",
-+      "download/download_shelf.cc",
-+      "download/download_shelf.h",
-       "download/download_ui_enterprise_util.cc",
-       "download/download_ui_enterprise_util.h",
-       "download/download_warning_desktop_hats_utils.cc",
-@@ -9159,6 +9163,8 @@ static_library("test_support") {
-     sources += [
-       "apps/intent_helper/preferred_apps_test_util.cc",
-       "apps/intent_helper/preferred_apps_test_util.h",
-+      "download/test_download_shelf.cc",
-+      "download/test_download_shelf.h",
-       "hid/mock_hid_device_observer.cc",
-       "hid/mock_hid_device_observer.h",
-       "notifications/notification_test_util.cc",
+diff --git a/chrome/browser/download/BUILD.gn b/chrome/browser/download/BUILD.gn
+index 76fa732861f58..b8e11e85008a2 100644
+--- a/chrome/browser/download/BUILD.gn
++++ b/chrome/browser/download/BUILD.gn
+@@ -114,6 +114,7 @@ source_set("download") {
+       "download_dir_policy_handler.h",
+       "download_dir_util.h",
+       "download_item_web_app_data.h",
++      "download_shelf.h",
+       "download_ui_enterprise_util.h",
+       "download_warning_desktop_hats_utils.h",
+       "offline_item_model.h",
+@@ -281,6 +282,7 @@ source_set("impl") {
+       "download_dir_policy_handler.cc",
+       "download_dir_util.cc",
+       "download_item_web_app_data.cc",
++      "download_shelf.cc",
+       "download_ui_enterprise_util.cc",
+       "download_warning_desktop_hats_utils.cc",
+       "offline_item_model.cc",
 diff --git a/chrome/browser/download/bubble/download_bubble_prefs.cc b/chrome/browser/download/bubble/download_bubble_prefs.cc
 index e1ad7a503c462..39665e7a134e2 100644
 --- a/chrome/browser/download/bubble/download_bubble_prefs.cc
@@ -211,112 +135,11 @@ index e1ad7a503c462..39665e7a134e2 100644
    // If the download UI is disabled by at least one extension, do not show the
    // bubble and the toolbar icon.
    return DownloadCoreServiceFactory::GetForBrowserContext(
-diff --git a/chrome/browser/download/download_browsertest.cc b/chrome/browser/download/download_browsertest.cc
-index e30d0298be942..b177528727576 100644
---- a/chrome/browser/download/download_browsertest.cc
-+++ b/chrome/browser/download/download_browsertest.cc
-@@ -53,6 +53,7 @@
- #include "chrome/browser/download/download_manager_utils.h"
- #include "chrome/browser/download/download_prefs.h"
- #include "chrome/browser/download/download_request_limiter.h"
-+#include "chrome/browser/download/download_shelf.h"
- #include "chrome/browser/download/download_target_determiner.h"
- #include "chrome/browser/download/download_test_file_activity_observer.h"
- #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
-@@ -507,7 +508,7 @@ void CreateCompletedDownload(content::DownloadManager* download_manager,
- 
- #if !BUILDFLAG(IS_CHROMEOS)
- // Whether download UI is visible at all (download toolbar button for download
--// bubble).
-+// bubble, or download shelf).
- bool IsDownloadUiVisible(BrowserWindow* window) {
-   return window->GetDownloadBubbleUIController()
-       ->GetDownloadDisplayController()
-@@ -516,7 +517,7 @@ bool IsDownloadUiVisible(BrowserWindow* window) {
- }
- 
- // Whether download details are visible in the UI (partial view for download
--// bubble).
-+// bubble, or download shelf).
- bool IsDownloadDetailedUiVisible(BrowserWindow* window) {
-   return window->GetDownloadBubbleUIController()
-       ->GetDownloadDisplayController()
-@@ -5134,6 +5135,70 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_DownloadAndWait) {
-   EXPECT_TRUE(IsDownloadDetailedUiVisible(browser()->window()));
- }
- 
-+// Tests for the download shelf.
-+#if BUILDFLAG(IS_CHROMEOS)
-+// Test that the download shelf is per-window by starting a download in one
-+// tab, opening a second tab, closing the shelf, going back to the first tab,
-+// and checking that the shelf is closed.
-+IN_PROC_BROWSER_TEST_F(DownloadTest, PerWindowShelf) {
-+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
-+  ASSERT_TRUE(embedded_test_server()->Start());
-+  GURL url = embedded_test_server()->GetURL("/download-test3.gif");
-+  base::FilePath download_file(
-+      FILE_PATH_LITERAL("download-test3-attachment.gif"));
-+
-+  // Download a file and wait.
-+  DownloadAndWait(browser(), url);
-+
-+  base::FilePath file(FILE_PATH_LITERAL("download-test3.gif"));
-+  CheckDownload(browser(), download_file, file);
-+
-+  // Check state.
-+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-+  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
-+
-+  // Open a second tab and wait.
-+  EXPECT_TRUE(chrome::AddSelectedTabWithURL(
-+      browser(), GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
-+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-+  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
-+
-+  // Hide the download shelf.
-+  browser()->window()->GetDownloadShelf()->Close();
-+  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
-+
-+  // Go to the first tab.
-+  browser()->tab_strip_model()->ActivateTabAt(
-+      0, TabStripUserGestureDetails(
-+             TabStripUserGestureDetails::GestureType::kOther));
-+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-+
-+  // The shelf should now be closed.
-+  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
-+}
-+
-+// Check whether the downloads shelf is closed when the downloads tab is
-+// invoked.
-+IN_PROC_BROWSER_TEST_F(DownloadTest, CloseShelfOnDownloadsTab) {
-+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
-+  ASSERT_TRUE(embedded_test_server()->Start());
-+  GURL url =
-+      embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
-+
-+  // Download the file and wait.  We do not expect the Select File dialog.
-+  DownloadAndWait(browser(), url);
-+
-+  // Check state.
-+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
-+  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
-+
-+  // Open the downloads tab.
-+  chrome::ShowDownloads(browser());
-+  // The download shelf should now be closed.
-+  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
-+}
-+#endif  // BUILDFLAG(IS_CHROMEOS)
-+
- // Flaky. crbug.com/1383009
- // Test that when downloading an item in Incognito mode, the download surface is
- // not visible after closing the Incognito window.
 diff --git a/chrome/browser/download/download_item_model.cc b/chrome/browser/download/download_item_model.cc
-index 0f9878efeb982..330ebdb447b4b 100644
+index 82b84c768969c..9e080624f7356 100644
 --- a/chrome/browser/download/download_item_model.cc
 +++ b/chrome/browser/download/download_item_model.cc
-@@ -373,6 +373,42 @@ bool DownloadItemModel::IsInsecure() const {
+@@ -377,6 +377,42 @@ bool DownloadItemModel::IsInsecure() const {
    return download_->IsInsecure();
  }
  
@@ -380,70 +203,6 @@ index 1d2991027512b..3d597213deb87 100644
    bool ShouldShowDownloadStartedAnimation() const override;
    bool ShouldNotifyUI() const override;
    bool WasUINotified() const override;
-diff --git a/chrome/browser/download/download_item_model_unittest.cc b/chrome/browser/download/download_item_model_unittest.cc
-index d442cd6049a79..097820ae2a258 100644
---- a/chrome/browser/download/download_item_model_unittest.cc
-+++ b/chrome/browser/download/download_item_model_unittest.cc
-@@ -834,6 +834,59 @@ TEST_F(DownloadItemModelTest, HasSupportedImageMimeType) {
-   EXPECT_FALSE(model().HasSupportedImageMimeType());
- }
- 
-+TEST_F(DownloadItemModelTest, ShouldRemoveFromShelfWhenComplete) {
-+  const struct TestCase {
-+    DownloadItem::DownloadState state;
-+    bool is_dangerous;  // Expectation for IsDangerous().
-+    bool is_auto_open;  // Expectation for GetOpenWhenComplete().
-+    bool auto_opened;   // Whether the download was successfully
-+                        // auto-opened. Expecation for GetAutoOpened().
-+    bool expected_result;
-+  } kTestCases[] = {
-+    // All the valid combinations of state, is_dangerous, is_auto_open and
-+    // auto_opened.
-+    //
-+    //                              .--- Is dangerous.
-+    //                             |       .--- Auto open or temporary.
-+    //                             |      |      .--- Auto opened.
-+    //                             |      |      |      .--- Expected result.
-+    { DownloadItem::IN_PROGRESS, false, false, false, false},
-+    { DownloadItem::IN_PROGRESS, false, true , false, true },
-+    { DownloadItem::IN_PROGRESS, true , false, false, false},
-+    { DownloadItem::IN_PROGRESS, true , true , false, false},
-+    { DownloadItem::COMPLETE,    false, false, false, false},
-+    { DownloadItem::COMPLETE,    false, true , false, false},
-+    { DownloadItem::COMPLETE,    false, false, true , true },
-+    { DownloadItem::COMPLETE,    false, true , true , true },
-+    { DownloadItem::CANCELLED,   false, false, false, false},
-+    { DownloadItem::CANCELLED,   false, true , false, false},
-+    { DownloadItem::CANCELLED,   true , false, false, false},
-+    { DownloadItem::CANCELLED,   true , true , false, false},
-+    { DownloadItem::INTERRUPTED, false, false, false, false},
-+    { DownloadItem::INTERRUPTED, false, true , false, false},
-+    { DownloadItem::INTERRUPTED, true , false, false, false},
-+    { DownloadItem::INTERRUPTED, true , true , false, false}
-+  };
-+
-+  SetupDownloadItemDefaults();
-+
-+  for (const auto& test_case : kTestCases) {
-+    EXPECT_CALL(item(), GetOpenWhenComplete())
-+        .WillRepeatedly(Return(test_case.is_auto_open));
-+    EXPECT_CALL(item(), GetState())
-+        .WillRepeatedly(Return(test_case.state));
-+    EXPECT_CALL(item(), IsDangerous())
-+        .WillRepeatedly(Return(test_case.is_dangerous));
-+    EXPECT_CALL(item(), GetAutoOpened())
-+        .WillRepeatedly(Return(test_case.auto_opened));
-+
-+    EXPECT_EQ(test_case.expected_result,
-+              model().ShouldRemoveFromShelfWhenComplete());
-+    Mock::VerifyAndClearExpectations(&item());
-+    Mock::VerifyAndClearExpectations(&model());
-+  }
-+}
-+
- TEST_F(DownloadItemModelTest, ShouldShowDropdown) {
-   // A few aliases for DownloadDangerTypes since the full names are fairly
-   // verbose.
 diff --git a/chrome/browser/download/download_shelf.cc b/chrome/browser/download/download_shelf.cc
 new file mode 100644
 index 0000000000000..fe30e75e4b07f
@@ -716,204 +475,8 @@ index 0000000000000..572f5522d8955
 +};
 +
 +#endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_H_
-diff --git a/chrome/browser/download/download_shelf_unittest.cc b/chrome/browser/download/download_shelf_unittest.cc
-new file mode 100644
-index 0000000000000..5a66a537bccd7
---- /dev/null
-+++ b/chrome/browser/download/download_shelf_unittest.cc
-@@ -0,0 +1,157 @@
-+// Copyright 2012 The Chromium Authors
-+// Use of this source code is governed by a BSD-style license that can be
-+// found in the LICENSE file.
-+
-+#include <memory>
-+
-+#include "base/compiler_specific.h"
-+#include "base/run_loop.h"
-+#include "chrome/browser/download/download_core_service_factory.h"
-+#include "chrome/browser/download/download_core_service_impl.h"
-+#include "chrome/browser/download/download_item_model.h"
-+#include "chrome/browser/download/test_download_shelf.h"
-+#include "chrome/test/base/testing_profile.h"
-+#include "components/download/public/common/mock_download_item.h"
-+#include "content/public/browser/download_item_utils.h"
-+#include "content/public/test/browser_task_environment.h"
-+#include "content/public/test/mock_download_manager.h"
-+#include "extensions/common/extension.h"
-+#include "testing/gmock/include/gmock/gmock.h"
-+#include "testing/gtest/include/gtest/gtest.h"
-+
-+using ::testing::Return;
-+
-+namespace {
-+
-+class DownloadShelfTest : public testing::Test {
-+ public:
-+  DownloadShelfTest();
-+
-+ protected:
-+  download::MockDownloadItem* download_item() { return download_item_.get(); }
-+  TestDownloadShelf* shelf() { return &shelf_; }
-+
-+ private:
-+  content::BrowserTaskEnvironment task_environment_;
-+  std::unique_ptr<TestingProfile> profile_ = std::make_unique<TestingProfile>();
-+  std::unique_ptr<download::MockDownloadItem> download_item_ =
-+      std::make_unique<::testing::NiceMock<download::MockDownloadItem>>();
-+  TestDownloadShelf shelf_{profile_.get()};
-+};
-+
-+DownloadShelfTest::DownloadShelfTest() {
-+  ON_CALL(*download_item(), GetGuid())
-+      .WillByDefault(::testing::ReturnRefOfCopy(std::string("TEST_GUID")));
-+  ON_CALL(*download_item(), GetAutoOpened()).WillByDefault(Return(false));
-+  ON_CALL(*download_item(), GetMimeType()).WillByDefault(Return("text/plain"));
-+  ON_CALL(*download_item(), GetOpenWhenComplete()).WillByDefault(Return(false));
-+  ON_CALL(*download_item(), GetTargetDisposition())
-+      .WillByDefault(
-+          Return(download::DownloadItem::TARGET_DISPOSITION_OVERWRITE));
-+  ON_CALL(*download_item(), GetURL())
-+      .WillByDefault(
-+          ::testing::ReturnRefOfCopy(GURL("http://example.com/foo")));
-+  ON_CALL(*download_item(), GetState())
-+      .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
-+  ON_CALL(*download_item(), IsTemporary()).WillByDefault(Return(false));
-+  ON_CALL(*download_item(), ShouldOpenFileBasedOnExtension())
-+      .WillByDefault(Return(false));
-+  content::DownloadItemUtils::AttachInfoForTesting(download_item(),
-+                                                   profile_.get(), nullptr);
-+
-+  auto download_manager =
-+      std::make_unique<::testing::NiceMock<content::MockDownloadManager>>();
-+  ON_CALL(*download_manager, GetDownloadByGuid(::testing::_))
-+      .WillByDefault(Return(download_item()));
-+  ON_CALL(*download_manager, GetBrowserContext())
-+      .WillByDefault(Return(profile_.get()));
-+
-+  profile_->SetDownloadManagerForTesting(std::move(download_manager));
-+}
-+
-+} // namespace
-+
-+TEST_F(DownloadShelfTest, ClosesShelfWhenHidden) {
-+  shelf()->Open();
-+  EXPECT_TRUE(shelf()->IsShowing());
-+  shelf()->Hide();
-+  EXPECT_FALSE(shelf()->IsShowing());
-+  shelf()->Unhide();
-+  EXPECT_TRUE(shelf()->IsShowing());
-+}
-+
-+TEST_F(DownloadShelfTest, CloseWhileHiddenPreventsShowOnUnhide) {
-+  shelf()->Open();
-+  shelf()->Hide();
-+  shelf()->Close();
-+  shelf()->Unhide();
-+  EXPECT_FALSE(shelf()->IsShowing());
-+}
-+
-+TEST_F(DownloadShelfTest, UnhideDoesntShowIfNotShownOnHide) {
-+  shelf()->Hide();
-+  shelf()->Unhide();
-+  EXPECT_FALSE(shelf()->IsShowing());
-+}
-+
-+TEST_F(DownloadShelfTest, AddDownloadWhileHiddenUnhides) {
-+  shelf()->Open();
-+  shelf()->Hide();
-+  shelf()->AddDownload(DownloadItemModel::Wrap(download_item()));
-+  EXPECT_TRUE(shelf()->IsShowing());
-+}
-+
-+TEST_F(DownloadShelfTest, AddDownloadWhileHiddenUnhidesAndShows) {
-+  shelf()->Hide();
-+  shelf()->AddDownload(DownloadItemModel::Wrap(download_item()));
-+  EXPECT_TRUE(shelf()->IsShowing());
-+}
-+
-+// Normal downloads should be added synchronously and cause the shelf to show.
-+TEST_F(DownloadShelfTest, AddNormalDownload) {
-+  EXPECT_FALSE(shelf()->IsShowing());
-+  shelf()->AddDownload(DownloadItemModel::Wrap(download_item()));
-+  EXPECT_TRUE(shelf()->did_add_download());
-+  EXPECT_TRUE(shelf()->IsShowing());
-+}
-+
-+// Add a transient download. It should not be added immediately. Instead it
-+// should be added after a delay. For testing, the delay is set to 0 seconds. So
-+// the download should be added once the message loop is flushed.
-+TEST_F(DownloadShelfTest, AddDelayedDownload) {
-+  ON_CALL(*download_item(), ShouldOpenFileBasedOnExtension())
-+      .WillByDefault(Return(true));
-+  DownloadItemModel::DownloadUIModelPtr download =
-+      DownloadItemModel::Wrap(download_item());
-+  ASSERT_TRUE(download->ShouldRemoveFromShelfWhenComplete());
-+  shelf()->AddDownload(std::move(download));
-+
-+  EXPECT_FALSE(shelf()->did_add_download());
-+  EXPECT_FALSE(shelf()->IsShowing());
-+
-+  base::RunLoop().RunUntilIdle();
-+}
-+
-+// Add a transient download that completes before the delay. It should not be
-+// displayed on the shelf.
-+TEST_F(DownloadShelfTest, AddDelayedCompletedDownload) {
-+  ON_CALL(*download_item(), ShouldOpenFileBasedOnExtension())
-+      .WillByDefault(Return(true));
-+  DownloadItemModel::DownloadUIModelPtr download =
-+      DownloadItemModel::Wrap(download_item());
-+  ASSERT_TRUE(download->ShouldRemoveFromShelfWhenComplete());
-+  ON_CALL(*download_item(), IsTemporary()).WillByDefault(Return(true));
-+  shelf()->AddDownload(std::move(download));
-+
-+  EXPECT_FALSE(shelf()->did_add_download());
-+  EXPECT_FALSE(shelf()->IsShowing());
-+
-+  ON_CALL(*download_item(), GetState())
-+      .WillByDefault(Return(download::DownloadItem::COMPLETE));
-+  ON_CALL(*download_item(), GetAutoOpened()).WillByDefault(Return(true));
-+
-+  base::RunLoop().RunUntilIdle();
-+
-+  EXPECT_FALSE(shelf()->did_add_download());
-+  EXPECT_FALSE(shelf()->IsShowing());
-+}
-diff --git a/chrome/browser/download/download_started_animation_browsertest.cc b/chrome/browser/download/download_started_animation_browsertest.cc
-new file mode 100644
-index 0000000000000..ae7d4e70c2bae
---- /dev/null
-+++ b/chrome/browser/download/download_started_animation_browsertest.cc
-@@ -0,0 +1,27 @@
-+// Copyright 2013 The Chromium Authors
-+// Use of this source code is governed by a BSD-style license that can be
-+// found in the LICENSE file.
-+
-+#include "chrome/browser/ui/browser.h"
-+#include "chrome/browser/ui/browser_commands.h"
-+#include "chrome/browser/ui/download/download_started_animation.h"
-+#include "chrome/browser/ui/tabs/tab_strip_model.h"
-+#include "chrome/test/base/in_process_browser_test.h"
-+#include "content/public/test/browser_test.h"
-+
-+class DownloadStartedAnimationTest : public InProcessBrowserTest {
-+ public:
-+  DownloadStartedAnimationTest() = default;
-+
-+  DownloadStartedAnimationTest(const DownloadStartedAnimationTest&) = delete;
-+  DownloadStartedAnimationTest& operator=(const DownloadStartedAnimationTest&) =
-+      delete;
-+};
-+
-+IN_PROC_BROWSER_TEST_F(DownloadStartedAnimationTest,
-+                       InstantiateAndImmediatelyClose) {
-+  content::WebContents* web_contents =
-+      browser()->tab_strip_model()->GetActiveWebContents();
-+  DownloadStartedAnimation::Show(web_contents);
-+  chrome::CloseWindow(browser());
-+}
 diff --git a/chrome/browser/download/download_ui_controller.cc b/chrome/browser/download/download_ui_controller.cc
-index fa41c5a2..a6081634 100644
+index fa41c5a267ca5..a6081634377a2 100644
 --- a/chrome/browser/download/download_ui_controller.cc
 +++ b/chrome/browser/download/download_ui_controller.cc
 @@ -1,4 +1,4 @@
@@ -1039,10 +602,10 @@ index fa41c5a2..a6081634 100644
    }
  #endif  // BUILDFLAG(IS_ANDROID)
 diff --git a/chrome/browser/download/download_ui_model.cc b/chrome/browser/download/download_ui_model.cc
-index cb19386b35f7c..ef34bf9e88778 100644
+index 4bc7f513e085d..b37b4b11a6ca2 100644
 --- a/chrome/browser/download/download_ui_model.cc
 +++ b/chrome/browser/download/download_ui_model.cc
-@@ -156,6 +156,9 @@ std::u16string FailStateDescription(FailState fail_state) {
+@@ -157,6 +157,9 @@ std::u16string FailStateDescription(FailState fail_state) {
  
  }  // namespace
  
@@ -1052,7 +615,7 @@ index cb19386b35f7c..ef34bf9e88778 100644
  DownloadUIModel::DownloadUIModel(
      std::unique_ptr<StatusTextBuilderBase> status_text_builder)
      : status_text_builder_(std::move(status_text_builder)) {
-@@ -423,6 +426,10 @@ bool DownloadUIModel::IsInsecure() const {
+@@ -427,6 +430,10 @@ bool DownloadUIModel::IsInsecure() const {
    return false;
  }
  
@@ -1135,121 +698,19 @@ index 943809d5fc11e..e802e7c5f8b94 100644
    offline_items_collection::FailState GetLastFailState() const override;
    GURL GetOriginalURL() const override;
    bool ShouldPromoteOrigin() const override;
-diff --git a/chrome/browser/download/test_download_shelf.cc b/chrome/browser/download/test_download_shelf.cc
-new file mode 100644
-index 0000000000000..c795562de53bc
---- /dev/null
-+++ b/chrome/browser/download/test_download_shelf.cc
-@@ -0,0 +1,49 @@
-+// Copyright 2012 The Chromium Authors
-+// Use of this source code is governed by a BSD-style license that can be
-+// found in the LICENSE file.
-+
-+#include "chrome/browser/download/test_download_shelf.h"
-+
-+#include "base/time/time.h"
-+
-+TestDownloadShelf::TestDownloadShelf(Profile* profile)
-+    : DownloadShelf(nullptr, profile) {}
-+
-+TestDownloadShelf::~TestDownloadShelf() = default;
-+
-+bool TestDownloadShelf::IsShowing() const {
-+  return is_showing_;
-+}
-+
-+bool TestDownloadShelf::IsClosing() const {
-+  return false;
-+}
-+
-+views::View* TestDownloadShelf::GetView() {
-+  return nullptr;
-+}
-+
-+void TestDownloadShelf::DoShowDownload(
-+    DownloadUIModel::DownloadUIModelPtr download) {
-+  did_add_download_ = true;
-+}
-+
-+void TestDownloadShelf::DoOpen() {
-+  is_showing_ = true;
-+}
-+
-+void TestDownloadShelf::DoClose() {
-+  is_showing_ = false;
-+}
-+
-+void TestDownloadShelf::DoHide() {
-+  is_showing_ = false;
-+}
-+
-+void TestDownloadShelf::DoUnhide() {
-+  is_showing_ = true;
-+}
-+
-+base::TimeDelta TestDownloadShelf::GetTransientDownloadShowDelay() const {
-+  return base::TimeDelta();
-+}
-diff --git a/chrome/browser/download/test_download_shelf.h b/chrome/browser/download/test_download_shelf.h
-new file mode 100644
-index 0000000000000..c4ae28a6b5342
---- /dev/null
-+++ b/chrome/browser/download/test_download_shelf.h
-@@ -0,0 +1,41 @@
-+// Copyright 2012 The Chromium Authors
-+// Use of this source code is governed by a BSD-style license that can be
-+// found in the LICENSE file.
-+
-+#ifndef CHROME_BROWSER_DOWNLOAD_TEST_DOWNLOAD_SHELF_H_
-+#define CHROME_BROWSER_DOWNLOAD_TEST_DOWNLOAD_SHELF_H_
-+
-+#include "chrome/browser/download/download_shelf.h"
-+
-+class Profile;
-+
-+// An implementation of DownloadShelf for testing.
-+class TestDownloadShelf : public DownloadShelf {
-+ public:
-+  explicit TestDownloadShelf(Profile* profile);
-+  TestDownloadShelf(const TestDownloadShelf&) = delete;
-+  TestDownloadShelf& operator=(const TestDownloadShelf&) = delete;
-+  ~TestDownloadShelf() override;
-+
-+  // DownloadShelf:
-+  bool IsShowing() const override;
-+  bool IsClosing() const override;
-+
-+  views::View* GetView() override;
-+
-+  bool did_add_download() const { return did_add_download_; }
-+
-+ protected:
-+  void DoShowDownload(DownloadUIModel::DownloadUIModelPtr download) override;
-+  void DoOpen() override;
-+  void DoClose() override;
-+  void DoHide() override;
-+  void DoUnhide() override;
-+  base::TimeDelta GetTransientDownloadShowDelay() const override;
-+
-+ private:
-+  bool is_showing_ = false;
-+  bool did_add_download_ = false;
-+};
-+
-+#endif  // CHROME_BROWSER_DOWNLOAD_TEST_DOWNLOAD_SHELF_H_
 diff --git a/chrome/browser/extensions/api/downloads/downloads_api.cc b/chrome/browser/extensions/api/downloads/downloads_api.cc
-index aa381ca982b98..e3583cc106f8d 100644
+index 967d84c790a85..0333d3664663c 100644
 --- a/chrome/browser/extensions/api/downloads/downloads_api.cc
 +++ b/chrome/browser/extensions/api/downloads/downloads_api.cc
-@@ -42,6 +42,7 @@
+@@ -43,6 +43,7 @@
  #include "chrome/browser/download/download_file_icon_extractor.h"
  #include "chrome/browser/download/download_prefs.h"
  #include "chrome/browser/download/download_query.h"
 +#include "chrome/browser/download/download_shelf.h"
  #include "chrome/browser/download/download_stats.h"
+ #include "chrome/browser/download/download_ui_safe_browsing_util.h"
  #include "chrome/browser/extensions/api/downloads/download_extension_errors.h"
- #include "chrome/browser/extensions/chrome_extension_function_details.h"
-@@ -1626,6 +1627,8 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
+@@ -1716,6 +1717,8 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
      Browser* browser = window->GetBrowser();
      if (browser->window()->GetDownloadBubbleUIController()) {
        browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
@@ -1258,7 +719,7 @@ index aa381ca982b98..e3583cc106f8d 100644
      }
  #endif
    }
-@@ -1676,6 +1679,8 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
+@@ -1766,6 +1769,8 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
      Browser* browser = window->GetBrowser();
      if (browser->window()->GetDownloadBubbleUIController()) {
        browser->window()->GetDownloadBubbleUIController()->HideDownloadUi();
@@ -1268,10 +729,10 @@ index aa381ca982b98..e3583cc106f8d 100644
  #endif
    }
 diff --git a/chrome/browser/extensions/api/downloads/downloads_api.h b/chrome/browser/extensions/api/downloads/downloads_api.h
-index df476d52202e9..de7870db81939 100644
+index ffede22a2548a..1248dd05050fd 100644
 --- a/chrome/browser/extensions/api/downloads/downloads_api.h
 +++ b/chrome/browser/extensions/api/downloads/downloads_api.h
-@@ -246,7 +246,6 @@ class DownloadsOpenFunction : public ExtensionFunction {
+@@ -244,7 +244,6 @@ class DownloadsOpenFunction : public ExtensionFunction {
    void OpenPromptDone(int download_id, bool accept);
  };
  
@@ -1280,11 +741,11 @@ index df476d52202e9..de7870db81939 100644
   public:
    DECLARE_EXTENSION_FUNCTION("downloads.setShelfEnabled",
 diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
-index 984ce0a661995..8da3b0a19b8f6 100644
+index b669d4f3ee5f3..5b8bb04a2fa99 100644
 --- a/chrome/browser/ui/BUILD.gn
 +++ b/chrome/browser/ui/BUILD.gn
-@@ -4302,8 +4302,12 @@ static_library("ui") {
-       "views/relaunch_notification/relaunch_required_timer_internal.h",
+@@ -4293,8 +4293,12 @@ static_library("ui") {
+       "views/record_replay/save_recording_bubble_view.h",
        "views/sad_tab_view.cc",
        "views/sad_tab_view.h",
 +      "views/safe_browsing/deep_scanning_modal_dialog.cc",
@@ -1297,11 +758,11 @@ index 984ce0a661995..8da3b0a19b8f6 100644
        "views/safe_browsing/tailored_security_desktop_dialog_manager.h",
        "views/safe_browsing/tailored_security_unconsented_modal.cc",
 diff --git a/chrome/browser/ui/browser.cc b/chrome/browser/ui/browser.cc
-index 781a968649994..efcc17053d71a 100644
+index b6bcac3e84d22..db5e84795b137 100644
 --- a/chrome/browser/ui/browser.cc
 +++ b/chrome/browser/ui/browser.cc
-@@ -1500,6 +1500,13 @@ void Browser::OpenFile() {
-       base::BindOnce(&Browser::OnFileSelectedFromDialog, AsWeakPtr()));
+@@ -995,6 +995,13 @@ std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {
+   return GetStatusBubbles();
  }
  
 +void Browser::UpdateDownloadShelfVisibility(bool visible) {
@@ -1311,35 +772,34 @@ index 781a968649994..efcc17053d71a 100644
 +  }
 +}
 +
- bool Browser::CanSaveContents(content::WebContents* web_contents) const {
-   return chrome::CanSavePage(this);
+ Profile* Browser::GetProfile() {
+   return profile();
  }
 diff --git a/chrome/browser/ui/browser.h b/chrome/browser/ui/browser.h
-index 38c6ae61b4a30..950678e00819a 100644
+index 718dda248e492..c61a9f62f3232 100644
 --- a/chrome/browser/ui/browser.h
 +++ b/chrome/browser/ui/browser.h
-@@ -646,6 +646,8 @@ class Browser : public TabStripModelObserver,
-   // Show various bits of UI
-   void OpenFile();
+@@ -705,6 +705,7 @@ class Browser : public TabStripModelObserver,
+   Browser* GetBrowserForOpeningWebUi();
  
+   std::vector<StatusBubble*> GetStatusBubblesForTesting();
 +  void UpdateDownloadShelfVisibility(bool visible);
-+
-   // Whether the specified WebContents can be saved.
-   // Saving can be disabled e.g. for the DevTools window.
-   bool CanSaveContents(content::WebContents* web_contents) const;
+   UnloadController* GetUnloadControllerForTesting() {
+     return UnloadController::From(this);
+   }
 diff --git a/chrome/browser/ui/browser_window.h b/chrome/browser/ui/browser_window.h
-index 3ddb52cf3b31c..d23c8da064326 100644
+index 1ee466974803d..3188b13884009 100644
 --- a/chrome/browser/ui/browser_window.h
 +++ b/chrome/browser/ui/browser_window.h
-@@ -42,6 +42,7 @@
+@@ -40,6 +40,7 @@
  class Browser;
  class BrowserView;
  class DownloadBubbleUIController;
 +class DownloadShelf;
  class ExclusiveAccessContext;
- class ExtensionsContainer;
  class FindBar;
-@@ -88,6 +89,10 @@ class NativeTheme;
+ class GURL;
+@@ -70,6 +71,10 @@ class NativeTheme;
  class ThemeProvider;
  }  // namespace ui
  
@@ -1350,9 +810,9 @@ index 3ddb52cf3b31c..d23c8da064326 100644
  namespace web_modal {
  class WebContentsModalDialogHost;
  }
-@@ -488,6 +493,19 @@ class BrowserWindow : public ui::BaseWindow {
-       const std::u16string& email,
-       base::OnceCallback<void(bool)> confirmed_callback) = 0;
+@@ -368,6 +373,18 @@ class BrowserWindow : public ui::BaseWindow {
+       translate::TranslateErrors error_type,
+       bool is_user_gesture) = 0;
  
 +  // Whether or not the shelf view is visible.
 +  virtual bool IsDownloadShelfVisible() const = 0;
@@ -1366,23 +826,22 @@ index 3ddb52cf3b31c..d23c8da064326 100644
 +
 +  // Returns the LensOverlayView.
 +  virtual views::View* GetLensOverlayView() = 0;
-+
+ 
    // Returns the DownloadBubbleUIController. Returns null if Download Bubble
    // UI is not enabled, or if the download toolbar button does not exist.
-   virtual DownloadBubbleUIController* GetDownloadBubbleUIController() = 0;
 diff --git a/chrome/browser/ui/chrome_pages.cc b/chrome/browser/ui/chrome_pages.cc
-index 6b1f7bc1be5f1..eed75be10c2a5 100644
+index a1575736b1f8e..67b33bfcee75a 100644
 --- a/chrome/browser/ui/chrome_pages.cc
 +++ b/chrome/browser/ui/chrome_pages.cc
-@@ -26,6 +26,7 @@
+@@ -24,6 +24,7 @@
  #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
  #include "chrome/browser/bookmarks/bookmark_model_factory.h"
  #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 +#include "chrome/browser/download/download_shelf.h"
+ #include "chrome/browser/extensions/extension_util.h"
  #include "chrome/browser/file_system_access/file_system_access_features.h"
  #include "chrome/browser/policy/profile_policy_connector.h"
- #include "chrome/browser/profiles/profile.h"
-@@ -384,6 +385,9 @@ void ShowDownloads(Browser* browser) {
+@@ -379,6 +380,9 @@ void ShowDownloads(BrowserWindowInterface* browser) {
          ->GetDownloadDisplayController()
          ->HideBubble();
    }
@@ -1393,20 +852,20 @@ index 6b1f7bc1be5f1..eed75be10c2a5 100644
    ShowSingletonTabOverwritingNTP(browser, GURL(kChromeUIDownloadsURL));
  }
 diff --git a/chrome/browser/ui/color/chrome_color_id.h b/chrome/browser/ui/color/chrome_color_id.h
-index 4a41fac2427a4..49dd24e55dd44 100644
+index 7f51a0b1ba78c..75a4cf0f961b2 100644
 --- a/chrome/browser/ui/color/chrome_color_id.h
 +++ b/chrome/browser/ui/color/chrome_color_id.h
-@@ -120,16 +120,32 @@
+@@ -132,16 +132,32 @@
    E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
    /* Desktop to iOS promo bubble. */ \
    E_CPONLY(kColorDesktopToIOSPromoFooterSubtitleLabel) \
--  /* Download bubble and toolbar button colors. */\
+-  /* Download bubble and toolbar button colors. */ \
 +  /* Common Download colors. */ \
    E_CPONLY(kColorDownloadItemIconDangerous) \
    E_CPONLY(kColorDownloadItemTextDangerous) \
    E_CPONLY(kColorDownloadItemIconWarning) \
    E_CPONLY(kColorDownloadItemTextWarning) \
-+  /* Download bubble colors. */\
++  /* Download bubble colors. */ \
    E_CPONLY(kColorDownloadBubbleInfoBackground) \
    E_CPONLY(kColorDownloadBubbleInfoIcon) \
    E_CPONLY(kColorDownloadBubbleRowHover) \
@@ -1431,10 +890,10 @@ index 4a41fac2427a4..49dd24e55dd44 100644
    E_CPONLY(kColorDownloadToolbarButtonAnimationBackground) \
    E_CPONLY(kColorDownloadToolbarButtonAnimationForeground) \
 diff --git a/chrome/browser/ui/color/chrome_color_mixer.cc b/chrome/browser/ui/color/chrome_color_mixer.cc
-index 9b64a7c15ee81..6b390cc142913 100644
+index bfdb6512f6de5..27eb3e1ca3a6d 100644
 --- a/chrome/browser/ui/color/chrome_color_mixer.cc
 +++ b/chrome/browser/ui/color/chrome_color_mixer.cc
-@@ -199,10 +199,38 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
+@@ -366,10 +366,38 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
    mixer[kColorCastDialogHelpIcon] = {ui::kColorAccent};
    mixer[kColorDesktopMediaTabListBorder] = {ui::kColorMidground};
    mixer[kColorDesktopMediaTabListPreviewBackground] = {ui::kColorMidground};
@@ -1473,7 +932,7 @@ index 9b64a7c15ee81..6b390cc142913 100644
    mixer[kColorDownloadToolbarButtonActive] =
        ui::PickGoogleColor(ui::kColorThrobber, kColorToolbar,
                            color_utils::kMinimumVisibleContrastRatio);
-@@ -1013,6 +1041,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
+@@ -1119,6 +1147,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
    if (!ShouldApplyHighContrastColors(key)) {
      return;
    }
@@ -1496,10 +955,10 @@ index 9811f91d46a73..7de18cba30ea9 100644
    mixer[kColorInfoBarContentAreaSeparator] = {
        kColorToolbarContentAreaSeparator};
 diff --git a/chrome/browser/ui/color/material_chrome_color_mixer.cc b/chrome/browser/ui/color/material_chrome_color_mixer.cc
-index 8a23cf2f466d7..575fcbcc3b7bb 100644
+index 798eb7c417c55..a75b23bdb654e 100644
 --- a/chrome/browser/ui/color/material_chrome_color_mixer.cc
 +++ b/chrome/browser/ui/color/material_chrome_color_mixer.cc
-@@ -95,7 +95,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
+@@ -110,7 +110,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
    mixer[kColorDownloadToolbarButtonRingBackground] = {
        ui::kColorSysNeutralOutline};
    mixer[kColorDownloadToolbarButtonAnimationForeground] =
@@ -1507,9 +966,9 @@ index 8a23cf2f466d7..575fcbcc3b7bb 100644
 +      AdjustHighlightColorForContrast(ui::kColorSysPrimary,
 +                                      kColorDownloadShelfBackground);
  
-   // Extensions colors.
-   mixer[kColorExtensionsMenuText] = {ui::kColorSysOnSurface};
-@@ -311,10 +312,24 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
+   // Download History WebUI colors.
+   mixer[kColorDownloadManagerItemError] = {ui::kColorSysError};
+@@ -377,10 +378,24 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
    mixer[kColorBookmarkDragImageBackground] = {ui::kColorSysPrimary};
    mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
    mixer[kColorCapturedTabContentsBorder] = {ui::kColorSysPrimary};
@@ -1535,10 +994,10 @@ index 8a23cf2f466d7..575fcbcc3b7bb 100644
        ui::kColorSysNeutralContainer};
    mixer[kColorFindBarBackground] = {ui::kColorSysSurface};
 diff --git a/chrome/browser/ui/color/win/native_chrome_color_mixer_win.cc b/chrome/browser/ui/color/win/native_chrome_color_mixer_win.cc
-index e60053cebc619..a229a624058c8 100644
+index 4580b3858f1c2..e0140681e511a 100644
 --- a/chrome/browser/ui/color/win/native_chrome_color_mixer_win.cc
 +++ b/chrome/browser/ui/color/win/native_chrome_color_mixer_win.cc
-@@ -146,6 +146,8 @@ ui::ColorTransform GetCaptionForegroundColor(
+@@ -149,6 +149,8 @@ ui::ColorTransform GetCaptionForegroundColor(
  }
  
  void AddNativeHighContrastColors(ui::ColorMixer& mixer) {
@@ -1548,18 +1007,18 @@ index e60053cebc619..a229a624058c8 100644
        kColorToolbarContentAreaSeparator};
    mixer[kColorLocationBarBorder] = {ui::kColorNativeWindowText};
 diff --git a/chrome/browser/ui/download/BUILD.gn b/chrome/browser/ui/download/BUILD.gn
-index 10932f1075a48..e5a38dcf3f761 100644
+index 81933e190dcbb..4d3f5e5efb890 100644
 --- a/chrome/browser/ui/download/BUILD.gn
 +++ b/chrome/browser/ui/download/BUILD.gn
-@@ -15,6 +15,7 @@ source_set("download") {
+@@ -18,6 +18,7 @@ source_set("download") {
+     "download_bubble_row_view_info.h",
      "download_bubble_security_view_info.h",
-     "download_display.h",
      "download_item_mode.h",
 +    "download_started_animation.h",
    ]
  
    public_deps = [
-@@ -37,6 +38,7 @@ source_set("impl") {
+@@ -41,6 +42,7 @@ source_set("impl") {
      "download_bubble_security_view_info.cc",
      "download_display.cc",
      "download_item_mode.cc",
@@ -1613,7 +1072,7 @@ index fbb4a6107a619..86d29867939ba 100644
  
  #endif  // CHROME_BROWSER_UI_STATUS_BUBBLE_H_
 diff --git a/chrome/browser/ui/view_ids.h b/chrome/browser/ui/view_ids.h
-index bb31c02577bab..66c3ec3919a73 100644
+index 0b1df97785136..5a833891c75db 100644
 --- a/chrome/browser/ui/view_ids.h
 +++ b/chrome/browser/ui/view_ids.h
 @@ -109,6 +109,9 @@ enum ViewID {
@@ -1644,7 +1103,7 @@ index 996db1c0ca74b..1e6ea2a137306 100644
    CONTEXT_IPH_BUBBLE_TITLE,
  
 diff --git a/chrome/browser/ui/views/chrome_typography_provider.cc b/chrome/browser/ui/views/chrome_typography_provider.cc
-index 63d1403664755..b8c0a86501423 100644
+index 59704fdcb337e..3f8193e68a148 100644
 --- a/chrome/browser/ui/views/chrome_typography_provider.cc
 +++ b/chrome/browser/ui/views/chrome_typography_provider.cc
 @@ -46,7 +46,8 @@ bool ChromeTypographyProvider::StyleAllowedForContext(int context,
@@ -1709,23 +1168,23 @@ index 63d1403664755..b8c0a86501423 100644
      default:
        return default_height;
 diff --git a/chrome/browser/ui/views/download/BUILD.gn b/chrome/browser/ui/views/download/BUILD.gn
-index 566d4863a8825..b59fcd81008c9 100644
+index e788d9f41ded9..9de76b4f8106f 100644
 --- a/chrome/browser/ui/views/download/BUILD.gn
 +++ b/chrome/browser/ui/views/download/BUILD.gn
-@@ -9,6 +9,13 @@ source_set("download") {
-     "download_danger_prompt_views.cc",
-     "download_in_progress_dialog_view.cc",
-     "download_in_progress_dialog_view.h",
-+    "download_item_view.cc",
-+    "download_item_view.h",
-+    "download_shelf_started_animation_views.cc",
-+    "download_shelf_started_animation_views.h",
-+    "download_shelf_view.cc",
-+    "download_shelf_view.h",
-+    "download_started_animation.cc",
-   ]
-   public_deps = [
-     "//base",
+@@ -62,6 +62,13 @@ source_set("download") {
+       "bubble/download_dialog_view.h",
+       "bubble/download_toolbar_ui_controller.cc",
+       "bubble/download_toolbar_ui_controller.h",
++      "download_item_view.cc",
++      "download_item_view.h",
++      "download_shelf_started_animation_views.cc",
++      "download_shelf_started_animation_views.h",
++      "download_shelf_view.cc",
++      "download_shelf_view.h",
++      "download_started_animation.cc",
+       "download_started_animation_views.cc",
+       "download_started_animation_views.h",
+       "download_ui_context_menu_view.cc",
 diff --git a/chrome/browser/ui/views/download/download_item_view.cc b/chrome/browser/ui/views/download/download_item_view.cc
 new file mode 100644
 index 0000000000000..25d6421c12f4b
@@ -3454,114 +2913,6 @@ index 0000000000000..21811f0927226
 +};
 +
 +#endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_ITEM_VIEW_H_
-diff --git a/chrome/browser/ui/views/download/download_item_view_browsertest.cc b/chrome/browser/ui/views/download/download_item_view_browsertest.cc
-new file mode 100644
-index 0000000000000..5ce3afb8f5ebd
---- /dev/null
-+++ b/chrome/browser/ui/views/download/download_item_view_browsertest.cc
-@@ -0,0 +1,102 @@
-+// Copyright 2024 The Chromium Authors
-+// Use of this source code is governed by a BSD-style license that can be
-+// found in the LICENSE file.
-+
-+#include "chrome/browser/ui/views/download/download_item_view.h"
-+
-+#include "chrome/browser/download/download_item_model.h"
-+#include "chrome/browser/profiles/profile.h"
-+#include "chrome/browser/ui/views/download/download_shelf_view.h"
-+#include "chrome/browser/ui/views/frame/browser_view.h"
-+#include "chrome/test/base/in_process_browser_test.h"
-+#include "components/download/public/common/mock_download_item.h"
-+#include "content/public/browser/download_item_utils.h"
-+#include "content/public/test/browser_test.h"
-+#include "content/public/test/fake_download_item.h"
-+#include "testing/gmock/include/gmock/gmock.h"
-+#include "testing/gtest/include/gtest/gtest.h"
-+#include "ui/views/accessibility/view_accessibility.h"
-+
-+namespace {
-+
-+using download::DownloadItem;
-+using ::testing::NiceMock;
-+using ::testing::Return;
-+using ::testing::ReturnRefOfCopy;
-+
-+// Default values for the mock download item.
-+const base::FilePath::CharType kDefaultTargetFilePath[] =
-+    FILE_PATH_LITERAL("/foo/bar/foo.bar");
-+const char kDefaultURL[] = "http://example.com/foo.bar";
-+
-+class DownloadItemViewTest : public InProcessBrowserTest {
-+ public:
-+  DownloadItemViewTest() = default;
-+  ~DownloadItemViewTest() override = default;
-+
-+  DownloadItemViewTest(const DownloadItemViewTest&) = delete;
-+  DownloadItemViewTest& operator=(const DownloadItemViewTest&) = delete;
-+
-+  void SetUpOnMainThread() override {
-+    InProcessBrowserTest::SetUpOnMainThread();
-+
-+    mock_item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
-+    ON_CALL(*mock_item_, GetState())
-+        .WillByDefault(Return(DownloadItem::IN_PROGRESS));
-+    ON_CALL(*mock_item_, GetURL())
-+        .WillByDefault(ReturnRefOfCopy(GURL(kDefaultURL)));
-+    ON_CALL(*mock_item_, GetTargetFilePath())
-+        .WillByDefault(ReturnRefOfCopy(base::FilePath(kDefaultTargetFilePath)));
-+    content::DownloadItemUtils::AttachInfoForTesting(
-+        mock_item_.get(), browser()->profile(), nullptr);
-+
-+    BrowserView* browser_view =
-+        BrowserView::GetBrowserViewForBrowser(browser());
-+    shelf_view_ =
-+        std::make_unique<DownloadShelfView>(browser(), browser_view);
-+    browser_view->SetDownloadShelfForTest(shelf_view_.get());
-+    browser_view->GetDownloadShelf()->AddDownload(
-+        DownloadItemModel::Wrap(mock_item_.get()));
-+  }
-+
-+  void TearDownOnMainThread() override {
-+    BrowserView* browser_view =
-+        BrowserView::GetBrowserViewForBrowser(browser());
-+    // It's possible the browser or its window is already being torn down.
-+    // We check browser_view before dereferencing it.
-+    if (browser_view) {
-+      browser_view->SetDownloadShelfForTest(nullptr);
-+    }
-+    shelf_view_.reset();
-+    mock_item_.reset();
-+    InProcessBrowserTest::TearDownOnMainThread();
-+  }
-+
-+ protected:
-+  DownloadItemView* GetDownloadItemView() {
-+    return GetDownloadShelfView()->GetViewOfLastDownloadItemForTesting();
-+  }
-+
-+  DownloadShelfView* GetDownloadShelfView() {
-+    BrowserView* browser_view =
-+        BrowserView::GetBrowserViewForBrowser(browser());
-+    return static_cast<DownloadShelfView*>(browser_view->GetDownloadShelf());
-+  }
-+
-+ private:
-+  std::unique_ptr<DownloadShelfView> shelf_view_;
-+  std::unique_ptr<NiceMock<download::MockDownloadItem>> mock_item_;
-+};
-+
-+IN_PROC_BROWSER_TEST_F(DownloadItemViewTest, AccessibleProperties) {
-+  auto* item_view = GetDownloadItemView();
-+  ui::AXNodeData data;
-+
-+  ASSERT_TRUE(item_view);
-+  item_view->GetViewAccessibility().GetAccessibleNodeData(&data);
-+  EXPECT_EQ(data.role, ax::mojom::Role::kGroup);
-+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-+            item_view->GetStatusTextForTesting() + u" ");
-+}
-+
-+}  // namespace
 diff --git a/chrome/browser/ui/views/download/download_shelf_started_animation_views.cc b/chrome/browser/ui/views/download/download_shelf_started_animation_views.cc
 new file mode 100644
 index 0000000000000..06a399a26559f
@@ -4235,10 +3586,10 @@ index aeb07c5b420a9..9c8db9d24388a 100644
  
    base::OnceClosure on_menu_will_show_callback_;
 diff --git a/chrome/browser/ui/views/frame/browser_frame_view_mac.mm b/chrome/browser/ui/views/frame/browser_frame_view_mac.mm
-index 72daacb1d4190..981b6ddd050c4 100644
+index 624c29498f8db..0040a3bd6f4a4 100644
 --- a/chrome/browser/ui/views/frame/browser_frame_view_mac.mm
 +++ b/chrome/browser/ui/views/frame/browser_frame_view_mac.mm
-@@ -245,10 +245,12 @@ void BrowserFrameViewMac::UpdateFullscreenTopUI() {
+@@ -237,10 +237,12 @@ void BrowserFrameViewMac::UpdateFullscreenTopUI() {
    // Update to the new toolbar style if needed.
    FullscreenToolbarStyle new_style;
    if (fullscreen_utils::IsInContentFullscreen(browser)) {
@@ -4250,36 +3601,36 @@ index 72daacb1d4190..981b6ddd050c4 100644
 +    browser_view()->UnhideDownloadShelf();
    }
  
-   if (browser_view()->UsesImmersiveFullscreenMode()) {
+   if (WindowFeatureController::From(GetBrowserView()->browser())
 diff --git a/chrome/browser/ui/views/frame/browser_view.cc b/chrome/browser/ui/views/frame/browser_view.cc
-index c25c7f691c4b9..02b8095508645 100644
+index c5b196b2be317..096b5ffebfbcf 100644
 --- a/chrome/browser/ui/views/frame/browser_view.cc
 +++ b/chrome/browser/ui/views/frame/browser_view.cc
-@@ -41,6 +41,7 @@
- #include "chrome/app/chrome_command_ids.h"
+@@ -43,6 +43,7 @@
  #include "chrome/browser/app_mode/app_mode_utils.h"
+ #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
  #include "chrome/browser/browser_process.h"
 +#include "chrome/browser/download/bubble/download_bubble_prefs.h"
+ #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
+ #include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
  #include "chrome/browser/devtools/devtools_ui_controller.h"
- #include "chrome/browser/devtools/devtools_window.h"
- #include "chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h"
-@@ -124,6 +125,7 @@
- #include "chrome/browser/ui/views/bookmarks/bookmark_page_action_controller.h"
+@@ -139,6 +140,7 @@
+ #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
  #include "chrome/browser/ui/views/color_provider_browser_helper.h"
  #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
 +#include "chrome/browser/ui/views/download/download_shelf_view.h"
  #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
  #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
  #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
-@@ -1093,6 +1095,7 @@ BrowserView::~BrowserView() {
+@@ -1103,6 +1105,7 @@ BrowserView::~BrowserView() {
+   toolbar_ = nullptr;
    top_container_separator_ = nullptr;
-   loading_bar_ = nullptr;
    find_bar_host_view_ = nullptr;
 +  download_shelf_ = nullptr;
    infobar_container_ = nullptr;
    multi_contents_view_ = nullptr;
    main_shadow_overlay_ = nullptr;
-@@ -1161,6 +1164,10 @@ BrowserView* BrowserView::GetBrowserViewForBrowser(
+@@ -1170,6 +1173,10 @@ BrowserView* BrowserView::GetBrowserViewForBrowser(
    return GetBrowserViewForNativeWindow(browser->GetWindow()->GetNativeWindow());
  }
  
@@ -4290,9 +3641,9 @@ index c25c7f691c4b9..02b8095508645 100644
  // static
  void BrowserView::SetDisableRevealerDelayForTesting(bool disable) {
    g_disable_revealer_delay_for_testing = disable;
-@@ -3260,6 +3267,45 @@ void BrowserView::ShowOneClickSigninConfirmation(
-                                        std::move(confirmed_callback));
+@@ -3038,6 +3045,45 @@ ShowTranslateBubbleResult BrowserView::ShowTranslateBubble(
  }
+ 
  
 +void BrowserView::SetDownloadShelfVisible(bool visible) {
 +  DCHECK(download_shelf_);
@@ -4336,7 +3687,7 @@ index c25c7f691c4b9..02b8095508645 100644
  DownloadBubbleUIController* BrowserView::GetDownloadBubbleUIController() {
  #if !BUILDFLAG(IS_CHROMEOS)
    if (auto* download_controller =
-@@ -4188,6 +4234,14 @@ void BrowserView::EnsureFocusOrder() {
+@@ -3757,6 +3803,14 @@ void BrowserView::EnsureFocusOrder() {
      infobar_container_->InsertAfterInFocusList(top_container_);
    }
  
@@ -4351,17 +3702,17 @@ index c25c7f691c4b9..02b8095508645 100644
  #if DCHECK_IS_ON()
    // Make sure we didn't create any cycles in the focus order.
    CheckFocusListForCycles(top_container_);
-@@ -4864,6 +4918,9 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
-   if (contents_height_side_panel_) {
-     panes->push_back(contents_height_side_panel_);
+@@ -4428,6 +4482,9 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
+   if (side_panel_) {
+     panes->push_back(side_panel_);
    }
 +  if (download_shelf_) {
 +    panes->push_back(download_shelf_->GetView());
 +  }
-   if (multi_contents_view_) {
-     for (views::View* pane : multi_contents_view_->GetAccessiblePanes()) {
-       panes->push_back(pane);
-@@ -5636,7 +5693,7 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
+   for (views::View* pane : multi_contents_view_->GetAccessiblePanes()) {
+     panes->push_back(pane);
+   }
+@@ -5217,7 +5274,7 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
  
  bool BrowserView::MaybeShowInfoBar(WebContents* contents) {
    // TODO(beng): Remove this function once the interface between
@@ -4370,7 +3721,7 @@ index c25c7f691c4b9..02b8095508645 100644
    //             view is sorted out.
    return true;
  }
-@@ -6210,6 +6267,23 @@ Profile* BrowserView::GetProfile() {
+@@ -5811,6 +5868,23 @@ Profile* BrowserView::GetProfile() const {
    return browser_->GetProfile();
  }
  
@@ -4395,10 +3746,10 @@ index c25c7f691c4b9..02b8095508645 100644
  // BrowserView, ImmersiveModeController::Observer implementation:
  void BrowserView::OnImmersiveFullscreenEntered() {
 diff --git a/chrome/browser/ui/views/frame/browser_view.h b/chrome/browser/ui/views/frame/browser_view.h
-index d8334d0355229..3a14dc27c2270 100644
+index ef13f8f68542d..43c9444bd6fb3 100644
 --- a/chrome/browser/ui/views/frame/browser_view.h
 +++ b/chrome/browser/ui/views/frame/browser_view.h
-@@ -184,6 +184,8 @@ class BrowserView : public BrowserWindow,
+@@ -193,6 +193,8 @@ class BrowserView : public BrowserWindow,
      return top_controls_slide_controller_.get();
    }
  
@@ -4407,10 +3758,10 @@ index d8334d0355229..3a14dc27c2270 100644
    // Returns the constraining bounding box that should be used to lay out the
    // FindBar within. This is _not_ the size of the find bar, just the bounding
    // box it should be laid out within. The coordinate system of the returned
-@@ -602,6 +604,12 @@ class BrowserView : public BrowserWindow,
-   void ShowOneClickSigninConfirmation(
-       const std::u16string& email,
-       base::OnceCallback<void(bool)> confirmed_callback) override;
+@@ -579,6 +581,12 @@ class BrowserView : public BrowserWindow,
+       translate::TranslateErrors error_type,
+       bool is_user_gesture) override;
+ 
 +  // TODO(beng): Not an override, move somewhere else.
 +  void SetDownloadShelfVisible(bool visible);
 +  bool IsDownloadShelfVisible() const override;
@@ -4420,7 +3771,7 @@ index d8334d0355229..3a14dc27c2270 100644
    DownloadBubbleUIController* GetDownloadBubbleUIController() override;
    void ConfirmBrowserCloseWithPendingDownloads(
        int download_count,
-@@ -635,6 +643,8 @@ class BrowserView : public BrowserWindow,
+@@ -611,6 +619,8 @@ class BrowserView : public BrowserWindow,
    ExclusiveAccessContext* GetExclusiveAccessContext() override;
    std::string GetWorkspace() const override;
    bool IsVisibleOnAllWorkspaces() const override;
@@ -4429,7 +3780,7 @@ index d8334d0355229..3a14dc27c2270 100644
  
    void ShowEmojiPanel() override;
    void ShowCaretBrowsingDialog() override;
-@@ -982,8 +992,8 @@ class BrowserView : public BrowserWindow,
+@@ -943,8 +953,8 @@ class BrowserView : public BrowserWindow,
    // updated and needs a layout.
    bool MaybeUpdateDevtools(content::WebContents* contents);
  
@@ -4439,17 +3790,17 @@ index d8334d0355229..3a14dc27c2270 100644
 +  // Download Shelf in response to a change notification from the specified
    // |contents|. |contents| can be null. In this case, all optional UI will be
    // removed.
-   void UpdateUIForContents(content::WebContents* contents);
-@@ -1169,6 +1179,8 @@ class BrowserView : public BrowserWindow,
-   // |  |  contents_web_view_ or multi_contents_view_ if defined           |  |
-   // |  --------------------------------------------------------------------  |
+   void UpdateUIForContents(content::WebContents* contents,
+@@ -1137,6 +1147,8 @@ class BrowserView : public BrowserWindow,
+   // |------------------------------------------------------------------------|
+   // | SidePanel (side_panel_)                                                |
    // |------------------------------------------------------------------------|
 +  // | Active downloads (download_shelf_)                                      |
 +  // |------------------------------------------------------------------------|
-   // | ContentHeightSidePanel (contents_height_side_panel_)                   |
-   // |------------------------------------------------------------------------|
-   // | ToolbarHeightSidePanel (toolbar_height_side_panel_)                    |
-@@ -1265,6 +1277,9 @@ class BrowserView : public BrowserWindow,
+ 
+   // The view that draws the background the main_container and
+   // side_panel are displayed on.
+@@ -1226,6 +1238,9 @@ class BrowserView : public BrowserWindow,
    // NativeView.
    raw_ptr<View> find_bar_host_view_ = nullptr;
  
@@ -4460,10 +3811,10 @@ index d8334d0355229..3a14dc27c2270 100644
    raw_ptr<InfoBarContainerView> infobar_container_ = nullptr;
  
 diff --git a/chrome/browser/ui/views/frame/layout/browser_view_app_layout_impl.cc b/chrome/browser/ui/views/frame/layout/browser_view_app_layout_impl.cc
-index d72c423ee2390..dcf86333bff68 100644
+index dd27edc51c876..c055f2ce2b431 100644
 --- a/chrome/browser/ui/views/frame/layout/browser_view_app_layout_impl.cc
 +++ b/chrome/browser/ui/views/frame/layout/browser_view_app_layout_impl.cc
-@@ -164,6 +164,9 @@ BrowserViewAppLayoutImpl::CalculateProposedLayout(
+@@ -191,6 +191,9 @@ BrowserViewAppLayoutImpl::CalculateProposedLayout(
      layout.AddChild(views().infobar_container, infobar_bounds, infobar_visible);
    }
  
@@ -4474,18 +3825,18 @@ index d72c423ee2390..dcf86333bff68 100644
    CHECK(
        IsParentedToAndVisible(views().contents_container, views().browser_view));
 diff --git a/chrome/browser/ui/views/frame/layout/browser_view_layout.h b/chrome/browser/ui/views/frame/layout/browser_view_layout.h
-index c475f825745d9..1d9523945d558 100644
+index 4d5b544dffe67..a33dba9a5f620 100644
 --- a/chrome/browser/ui/views/frame/layout/browser_view_layout.h
 +++ b/chrome/browser/ui/views/frame/layout/browser_view_layout.h
-@@ -82,6 +82,7 @@ struct BrowserViewLayoutViews {
-   raw_ptr<views::View> webui_tab_strip = nullptr;
-   raw_ptr<views::View> loading_bar = nullptr;
+@@ -88,6 +88,7 @@ struct BrowserViewLayoutViews {
+ 
+   // These views are dynamically set.
    raw_ptr<BookmarkBarView> bookmark_bar = nullptr;
 +  raw_ptr<views::View> download_shelf = nullptr;
  };
  
  // The layout manager used in chrome browser.
-@@ -127,6 +128,9 @@ class BrowserViewLayout : public views::LayoutManager {
+@@ -125,6 +126,9 @@ class BrowserViewLayout : public views::LayoutManager {
    void set_bookmark_bar(BookmarkBarView* bookmark_bar) {
      views_.bookmark_bar = bookmark_bar;
    }
@@ -4496,10 +3847,10 @@ index c475f825745d9..1d9523945d558 100644
      views_.side_panel_animation_content = contents_to_animate;
    }
 diff --git a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc
-index de586f0c95d05..b32170cf72e15 100644
+index 819a780e151bd..e984623dc8b5f 100644
 --- a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc
 +++ b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc
-@@ -175,6 +175,28 @@ gfx::Rect BrowserViewLayoutImpl::GetTopContainerBoundsInParent(
+@@ -200,6 +200,28 @@ gfx::Rect BrowserViewLayoutImpl::GetTopContainerBoundsInParent(
    return bounds;
  }
  
@@ -4525,14 +3876,14 @@ index de586f0c95d05..b32170cf72e15 100644
 +  return available_bounds;
 +}
 +
- int BrowserViewLayoutImpl::GetMinWebContentsWidthForTesting() const {
-   return kContentsContainerMinimumWidth;
- }
+ // Layout logic.
+ 
+ void BrowserViewLayoutImpl::Layout(views::View* host) {
 diff --git a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h
-index 05a4437f3899c..53e824271a4bb 100644
+index 958b0425077c1..3574baa3f5735 100644
 --- a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h
 +++ b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h
-@@ -113,6 +113,11 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
+@@ -118,6 +118,11 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
        const gfx::Rect& local_bounds,
        const BrowserLayoutParams& parent_params) const;
  
@@ -4544,95 +3895,11 @@ index 05a4437f3899c..53e824271a4bb 100644
    // Override these methods to customize layout for specific browser types.
  
    // Hierarchical version of views::ProposedLayout that will allow us to run
-diff --git a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.cc b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.cc
-index ad51c0f5dfcd9..aa300507e35a3 100644
---- a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.cc
-+++ b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.cc
-@@ -127,6 +127,7 @@ void BrowserViewLayoutImplOld::Layout(views::View* browser_view) {
-   // Ensure `available_bounds` has the correct height.
-   main_container_bounds.set_height(main_container_bounds.height() -
-                                    main_container_bounds.y());
-+  LayoutDownloadShelf(main_container_bounds);
-   LayoutContentsContainerView(main_container_bounds);
- 
-   UpdateBubbles();
-@@ -578,6 +579,27 @@ void BrowserViewLayoutImplOld::LayoutInfoBar(gfx::Rect& available_bounds) {
-   available_bounds.set_y(content_top);
- }
- 
-+void BrowserViewLayoutImplOld::LayoutDownloadShelf(
-+    gfx::Rect& available_bounds) {
-+  if (!views().download_shelf ||
-+      views().download_shelf->parent() != views().browser_view) {
-+    return;
-+  }
-+
-+  if (!views().download_shelf->GetVisible()) {
-+    views().download_shelf->SetBoundsRect(gfx::Rect());
-+    return;
-+  }
-+
-+  const int shelf_height = std::min(
-+      views().download_shelf->GetPreferredSize().height(),
-+      available_bounds.height());
-+  views().download_shelf->SetBounds(
-+      available_bounds.x(), available_bounds.bottom() - shelf_height,
-+      available_bounds.width(), shelf_height);
-+  available_bounds.set_height(available_bounds.height() - shelf_height);
-+}
-+
- void BrowserViewLayoutImplOld::LayoutContentsContainerView(
-     const gfx::Rect& available_bounds) {
-   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutContentsContainerView");
-diff --git a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.h b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.h
-index d9cfc2e6d87ef..0abd0b76c6456 100644
---- a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.h
-+++ b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl_old.h
-@@ -55,6 +55,7 @@ class BrowserViewLayoutImplOld : public BrowserViewLayout {
-   void LayoutBookmarkAndInfoBars(gfx::Rect& available_bounds);
-   void LayoutBookmarkBar(gfx::Rect& available_bounds);
-   void LayoutInfoBar(gfx::Rect& available_bounds);
-+  void LayoutDownloadShelf(gfx::Rect& available_bounds);
- 
-   // Returns the minimum acceptable width for the browser web contents. If split
-   // view is active, this includes the full split view.
-diff --git a/chrome/browser/ui/views/frame/layout/browser_view_layout_unittest.cc b/chrome/browser/ui/views/frame/layout/browser_view_layout_unittest.cc
-index bd189d59219c2..f1ed8eb04548b 100644
---- a/chrome/browser/ui/views/frame/layout/browser_view_layout_unittest.cc
-+++ b/chrome/browser/ui/views/frame/layout/browser_view_layout_unittest.cc
-@@ -375,6 +375,27 @@ TEST_F(BrowserViewLayoutTest, Layout) {
-   // TODO(jamescook): Tab strip and bookmark bar.
- }
- 
-+TEST_F(BrowserViewLayoutTest, LayoutDownloadShelf) {
-+  constexpr int kHeight = 50;
-+  std::unique_ptr<views::View> download_shelf =
-+      CreateFixedSizeView(gfx::Size(kBaseWidth, kHeight));
-+  layout()->set_download_shelf(download_shelf.get());
-+
-+  // If the download shelf isn't visible, it doesn't move the bottom edge.
-+  download_shelf->SetVisible(false);
-+  constexpr int kBottom = 500;
-+  EXPECT_EQ(kBottom, layout()->LayoutDownloadShelf(kBottom));
-+
-+  // A visible download shelf moves the bottom edge up.
-+  download_shelf->SetVisible(true);
-+  constexpr int kTop = kBottom - kHeight;
-+  EXPECT_EQ(kTop, layout()->LayoutDownloadShelf(kBottom));
-+  EXPECT_EQ(gfx::Rect(0, kTop, 0, kHeight), download_shelf->bounds());
-+
-+  // avoid dangling pointer.
-+  layout()->set_download_shelf(nullptr);
-+}
-+
- TEST_F(BrowserViewLayoutTest, LayoutContentsWithTopControlsSlideBehavior) {
-   // Top controls are fully shown.
-   delegate()->set_should_draw_tab_strip(false);
 diff --git a/chrome/browser/ui/views/frame/layout/browser_view_popup_layout_impl.cc b/chrome/browser/ui/views/frame/layout/browser_view_popup_layout_impl.cc
-index 52622b44a751d..5b4165dad1208 100644
+index 206b3e83c1ea1..7526b94946c74 100644
 --- a/chrome/browser/ui/views/frame/layout/browser_view_popup_layout_impl.cc
 +++ b/chrome/browser/ui/views/frame/layout/browser_view_popup_layout_impl.cc
-@@ -102,6 +102,9 @@ BrowserViewPopupLayoutImpl::CalculateProposedLayout(
+@@ -97,6 +97,9 @@ BrowserViewPopupLayoutImpl::CalculateProposedLayout(
      layout.AddChild(views().infobar_container, infobar_bounds, infobar_visible);
    }
  
@@ -4643,12 +3910,12 @@ index 52622b44a751d..5b4165dad1208 100644
    CHECK(
        IsParentedToAndVisible(views().contents_container, views().browser_view));
 diff --git a/chrome/browser/ui/views/frame/layout/browser_view_tabbed_layout_impl.cc b/chrome/browser/ui/views/frame/layout/browser_view_tabbed_layout_impl.cc
-index b8911444e7417..dc408ff6c45ee 100644
+index 9d89055779134..ead84b1069789 100644
 --- a/chrome/browser/ui/views/frame/layout/browser_view_tabbed_layout_impl.cc
 +++ b/chrome/browser/ui/views/frame/layout/browser_view_tabbed_layout_impl.cc
-@@ -550,6 +550,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
-     layout.AddChild(views().side_panel_rounded_corner, corner_bounds, visible);
-   }
+@@ -1079,6 +1079,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
+   views().multi_contents_view->SetIsAnimatingContent(
+       side_panel_is_animating || vertical_tab_strip_animation.current_motion);
  
 +  params.visual_client_area =
 +      LayoutDownloadShelf(layout, params.visual_client_area);
@@ -4957,47 +4224,8 @@ index 0000000000000..15b16719f004e
 +}  // namespace safe_browsing
 +
 +#endif  // CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_PROMPT_FOR_SCANNING_MODAL_DIALOG_H_
-diff --git a/chrome/browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog_browsertest.cc b/chrome/browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog_browsertest.cc
-new file mode 100644
-index 0000000000000..81e54059c8bae
---- /dev/null
-+++ b/chrome/browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog_browsertest.cc
-@@ -0,0 +1,33 @@
-+// Copyright 2021 The Chromium Authors
-+// Use of this source code is governed by a BSD-style license that can be
-+// found in the LICENSE file.
-+
-+#include "chrome/browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog.h"
-+
-+#include <string>
-+
-+#include "base/functional/callback_helpers.h"
-+#include "chrome/browser/ui/browser.h"
-+#include "chrome/browser/ui/tabs/tab_strip_model.h"
-+#include "chrome/browser/ui/test/test_browser_dialog.h"
-+#include "content/public/test/browser_test.h"
-+
-+class PromptForScanningModalDialogTest : public DialogBrowserTest {
-+ public:
-+  PromptForScanningModalDialogTest() = default;
-+  PromptForScanningModalDialogTest(const PromptForScanningModalDialogTest&) =
-+      delete;
-+  PromptForScanningModalDialogTest& operator=(
-+      const PromptForScanningModalDialogTest&) = delete;
-+
-+  // DialogBrowserTest:
-+  void ShowUi(const std::string& name) override {
-+    safe_browsing::PromptForScanningModalDialog::ShowForWebContents(
-+        browser()->tab_strip_model()->GetActiveWebContents(), u"Filename",
-+        base::DoNothing(), base::DoNothing());
-+  }
-+};
-+
-+IN_PROC_BROWSER_TEST_F(PromptForScanningModalDialogTest, InvokeUi_default) {
-+  ShowAndVerifyUi();
-+}
 diff --git a/chrome/browser/ui/views/status_bubble_views.cc b/chrome/browser/ui/views/status_bubble_views.cc
-index 0e262e8edc6f2..5e7d212effb33 100644
+index 56d564c5d191f..992d2222163db 100644
 --- a/chrome/browser/ui/views/status_bubble_views.cc
 +++ b/chrome/browser/ui/views/status_bubble_views.cc
 @@ -516,11 +516,13 @@ void StatusView::OnPaint(gfx::Canvas* canvas) {
@@ -5073,11 +4301,11 @@ index 5168c9112656d..1dfe683078ff7 100644
    // change size immediately, with no hover.
    bool is_expanded_ = false;
 diff --git a/chrome/browser/ui/webui_browser/webui_browser_window.cc b/chrome/browser/ui/webui_browser/webui_browser_window.cc
-index 1b6e873041b80..b756c371a70ea 100644
+index 3fabca0c2a49a..6ee5c1997eb02 100644
 --- a/chrome/browser/ui/webui_browser/webui_browser_window.cc
 +++ b/chrome/browser/ui/webui_browser/webui_browser_window.cc
-@@ -896,6 +896,22 @@ void WebUIBrowserWindow::ShowOneClickSigninConfirmation(
-   NOTIMPLEMENTED();
+@@ -865,6 +865,21 @@ ShowTranslateBubbleResult WebUIBrowserWindow::ShowTranslateBubble(
+   return ShowTranslateBubbleResult::kBrowserWindowNotValid;
  }
  
 +bool WebUIBrowserWindow::IsDownloadShelfVisible() const {
@@ -5095,18 +4323,18 @@ index 1b6e873041b80..b756c371a70ea 100644
 +views::View* WebUIBrowserWindow::GetLensOverlayView() {
 +  return nullptr;
 +}
-+
+ 
  DownloadBubbleUIController*
  WebUIBrowserWindow::GetDownloadBubbleUIController() {
-   NOTIMPLEMENTED();
 diff --git a/chrome/browser/ui/webui_browser/webui_browser_window.h b/chrome/browser/ui/webui_browser/webui_browser_window.h
-index 77f72feee08ed..51a4deea5bf5c 100644
+index b1bf0bcb52d5b..8231e4b7b5bb9 100644
 --- a/chrome/browser/ui/webui_browser/webui_browser_window.h
 +++ b/chrome/browser/ui/webui_browser/webui_browser_window.h
-@@ -164,6 +164,10 @@ class WebUIBrowserWindow : public BrowserWindow,
-   void ShowOneClickSigninConfirmation(
-       const std::u16string& email,
-       base::OnceCallback<void(bool)> confirmed_callback) override;
+@@ -127,7 +127,10 @@ class WebUIBrowserWindow : public BrowserWindow,
+       const std::string& target_language,
+       translate::TranslateErrors error_type,
+       bool is_user_gesture) override;
+-
 +  bool IsDownloadShelfVisible() const override;
 +  DownloadShelf* GetDownloadShelf() override;
 +  views::View* GetTopContainer() override;
@@ -5114,105 +4342,3 @@ index 77f72feee08ed..51a4deea5bf5c 100644
    DownloadBubbleUIController* GetDownloadBubbleUIController() override;
    void ConfirmBrowserCloseWithPendingDownloads(
        int download_count,
-diff --git a/chrome/test/BUILD.gn b/chrome/test/BUILD.gn
-index 546735291c35d..f4af7008be472 100644
---- a/chrome/test/BUILD.gn
-+++ b/chrome/test/BUILD.gn
-@@ -3309,6 +3309,7 @@ if (!is_android) {
-       "../browser/download/download_browsertest.cc",
-       "../browser/download/download_danger_prompt_browsertest.cc",
-       "../browser/download/download_frame_policy_browsertest.cc",
-+      "../browser/download/download_started_animation_browsertest.cc",
-       "../browser/download/save_page_browsertest.cc",
-       "../browser/engagement/site_engagement_helper_browsertest.cc",
-       "../browser/enterprise/browser_management/management_service_browsertest.cc",
-@@ -3704,6 +3705,7 @@ if (!is_android) {
-       "../browser/ui/views/device_chooser_browsertest.cc",
-       "../browser/ui/views/digital_credentials/digital_identity_integration_test.cc",
-       "../browser/ui/views/digital_credentials/digital_identity_multi_step_dialog_browsertest.cc",
-+      "../browser/ui/views/download/download_item_view_browsertest.cc",
-       "../browser/ui/views/exclusive_access_bubble_views_browsertest.cc",
-       "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc",
-       "../browser/ui/views/eye_dropper/eye_dropper_browsertest.cc",
-@@ -5205,6 +5207,7 @@ if (!is_android) {
-         "../browser/ui/views/permissions/permission_request_chip_browsertest.cc",
-         "../browser/ui/views/profiles/profile_menu_view_browsertest.cc",
-         "../browser/ui/views/safe_browsing/password_reuse_modal_warning_dialog_browsertest.cc",
-+        "../browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog_browsertest.cc",
-         "../browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager_browsertest.cc",
-         "../browser/ui/views/search_engines/dse_reset_dialog_view_browsertest.cc",
-         "../browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_browsertest.cc",
-@@ -8111,6 +8114,8 @@ test("unit_tests") {
-       "../browser/diagnostics/diagnostics_model_unittest.cc",
-       "../browser/download/download_commands_unittest.cc",
-       "../browser/download/download_dir_policy_handler_unittest.cc",
-+      "../browser/download/download_shelf_unittest.cc",
-+      "../browser/download/download_ui_context_menu_unittest.cc",
-       "../browser/download/download_ui_enterprise_util_unittest.cc",
-       "../browser/download/download_warning_desktop_hats_utils_unittest.cc",
-       "../browser/enterprise/reporting/extension_info_unittest.cc",
-@@ -8802,7 +8807,6 @@ test("unit_tests") {
-       "../browser/download/bubble/download_bubble_update_service_unittest.cc",
-       "../browser/download/bubble/download_bubble_utils_unittest.cc",
-       "../browser/download/bubble/download_display_controller_unittest.cc",
--      "../browser/download/download_ui_context_menu_unittest.cc",
-       "../browser/hid/hid_status_icon_unittest.cc",
-     ]
- 
-diff --git a/chrome/test/base/test_browser_window.cc b/chrome/test/base/test_browser_window.cc
-index d489ebff46e6f..bd57f7575309d 100644
---- a/chrome/test/base/test_browser_window.cc
-+++ b/chrome/test/base/test_browser_window.cc
-@@ -332,6 +332,21 @@ sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
- }
- #endif  // BUILDFLAG(IS_CHROMEOS)
- 
-+bool TestBrowserWindow::IsDownloadShelfVisible() const {
-+  return false;
-+}
-+
-+DownloadShelf* TestBrowserWindow::GetDownloadShelf() {
-+  return &download_shelf_;
-+}
-+views::View* TestBrowserWindow::GetTopContainer() {
-+  return nullptr;
-+}
-+
-+views::View* TestBrowserWindow::GetLensOverlayView() {
-+  return nullptr;
-+}
-+
- DownloadBubbleUIController* TestBrowserWindow::GetDownloadBubbleUIController() {
-   return nullptr;
- }
-diff --git a/chrome/test/base/test_browser_window.h b/chrome/test/base/test_browser_window.h
-index 6d017a1753cbf..1e38e68320401 100644
---- a/chrome/test/base/test_browser_window.h
-+++ b/chrome/test/base/test_browser_window.h
-@@ -12,6 +12,7 @@
- #include "base/functional/callback_helpers.h"
- #include "base/scoped_observation.h"
- #include "build/build_config.h"
-+#include "chrome/browser/download/test_download_shelf.h"
- #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
- #include "chrome/browser/ui/browser.h"
- #include "chrome/browser/ui/browser_dialogs.h"
-@@ -206,6 +207,10 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
-   void ShowOneClickSigninConfirmation(
-       const std::u16string& email,
-       base::OnceCallback<void(bool)> confirmed_callback) override {}
-+  bool IsDownloadShelfVisible() const override;
-+  DownloadShelf* GetDownloadShelf() override;
-+  views::View* GetTopContainer() override;
-+  views::View* GetLensOverlayView() override;
-   DownloadBubbleUIController* GetDownloadBubbleUIController() override;
-   void ConfirmBrowserCloseWithPendingDownloads(
-       int download_count,
-@@ -301,6 +306,7 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
-   void OnBrowserAdded(Browser* browser) override;
- 
-   autofill::TestAutofillBubbleHandler autofill_bubble_handler_;
-+  TestDownloadShelf download_shelf_{nullptr};
-   TestLocationBar location_bar_;
-   gfx::NativeWindow native_window_ = gfx::NativeWindow();
- 

@@ -1,5 +1,5 @@
 diff --git a/chrome/installer/mini_installer/BUILD.gn b/chrome/installer/mini_installer/BUILD.gn
-index 5f9acdb7f3550..c492fa4e569b6 100644
+index 37a9269380b70..6ff86c7fc3aa8 100644
 --- a/chrome/installer/mini_installer/BUILD.gn
 +++ b/chrome/installer/mini_installer/BUILD.gn
 @@ -1,7 +1,8 @@
@@ -195,7 +195,7 @@ index 5f9acdb7f3550..c492fa4e569b6 100644
    rc_file = packed_files_rc_file
  }
  
-@@ -352,14 +459,14 @@ if (!(is_component_build && is_debug && target_cpu == "x86") &&
+@@ -353,14 +460,14 @@ if (!(is_component_build && is_debug && target_cpu == "x86") &&
              root_out_dir)
      inputs = [
        "$root_out_dir/" + alternate_version_generator_rel_path,
@@ -212,7 +212,7 @@ index 5f9acdb7f3550..c492fa4e569b6 100644
        "--out",
        "$target_name.exe",
        "--path_7za",
-@@ -367,6 +474,7 @@ if (!(is_component_build && is_debug && target_cpu == "x86") &&
+@@ -368,6 +475,7 @@ if (!(is_component_build && is_debug && target_cpu == "x86") &&
      ]
      deps = [
        ":mini_installer",
@@ -298,7 +298,7 @@ index e2b6155fe43fc..08b937f7793e6 100644
    bool should_delete_extracted_files_;
  
 diff --git a/chrome/installer/mini_installer/mini_installer.cc b/chrome/installer/mini_installer/mini_installer.cc
-index 44f29f2fafda8..e774edf86da7b 100644
+index 6aae112356a1a..738b3d01651ca 100644
 --- a/chrome/installer/mini_installer/mini_installer.cc
 +++ b/chrome/installer/mini_installer/mini_installer.cc
 @@ -1,4 +1,4 @@
@@ -904,7 +904,7 @@ index 0000000000000..0930463ef38fc
 +
 +#endif // CHROME_INSTALLER_MINI_INSTALLER_MINI_INSTALLER_VERSION_H_
 diff --git a/chrome/installer/setup/install_worker.cc b/chrome/installer/setup/install_worker.cc
-index 317e77e81c040..7864422d46333 100644
+index 59679ed4c8b5d..ab1d1da74339b 100644
 --- a/chrome/installer/setup/install_worker.cc
 +++ b/chrome/installer/setup/install_worker.cc
 @@ -1,4 +1,4 @@
@@ -913,16 +913,16 @@ index 317e77e81c040..7864422d46333 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  //
-@@ -29,6 +29,8 @@
- #include "base/functional/bind.h"
+@@ -30,6 +30,8 @@
  #include "base/functional/callback_helpers.h"
  #include "base/logging.h"
+ #include "base/memory/ptr_util.h"
 +#include "base/process/kill.h"
 +#include "base/process/process_iterator.h"
  #include "base/strings/string_util.h"
  #include "base/strings/utf_string_conversions.h"
  #include "base/version.h"
-@@ -39,6 +41,7 @@
+@@ -40,6 +42,7 @@
  #include "base/win/win_util.h"
  #include "base/win/windows_version.h"
  #include "build/branding_buildflags.h"
@@ -930,7 +930,7 @@ index 317e77e81c040..7864422d46333 100644
  #include "chrome/install_static/buildflags.h"
  #include "chrome/install_static/install_details.h"
  #include "chrome/install_static/install_modes.h"
-@@ -79,6 +82,10 @@ namespace installer {
+@@ -82,6 +85,10 @@ namespace installer {
  
  namespace {
  
@@ -941,7 +941,15 @@ index 317e77e81c040..7864422d46333 100644
  void AddInstallerCopyTasks(const InstallParams& install_params,
                             WorkItemList* install_list) {
    DCHECK(install_list);
-@@ -198,6 +205,46 @@ void AddDeleteUninstallEntryForMSIWorkItems(
+@@ -109,6 +116,7 @@ void AddInstallerCopyTasks(const InstallParams& install_params,
+   }
+ }
+ 
++#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ // Adds work items to register the Elevation Service with Windows. Only for
+ // system level installs.
+ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
+@@ -265,6 +273,46 @@ void AddDeleteUninstallEntryForMSIWorkItems(
    delete_reg_key->set_best_effort(true);
  }
  
@@ -988,7 +996,7 @@ index 317e77e81c040..7864422d46333 100644
  // Adds Chrome specific install work items to |install_list|.
  void AddChromeWorkItems(const InstallParams& install_params,
                          WorkItemList* install_list) {
-@@ -209,6 +256,11 @@ void AddChromeWorkItems(const InstallParams& install_params,
+@@ -276,6 +324,11 @@ void AddChromeWorkItems(const InstallParams& install_params,
  
    const base::FilePath& target_path = installer_state.target_path();
  
@@ -1000,30 +1008,30 @@ index 317e77e81c040..7864422d46333 100644
    if (current_version.IsValid()) {
      // TODO(crbug.com/441478433): Delete this cleanup some time in 2027.
      // Delete the archive from an existing install to save some disk space.
-@@ -234,6 +286,14 @@ void AddChromeWorkItems(const InstallParams& install_params,
-                                     temp_path, WorkItem::NEW_NAME_IF_IN_USE,
-                                     new_chrome_exe);
+@@ -308,12 +361,22 @@ void AddChromeWorkItems(const InstallParams& install_params,
+   // Copy installer in install directory.
+   AddInstallerCopyTasks(install_params, install_list);
  
-+  // Add Thorium-specific files
++  // Add Thorium-specific files.
 +  install_list->AddCopyTreeWorkItem(src_path.Append(kInitPref),
-+                                    target_path.Append(kInitPref),
-+                                    temp_path, WorkItem::ALWAYS);
++                                    target_path.Append(kInitPref), temp_path,
++                                    WorkItem::ALWAYS);
 +  install_list->AddCopyTreeWorkItem(src_path.Append(kThorVer),
-+                                    target_path.Append(kThorVer),
-+                                    temp_path, WorkItem::ALWAYS);
++                                    target_path.Append(kThorVer), temp_path,
++                                    WorkItem::ALWAYS);
 +
-   // Install kVisualElementsManifest if it is present in |src_path|. No need to
-   // make this a conditional work item as if the file is not there now, it will
-   // never be.
-@@ -272,6 +332,7 @@ void AddChromeWorkItems(const InstallParams& install_params,
-       ->set_best_effort(true);
- }
- 
 +#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
- // Adds work items to register the Elevation Service with Windows. Only for
- // system level installs.
- void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
-@@ -356,7 +417,6 @@ void AddTracingServiceWorkItems(const InstallationState& original_state,
+   if (installer_state.system_install()) {
+     // Register the elevation service, which is required for proper browser
+     // operation.
+     AddElevationServiceWorkItems(
+         GetElevationServicePath(target_path, new_version), install_list);
+   }
++#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ 
+   // Move chrome.exe to new_chrome.exe if the target is in use; otherwise,
+   // delete a pre-existing new_chrome.exe and overwrite the target.
+@@ -426,7 +489,6 @@ void AddTracingServiceWorkItems(const InstallationState& original_state,
    }
  }
  
@@ -1031,7 +1039,7 @@ index 317e77e81c040..7864422d46333 100644
  // Adds work items to add the "store-dmtoken" command to Chrome's version key.
  // This method is a no-op if this is anything other than system-level Chrome.
  // The command is used when enrolling Chrome browser instances into enterprise
-@@ -980,7 +1040,7 @@ void AddInstallWorkItems(const InstallParams& install_params,
+@@ -1015,7 +1077,7 @@ void AddInstallWorkItems(const InstallParams& install_params,
                                      install_list);
    AddPlatformExperienceHelperWorkItems(installer_state, new_version,
                                         install_list);
@@ -1040,20 +1048,7 @@ index 317e77e81c040..7864422d46333 100644
    AddFirewallRulesWorkItems(installer_state, !current_version.IsValid(),
                              install_list);
  
-@@ -990,10 +1050,12 @@ void AddInstallWorkItems(const InstallParams& install_params,
-       installer_state.root_key(),
-       GetNotificationHelperPath(target_path, new_version), install_list);
- 
-+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-   if (installer_state.system_install()) {
-     AddElevationServiceWorkItems(
-         GetElevationServicePath(target_path, new_version), install_list);
-   }
-+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
- 
-   AddUpdateDowngradeVersionItem(installer_state.root_key(), current_version,
-                                 new_version, install_list);
-@@ -1273,10 +1335,12 @@ void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
+@@ -1294,10 +1356,12 @@ void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
    AddWerHelperRegistration(installer_state.root_key(),
                             GetWerHelperPath(target_path, new_version), list);
  
@@ -1067,10 +1062,10 @@ index 317e77e81c040..7864422d46333 100644
    const std::wstring client_state_key = install_static::GetClientStateKeyPath();
  
 diff --git a/chrome/installer/setup/installer_state.cc b/chrome/installer/setup/installer_state.cc
-index f1e38c0efc160..7334cb587c48b 100644
+index 93c827d5e3e5f..befc5421a7ef1 100644
 --- a/chrome/installer/setup/installer_state.cc
 +++ b/chrome/installer/setup/installer_state.cc
-@@ -44,14 +44,16 @@ InstallerState::InstallerState()
+@@ -43,14 +43,16 @@ InstallerState::InstallerState()
        level_(UNKNOWN_LEVEL),
        root_key_(nullptr),
        msi_(false),
@@ -1089,7 +1084,7 @@ index f1e38c0efc160..7334cb587c48b 100644
    // Use set_level() so that root_key_ is updated properly.
    set_level(level);
  }
-@@ -67,8 +69,16 @@ void InstallerState::Initialize(const base::CommandLine& command_line,
+@@ -66,8 +68,16 @@ void InstallerState::Initialize(const base::CommandLine& command_line,
                  ? SYSTEM_LEVEL
                  : USER_LEVEL);
  
@@ -1107,7 +1102,7 @@ index f1e38c0efc160..7334cb587c48b 100644
  
    msi_ = GetMasterPreference(prefs, initial_preferences::kMsi, false);
    if (!msi_) {
-@@ -163,6 +173,7 @@ void InstallerState::Clear() {
+@@ -162,6 +172,7 @@ void InstallerState::Clear() {
    root_key_ = nullptr;
    msi_ = false;
    verbose_logging_ = false;
@@ -1194,7 +1189,7 @@ index a5d073d214b6e..b8bc64d803cf5 100644
    }
    DCHECK_NE(ret, static_cast<int>(STILL_ACTIVE));
 diff --git a/chrome/installer/setup/setup_util.cc b/chrome/installer/setup/setup_util.cc
-index 56e12e6bbfb0d..fe423186dcea5 100644
+index 623618d3b784b..bfb9ecc3365cf 100644
 --- a/chrome/installer/setup/setup_util.cc
 +++ b/chrome/installer/setup/setup_util.cc
 @@ -1,4 +1,4 @@
@@ -1203,7 +1198,7 @@ index 56e12e6bbfb0d..fe423186dcea5 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  //
-@@ -270,7 +270,7 @@ bool ContainsUnsupportedSwitch(const base::CommandLine& cmd_line) {
+@@ -247,7 +247,7 @@ bool ContainsUnsupportedSwitch(const base::CommandLine& cmd_line) {
  
  bool IsProcessorSupported() {
  #if defined(ARCH_CPU_X86_FAMILY)
@@ -1212,7 +1207,7 @@ index 56e12e6bbfb0d..fe423186dcea5 100644
  #elif defined(ARCH_CPU_ARM64)
    return true;
  #else
-@@ -428,10 +428,15 @@ void DeleteRegistryKeyPartial(
+@@ -405,10 +405,15 @@ void DeleteRegistryKeyPartial(
  }
  
  bool IsDowngradeAllowed(const InitialPreferences& prefs) {
@@ -1232,7 +1227,7 @@ index 56e12e6bbfb0d..fe423186dcea5 100644
  
  int GetInstallAge(const InstallerState& installer_state) {
 diff --git a/chrome/installer/util/initial_preferences.cc b/chrome/installer/util/initial_preferences.cc
-index c1ecc73d63705..3b8dabfb4be5a 100644
+index 1e401764a4d83..a81e182f7a8a1 100644
 --- a/chrome/installer/util/initial_preferences.cc
 +++ b/chrome/installer/util/initial_preferences.cc
 @@ -4,6 +4,10 @@
@@ -1282,7 +1277,7 @@ index c1ecc73d63705..3b8dabfb4be5a 100644
 +
  }  // namespace installer
 diff --git a/chrome/installer/util/initial_preferences.h b/chrome/installer/util/initial_preferences.h
-index e5dc6ab6d412f..74d1b90978f59 100644
+index b82ecc3386668..97716eabf3f69 100644
 --- a/chrome/installer/util/initial_preferences.h
 +++ b/chrome/installer/util/initial_preferences.h
 @@ -249,6 +249,9 @@ class InitialPreferences {
@@ -1480,7 +1475,7 @@ index 0e3845d610127..2fd12a4720483 100644
  void InitInstallerLogging(const installer::InitialPreferences& prefs);
  
 diff --git a/chrome/installer/util/util_constants.cc b/chrome/installer/util/util_constants.cc
-index 649e0d5f4db51..7c6eec238a572 100644
+index fa3e16293fe3b..1c9def7d10566 100644
 --- a/chrome/installer/util/util_constants.cc
 +++ b/chrome/installer/util/util_constants.cc
 @@ -1,4 +1,4 @@
@@ -1503,7 +1498,7 @@ index 649e0d5f4db51..7c6eec238a572 100644
  const char kInstallArchive[] = "install-archive";
  
  // Use the given uncompressed chrome.7z archive as the source of files to
-@@ -163,6 +164,9 @@ const char kUninstall[] = "uninstall";
+@@ -166,6 +167,9 @@ const char kUninstall[] = "uninstall";
  // Enable verbose logging (info level).
  const char kVerboseLogging[] = "verbose-logging";
  
@@ -1513,7 +1508,7 @@ index 649e0d5f4db51..7c6eec238a572 100644
  }  // namespace switches
  
  // The Active Setup executable will be an identical copy of setup.exe; this is
-@@ -176,9 +180,9 @@ const char kVerboseLogging[] = "verbose-logging";
+@@ -179,9 +183,9 @@ const char kVerboseLogging[] = "verbose-logging";
  // Active Setup.
  const wchar_t kActiveSetupExe[] = L"chrmstp.exe";
  const wchar_t kChromeDll[] = L"chrome.dll";
@@ -1527,14 +1522,13 @@ index 649e0d5f4db51..7c6eec238a572 100644
  const wchar_t kChromeProxyNewExe[] = L"new_chrome_proxy.exe";
  const wchar_t kChromeProxyOldExe[] = L"old_chrome_proxy.exe";
 diff --git a/chrome/installer/util/util_constants.h b/chrome/installer/util/util_constants.h
-index eb24d9675dc22..5b3a10610ca8c 100644
+index ce173b497ab46..6d6b6d6514ebc 100644
 --- a/chrome/installer/util/util_constants.h
 +++ b/chrome/installer/util/util_constants.h
-@@ -202,6 +202,7 @@ extern const char kUncompressedArchive[];
+@@ -203,6 +203,7 @@ extern const char kUncompressedArchive[];
  extern const char kUninstall[];
  extern const char kUpdateSetupExe[];
  extern const char kVerboseLogging[];
 +extern const char kDebugMode[];
  
  }  // namespace switches
- 

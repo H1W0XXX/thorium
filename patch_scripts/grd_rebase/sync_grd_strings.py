@@ -57,6 +57,14 @@ EXPERIMENT_TITLE_MESSAGE_IDS = frozenset(
 ALEX313031_RECOMMENDATION_MESSAGE_IDS = frozenset(
     {"IDS_CHROME_REENGAGEMENT_NOTIFICATION_3_TITLE"}
 )
+WEB_STORE_BRAND_MESSAGE_IDS = frozenset(
+    {
+        "IDS_EXTENSIONS_BLOCKLISTED_CWS_POLICY_VIOLATION",
+        "IDS_EXTENSIONS_ITEM_CHROME_WEB_STORE",
+        "IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF",
+        "IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON",
+    }
+)
 
 
 def apply_ordered_replacements(text: str) -> str:
@@ -79,6 +87,42 @@ def apply_ordered_replacements(text: str) -> str:
     ):
         text = text.replace(old, new)
     return text
+
+
+def apply_replacements_preserving_chrome(text: str) -> str:
+    """Apply product replacements while preserving Chrome-owned service names."""
+    for old, new in (
+        ("Chromium", "Thorium"),
+        ("Google Thorium", "Thorium"),
+        ("Google recommends Thorium", "Alex313031 recommends Thorium"),
+        ("ThoriumOS Flex", "ThoriumOS"),
+        ("made possible by Thorium", "made possible by Chromium"),
+    ):
+        text = text.replace(old, new)
+    text = re.sub(r"(?<!Thorium )Experiments", "Thorium Experiments", text)
+    text = text.replace(
+        "Aw, Snap!", "Aw, #@%!, this tab's process has gone bye bye..."
+    )
+    text = text.replace("Thorium Remote Desktop", "Chrome Remote Desktop")
+    return text
+
+
+def normalize_xtb_translation_text(text: str) -> str:
+    """Normalize copied Thorium XTB text after branding replacements."""
+    for old, new in (
+        ("ThoriumOS Flex", "ThoriumOS"),
+        ("ThoriumOS\u00a0Flex", "ThoriumOS"),
+        ("Thorium OS Flex", "ThoriumOS"),
+        ("Thorium\u00a0OS Flex", "ThoriumOS"),
+        ("Thorium OS\u00a0Flex", "ThoriumOS"),
+        ("Thorium\u00a0OS\u00a0Flex", "ThoriumOS"),
+        ("ThoriumOs Flex", "ThoriumOS"),
+        ("ThoriumOs\u00a0Flex", "ThoriumOS"),
+        ("Thorium Flex", "ThoriumOS"),
+        ("Thorium\u00a0Flex", "ThoriumOS"),
+    ):
+        text = text.replace(old, new)
+    return "\n".join(line.rstrip() for line in text.splitlines())
 
 
 TRANSLATION_FILE_RE = re.compile(
@@ -512,6 +556,22 @@ def _replace_outside_markup(text: str) -> str:
     return "".join(parts)
 
 
+def _replace_outside_markup_preserving_chrome(text: str) -> str:
+    """Apply text replacements without rewriting Chrome-owned service names."""
+    parts: list[str] = []
+    cursor = 0
+    for match in MARKUP_TAG_RE.finditer(text):
+        if match.start() > cursor:
+            parts.append(
+                apply_replacements_preserving_chrome(text[cursor : match.start()])
+            )
+        parts.append(match.group(0))
+        cursor = match.end()
+    if cursor < len(text):
+        parts.append(apply_replacements_preserving_chrome(text[cursor:]))
+    return "".join(parts)
+
+
 def _replace_message_body(body: str) -> str:
     """Apply replacements to message text while preserving placeholders.
 
@@ -791,11 +851,15 @@ def build_translation_insertions(
                     f"{change.old_translation_id} in {match.chromium_path}"
                 )
 
-            replaced_body = _replace_outside_markup(match.body)
+            if change.message_id in WEB_STORE_BRAND_MESSAGE_IDS:
+                replaced_body = _replace_outside_markup_preserving_chrome(match.body)
+            else:
+                replaced_body = _replace_outside_markup(match.body)
             replaced_body = _apply_translation_specific_replacements(
                 change.message_id,
                 replaced_body,
             )
+            replaced_body = normalize_xtb_translation_text(replaced_body)
             replaced_block = (
                 f"<translation{copied_attrs}>"
                 f"{replaced_body}</translation>"

@@ -15,6 +15,95 @@ TRANSLATION_RE = re.compile(
     re.DOTALL,
 )
 TRANSLATION_BUNDLE_END = "</translationbundle>"
+MARKUP_TAG_RE = re.compile(r"<[^>]+>")
+WEB_STORE_BRAND_TRANSLATION_IDS = frozenset(
+    {
+        "1431202594789052745",
+        "3776796446459804932",
+        "3909353120217047026",
+        "73786666777299047",
+    }
+)
+
+
+def apply_ordered_replacements(text: str) -> str:
+    """Apply reviewed Thorium replacements in their required order."""
+    for old, new in (
+        ("Chromium", "Thorium"),
+        ("Chrome", "Thorium"),
+        ("Google Thorium", "Thorium"),
+        ("Google recommends Thorium", "Alex313031 recommends Thorium"),
+        ("ThoriumOS Flex", "ThoriumOS"),
+        ("made possible by Thorium", "made possible by Chromium"),
+    ):
+        text = text.replace(old, new)
+    text = re.sub(r"(?<!Thorium )Experiments", "Thorium Experiments", text)
+    text = text.replace(
+        "Aw, Snap!", "Aw, #@%!, this tab's process has gone bye bye..."
+    )
+    text = text.replace("Thorium Web Store", "Chrome Web Store")
+    text = text.replace("Thorium web store", "Chrome web store")
+    text = text.replace("Thorium Remote Desktop", "Chrome Remote Desktop")
+    return text
+
+
+def apply_replacements_preserving_chrome(text: str) -> str:
+    """Apply product replacements while preserving Chrome-owned service names."""
+    for old, new in (
+        ("Chromium", "Thorium"),
+        ("Google Thorium", "Thorium"),
+        ("Google recommends Thorium", "Alex313031 recommends Thorium"),
+        ("ThoriumOS Flex", "ThoriumOS"),
+        ("made possible by Thorium", "made possible by Chromium"),
+    ):
+        text = text.replace(old, new)
+    text = re.sub(r"(?<!Thorium )Experiments", "Thorium Experiments", text)
+    text = text.replace(
+        "Aw, Snap!", "Aw, #@%!, this tab's process has gone bye bye..."
+    )
+    text = text.replace("Thorium Remote Desktop", "Chrome Remote Desktop")
+    return text
+
+
+def replace_outside_markup(text: str, *, preserve_chrome: bool = False) -> str:
+    """Apply text replacements without changing XML-like tags."""
+    replacer = (
+        apply_replacements_preserving_chrome
+        if preserve_chrome
+        else apply_ordered_replacements
+    )
+    parts: list[str] = []
+    cursor = 0
+    for match in MARKUP_TAG_RE.finditer(text):
+        if match.start() > cursor:
+            parts.append(replacer(text[cursor : match.start()]))
+        parts.append(match.group(0))
+        cursor = match.end()
+    if cursor < len(text):
+        parts.append(replacer(text[cursor:]))
+    return "".join(parts)
+
+
+def normalize_xtb_translation_block(block: str, translation_id: str) -> str:
+    """Normalize reviewed Thorium XTB additions before insertion."""
+    block = replace_outside_markup(
+        block,
+        preserve_chrome=translation_id in WEB_STORE_BRAND_TRANSLATION_IDS,
+    )
+    for old, new in (
+        ("ThoriumOS Flex", "ThoriumOS"),
+        ("ThoriumOS\u00a0Flex", "ThoriumOS"),
+        ("Thorium OS Flex", "ThoriumOS"),
+        ("Thorium\u00a0OS Flex", "ThoriumOS"),
+        ("Thorium OS\u00a0Flex", "ThoriumOS"),
+        ("Thorium\u00a0OS\u00a0Flex", "ThoriumOS"),
+        ("ThoriumOs Flex", "ThoriumOS"),
+        ("ThoriumOs\u00a0Flex", "ThoriumOS"),
+        ("Thorium Flex", "ThoriumOS"),
+        ("Thorium\u00a0Flex", "ThoriumOS"),
+    ):
+        block = block.replace(old, new)
+    return "\n".join(line.rstrip() for line in block.splitlines())
 
 
 @dataclass(frozen=True)
@@ -67,7 +156,10 @@ def group_inventory(
         target_path = row.get("target_path", "").replace("\\", "/").strip("/")
         target_parts = PurePosixPath(target_path).parts
         translation_id = row.get("translation_id", "").strip()
-        block = row.get("translation_block", "")
+        block = normalize_xtb_translation_block(
+            row.get("translation_block", ""),
+            translation_id,
+        )
         if (
             not target_path.endswith(".xtb")
             or not target_parts

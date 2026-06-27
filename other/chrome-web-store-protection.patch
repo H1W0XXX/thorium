@@ -1,5 +1,5 @@
 diff --git a/chrome/app/extensions_strings.grdp b/chrome/app/extensions_strings.grdp
-index 3275600303666..b828d3776aca7 100644
+index 75421913a1494..aecbd5ca351d0 100644
 --- a/chrome/app/extensions_strings.grdp
 +++ b/chrome/app/extensions_strings.grdp
 @@ -79,6 +79,12 @@

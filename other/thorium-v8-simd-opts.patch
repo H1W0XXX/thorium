@@ -1,12 +1,16 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index a19ec521254..a1ce2e213b5 100644
+index a19ec521254..f009d4a85e1 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -7,2 +7,3 @@
+@@ -6,6 +6,7 @@
+ 
+ import("//build/config/android/config.gni")
  import("//build/config/arm.gni")
 +import("//build/config/compiler_opt.gni")
  import("//build/config/c++/c++.gni")
-@@ -1750,7 +1750,31 @@ config("toolchain") {
+ import("//build/config/coverage/coverage.gni")
+ import("//build/config/dcheck_always_on.gni")
+@@ -1750,7 +1751,31 @@ config("toolchain") {
      defines += [ "V8_TARGET_ARCH_IA32" ]
      if (is_win) {
        # Ensure no surprising artifacts from 80bit double math with x86.
@@ -39,7 +43,7 @@ index a19ec521254..a1ce2e213b5 100644
      }
    }
    if (v8_current_cpu == "x64") {
-@@ -1759,7 +1783,78 @@ config("toolchain") {
+@@ -1759,7 +1784,78 @@ config("toolchain") {
        # Increase the initial stack size. The default is 1MB, this is 2MB. This
        # applies only to executables and shared libraries produced by V8 since
        # ldflags are not pushed to dependants.

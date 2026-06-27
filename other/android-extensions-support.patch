@@ -615,7 +615,7 @@ index 48f526ebdf558..3ffe25a2d8ed2 100644
                                  selectionDropdownMenuDelegate,
                                  mTabModelSelector,
 diff --git a/chrome/app/extensions_strings.grdp b/chrome/app/extensions_strings.grdp
-index 4c74dc4ca8988..3275600303666 100644
+index 4c74dc4ca8988..75421913a1494 100644
 --- a/chrome/app/extensions_strings.grdp
 +++ b/chrome/app/extensions_strings.grdp
 @@ -394,9 +394,16 @@
@@ -1048,9 +1048,15 @@ diff --git a/chrome/browser/extensions/BUILD.gn b/chrome/browser/extensions/BUIL
 index e0eeeb2cafba5..ff72c512528a1 100644
 --- a/chrome/browser/extensions/BUILD.gn
 +++ b/chrome/browser/extensions/BUILD.gn
-@@ -683,1 +683,1 @@ source_set("extensions") {
+@@ -679,7 +679,7 @@ source_set("extensions") {
+       "//chrome/browser/ui/android/tab_model",
+     ]
+ 
 -    if (enable_desktop_android_extensions) {
 +    if (enable_desktop_android_extensions_thorium) {
+       # pack_extension_job.cc and developer_private_functions.cc include headers
+       # from android extension bridges under IS_ANDROID.
+       deps += [ "//chrome/browser/ui/android/extensions:public" ]
 @@ -1737,7 +1737,7 @@ source_set("chrome_extensions_browser_client") {
      "//extensions/browser/updater",
    ]
@@ -1060,9 +1066,15 @@ index e0eeeb2cafba5..ff72c512528a1 100644
      sources += [ "chrome_extensions_browser_client_android.cc" ]
  
      deps += [
-@@ -2157,1 +2157,1 @@ source_set("unit_tests") {
+@@ -2153,7 +2153,7 @@ source_set("unit_tests") {
+     }
+   }
+ 
 -  if (enable_desktop_android_extensions) {
 +  if (enable_desktop_android_extensions_thorium) {
+     # developer_private_api_unittest.cc includes extension_util_bridge.h under
+     # IS_ANDROID.
+     deps += [ "//chrome/browser/ui/android/extensions:public" ]
 diff --git a/chrome/browser/extensions/api/chrome_extensions_api_client_android.cc b/chrome/browser/extensions/api/chrome_extensions_api_client_android.cc
 index 6df055df9399c..58f3b9e35f83f 100644
 --- a/chrome/browser/extensions/api/chrome_extensions_api_client_android.cc
@@ -1988,7 +2000,7 @@ index 21c413d3f709d..77a6fb37f942f 100644
        "webui/discards/discards_ui.cc",
        "webui/discards/discards_ui.h",
 diff --git a/chrome/browser/ui/android/BUILD.gn b/chrome/browser/ui/android/BUILD.gn
-index 589bb2f89bc73..4edfe9313334 100644
+index 589bb2f89bc73..249e7ef6b3cd6 100644
 --- a/chrome/browser/ui/android/BUILD.gn
 +++ b/chrome/browser/ui/android/BUILD.gn
 @@ -76,7 +76,7 @@ if (is_android) {

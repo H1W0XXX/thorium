@@ -20,7 +20,7 @@ index aa7d37c13421c..1be24e3c49552 100644
  
      if (toolkit_views && !is_mac && !is_castos) {
 diff --git a/content/shell/BUILD.gn b/content/shell/BUILD.gn
-index 1ab8f3cac2e00..59714043387c2 100644
+index 1ab8f3cac2e00..5c794cb59b5f6 100644
 --- a/content/shell/BUILD.gn
 +++ b/content/shell/BUILD.gn
 @@ -1,4 +1,4 @@

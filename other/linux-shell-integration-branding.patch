@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/shell_integration_linux.cc b/chrome/browser/shell_integration_linux.cc
-index 94c5e9be9e9a4..628965f5557d7 100644
+index 94c5e9be9e9a4..928295350aee4 100644
 --- a/chrome/browser/shell_integration_linux.cc
 +++ b/chrome/browser/shell_integration_linux.cc
 @@ -1,4 +1,4 @@

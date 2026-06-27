@@ -1,5 +1,5 @@
 diff --git a/chrome/app/vector_icons/BUILD.gn b/chrome/app/vector_icons/BUILD.gn
-index 7549ff5..bd7fd78 100644
+index 7549ff5614f9e..bd7fd7857f514 100644
 --- a/chrome/app/vector_icons/BUILD.gn
 +++ b/chrome/app/vector_icons/BUILD.gn
 @@ -1,4 +1,4 @@

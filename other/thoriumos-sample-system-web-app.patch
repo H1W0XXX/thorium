@@ -126,6 +126,27 @@ index 1c4952ef447da..a20b39920c956 100644
  
  namespace content {
  class WebUI;
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index 0944c5f707fa3..0dd3464bdd1a6 100644
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -4290,12 +4290,10 @@ static_library("browser") {
+       deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]
+     }
+ 
+-    if (!is_official_build) {
+-      deps += [
+-        "//ash/webui/sample_system_web_app_ui",
+-        "//ash/webui/sample_system_web_app_ui/mojom:mojo_bindings",
+-      ]
+-    }
++    deps += [
++      "//ash/webui/sample_system_web_app_ui",
++      "//ash/webui/sample_system_web_app_ui/mojom:mojo_bindings",
++    ]
+ 
+     if (enable_server_based_recognition) {
+       deps += [ "//chrome/services/speech/internal:lib" ]
 diff --git a/chrome/browser/ash/system_web_apps/apps/BUILD.gn b/chrome/browser/ash/system_web_apps/apps/BUILD.gn
 index a8f16907b19c2..c8bf0165d4b4a 100644
 --- a/chrome/browser/ash/system_web_apps/apps/BUILD.gn
@@ -170,26 +191,6 @@ index c80f8c0a8995c..d30b7ca6de16f 100644
  
  class SampleSystemAppDelegate : public ash::SystemWebAppDelegate {
   public:
-diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
---- a/chrome/browser/BUILD.gn
-+++ b/chrome/browser/BUILD.gn
-@@ -4288,12 +4288,10 @@ static_library("browser") {
-       deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]
-     }
- 
--    if (!is_official_build) {
--      deps += [
--        "//ash/webui/sample_system_web_app_ui",
--        "//ash/webui/sample_system_web_app_ui/mojom:mojo_bindings",
--      ]
--    }
-+    deps += [
-+      "//ash/webui/sample_system_web_app_ui",
-+      "//ash/webui/sample_system_web_app_ui/mojom:mojo_bindings",
-+    ]
- 
-     if (enable_server_based_recognition) {
-       deps += [ "//chrome/services/speech/internal:lib" ]
 diff --git a/chrome/browser/ash/system_web_apps/system_web_app_manager.cc b/chrome/browser/ash/system_web_apps/system_web_app_manager.cc
 index a40e8c795b241..d6f44749a4c41 100644
 --- a/chrome/browser/ash/system_web_apps/system_web_app_manager.cc
@@ -254,7 +255,7 @@ index 6776c46efba9d..8340a844ee778 100644
  
  }  // namespace chrome::internal
 diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
-index b669d4f3ee5f3..d3c6386a752de 100644
+index 5b8bb04a2fa99..21c413d3f709d 100644
 --- a/chrome/browser/ui/BUILD.gn
 +++ b/chrome/browser/ui/BUILD.gn
 @@ -2954,9 +2954,7 @@ static_library("ui") {

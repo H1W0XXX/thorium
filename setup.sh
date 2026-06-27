@@ -95,7 +95,18 @@ applyThoriumSeries () {
 	printf "${YEL}Applying Thorium patch series...${c0}\n" &&
 	python3 patch_scripts/series/apply_series.py --source-tree "${CR_SRC_DIR}" --apply "${condition_args[@]}"
 }
-applyThoriumSeries "$@";
+try applyThoriumSeries "$@";
+
+applyGrdRebase () {
+	printf "\n" &&
+	printf "${YEL}Applying Thorium GRD/XTB rebase...${c0}\n" &&
+	python3 patch_scripts/grd_rebase/sync_grd_strings.py "${CR_SRC_DIR}" \
+		--file-allowlist patch_scripts/grd_rebase/config/file_allowlist.csv \
+		--message-allowlist patch_scripts/grd_rebase/config/message_allowlist.csv \
+		--feature-message-ownership patch_scripts/grd_rebase/config/feature_patch_message_ownership.csv &&
+	python3 patch_scripts/grd_rebase/merge_thorium_xtb.py "${CR_SRC_DIR}"
+}
+try applyGrdRebase;
 
 cd ~/thorium &&
 

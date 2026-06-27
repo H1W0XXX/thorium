@@ -1,5 +1,5 @@
 diff --git a/chrome/android/BUILD.gn b/chrome/android/BUILD.gn
-index 6f1aa2d..0750b64 100644
+index 6f1aa2dcd2822..0750b64fd75ef 100644
 --- a/chrome/android/BUILD.gn
 +++ b/chrome/android/BUILD.gn
 @@ -1,4 +1,4 @@
@@ -87,7 +87,7 @@ index 6f1aa2d..0750b64 100644
        ":chrome_test_apk_template_resources",
        ":chrome_test_java",
 diff --git a/chrome/android/chrome_java_resources.gni b/chrome/android/chrome_java_resources.gni
-index a13c34a..c8d163e 100644
+index a13c34ab9fdbc..c8d163eecea8d 100644
 --- a/chrome/android/chrome_java_resources.gni
 +++ b/chrome/android/chrome_java_resources.gni
 @@ -53,9 +53,11 @@ chrome_java_resources = [
@@ -151,7 +151,7 @@ index a13c34a..c8d163e 100644
    "java/res/drawable-xxxhdpi/incognito_splash.png",
    "java/res/drawable-xxxhdpi/infobar_chrome.png",
 diff --git a/chrome/android/chrome_public_apk_tmpl.gni b/chrome/android/chrome_public_apk_tmpl.gni
-index 9bf07d2..26c1c75 100644
+index 9bf07d2470457..26c1c75715df1 100644
 --- a/chrome/android/chrome_public_apk_tmpl.gni
 +++ b/chrome/android/chrome_public_apk_tmpl.gni
 @@ -1,4 +1,4 @@
@@ -180,7 +180,7 @@ index 9bf07d2..26c1c75 100644
  default_chrome_public_jinja_variables = [
    "channel=$android_channel",
 diff --git a/chrome/android/java/res_base/drawable/ic_launcher_round.xml b/chrome/android/java/res_base/drawable/ic_launcher_round.xml
-index 2159da0..cb5e738 100644
+index 2159da0bd9866..cb5e738e61240 100644
 --- a/chrome/android/java/res_base/drawable/ic_launcher_round.xml
 +++ b/chrome/android/java/res_base/drawable/ic_launcher_round.xml
 @@ -5,8 +5,8 @@ Use of this source code is governed by a BSD-style license that can be
@@ -196,7 +196,7 @@ index 2159da0..cb5e738 100644
      <monochrome android:drawable="@drawable/themed_app_icon"/>
  </adaptive-icon>
 diff --git a/chrome/android/java/res_chromium_base/drawable/themed_app_icon.xml b/chrome/android/java/res_chromium_base/drawable/themed_app_icon.xml
-index 32a95bc..58acce7 100644
+index 32a95bc6ee4d5..58acce75bcfb3 100644
 --- a/chrome/android/java/res_chromium_base/drawable/themed_app_icon.xml
 +++ b/chrome/android/java/res_chromium_base/drawable/themed_app_icon.xml
 @@ -1,6 +1,6 @@
@@ -208,7 +208,7 @@ index 32a95bc..58acce7 100644
  found in the LICENSE file.
  -->
 diff --git a/chrome/android/java/res_chromium_base/values/channel_constants.xml b/chrome/android/java/res_chromium_base/values/channel_constants.xml
-index cc1f2a3..32f97e3 100644
+index cc1f2a30cb3c5..32f97e3bb15d2 100644
 --- a/chrome/android/java/res_chromium_base/values/channel_constants.xml
 +++ b/chrome/android/java/res_chromium_base/values/channel_constants.xml
 @@ -1,14 +1,14 @@

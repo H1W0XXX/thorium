@@ -193,7 +193,7 @@ index 921ca8867e952..1f079508ae5e4 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
-@@ -103,12 +103,5 @@ bool IsManifestSupported(int manifest_version,
+@@ -103,13 +103,6 @@ bool IsManifestSupported(int manifest_version,
    // Supported versions are always safe.
    if (manifest_version >= kMinimumSupportedManifestVersion &&
        manifest_version <= kMaximumSupportedManifestVersion) {
@@ -206,3 +206,4 @@ index 921ca8867e952..1f079508ae5e4 100644
 -    }
      return true;
    }
+ 

@@ -1,16 +1,12 @@
 diff --git a/components/vector_icons/BUILD.gn b/components/vector_icons/BUILD.gn
-index f4969982faa44..b4f8cbfcaa3cc 100644
+index f4969982faa44..12ee019c45e19 100644
 --- a/components/vector_icons/BUILD.gn
 +++ b/components/vector_icons/BUILD.gn
-@@ -1,8 +1,8 @@
+@@ -1,4 +1,4 @@
 -# Copyright 2017 The Chromium Authors
 +# Copyright 2026 The Chromium Authors and Alex313031
  # Use of this source code is governed by a BSD-style license that can be
  # found in the LICENSE file.
- 
- import("//components/vector_icons/vector_icons.gni")
- 
- _icons_gen_dir = "$root_build_dir/gen/components/vector_icons"
  
 @@ -509,6 +509,16 @@ if (current_toolchain == default_toolchain) {
        "work_old.icon",

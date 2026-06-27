@@ -1,5 +1,5 @@
 diff --git a/chrome/installer/mini_installer/chrome.release b/chrome/installer/mini_installer/chrome.release
-index 0f331c3e0f2a3..86b241f5044bc 100644
+index 0f331c3e0f2a3..b1ecc1fc023fb 100644
 --- a/chrome/installer/mini_installer/chrome.release
 +++ b/chrome/installer/mini_installer/chrome.release
 @@ -1,4 +1,4 @@
@@ -34,7 +34,7 @@ index 0f331c3e0f2a3..86b241f5044bc 100644
  d3dcompiler_47.dll: %(VersionDir)s\
  eventlog_provider.dll: %(VersionDir)s\
  icudtl.dat: %(VersionDir)s\
-@@ -32,15 +39,48 @@ libGLESv2.dll: %(VersionDir)s\
+@@ -32,15 +37,48 @@ libGLESv2.dll: %(VersionDir)s\
  notification_helper.exe: %(VersionDir)s\
  optimization_guide_internal.dll: %(VersionDir)s\
  resources.pak: %(VersionDir)s\
@@ -83,7 +83,7 @@ index 0f331c3e0f2a3..86b241f5044bc 100644
  
  #
  # VisualElements sub-dir.
-@@ -71,7 +111,9 @@ IwaKeyDistribution\manifest.json: %(VersionDir)s\IwaKeyDistribution\
+@@ -71,6 +109,8 @@ IwaKeyDistribution\manifest.json: %(VersionDir)s\IwaKeyDistribution\
  
  [HIDPI]
  chrome_200_percent.pak: %(VersionDir)s\
@@ -92,4 +92,3 @@ index 0f331c3e0f2a3..86b241f5044bc 100644
  
  [FFMPEG]
  ffmpeg.dll: %(VersionDir)s\
- 

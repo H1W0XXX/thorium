@@ -1,8 +1,11 @@
 diff --git a/chrome/browser/ui/views/frame/browser_view.cc b/chrome/browser/ui/views/frame/browser_view.cc
-index 70554a9e2a20b..12a3f1fdfd93c 100644
+index 096b5ffebfbcf..9ad16133e1ee5 100644
 --- a/chrome/browser/ui/views/frame/browser_view.cc
 +++ b/chrome/browser/ui/views/frame/browser_view.cc
-@@ -1301,5 +1301,14 @@ bool BrowserView::ShouldDrawTabStrokes() const {
+@@ -1306,8 +1306,17 @@ bool BrowserView::GetTabStripVisible() const {
+ }
+ 
+ bool BrowserView::ShouldDrawTabStrokes() const {
 +  // Don't want to have to run a full feature query every time this function is
 +  // called.
 +  static const bool force_disable_tab_outlines =
@@ -18,8 +21,7 @@ index 70554a9e2a20b..12a3f1fdfd93c 100644
  #else   // BUILDFLAG(IS_CHROMEOS)
  
    if (browser()->app_controller() &&
-@@ -1325,8 +1334,8 @@ bool BrowserView::ShouldDrawTabStrokes() const {
-         theme_service->IsSystemThemeDistinctFromDefaultTheme() &&
+@@ -1329,7 +1338,7 @@ bool BrowserView::ShouldDrawTabStrokes() const {
          theme_service->UsingSystemTheme();
    }
  
@@ -28,7 +30,7 @@ index 70554a9e2a20b..12a3f1fdfd93c 100644
      // Strokes are only supported for system themes.
      return false;
    }
-@@ -1340,6 +1349,13 @@ bool BrowserView::ShouldDrawTabStrokes() const {
+@@ -1347,7 +1356,14 @@ bool BrowserView::ShouldDrawTabStrokes() const {
        GetFrameView()->GetFrameColor(BrowserFrameActiveState::kActive);
    const float contrast_ratio =
        color_utils::GetContrastRatio(background_color, frame_color);
@@ -43,3 +45,4 @@ index 70554a9e2a20b..12a3f1fdfd93c 100644
 +  return false;
  #endif  // !BUILDFLAG(IS_CHROMEOS)
  }
+ 

@@ -1,8 +1,8 @@
 diff --git a/chrome/app/chrome_main_delegate.cc b/chrome/app/chrome_main_delegate.cc
-index 502f0f284fe1278caf57af0fd96e19d8bce6350a..85596036d212122176dfe15a337ce3f20def4788 100644
+index f0857b4b67eff..49634102643e5 100644
 --- a/chrome/app/chrome_main_delegate.cc
 +++ b/chrome/app/chrome_main_delegate.cc
-@@ -629,6 +629,15 @@ void InitLogging(const std::string& process_type) {
+@@ -639,6 +639,15 @@ void InitLogging(const std::string& process_type) {
                   << chrome::kChromeVersion << " (not a warning)";
      LOG(WARNING) << "In Loving Memory of Linda Louise Frick: Grandma, Mother, and Sister.";
    }
@@ -19,7 +19,7 @@ index 502f0f284fe1278caf57af0fd96e19d8bce6350a..85596036d212122176dfe15a337ce3f2
  #endif  // !BUILDFLAG(IS_ANDROID)
  
 diff --git a/chrome/browser/ui/views/frame/browser_root_view.cc b/chrome/browser/ui/views/frame/browser_root_view.cc
-index 47d7e467d9ddd8209171f7cd05d1b54d9ab75f23..d90e8776294b6b6a7b9b5ed878c156e8e17465c0 100644
+index 47d7e467d9ddd..d90e8776294b6 100644
 --- a/chrome/browser/ui/views/frame/browser_root_view.cc
 +++ b/chrome/browser/ui/views/frame/browser_root_view.cc
 @@ -12,6 +12,7 @@
@@ -71,7 +71,7 @@ index 47d7e467d9ddd8209171f7cd05d1b54d9ab75f23..d90e8776294b6b6a7b9b5ed878c156e8
      // Switch to the left/right tab if the wheel-scroll happens over the
      // tabstrip, or the empty space beside the tabstrip.
 diff --git a/chrome/browser/ui/views/frame/browser_root_view.h b/chrome/browser/ui/views/frame/browser_root_view.h
-index 6bff662b1f477b699ac53c152886e3a0579273e6..2ab3df31a65e9372845a79cd6a1c4650ebf68973 100644
+index 6bff662b1f477..2ab3df31a65e9 100644
 --- a/chrome/browser/ui/views/frame/browser_root_view.h
 +++ b/chrome/browser/ui/views/frame/browser_root_view.h
 @@ -158,6 +158,8 @@ class BrowserRootView : public views::internal::RootView {

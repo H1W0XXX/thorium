@@ -16,10 +16,10 @@ index 3275600303666..b828d3776aca7 100644
      This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.
    </message>
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index 55868df708e93..7884ddf6f012d 100644
+index 29072c60b13a2..05cac0c6a6c25 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -4793,6 +4793,16 @@ const FeatureEntry kFeatureEntries[] = {
+@@ -4799,6 +4799,16 @@ const FeatureEntry kFeatureEntries[] = {
       flag_descriptions::kWebRequestSecurityInfoName,
       flag_descriptions::kWebRequestSecurityInfoDescription, kOsDesktop,
       FEATURE_VALUE_TYPE(extensions_features::kWebRequestSecurityInfo)},

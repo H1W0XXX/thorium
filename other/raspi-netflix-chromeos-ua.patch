@@ -1,5 +1,5 @@
 diff --git a/components/embedder_support/user_agent_utils.cc b/components/embedder_support/user_agent_utils.cc
-index 608bea5cb3864..e4addaa899184 100644
+index 74e6abbab7f30..4a3c3e2ca6bcd 100644
 --- a/components/embedder_support/user_agent_utils.cc
 +++ b/components/embedder_support/user_agent_utils.cc
 @@ -422,6 +422,8 @@ std::string GetOSVersion(IncludeAndroidBuildNumber include_android_build_number,

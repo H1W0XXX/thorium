@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/ui/views/toolbar/reload_button.cc b/chrome/browser/ui/views/toolbar/reload_button.cc
-index 2a6c40a06d128..7f729b790cc93 100644
+index fbabf7bf13cd4..538d57d990332 100644
 --- a/chrome/browser/ui/views/toolbar/reload_button.cc
 +++ b/chrome/browser/ui/views/toolbar/reload_button.cc
-@@ -182,7 +182,7 @@ void ReloadButton::UpdateCachedTooltipText() {
+@@ -186,7 +186,7 @@ void ReloadButton::UpdateCachedTooltipText() {
  }
  
  bool ReloadButton::ShouldShowMenu() {

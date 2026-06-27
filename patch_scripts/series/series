@@ -17,7 +17,7 @@ third_party/widevine: other/widevine-cdm-support.patch
 third_party/search_engines_data/resources: other/thorium-search-engines-data.patch
 third_party/libyuv: other/libyuv-arm-simd-compat.patch
 v8: other/thorium-v8-simd-opts.patch
-[sse2] third_party/angle/src: other/SSE2/angle-lockfree.patch
+[sse2] third_party/angle: other/SSE2/angle-lockfree.patch
 
 # 10 - Media, codecs, and third_party-facing browser glue.
 other/enable-hevc-ffmpeg-decoding.patch

@@ -174,10 +174,10 @@ index d80c9ff95a2b0..cf6762581e4e9 100644
  
  declare_args() {
 diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
-index e1da11405c1f6..808456541dfbd 100644
+index 2786029dd95b9..446b3a0050c42 100644
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
-@@ -243,7 +243,7 @@ if (is_android) {
+@@ -244,7 +244,7 @@ if (is_android) {
          # logic more easily on an emulator, so the decision to use the arm64
          # orderfile for x64 (instead of arm32) is somewhat arbitrary. We just
          # needed to use some real orderfile.
@@ -213,10 +213,10 @@ index 2c84cf8929ac2..7888b3dc2913e 100644
      // ALPHA_8 to angle_vulkan_image_backing may fail because it expects 1 byte
      // alignment stride. Workaround via copying it to N32.
 diff --git a/chrome/android/BUILD.gn b/chrome/android/BUILD.gn
-index 6f1aa2dcd2822..cacede450bf3e 100644
+index 0750b64fd75ef..99c3f9f7ae776 100644
 --- a/chrome/android/BUILD.gn
 +++ b/chrome/android/BUILD.gn
-@@ -1020,7 +1020,7 @@ if (_is_default_toolchain) {
+@@ -1014,7 +1014,7 @@ if (_is_default_toolchain) {
        "//components/visited_url_ranking/internal:internal_java",
      ]
  
@@ -225,7 +225,7 @@ index 6f1aa2dcd2822..cacede450bf3e 100644
        deps +=
            [ "//chrome/browser/ui/android/extensions/windowing/internal:java" ]
      } else {
-@@ -2440,7 +2440,7 @@ if (_is_default_toolchain) {
+@@ -2428,7 +2428,7 @@ if (_is_default_toolchain) {
        "//components/embedder_support/android:virtual_structure_javatests",
      ]
  
@@ -235,7 +235,7 @@ index 6f1aa2dcd2822..cacede450bf3e 100644
          "//chrome/browser/ui/android/extensions/windowing/internal:javatests",
  
 diff --git a/chrome/android/chrome_public_apk_tmpl.gni b/chrome/android/chrome_public_apk_tmpl.gni
-index 9bf07d2470457..2b43fd6ceba7a 100644
+index 26c1c75715df1..bd6e983fdb005 100644
 --- a/chrome/android/chrome_public_apk_tmpl.gni
 +++ b/chrome/android/chrome_public_apk_tmpl.gni
 @@ -41,7 +41,7 @@ default_chrome_public_jinja_variables = [
@@ -636,10 +636,10 @@ index 4c74dc4ca8988..3275600303666 100644
      No description provided
    </message>
 diff --git a/chrome/app/theme/theme_resources.grd b/chrome/app/theme/theme_resources.grd
-index 3d795c9030811..b978452acf7dc 100644
+index ddc44638de809..2b275e79d9fe1 100644
 --- a/chrome/app/theme/theme_resources.grd
 +++ b/chrome/app/theme/theme_resources.grd
-@@ -384,7 +384,7 @@
+@@ -396,7 +396,7 @@
          <structure type="chrome_scaled_image" name="IDR_UPLOAD_VIOLATION_DARK" file="common/upload_violation_dark.png" />
        </if>
        <if expr="not _google_chrome">
@@ -648,7 +648,7 @@ index 3d795c9030811..b978452acf7dc 100644
            <!-- Desktop Android supports extensions and the web store. -->
            <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON" file="chromium/webstore_icon.png" />
            <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON_16" file="chromium/webstore_icon_16.png" />
-@@ -393,7 +393,7 @@
+@@ -405,7 +405,7 @@
          </if>
        </if>
        <if expr="_google_chrome">
@@ -658,7 +658,7 @@ index 3d795c9030811..b978452acf7dc 100644
            <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON" file="google_chrome/webstore_icon.png" />
            <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON_16" file="google_chrome/webstore_icon_16.png" />
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 311a3dfebc076..86a6d6951df3f 100644
+index 0dd3464bdd1a6..050f4387c3d0d 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
 @@ -4994,7 +4994,7 @@ static_library("browser") {
@@ -680,10 +680,10 @@ index 311a3dfebc076..86a6d6951df3f 100644
    }
  
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index 6efeb11d891cb..55868df708e93 100644
+index f186500658274..29072c60b13a2 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -383,6 +383,10 @@
+@@ -384,6 +384,10 @@
  #include "extensions/common/switches.h"
  #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
  
@@ -694,7 +694,7 @@ index 6efeb11d891cb..55868df708e93 100644
  #if BUILDFLAG(ENABLE_PDF)
  #include "pdf/pdf_features.h"
  #endif
-@@ -8902,6 +8906,13 @@ const FeatureEntry kFeatureEntries[] = {
+@@ -8908,6 +8912,13 @@ const FeatureEntry kFeatureEntries[] = {
       FEATURE_VALUE_TYPE(ash::features::kTrafficCountersForWiFiTesting)},
  #endif  // BUILDFLAG(IS_CHROMEOS)
  
@@ -962,10 +962,10 @@ index b636ad2726268..0d060c123edd0 100644
                                           DiscardsUI>(map);
  
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index edab63d18ffd0..3fab770e6931d 100644
+index fee5e79b792f4..4c812af1c60ed 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -4394,7 +4394,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
+@@ -4405,7 +4405,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
      // TODO(wenz): This should instead proceed with the selected certificate
      // when there are matching certificates in the OS.
  #if BUILDFLAG(ENABLE_EXTENSIONS) && \
@@ -974,7 +974,7 @@ index edab63d18ffd0..3fab770e6931d 100644
      if (matching_certificates.empty() && nonmatching_certificates.empty()) {
        extensions::ProcessMap* process_map =
            extensions::ProcessMap::Get(profile);
-@@ -4687,7 +4687,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
+@@ -4698,7 +4698,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
  // Fill font preferences. These are not registered on Android unless we're built
  // with extensions (the chrome.fontSettings API can change these).
  // - http://crbug.com/40337093, http://crbug.com/41304476.
@@ -1010,7 +1010,7 @@ index b8e11e85008a2..793e7a52ef2b8 100644
    }
  
 diff --git a/chrome/browser/download/chrome_download_manager_delegate.cc b/chrome/browser/download/chrome_download_manager_delegate.cc
-index f4589273bbe4b..884d791756b87 100644
+index 5eaaedfc382c1..59a133705aebc 100644
 --- a/chrome/browser/download/chrome_download_manager_delegate.cc
 +++ b/chrome/browser/download/chrome_download_manager_delegate.cc
 @@ -766,7 +766,7 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
@@ -1446,10 +1446,10 @@ index de9ff27fd4969..c59f074bff741 100644
      "Enable Extensions Menu Teardown Fix";
  inline constexpr char kEnableExtensionsMenuTeardownFixDescription[] =
 diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-index d44753495eca5..dd0d1768f34c9 100644
+index c31bf36e867a9..b3e1caee31c09 100644
 --- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 +++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-@@ -772,7 +772,10 @@ public abstract class ChromeFeatureList {
+@@ -769,7 +769,10 @@ public abstract class ChromeFeatureList {
      public static final CachedFlag sAndroidNewMediaPicker =
              newCachedFlag(ANDROID_NEW_MEDIA_PICKER, true);
      public static final CachedFlag sAndroidOpenIncognitoAsWindow =
@@ -1461,7 +1461,7 @@ index d44753495eca5..dd0d1768f34c9 100644
      public static final CachedFlag sAndroidOpenIncognitoAsWindowRestrictions =
              newCachedFlag(ANDROID_OPEN_INCOGNITO_AS_WINDOW_RESTRICTIONS, true);
      public static final CachedFlag sAndroidPageInfoAsAppMenuItem =
-@@ -897,7 +900,7 @@ public abstract class ChromeFeatureList {
+@@ -894,7 +897,7 @@ public abstract class ChromeFeatureList {
      public static final CachedFlag sChromeItemPickerUi =
              newCachedFlag(CHROME_ITEM_PICKER_UI, /* defaultValue= */ false);
      public static final CachedFlag sChromeNativeUrlOverriding =
@@ -1470,7 +1470,7 @@ index d44753495eca5..dd0d1768f34c9 100644
      public static final CachedFlag sClampAutomotiveScaling =
              newCachedFlag(CLAMP_AUTOMOTIVE_SCALING, true);
      public static final CachedFlag sClankStartupLatencyInjection =
-@@ -1117,7 +1120,7 @@ public abstract class ChromeFeatureList {
+@@ -1114,7 +1117,7 @@ public abstract class ChromeFeatureList {
              newCachedFlag(POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND, true);
      public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
      public static final CachedFlag sProtectRecentlyVisibleTab =
@@ -1960,7 +1960,7 @@ index b7a7c9dbbdf63..9ee32dd5bcafe 100644
  #else
               base::FEATURE_DISABLED_BY_DEFAULT
 diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
-index 5b8bb04a2fa99..023a024748762 100644
+index 21c413d3f709d..77a6fb37f942f 100644
 --- a/chrome/browser/ui/BUILD.gn
 +++ b/chrome/browser/ui/BUILD.gn
 @@ -718,7 +718,7 @@ static_library("ui") {
@@ -1972,7 +1972,7 @@ index 5b8bb04a2fa99..023a024748762 100644
      deps += [ "//chrome/browser/ui/android/extensions/windowing/internal" ]
    }
  
-@@ -2997,7 +2997,7 @@ static_library("ui") {
+@@ -2995,7 +2995,7 @@ static_library("ui") {
      allow_circular_includes_from += [ "//chrome/browser/ui/wallet" ]
    }
  
@@ -3273,10 +3273,10 @@ index 9297869323cde..d0f4dbf24b774 100644
  #endif
  
 diff --git a/components/webui/version/resources/about_version.html b/components/webui/version/resources/about_version.html
-index 3b689206909bf..2b21e43c2246f 100644
+index b4eeb06d4f83e..46f349abed5db 100644
 --- a/components/webui/version/resources/about_version.html
 +++ b/components/webui/version/resources/about_version.html
-@@ -105,7 +105,7 @@ about:version template page
+@@ -131,7 +131,7 @@ about:version template page
              <span>$i18n{gms_version}</span>
            </td>
          </tr>
@@ -3791,10 +3791,10 @@ index 174028663459a..3616ee1857f69 100644
  
  # Skia only needs to support GPU rasterization if we use the full Chromium
 diff --git a/third_party/blink/common/features.cc b/third_party/blink/common/features.cc
-index d210598dfddeb..4a4b73c0a2e4a 100644
+index 8a3a6ab7707fa..ac60cc28cae83 100644
 --- a/third_party/blink/common/features.cc
 +++ b/third_party/blink/common/features.cc
-@@ -2527,7 +2527,7 @@ BASE_FEATURE(kStopInBackground,
+@@ -2533,7 +2533,7 @@ BASE_FEATURE(kStopInBackground,
  // b/248036988 - Disable this for Chromecast on Android builds to prevent apps
  // that play audio in the background from stopping.
  #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CAST_ANDROID) && \
@@ -3803,7 +3803,7 @@ index d210598dfddeb..4a4b73c0a2e4a 100644
               base::FEATURE_ENABLED_BY_DEFAULT
  #else
               base::FEATURE_DISABLED_BY_DEFAULT
-@@ -2818,7 +2818,7 @@ bool IsFencedFramesEnabled() {
+@@ -2824,7 +2824,7 @@ bool IsFencedFramesEnabled() {
  // https://bugs.chromium.org/p/chromium/issues/detail?id=1335069#c3.
  bool IsMemoryPurgeOnBackgroundingEnabled() {
    return
@@ -3835,7 +3835,7 @@ index ebdd20021fe86..34d4e1c769f3c 100644
  #endif  // BUILDFLAG(IS_ANDROID)  && !BUILDFLAG(IS_DESKTOP_ANDROID)
  }
 diff --git a/third_party/libvpx/BUILD.gn b/third_party/libvpx/BUILD.gn
-index 3437424b46ef2..edb4088f13d30 100644
+index 338595aed8ef6..aed20f6af185a 100644
 --- a/third_party/libvpx/BUILD.gn
 +++ b/third_party/libvpx/BUILD.gn
 @@ -30,7 +30,7 @@ if (current_cpu == "x86") {
@@ -3862,7 +3862,7 @@ index cd2b6b9337663..e184d6739995d 100644
  
  # Must match `enable_hidpi` in ui/base/ui_features.gni.
 diff --git a/tools/json_schema_compiler/cpp_bundle_generator.py b/tools/json_schema_compiler/cpp_bundle_generator.py
-index f345f64751374..e9461e8efd4fc 100644
+index f345f64751374..d4cf3d969b05f 100644
 --- a/tools/json_schema_compiler/cpp_bundle_generator.py
 +++ b/tools/json_schema_compiler/cpp_bundle_generator.py
 @@ -138,7 +138,7 @@ class CppBundleGenerator(object):

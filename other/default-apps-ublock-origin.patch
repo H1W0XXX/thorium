@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/resources/default_apps/external_extensions.json b/chrome/browser/resources/default_apps/external_extensions.json
-index eb91c08e1fac4..56d171598f9e7 100644
+index b186b1dde8257..762dc5819eaf9 100644
 --- a/chrome/browser/resources/default_apps/external_extensions.json
 +++ b/chrome/browser/resources/default_apps/external_extensions.json
 @@ -1,10 +1,12 @@

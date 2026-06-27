@@ -1,8 +1,8 @@
 diff --git a/media/base/supported_types.cc b/media/base/supported_types.cc
-index c4d25f792f306..2534aa6fea3d0 100644
+index aa1f911343008..7d440f9e76f9b 100644
 --- a/media/base/supported_types.cc
 +++ b/media/base/supported_types.cc
-@@ -461,9 +461,10 @@ bool IsDefaultDecoderSupportedVideoType(const VideoType& type) {
+@@ -448,9 +448,10 @@ bool IsDefaultDecoderSupportedVideoType(const VideoType& type) {
        return IsDecoderHevcProfileSupported(type);
      case VideoCodec::kDolbyVision:
        return IsDecoderDolbyVisionProfileSupported(type);
@@ -15,7 +15,7 @@ index c4d25f792f306..2534aa6fea3d0 100644
        return false;
    }
 diff --git a/media/ffmpeg/ffmpeg_common.cc b/media/ffmpeg/ffmpeg_common.cc
-index 4bf77b0acb5ae..3cde5feb1ed8e 100644
+index 27b73afbb4b60..4a6daa31ed652 100644
 --- a/media/ffmpeg/ffmpeg_common.cc
 +++ b/media/ffmpeg/ffmpeg_common.cc
 @@ -186,6 +186,12 @@ AVCodecID AudioCodecToCodecID(AudioCodec audio_codec,

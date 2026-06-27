@@ -10,6 +10,7 @@ import html
 from pathlib import Path
 import re
 import sys
+from typing import Iterable
 
 CHROMIUM_PROJECT_LINK_MESSAGE_IDS = frozenset(
     {
@@ -73,6 +74,7 @@ def apply_ordered_replacements(text: str) -> str:
     for old, new in (
         ("Aw, Snap!", "Aw, #@%!, this tab's process has gone bye bye..."),
         ("Thorium Web Store", "Chrome Web Store"),
+        ("Thorium web store", "Chrome web store"),
         ("Thorium Remote Desktop", "Chrome Remote Desktop"),
     ):
         text = text.replace(old, new)
@@ -1264,7 +1266,7 @@ def main() -> int:
         )
     if xtb_conflicts:
         print(
-            "warning: selected the first translation candidate for "
+            "info: selected the first translation candidate for "
             f"{len(xtb_conflicts)} converged XTB conflicts",
             file=sys.stderr,
         )
@@ -1281,7 +1283,7 @@ def main() -> int:
             for item in missing_old_translations
         }
         print(
-            "warning: old translation IDs were missing from "
+            "info: old translation IDs were missing from "
             f"{len(missing_old_translations)} mapped XTB lookups across "
             f"{len(missing_messages)} messages; continuing without them",
             file=sys.stderr,

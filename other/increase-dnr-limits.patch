@@ -1,5 +1,5 @@
 diff --git a/extensions/common/api/declarative_net_request.webidl b/extensions/common/api/declarative_net_request.webidl
-index 13e9fc03677b4..4929f85cc3160 100644
+index 13e9fc03677b4..ef6b963297ccd 100644
 --- a/extensions/common/api/declarative_net_request.webidl
 +++ b/extensions/common/api/declarative_net_request.webidl
 @@ -878,28 +878,29 @@ interface DeclarativeNetRequest {

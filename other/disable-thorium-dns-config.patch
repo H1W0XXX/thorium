@@ -1,5 +1,5 @@
 diff --git a/net/dns/dns_client.cc b/net/dns/dns_client.cc
-index 1d3c4855111be4ceb9a2bd98e8623d48f1572ccd..331eab0b9838c2599320e37f7d2333f77e494694 100644
+index 1d3c4855111be..331eab0b9838c 100644
 --- a/net/dns/dns_client.cc
 +++ b/net/dns/dns_client.cc
 @@ -10,6 +10,7 @@

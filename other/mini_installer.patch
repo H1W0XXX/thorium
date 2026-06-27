@@ -904,7 +904,7 @@ index 0000000000000..0930463ef38fc
 +
 +#endif // CHROME_INSTALLER_MINI_INSTALLER_MINI_INSTALLER_VERSION_H_
 diff --git a/chrome/installer/setup/install_worker.cc b/chrome/installer/setup/install_worker.cc
-index 59679ed4c8b5d..ab1d1da74339b 100644
+index 59679ed4c8b5d..bbf1530b4b4d8 100644
 --- a/chrome/installer/setup/install_worker.cc
 +++ b/chrome/installer/setup/install_worker.cc
 @@ -1,4 +1,4 @@
@@ -940,7 +940,7 @@ index 59679ed4c8b5d..ab1d1da74339b 100644
  void AddInstallerCopyTasks(const InstallParams& install_params,
                             WorkItemList* install_list) {
    DCHECK(install_list);
-@@ -109,6 +116,7 @@ void AddInstallerCopyTasks(const InstallParams& install_params,
+@@ -109,6 +115,7 @@ void AddInstallerCopyTasks(const InstallParams& install_params,
    }
  }
  
@@ -948,7 +948,7 @@ index 59679ed4c8b5d..ab1d1da74339b 100644
  // Adds work items to register the Elevation Service with Windows. Only for
  // system level installs.
  void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
-@@ -265,6 +273,46 @@ void AddDeleteUninstallEntryForMSIWorkItems(
+@@ -265,6 +272,46 @@ void AddDeleteUninstallEntryForMSIWorkItems(
    delete_reg_key->set_best_effort(true);
  }
  
@@ -995,7 +995,7 @@ index 59679ed4c8b5d..ab1d1da74339b 100644
  // Adds Chrome specific install work items to |install_list|.
  void AddChromeWorkItems(const InstallParams& install_params,
                          WorkItemList* install_list) {
-@@ -276,6 +324,11 @@ void AddChromeWorkItems(const InstallParams& install_params,
+@@ -276,6 +323,11 @@ void AddChromeWorkItems(const InstallParams& install_params,
  
    const base::FilePath& target_path = installer_state.target_path();
  
@@ -1007,7 +1007,7 @@ index 59679ed4c8b5d..ab1d1da74339b 100644
    if (current_version.IsValid()) {
      // TODO(crbug.com/441478433): Delete this cleanup some time in 2027.
      // Delete the archive from an existing install to save some disk space.
-@@ -308,12 +361,19 @@ void AddChromeWorkItems(const InstallParams& install_params,
+@@ -308,12 +360,19 @@ void AddChromeWorkItems(const InstallParams& install_params,
    // Copy installer in install directory.
    AddInstallerCopyTasks(install_params, install_list);
  
@@ -1027,7 +1027,7 @@ index 59679ed4c8b5d..ab1d1da74339b 100644
  
    // Move chrome.exe to new_chrome.exe if the target is in use; otherwise,
    // delete a pre-existing new_chrome.exe and overwrite the target.
-@@ -426,7 +489,6 @@ void AddTracingServiceWorkItems(const InstallationState& original_state,
+@@ -426,7 +485,6 @@ void AddTracingServiceWorkItems(const InstallationState& original_state,
    }
  }
  
@@ -1035,7 +1035,7 @@ index 59679ed4c8b5d..ab1d1da74339b 100644
  // Adds work items to add the "store-dmtoken" command to Chrome's version key.
  // This method is a no-op if this is anything other than system-level Chrome.
  // The command is used when enrolling Chrome browser instances into enterprise
-@@ -1015,7 +1077,7 @@ void AddInstallWorkItems(const InstallParams& install_params,
+@@ -1015,7 +1073,7 @@ void AddInstallWorkItems(const InstallParams& install_params,
                                      install_list);
    AddPlatformExperienceHelperWorkItems(installer_state, new_version,
                                         install_list);
@@ -1044,7 +1044,7 @@ index 59679ed4c8b5d..ab1d1da74339b 100644
    AddFirewallRulesWorkItems(installer_state, !current_version.IsValid(),
                              install_list);
  
-@@ -1294,10 +1356,12 @@ void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
+@@ -1294,10 +1352,12 @@ void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
    AddWerHelperRegistration(installer_state.root_key(),
                             GetWerHelperPath(target_path, new_version), list);
  
@@ -1521,10 +1521,11 @@ diff --git a/chrome/installer/util/util_constants.h b/chrome/installer/util/util
 index ce173b497ab46..6d6b6d6514ebc 100644
 --- a/chrome/installer/util/util_constants.h
 +++ b/chrome/installer/util/util_constants.h
-@@ -203,5 +203,6 @@ extern const char kUncompressedArchive[];
+@@ -203,6 +203,7 @@ extern const char kUncompressedArchive[];
  extern const char kUninstall[];
  extern const char kUpdateSetupExe[];
  extern const char kVerboseLogging[];
 +extern const char kDebugMode[];
  
  }  // namespace switches
+ 

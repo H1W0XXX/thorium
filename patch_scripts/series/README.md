@@ -7,6 +7,24 @@ Patch files intentionally remain in `other/` for now. The series layer records
 ordering, apply roots, and platform conditions. Both `setup.sh` and
 `win_scripts/setup.py` apply patches through this runner.
 
+## Platform Notes
+
+Run the scripts from the Thorium repository root. On Windows, the examples use
+the Python launcher:
+
+```powershell
+py -3 patch_scripts\series\apply_series.py --help
+```
+
+On Linux/macOS, use `python3`:
+
+```sh
+python3 patch_scripts/series/apply_series.py --help
+```
+
+All paths may be passed in the host platform's native style. The series file
+itself should keep forward slashes.
+
 ## Syntax
 
 ```text
@@ -18,6 +36,8 @@ chromium/apply/root: other/example.patch
 Patch paths are relative to the Thorium repository root. Apply roots are
 relative to the Chromium source tree. Use forward slashes in the series file;
 the runner resolves them through Python's `Path` APIs on the host platform.
+Apply roots may be standalone Git checkouts or subdirectories inside the main
+Chromium checkout; the runner handles both forms.
 For example, this applies the patch from inside Chromium's
 `third_party/ffmpeg` checkout:
 
@@ -93,6 +113,101 @@ python3 patch_scripts/series/apply_series.py --source-tree /path/to/chromium/src
 `--apply` modifies the Chromium checkout. It first checks whether a patch
 applies cleanly, applies it with `git apply --reject`, and treats
 reverse-applicable patches as already applied.
+
+## Refresh
+
+Use `refresh_series.py` to re-export patches against the current ordered
+series context. It applies each patch to a temporary index, exports the
+single-patch tree delta, and compares that output with the existing patch file.
+
+Default dry-run checks only unconditional entries.
+
+Windows:
+
+```powershell
+py -3 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src
+```
+
+Linux/macOS:
+
+```sh
+python3 patch_scripts/series/refresh_series.py --source-tree /path/to/chromium/src
+```
+
+The refresh runner applies the series to temporary Git indexes and compares
+temporary trees, so it does not modify the Chromium worktree or Chromium's real
+index. It only reports patch files whose re-exported form differs from the
+current file.
+
+Refresh follows normal apply/check condition handling by default: unconditional
+entries are processed, while conditional entries are skipped. Pass
+`--condition sse2` or `--condition raspi` to refresh that variant together with
+the unconditional entries that precede it. In condition mode, unconditional
+entries are applied as context only; only entries with the requested condition
+are eligible for refresh/write. Use `--all-conditions` only for a full dry-run
+audit across every conditional entry. The runner rejects
+`--all-conditions --write` and also verifies that every `other/**/*.patch` file
+is listed in the series.
+
+The temporary indexes are initialized from each apply root's `HEAD`. The
+Chromium worktree may have local changes, but the checked-out `HEAD` must be
+the intended base revision for the series.
+
+To overwrite changed unconditional patch files on Windows:
+
+```powershell
+py -3 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --write
+```
+
+To overwrite changed unconditional patch files on Linux/macOS:
+
+```sh
+python3 patch_scripts/series/refresh_series.py --source-tree /path/to/chromium/src --write
+```
+
+Variant dry-run on Windows:
+
+```powershell
+py -3 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --condition raspi
+```
+
+Variant dry-run on Linux/macOS:
+
+```sh
+python3 patch_scripts/series/refresh_series.py --source-tree /path/to/chromium/src --condition raspi
+```
+
+Variant write-back only updates patches tagged with the requested condition;
+unconditional entries are applied as context and reported as `context-only`:
+
+Windows:
+
+```powershell
+py -3 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --condition raspi --write
+```
+
+Linux/macOS:
+
+```sh
+python3 patch_scripts/series/refresh_series.py --source-tree /path/to/chromium/src --condition raspi --write
+```
+
+Full conditional audit on Windows:
+
+```powershell
+py -3 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --all-conditions
+```
+
+Full conditional audit on Linux/macOS:
+
+```sh
+python3 patch_scripts/series/refresh_series.py --source-tree /path/to/chromium/src --all-conditions
+```
+
+`--all-conditions --write` is intentionally rejected.
+
+If a patch fails to apply, refresh stops and leaves the patch for manual
+repair. Mail-style patches with headers are reported but not rewritten.
 
 ## Policy
 

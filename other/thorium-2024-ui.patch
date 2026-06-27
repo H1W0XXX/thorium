@@ -186,7 +186,7 @@ index 2d72f112e9b9f..567503f15f329 100644
  BASE_EXPORT bool ShouldCreateLogMessage(int severity);
  
 diff --git a/chrome/browser/chrome_browser_main.cc b/chrome/browser/chrome_browser_main.cc
-index 057be98e715c6..f491ee0194c4f 100644
+index 057be98e715c6..89865a9d7fe82 100644
 --- a/chrome/browser/chrome_browser_main.cc
 +++ b/chrome/browser/chrome_browser_main.cc
 @@ -1269,6 +1269,8 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
@@ -247,20 +247,20 @@ index 03b09f0363609..09141d9160a7c 100644
              @click="${this.onMoreActionsClick_}" aria-haspopup="menu"
              focus-row-control focus-type="actionMenuButton">
 diff --git a/chrome/browser/resources/downloads/item.ts b/chrome/browser/resources/downloads/item.ts
-index a5d82d77c9c28..50177c762eb79 100644
+index a5d82d77c9c28..b33f64bf76aa2 100644
 --- a/chrome/browser/resources/downloads/item.ts
 +++ b/chrome/browser/resources/downloads/item.ts
-@@ -183,6 +183,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
-     assert(!!menu);
+@@ -184,6 +184,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
      return menu;
    }
-+
+ 
 +  protected getDisplayUrlStr_(): string {
 +    return this.data ? this.data.displayUrl : '';
 +  }
- 
++
    protected computeClass_(): string {
      const classes = [];
+ 
 diff --git a/chrome/browser/resources/pdf/manifest.json b/chrome/browser/resources/pdf/manifest.json
 index 04e1e8868ef79..4644ea31cb39d 100644
 --- a/chrome/browser/resources/pdf/manifest.json

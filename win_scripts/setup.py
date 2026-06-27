@@ -134,7 +134,36 @@ def apply_patch_series():
         fail("Failed applying Thorium patch series")
 
 
+def apply_grd_rebase():
+    print("\nApplying Thorium GRD/XTB rebase\n")
+    grd_rebase_dir = os.path.join(thor_src_dir, "patch_scripts", "grd_rebase")
+    config_dir = os.path.join(grd_rebase_dir, "config")
+    sync_script = os.path.join(grd_rebase_dir, "sync_grd_strings.py")
+    merge_script = os.path.join(grd_rebase_dir, "merge_thorium_xtb.py")
+
+    try:
+        subprocess.run([
+            sys.executable,
+            sync_script,
+            cr_src_dir,
+            "--file-allowlist",
+            os.path.join(config_dir, "file_allowlist.csv"),
+            "--message-allowlist",
+            os.path.join(config_dir, "message_allowlist.csv"),
+            "--feature-message-ownership",
+            os.path.join(config_dir, "feature_patch_message_ownership.csv"),
+        ], check=True)
+        subprocess.run([
+            sys.executable,
+            merge_script,
+            cr_src_dir,
+        ], check=True)
+    except subprocess.CalledProcessError:
+        fail("Failed applying Thorium GRD/XTB rebase")
+
+
 apply_patch_series()
+apply_grd_rebase()
 
 print("\nCopying other files to out/thorium\n")
 # Copying additional files.

@@ -1,5 +1,5 @@
 diff --git a/chrome/app/chrome_exe.ver b/chrome/app/chrome_exe.ver
-index a2d3901..000e005 100644
+index a2d39013f5a5d..000e0052c7a7b 100644
 --- a/chrome/app/chrome_exe.ver
 +++ b/chrome/app/chrome_exe.ver
 @@ -1,2 +1,2 @@
@@ -8,7 +8,7 @@ index a2d3901..000e005 100644
 +INTERNAL_NAME=thorium_exe
 +ORIGINAL_FILENAME=thorium.exe
 diff --git a/chrome/app/chrome_exe.vsprops b/chrome/app/chrome_exe.vsprops
-index 95b044a..23675b3 100644
+index 95b044a1328ff..23675b3ca95c8 100644
 --- a/chrome/app/chrome_exe.vsprops
 +++ b/chrome/app/chrome_exe.vsprops
 @@ -12,7 +12,7 @@
@@ -21,7 +21,7 @@ index 95b044a..23675b3 100644
  	/>
  	<Tool
 diff --git a/chrome/app/resources/manpage.1.in b/chrome/app/resources/manpage.1.in
-index 25d3a92..c65e76d 100644
+index 25d3a92a98a6a..c65e76dfb7d95 100644
 --- a/chrome/app/resources/manpage.1.in
 +++ b/chrome/app/resources/manpage.1.in
 @@ -3,16 +3,16 @@
@@ -58,7 +58,7 @@ index 25d3a92..c65e76d 100644
 -The Chromium team \- <http://www.chromium.org>
 +The Chromium team and Alex313031 \- <http://www.chromium.org>
 diff --git a/chrome/app/theme/chromium/BRANDING b/chrome/app/theme/chromium/BRANDING
-index f8363d5..b06454a 100644
+index f8363d5b294fe..b06454a1f97c8 100644
 --- a/chrome/app/theme/chromium/BRANDING
 +++ b/chrome/app/theme/chromium/BRANDING
 @@ -1,10 +1,10 @@

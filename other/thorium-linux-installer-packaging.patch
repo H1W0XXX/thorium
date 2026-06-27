@@ -1,5 +1,5 @@
 diff --git a/chrome/installer/linux/BUILD.gn b/chrome/installer/linux/BUILD.gn
-index e1aca5fd6ecd1..5cf847664bdbb 100644
+index e1aca5fd6ecd1..c5180842dc17b 100644
 --- a/chrome/installer/linux/BUILD.gn
 +++ b/chrome/installer/linux/BUILD.gn
 @@ -1,17 +1,16 @@
@@ -114,7 +114,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
    deps = [ "//chrome" ]
  }
  
-@@ -217,6 +220,35 @@ strip_binary("strip_chrome_sandbox") {
+@@ -217,6 +219,35 @@ strip_binary("strip_chrome_sandbox") {
    deps = [ "//sandbox/linux:chrome_sandbox" ]
  }
  
@@ -150,7 +150,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
  strip_binary("strip_libEGL_shlib") {
    binary_input = "$root_out_dir/libEGL.so"
    deps = [ "//third_party/angle:libEGL" ]
-@@ -265,55 +297,7 @@ if (use_qt6) {
+@@ -265,55 +296,7 @@ if (use_qt6) {
  # is_component_build=false before building this target.
  group("linux") {
    deps = [
@@ -206,7 +206,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
    ]
  }
  
-@@ -325,13 +309,11 @@ copy("common_packaging_files") {
+@@ -325,13 +308,11 @@ copy("common_packaging_files") {
    visibility = [ ":*" ]
    sources = [
      "//chrome/app/resources/manpage.1.in",
@@ -220,7 +220,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
      "common/postinst.include",
      "common/prerm.include",
      "common/repo.cron",
-@@ -357,16 +339,19 @@ copy("deb_packaging_files") {
+@@ -357,16 +338,19 @@ copy("deb_packaging_files") {
    sources = [
      "debian/changelog.template",
      "debian/control.template",
@@ -243,7 +243,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
  copy("theme_files") {
    visibility = [ ":*" ]
    sources = [
-@@ -410,7 +400,7 @@ copy("theme_files") {
+@@ -410,7 +394,7 @@ copy("theme_files") {
  if (!is_chromeos) {
    copy("rpm_packaging_files") {
      visibility = [ ":*" ]
@@ -252,7 +252,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
      outputs = [ "$root_out_dir/installer/rpm/{{source_file_part}}" ]
    }
  }
-@@ -442,6 +432,7 @@ group("installer_deps") {
+@@ -442,6 +426,7 @@ group("installer_deps") {
      ":strip_chrome_management_service",
      ":strip_chrome_sandbox",
      ":theme_files",
@@ -260,7 +260,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
      "//chrome",
      "//chrome:packed_resources",
      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:chrome_management_service",
-@@ -449,6 +441,8 @@ group("installer_deps") {
+@@ -449,6 +434,8 @@ group("installer_deps") {
      "//components/crash/core/app:chrome_crashpad_handler",
      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
      "//sandbox/linux:chrome_sandbox",
@@ -269,7 +269,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
    ]
    if (bundle_widevine_cdm) {
      public_deps += [ "//third_party/widevine/cdm" ]
-@@ -502,13 +496,11 @@ group("installer_deps") {
+@@ -502,13 +489,11 @@ group("installer_deps") {
  # channel:
  #   Name of the channel.
  template("linux_package") {
@@ -284,7 +284,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
    }
  
    deb_target_name = "${target_name}_deb"
-@@ -516,8 +508,36 @@ template("linux_package") {
+@@ -516,8 +501,36 @@ template("linux_package") {
      visibility = [ ":*" ]
      script = "debian/build.py"
  
@@ -322,7 +322,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
  
      args = [
        "-a",
-@@ -528,14 +548,14 @@ template("linux_package") {
+@@ -528,14 +541,14 @@ template("linux_package") {
        invoker.channel,
        "-d",
        branding_path_component,
@@ -339,7 +339,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
      ]
      if (is_official_build) {
        args += [ "-f" ]
-@@ -552,8 +572,36 @@ template("linux_package") {
+@@ -552,8 +565,36 @@ template("linux_package") {
        visibility = [ ":*" ]
        script = "rpm/build.py"
  
@@ -377,7 +377,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
  
        args = [
          "-a",
-@@ -564,6 +612,8 @@ template("linux_package") {
+@@ -564,6 +605,8 @@ template("linux_package") {
          invoker.channel,
          "-d",
          branding_path_component,
@@ -386,7 +386,7 @@ index e1aca5fd6ecd1..5cf847664bdbb 100644
          "-o",
          rebase_path(root_out_dir, root_build_dir),
          "-t",
-@@ -591,12 +641,3 @@ template("linux_package") {
+@@ -591,12 +634,3 @@ template("linux_package") {
  linux_package("stable") {
    channel = "stable"
  }
@@ -1066,7 +1066,7 @@ index bf572f69720a0..14c45f437b5bc 100644
 +Name=Open in Dark Mode
 +Exec=/usr/bin/@@USR_BIN_SYMLINK_NAME@@ --force-dark-mode %U
 diff --git a/chrome/installer/linux/common/installer.py b/chrome/installer/linux/common/installer.py
-index a9bbec28188c9..8c8647273366a 100644
+index a9bbec28188c9..f1d56cad50cd3 100644
 --- a/chrome/installer/linux/common/installer.py
 +++ b/chrome/installer/linux/common/installer.py
 @@ -1,97 +1,20 @@
@@ -2117,7 +2117,7 @@ index a9bbec28188c9..8c8647273366a 100644
          icon_suffix = ""
          if self.branding == "google_chrome":
              if self.channel == "beta":
-@@ -686,112 +620,93 @@ class InstallerConfig:
+@@ -686,112 +618,93 @@ class InstallerConfig:
          for size in icon_sizes:
              logo = f"product_logo_{size}{icon_suffix}.png"
              logo_resources_png.append(logo)
@@ -2304,7 +2304,7 @@ index a9bbec28188c9..8c8647273366a 100644
              "NoDisplay=true prevents\n"
              "# duplicate menu entries. This is required to match "
              "the application ID\n"
-@@ -800,210 +715,58 @@ class InstallerConfig:
+@@ -800,210 +713,58 @@ class InstallerConfig:
              "# The old desktop file is kept to preserve default "
              "browser settings.\n"
              "NoDisplay=true\n")
@@ -2560,7 +2560,7 @@ index a9bbec28188c9..8c8647273366a 100644
          dest.parent.mkdir(parents=True, exist_ok=True)
  
          shutil.copy(src, dest)
-@@ -1012,12 +775,12 @@ class Installer:
+@@ -1012,12 +773,12 @@ class Installer:
          if mode is not None:
              dest.chmod(mode)
  
@@ -2575,7 +2575,7 @@ index a9bbec28188c9..8c8647273366a 100644
              for f in files:
                  path = pathlib.Path(root) / f
                  if path.is_symlink():
-@@ -1039,7 +802,7 @@ class Installer:
+@@ -1039,7 +800,7 @@ class Installer:
                      if "not stripped" in output:
                          unstripped.append(path)
  
@@ -2584,7 +2584,7 @@ index a9bbec28188c9..8c8647273366a 100644
                          # Check RPATH
                          try:
                              readelf_out = subprocess.check_output(
-@@ -1058,10 +821,9 @@ class Installer:
+@@ -1058,10 +819,9 @@ class Installer:
  
          if rpath_bins:
              print(
@@ -2596,7 +2596,7 @@ index a9bbec28188c9..8c8647273366a 100644
  
          if elf_outside:
              print(
-@@ -1071,10 +833,10 @@ class Installer:
+@@ -1071,10 +831,10 @@ class Installer:
              )
              sys.exit(1)
  
@@ -2609,7 +2609,7 @@ index a9bbec28188c9..8c8647273366a 100644
              # On Cog, permission is always 0664 or 0775
              if os.getcwd().startswith("/google/cog/cloud/"):
                  on_cog = True
-@@ -1083,7 +845,7 @@ class Installer:
+@@ -1083,7 +843,7 @@ class Installer:
                      file=sys.stderr,
                  )
  
@@ -2618,7 +2618,7 @@ index a9bbec28188c9..8c8647273366a 100644
              # Check directories
              for d in dirs:
                  pass
-@@ -1095,15 +857,14 @@ class Installer:
+@@ -1095,15 +855,14 @@ class Installer:
                  actual_perms = stat.S_IMODE(st.st_mode)
  
                  base_name = item
@@ -2637,7 +2637,7 @@ index a9bbec28188c9..8c8647273366a 100644
                      else:
                          expect_exists = path.parent / target
  
-@@ -1124,26 +885,26 @@ class Installer:
+@@ -1124,26 +883,26 @@ class Installer:
                      file_type = ""
  
                  if base_name == "chrome-management-service":
@@ -2968,7 +2968,7 @@ index 90ff896ea5ede..3374b31a4d75c 100755
 -  update_bad_repo
 -fi
 diff --git a/chrome/installer/linux/common/wrapper b/chrome/installer/linux/common/wrapper
-index 5ee3f9ff0f521..85f7f4785e40d 100755
+index 5ee3f9ff0f521..802c9f77e9c76 100755
 --- a/chrome/installer/linux/common/wrapper
 +++ b/chrome/installer/linux/common/wrapper
 @@ -1,6 +1,6 @@
@@ -4021,7 +4021,7 @@ index 5cced7e815d64..3383566f3abdf 100755
  if __name__ == "__main__":
 diff --git a/chrome/installer/linux/rpm/thorium.spec.template b/chrome/installer/linux/rpm/thorium.spec.template
 new file mode 100644
-index 0000000000000..49a5914db6a8e
+index 0000000000000..a432cb8d28980
 --- /dev/null
 +++ b/chrome/installer/linux/rpm/thorium.spec.template
 @@ -0,0 +1,222 @@

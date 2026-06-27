@@ -1,4 +1,5 @@
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index 311a3dfebc076..0944c5f707fa3 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
 @@ -1,4 +1,4 @@
@@ -17,7 +18,7 @@ diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
      "unexpire_flags.h",
      "universal_web_contents_observers.cc",
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index 287ae9e1ff1cf..63866f9bbf655 100644
+index 287ae9e1ff1cf..4ee013188e345 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
 @@ -1,4 +1,4 @@
@@ -34,7 +35,7 @@ index 287ae9e1ff1cf..63866f9bbf655 100644
  #include "components/password_manager/core/common/password_manager_features.h"
  #include "components/payments/core/features.h"
  #include "components/performance_manager/public/features.h"
-@@ -4694,4 +4695,8 @@ const FeatureEntry::Choice kUseAngleChoicesMac[] = {
+@@ -4694,11 +4695,16 @@ const FeatureEntry::FeatureVariation kCanvasAccessibilityChoices[] = {
  // calculate and verify checksum.
  //
  // When adding a new choice, add it to the end of the list.
@@ -43,10 +44,11 @@ index 287ae9e1ff1cf..63866f9bbf655 100644
 +#include "chrome/browser/thorium_flag_choices.h"
 +
  const FeatureEntry kFeatureEntries[] = {
-@@ -4698,5 +4703,6 @@ const FeatureEntry kFeatureEntries[] = {
  // Include generated flags for flag unexpiry; see //docs/flag_expiry.md and
  // //tools/flags/generate_unexpire_flags.py.
  #include "build/chromeos_buildflags.h"
  #include "chrome/browser/unexpire_flags_gen.inc"
 +#include "chrome/browser/thorium_flag_entries.h"
      {switches::kEnableBenchmarking, flag_descriptions::kEnableBenchmarkingName,
+      flag_descriptions::kEnableBenchmarkingDescription, kOsAll,
+      MULTI_VALUE_TYPE(kEnableBenchmarkingChoices)},

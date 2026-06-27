@@ -1,3 +1,24 @@
+diff --git a/components/BUILD.gn b/components/BUILD.gn
+index a2c5df7e737a2..b7d8379a1db97 100644
+--- a/components/BUILD.gn
++++ b/components/BUILD.gn
+@@ -1,4 +1,4 @@
+-# Copyright 2014 The Chromium Authors
++# Copyright 2026 The Chromium Authors and Alex313031
+ # Use of this source code is governed by a BSD-style license that can be
+ # found in the LICENSE file.
+ 
+@@ -1237,8 +1237,8 @@ if (use_blink) {
+     ]
+ 
+     if (is_mac) {
+-      data_deps += [ "//content/shell:content_shell" ]
+-      data += [ "$root_out_dir/Content Shell.app/" ]
++      data_deps += [ "//content/shell:thorium_shell" ]
++      data += [ "$root_out_dir/Thorium Shell.app/" ]
+     }
+ 
+     if (toolkit_views && !is_mac && !is_castos) {
 diff --git a/content/shell/BUILD.gn b/content/shell/BUILD.gn
 index 1ab8f3cac2e00..59714043387c2 100644
 --- a/content/shell/BUILD.gn
@@ -198,24 +219,3 @@ index 94aaa3396b101..1dbec16f1de78 100644
      if (use_ozone) {
        deps += [ "//ui/ozone" ]
      }
-diff --git a/components/BUILD.gn b/components/BUILD.gn
-index a2c5df7e337be..1a92aacbe3d77 100644
---- a/components/BUILD.gn
-+++ b/components/BUILD.gn
-@@ -1,4 +1,4 @@
--# Copyright 2014 The Chromium Authors
-+# Copyright 2026 The Chromium Authors and Alex313031
- # Use of this source code is governed by a BSD-style license that can be
- # found in the LICENSE file.
- 
-@@ -1237,8 +1237,8 @@ if (use_blink) {
-     ]
- 
-     if (is_mac) {
--      data_deps += [ "//content/shell:content_shell" ]
--      data += [ "$root_out_dir/Content Shell.app/" ]
-+      data_deps += [ "//content/shell:thorium_shell" ]
-+      data += [ "$root_out_dir/Thorium Shell.app/" ]
-     }
- 
-     if (toolkit_views && !is_mac && !is_castos) {

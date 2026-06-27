@@ -86,14 +86,6 @@ def selected(entry: SeriesEntry, enabled_conditions: set[str]) -> bool:
     return set(entry.conditions).issubset(enabled_conditions)
 
 
-def git_apply_check(apply_dir: Path, patch: Path, reverse: bool = False) -> bool:
-    cmd = ["git", "-C", str(apply_dir), "apply", "--check"]
-    if reverse:
-        cmd.append("--reverse")
-    cmd.append(str(patch))
-    return subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
-
-
 def run_git(apply_dir: Path, args: list[str], env: dict[str, str] | None = None) -> int:
     cmd = ["git", "-C", str(apply_dir), *args]
     return subprocess.run(cmd, env=env).returncode
@@ -102,6 +94,24 @@ def run_git(apply_dir: Path, args: list[str], env: dict[str, str] | None = None)
 def git_output(apply_dir: Path, args: list[str]) -> str:
     cmd = ["git", "-C", str(apply_dir), *args]
     return subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL).strip()
+
+
+def git_apply_command(apply_dir: Path, patch: Path, args: list[str]) -> list[str]:
+    repo_root = Path(git_output(apply_dir, ["rev-parse", "--show-toplevel"]))
+    cmd = ["git", "-C", str(repo_root), "apply", *args]
+    relative_apply_dir = apply_dir.resolve().relative_to(repo_root.resolve())
+    if str(relative_apply_dir) != ".":
+        cmd.append(f"--directory={relative_apply_dir.as_posix()}")
+    cmd.append(str(patch))
+    return cmd
+
+
+def git_apply_check(apply_dir: Path, patch: Path, reverse: bool = False) -> bool:
+    args = ["--check"]
+    if reverse:
+        args.append("--reverse")
+    cmd = git_apply_command(apply_dir, patch, args)
+    return subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
 
 
 def prepare_temp_index(
@@ -131,11 +141,14 @@ def prepare_temp_index(
 
 
 def git_apply_cached(apply_dir: Path, patch: Path, env: dict[str, str]) -> int:
-    return run_git(apply_dir, ["apply", "--cached", str(patch)], env=env)
+    return subprocess.run(
+        git_apply_command(apply_dir, patch, ["--cached"]),
+        env=env,
+    ).returncode
 
 
 def git_apply(apply_dir: Path, patch: Path) -> int:
-    cmd = ["git", "-C", str(apply_dir), "apply", "--reject", str(patch)]
+    cmd = git_apply_command(apply_dir, patch, ["--reject"])
     return subprocess.run(cmd).returncode
 
 

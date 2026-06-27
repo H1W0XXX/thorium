@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/background/extensions/background_mode_manager.cc b/chrome/browser/background/extensions/background_mode_manager.cc
-index d92f6fa9..294a0499 100644
+index d92f6fa9ac3cd..c1f4fec419398 100644
 --- a/chrome/browser/background/extensions/background_mode_manager.cc
 +++ b/chrome/browser/background/extensions/background_mode_manager.cc
 @@ -1,4 +1,4 @@

@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ash/settings/stats_reporting_controller.cc b/chrome/browser/ash/settings/stats_reporting_controller.cc
-index 8e3a9572..94a1c26c 100644
+index 8e3a957236d6c..e28ec9b305b0c 100644
 --- a/chrome/browser/ash/settings/stats_reporting_controller.cc
 +++ b/chrome/browser/ash/settings/stats_reporting_controller.cc
 @@ -1,4 +1,4 @@

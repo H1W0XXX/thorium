@@ -16,7 +16,7 @@ index 3275600303666..b828d3776aca7 100644
      This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.
    </message>
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index 29072c60b13a2..05cac0c6a6c25 100644
+index 812ef2225a35a..76ac8515368ce 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
 @@ -4799,6 +4799,16 @@ const FeatureEntry kFeatureEntries[] = {
@@ -429,10 +429,10 @@ index d88bf029fadaa..b6395c415200c 100644
    raw_ptr<PrefService> prefs_ = nullptr;
    raw_ptr<Profile> profile_ = nullptr;
 diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
-index c59f074bff741..5a446f657a4df 100644
+index a50dd98b9a0ae..6d22a8a38987a 100644
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
-@@ -2083,6 +2083,17 @@ inline constexpr char kEnablePerfettoSystemTracingDescription[] =
+@@ -2088,6 +2088,17 @@ inline constexpr char kEnablePerfettoSystemTracingDescription[] =
      "When enabled, Chrome will attempt to connect to the system tracing "
      "service";
  
@@ -1168,10 +1168,10 @@ index f10b082232a53..5f745f0c07b1d 100644
          download_url_,
          content::Referrer(controller.GetVisibleEntry()->GetURL(),
 diff --git a/extensions/common/extension_features.cc b/extensions/common/extension_features.cc
-index 8fb2a5694ddca..79dc8b34d3dc7 100644
+index df07d47afb389..601f465b56568 100644
 --- a/extensions/common/extension_features.cc
 +++ b/extensions/common/extension_features.cc
-@@ -197,6 +197,14 @@ BASE_FEATURE(kWebstoreHostedApp,
+@@ -199,6 +199,14 @@ BASE_FEATURE(kWebstoreHostedApp,
  BASE_FEATURE(kWebstoreInstallerUserGestureKillSwitch,
               base::FEATURE_ENABLED_BY_DEFAULT);
  
@@ -1187,10 +1187,10 @@ index 8fb2a5694ddca..79dc8b34d3dc7 100644
               "DeclarativeNetRequestSafeDynamicRules",
               base::FEATURE_ENABLED_BY_DEFAULT);
 diff --git a/extensions/common/extension_features.h b/extensions/common/extension_features.h
-index 78d767533431d..af09d8e3a98cd 100644
+index 1ee683824c630..7c3e491dcf592 100644
 --- a/extensions/common/extension_features.h
 +++ b/extensions/common/extension_features.h
-@@ -242,6 +242,17 @@ BASE_DECLARE_FEATURE(kWebstoreHostedApp);
+@@ -245,6 +245,17 @@ BASE_DECLARE_FEATURE(kWebstoreHostedApp);
  // as having a corresponding user gesture or not.
  BASE_DECLARE_FEATURE(kWebstoreInstallerUserGestureKillSwitch);
  

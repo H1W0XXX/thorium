@@ -1,5 +1,5 @@
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 20be6b38d1bf9..079488ee52f46 100644
+index 77a15c733cc98..c8aaca332d2ee 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
 @@ -2291,6 +2291,10 @@ are declared in tools/grit/grit_args.gni.
@@ -961,7 +961,7 @@ index 9811f91d46a73..7de18cba30ea9 100644
    mixer[kColorInfoBarContentAreaSeparator] = {
        kColorToolbarContentAreaSeparator};
 diff --git a/chrome/browser/ui/color/material_chrome_color_mixer.cc b/chrome/browser/ui/color/material_chrome_color_mixer.cc
-index 798eb7c417c55..a75b23bdb654e 100644
+index f8845ec246ccb..f12d380733495 100644
 --- a/chrome/browser/ui/color/material_chrome_color_mixer.cc
 +++ b/chrome/browser/ui/color/material_chrome_color_mixer.cc
 @@ -110,7 +110,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
@@ -974,7 +974,7 @@ index 798eb7c417c55..a75b23bdb654e 100644
  
    // Download History WebUI colors.
    mixer[kColorDownloadManagerItemError] = {ui::kColorSysError};
-@@ -377,10 +378,24 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
+@@ -384,10 +385,24 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
    mixer[kColorBookmarkDragImageBackground] = {ui::kColorSysPrimary};
    mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
    mixer[kColorCapturedTabContentsBorder] = {ui::kColorSysPrimary};
@@ -3853,7 +3853,7 @@ index 4d5b544dffe67..a33dba9a5f620 100644
      views_.side_panel_animation_content = contents_to_animate;
    }
 diff --git a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc
-index 819a780e151bd..e984623dc8b5f 100644
+index f8c42164612e1..931b60096083c 100644
 --- a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc
 +++ b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.cc
 @@ -200,6 +200,28 @@ gfx::Rect BrowserViewLayoutImpl::GetTopContainerBoundsInParent(
@@ -3886,7 +3886,7 @@ index 819a780e151bd..e984623dc8b5f 100644
  
  void BrowserViewLayoutImpl::Layout(views::View* host) {
 diff --git a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h
-index 958b0425077c1..3574baa3f5735 100644
+index 8f0893a7df84e..78b2990d1db33 100644
 --- a/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h
 +++ b/chrome/browser/ui/views/frame/layout/browser_view_layout_impl.h
 @@ -118,6 +118,11 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {

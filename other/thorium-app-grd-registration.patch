@@ -1,5 +1,5 @@
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index c423263f6947c..714ea5e63b1e3 100644
+index 779262fae00af..2c6afd4602195 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
 @@ -277,6 +277,9 @@ are declared in tools/grit/grit_args.gni.

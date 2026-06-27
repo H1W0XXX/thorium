@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/download/chrome_download_manager_delegate.cc b/chrome/browser/download/chrome_download_manager_delegate.cc
-index f4589273bbe4b..5eaaedfc382c1 100644
+index caa3d49934c80..bed5372a56cd7 100644
 --- a/chrome/browser/download/chrome_download_manager_delegate.cc
 +++ b/chrome/browser/download/chrome_download_manager_delegate.cc
 @@ -1,4 +1,4 @@
@@ -8,7 +8,7 @@ index f4589273bbe4b..5eaaedfc382c1 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
-@@ -2126,8 +2126,12 @@ bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
+@@ -2127,8 +2127,12 @@ bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
  bool ChromeDownloadManagerDelegate::ShouldBlockFile(
      download::DownloadItem* item,
      download::DownloadDangerType danger_type) const {
@@ -22,7 +22,7 @@ index f4589273bbe4b..5eaaedfc382c1 100644
      return false;
    }
  
-@@ -2181,44 +2185,14 @@ bool ChromeDownloadManagerDelegate::ShouldBlockFile(
+@@ -2182,44 +2186,14 @@ bool ChromeDownloadManagerDelegate::ShouldBlockFile(
  void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadOpenedReport(
      DownloadItem* download,
      bool show_download_in_folder) {

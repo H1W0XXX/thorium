@@ -11,10 +11,10 @@ index c8d163eecea8d..74891bc5f57ca 100644
    "java/res/xml/homepage_preferences.xml",
    "java/res/xml/legal_information_preferences.xml",
 diff --git a/chrome/android/chrome_java_sources.gni b/chrome/android/chrome_java_sources.gni
-index 3755c4962c211..df141f9137e90 100644
+index 3148d3452db86..59c4b295248e7 100644
 --- a/chrome/android/chrome_java_sources.gni
 +++ b/chrome/android/chrome_java_sources.gni
-@@ -1013,6 +1013,7 @@ chrome_java_sources = [
+@@ -1014,6 +1014,7 @@ chrome_java_sources = [
    "java/src/org/chromium/chrome/browser/photo_picker/DecoderServiceImpl.java",
    "java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
    "java/src/org/chromium/chrome/browser/policy/PolicyAuditorBridge.java",
@@ -762,7 +762,7 @@ index e0e9af90a35fd..8370aae45dd53 100644
    auto url_request_extra_data = base::MakeRefCounted<WebURLRequestExtraData>();
    request.SetURLRequestExtraData(std::move(url_request_extra_data));
 diff --git a/third_party/blink/renderer/platform/runtime_enabled_features.json5 b/third_party/blink/renderer/platform/runtime_enabled_features.json5
-index 5e580db63b6a4..406fcfe0ebf4c 100644
+index 826f6eb2025e2..413452ed0a35f 100644
 --- a/third_party/blink/renderer/platform/runtime_enabled_features.json5
 +++ b/third_party/blink/renderer/platform/runtime_enabled_features.json5
 @@ -3249,6 +3249,11 @@

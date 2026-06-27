@@ -11,7 +11,7 @@ index 0f50c4d73e0cf..204179d257ed3 100644
  // Image items.
  #define IDC_CONTENT_CONTEXT_SAVEIMAGEAS 50120
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 079488ee52f46..2b83313555a47 100644
+index c8aaca332d2ee..46264bc11768e 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
 @@ -704,6 +704,9 @@ are declared in tools/grit/grit_args.gni.
@@ -35,7 +35,7 @@ index 079488ee52f46..2b83313555a47 100644
              Open Link in New &amp;Window
            </message>
 diff --git a/chrome/browser/renderer_context_menu/render_view_context_menu.cc b/chrome/browser/renderer_context_menu/render_view_context_menu.cc
-index 128c6d541cd38..2ff4e1e1171a3 100644
+index 055326ebf4431..5b1a90402fd36 100644
 --- a/chrome/browser/renderer_context_menu/render_view_context_menu.cc
 +++ b/chrome/browser/renderer_context_menu/render_view_context_menu.cc
 @@ -616,13 +616,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
@@ -94,7 +94,7 @@ index 128c6d541cd38..2ff4e1e1171a3 100644
      if (params_.link_url.is_valid()) {
        AppendProtocolHandlerSubMenu();
      }
-@@ -3310,6 +3318,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
+@@ -3311,6 +3319,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
  
      case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
      case IDC_CONTENT_CONTEXT_OPENLINKINPROFILE:
@@ -102,7 +102,7 @@ index 128c6d541cd38..2ff4e1e1171a3 100644
      case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB:
      case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
        return navigation_allowed && params_.link_url.is_valid() &&
-@@ -3632,6 +3641,30 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
+@@ -3633,6 +3642,30 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
    }
  
    switch (id) {

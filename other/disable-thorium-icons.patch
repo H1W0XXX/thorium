@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc b/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc
-index 0869e1d788261..68b6ea2f2ff12 100644
+index 77612f77f3acb..c4bea2e6332bd 100644
 --- a/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc
 +++ b/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc
 @@ -1,4 +1,4 @@
@@ -16,7 +16,7 @@ index 0869e1d788261..68b6ea2f2ff12 100644
  #include "base/feature_list.h"
  #include "base/functional/bind.h"
  #include "base/location.h"
-@@ -140,13 +141,19 @@ void BrowserAppMenuButton::UpdateThemeBasedState() {
+@@ -146,13 +147,19 @@ void BrowserAppMenuButton::UpdateThemeBasedState() {
  }
  
  void BrowserAppMenuButton::UpdateIcon() {
@@ -74,7 +74,7 @@ index d23ce42d48414..f3994c578a924 100644
                                                     : kNavigateHomeTouchOldIcon);
    SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_HOME));
 diff --git a/chrome/browser/ui/views/toolbar/reload_button.cc b/chrome/browser/ui/views/toolbar/reload_button.cc
-index 2a6c40a06d128..fbabf7bf13cd4 100644
+index a2ed2085675b2..ac2fb7ae21769 100644
 --- a/chrome/browser/ui/views/toolbar/reload_button.cc
 +++ b/chrome/browser/ui/views/toolbar/reload_button.cc
 @@ -1,4 +1,4 @@
@@ -91,7 +91,7 @@ index 2a6c40a06d128..fbabf7bf13cd4 100644
  #include "base/strings/utf_string_conversions.h"
  #include "build/build_config.h"
  #include "chrome/app/chrome_command_ids.h"
-@@ -69,7 +70,10 @@ ReloadButton::ReloadButton(
+@@ -78,7 +79,10 @@ ReloadButton::ReloadButton(
        command_updater_(command_updater),
        reload_icon_(features::IsRoundedIconsEnabled()
                         ? vector_icons::kRefreshIcon

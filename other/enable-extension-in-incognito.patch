@@ -159,7 +159,7 @@ index 60765c2c98d5b..71f27dab75d13 100644
      public void didBecomeEmpty() {
          for (IncognitoTabModelObserver observer : mIncognitoObservers) {
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java b/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java
-index 1cbc186d6a66a..2c4c2021641db 100644
+index 3ffe25a2d8ed2..13a48a3ae3602 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java
 @@ -82,6 +82,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
@@ -170,7 +170,7 @@ index 1cbc186d6a66a..2c4c2021641db 100644
  import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
  import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
  import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
-@@ -2581,11 +2582,14 @@ public class ToolbarManager
+@@ -2584,11 +2585,14 @@ public class ToolbarManager
                                  task,
                                  assertNonNull(mTabModelSelector.getCurrentModel().getProfile()),
                                  mActivityTabProvider.asObservable(),

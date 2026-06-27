@@ -277,7 +277,7 @@ index 04e1e8868ef79..4644ea31cb39d 100644
    "incognito": "split",
    "permissions": [
 diff --git a/chrome/browser/ui/bookmarks/bookmark_utils.cc b/chrome/browser/ui/bookmarks/bookmark_utils.cc
-index 2e45d8550ec51..3e76ee58d4375 100644
+index ed11adf55026f..244e25be525d2 100644
 --- a/chrome/browser/ui/bookmarks/bookmark_utils.cc
 +++ b/chrome/browser/ui/bookmarks/bookmark_utils.cc
 @@ -7,6 +7,7 @@
@@ -288,7 +288,7 @@ index 2e45d8550ec51..3e76ee58d4375 100644
  #include "base/feature_list.h"
  #include "base/functional/bind.h"
  #include "base/memory/raw_ptr.h"
-@@ -331,15 +332,59 @@ bool CanAllBeEditedByUser(
+@@ -383,15 +384,59 @@ bool CanAllBeEditedByUser(
  
  ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
                                       ui::ColorVariant color) {
@@ -421,7 +421,7 @@ index 5a9ef8bd89cad..c0d307eb5197a 100644
                             Item(parent_node_, Item::TYPE_ALL_BOOKMARKS_NODE));
    }
 diff --git a/chrome/browser/ui/browser_actions.cc b/chrome/browser/ui/browser_actions.cc
-index f9503246a2ee5..ef39b2c865ec3 100644
+index 5be3c74fb1d35..44f0d03da121a 100644
 --- a/chrome/browser/ui/browser_actions.cc
 +++ b/chrome/browser/ui/browser_actions.cc
 @@ -11,6 +11,7 @@
@@ -432,7 +432,7 @@ index f9503246a2ee5..ef39b2c865ec3 100644
  #include "base/functional/bind.h"
  #include "base/functional/callback_helpers.h"
  #include "base/metrics/user_metrics.h"
-@@ -1202,6 +1203,9 @@ void BrowserActions::InitializeChromeMenuActions() {
+@@ -1204,6 +1205,9 @@ void BrowserActions::InitializeChromeMenuActions() {
    // TODO(crbug.com/435220196): Ideally this action would have
    // ChromeLabsCoordinator passed in as a dependency directly.
    if (IsChromeLabsEnabled() && !web_app::AppBrowserController::IsWebApp(bwi)) {
@@ -442,7 +442,7 @@ index f9503246a2ee5..ef39b2c865ec3 100644
      root_action_item_->AddChild(
          ChromeMenuAction(
              base::BindRepeating(
-@@ -1211,9 +1215,7 @@ void BrowserActions::InitializeChromeMenuActions() {
+@@ -1213,9 +1217,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                  },
                  bwi),
              kActionShowChromeLabs, IDS_CHROMELABS, IDS_CHROMELABS,
@@ -1097,7 +1097,7 @@ index 7d5cc80a558e3..0b1df97785136 100644
    VIEW_ID_EXTENSIONS_MENU_BUTTON,
    VIEW_ID_APP_MENU,
 diff --git a/chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc b/chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
-index f8eff533e8f31..93dda3561b7cd 100644
+index 146d6dc191951..e8ba27a5d11f3 100644
 --- a/chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
 +++ b/chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
 @@ -371,8 +371,8 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
@@ -1863,10 +1863,10 @@ index 24c769cf019fe..80b2e6f400848 100644
      // High contrast schemes get a border stroke even on a rounded omnibox.
      border_color =
 diff --git a/chrome/browser/ui/views/location_bar/location_icon_view.cc b/chrome/browser/ui/views/location_bar/location_icon_view.cc
-index 656b7a15e7862..62df1e78ee9c1 100644
+index 01ba0aa4ae8f4..cc78874a0b3f1 100644
 --- a/chrome/browser/ui/views/location_bar/location_icon_view.cc
 +++ b/chrome/browser/ui/views/location_bar/location_icon_view.cc
-@@ -82,8 +82,10 @@ LocationIconView::LocationIconView(
+@@ -84,8 +84,10 @@ LocationIconView::LocationIconView(
  
    SetAccessibleProperties();
  
@@ -1879,7 +1879,7 @@ index 656b7a15e7862..62df1e78ee9c1 100644
  
    UpdateBorder();
  }
-@@ -117,7 +119,7 @@ SkColor LocationIconView::GetForegroundColor() const {
+@@ -119,7 +121,7 @@ SkColor LocationIconView::GetForegroundColor() const {
  }
  
  bool LocationIconView::ShouldShowSeparator() const {
@@ -1888,7 +1888,7 @@ index 656b7a15e7862..62df1e78ee9c1 100644
  }
  
  bool LocationIconView::ShouldShowLabelAfterAnimation() const {
-@@ -329,23 +331,27 @@ void LocationIconView::UpdateIcon() {
+@@ -343,23 +345,27 @@ void LocationIconView::UpdateIcon() {
  
  void LocationIconView::UpdateBackground() {
    CHECK(GetColorProvider());
@@ -1929,7 +1929,7 @@ index 656b7a15e7862..62df1e78ee9c1 100644
    }
  }
  
-@@ -368,7 +374,7 @@ void LocationIconView::Update(bool suppress_animations,
+@@ -382,7 +388,7 @@ void LocationIconView::Update(bool suppress_animations,
    // level.
    UpdateLabelColors();
  
@@ -1938,7 +1938,7 @@ index 656b7a15e7862..62df1e78ee9c1 100644
      SetBackgroundColor(SK_ColorTRANSPARENT);
    }
  
-@@ -425,25 +431,29 @@ void LocationIconView::UpdateBorder() {
+@@ -439,25 +445,29 @@ void LocationIconView::UpdateBorder() {
    // the bubble should be smaller, so use an empty border to shrink down the
    // content bounds so the background gets painted correctly.
    gfx::Insets insets = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
@@ -2894,7 +2894,7 @@ index eae95c5f35740..af46f59fc2691 100644
  #endif  // !BUILDFLAG(IS_MAC)
        break;
 diff --git a/components/lens/lens_features.cc b/components/lens/lens_features.cc
-index f969527966128..31bfbb2d55f83 100644
+index 83c00289ecd84..d276796100ae0 100644
 --- a/components/lens/lens_features.cc
 +++ b/components/lens/lens_features.cc
 @@ -12,6 +12,7 @@

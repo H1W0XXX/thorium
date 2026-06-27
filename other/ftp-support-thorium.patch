@@ -32,7 +32,7 @@ index 6fada0a2b1a1f..6b2ec4b67e015 100644
  			<key>CFBundleURLName</key>
  			<string>Local file URL</string>
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 714ea5e63b1e3..20be6b38d1bf9 100644
+index 2c6afd4602195..77a15c733cc98 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
 @@ -14904,6 +14904,9 @@ This can include information about installed software, files, your browser, the
@@ -46,10 +46,10 @@ index 714ea5e63b1e3..20be6b38d1bf9 100644
        <!-- Saving Page-->
        <message name="IDS_SAVE_PAGE_DESC_HTML_ONLY" desc="In the Save Page dialog, the description of saving only the HTML of a webpage.">
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index 4ee013188e345..f186500658274 100644
+index f888b7904d20b..c90acf5dc7efd 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -8274,6 +8274,12 @@ const FeatureEntry kFeatureEntries[] = {
+@@ -8289,6 +8289,12 @@ const FeatureEntry kFeatureEntries[] = {
       FEATURE_VALUE_TYPE(
           heavy_ad_intervention::features::kHeavyAdPrivacyMitigations)},
  
@@ -63,7 +63,7 @@ index 4ee013188e345..f186500658274 100644
      {"crostini-container-install",
       flag_descriptions::kCrostiniContainerInstallName,
 diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
-index bda05ada0a781..de9ff27fd4969 100644
+index c8f53c118f523..7b11234d3ea85 100644
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
 @@ -766,6 +766,13 @@ inline constexpr char kEnableDrDcDescription[] =
@@ -231,7 +231,7 @@ index 765c759db3e21..5bec9aeb07a5f 100644
        url::kFileScheme,
        url::kFileSystemScheme,
 diff --git a/content/public/common/content_switches.cc b/content/public/common/content_switches.cc
-index a8e989bffc604..5767d72533cef 100644
+index 7619a1bfcfdc5..f6f77a584041d 100644
 --- a/content/public/common/content_switches.cc
 +++ b/content/public/common/content_switches.cc
 @@ -328,6 +328,9 @@ const char kEnableExperimentalWebPlatformFeatures[] =
@@ -245,7 +245,7 @@ index a8e989bffc604..5767d72533cef 100644
  const char kDisableOriginTrialControlledBlinkFeatures[] =
      "disable-origin-trial-controlled-blink-features";
 diff --git a/content/public/common/content_switches.h b/content/public/common/content_switches.h
-index 7976de552f082..6253d815a3890 100644
+index 7118994c96431..e52b1946c3772 100644
 --- a/content/public/common/content_switches.h
 +++ b/content/public/common/content_switches.h
 @@ -104,6 +104,7 @@ CONTENT_EXPORT extern const char kEnableExperimentalCookieFeatures[];

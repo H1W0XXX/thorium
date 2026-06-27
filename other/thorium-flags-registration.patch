@@ -18,7 +18,7 @@ index 311a3dfebc076..0944c5f707fa3 100644
      "unexpire_flags.h",
      "universal_web_contents_observers.cc",
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index 287ae9e1ff1cf..4ee013188e345 100644
+index 65692f66ab989..f888b7904d20b 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
 @@ -1,4 +1,4 @@

@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/resources/BUILD.gn b/chrome/browser/resources/BUILD.gn
-index 713625d2904c7..beb782124e695 100644
+index 66dcefc524411..368d6b766dcf5 100644
 --- a/chrome/browser/resources/BUILD.gn
 +++ b/chrome/browser/resources/BUILD.gn
 @@ -128,7 +128,6 @@ group("resources") {

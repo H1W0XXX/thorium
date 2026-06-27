@@ -1045,9 +1045,12 @@ index 0c4da356e3582..4284734b25bd8 100644
    // can disable UI updates.
    // TODO(crbug.com/459823225): Expand the IsDangerous() check to other
 diff --git a/chrome/browser/extensions/BUILD.gn b/chrome/browser/extensions/BUILD.gn
-index e0eeeb2cafba5..d78325a71dc60 100644
+index e0eeeb2cafba5..ff72c512528a1 100644
 --- a/chrome/browser/extensions/BUILD.gn
 +++ b/chrome/browser/extensions/BUILD.gn
+@@ -683,1 +683,1 @@ source_set("extensions") {
+-    if (enable_desktop_android_extensions) {
++    if (enable_desktop_android_extensions_thorium) {
 @@ -1737,7 +1737,7 @@ source_set("chrome_extensions_browser_client") {
      "//extensions/browser/updater",
    ]
@@ -1057,6 +1060,9 @@ index e0eeeb2cafba5..d78325a71dc60 100644
      sources += [ "chrome_extensions_browser_client_android.cc" ]
  
      deps += [
+@@ -2157,1 +2157,1 @@ source_set("unit_tests") {
+-  if (enable_desktop_android_extensions) {
++  if (enable_desktop_android_extensions_thorium) {
 diff --git a/chrome/browser/extensions/api/chrome_extensions_api_client_android.cc b/chrome/browser/extensions/api/chrome_extensions_api_client_android.cc
 index 6df055df9399c..58f3b9e35f83f 100644
 --- a/chrome/browser/extensions/api/chrome_extensions_api_client_android.cc
@@ -1981,6 +1987,19 @@ index 21c413d3f709d..77a6fb37f942f 100644
      sources += [
        "webui/discards/discards_ui.cc",
        "webui/discards/discards_ui.h",
+diff --git a/chrome/browser/ui/android/BUILD.gn b/chrome/browser/ui/android/BUILD.gn
+index 589bb2f89bc73..4edfe9313334 100644
+--- a/chrome/browser/ui/android/BUILD.gn
++++ b/chrome/browser/ui/android/BUILD.gn
+@@ -76,7 +76,7 @@ if (is_android) {
+       "//ui/menus",
+       "//url",
+     ]
+-    if (enable_desktop_android_extensions) {
++    if (enable_desktop_android_extensions_thorium) {
+       # extension_menu_model_android.h is in the chrome/browser/extensions/
+       # directory; dep on that target to make it accessible.
+       deps += [ "//chrome/browser/extensions" ]
 diff --git a/chrome/browser/ui/android/context_menu_helper.cc b/chrome/browser/ui/android/context_menu_helper.cc
 index 33e54e0caf21c..0c57c7dd03fd1 100644
 --- a/chrome/browser/ui/android/context_menu_helper.cc

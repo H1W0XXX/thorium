@@ -2,6 +2,10 @@ diff --git a/BUILD.gn b/BUILD.gn
 index a19ec521254..a1ce2e213b5 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
+@@ -7,2 +7,3 @@
+ import("//build/config/arm.gni")
++import("//build/config/compiler_opt.gni")
+ import("//build/config/c++/c++.gni")
 @@ -1750,7 +1750,31 @@ config("toolchain") {
      defines += [ "V8_TARGET_ARCH_IA32" ]
      if (is_win) {

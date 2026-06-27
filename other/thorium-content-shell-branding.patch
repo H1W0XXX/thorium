@@ -85,6 +85,15 @@ index 1ab8f3cac2e00..59714043387c2 100644
        "//build/android:devil_chromium_py",
        "//build/android:test_runner_py",
        "//testing:test_scripts_shared",
+@@ -1110,7 +1110,7 @@ if (is_android) {
+ group("content_shell_crash_test") {
+   testonly = true
+   data_deps = [
+-    ":content_shell",
++    ":thorium_shell",
+     "//testing:test_scripts_shared",
+     "//third_party/angle:includes",
+   ]
 diff --git a/content/shell/android/BUILD.gn b/content/shell/android/BUILD.gn
 index a3bedcddfa313..0481e0c360256 100644
 --- a/content/shell/android/BUILD.gn

@@ -1730,12 +1730,6 @@ enable_device_bound_sessions
 
     DBSC is only supported on windows for now
 
-enable_discovery
-    Current value = true
-      From //out/default/args.gn:49
-    Overridden from the default = false
-      From //components/sharing_message/buildflags.gni:6
-
 enable_distro_version_check
     Current value = false
       From //out/default/args.gn:14
@@ -2828,14 +2822,6 @@ enable_webui_inline_sourcemaps
 
     Whether to inline source maps during build. Cannot be enabled when
     `optimize_webui=true`.
-
-enable_webui_tab_strip
-    Current value = true
-      From //out/default/args.gn:30
-    Overridden from the default = true
-      From //ui/webui/webui_features.gni:15
-
-    Enable the WebUI version of the browser's tab strip.
 
 enable_widevine
     Current value = true
@@ -6380,15 +6366,6 @@ use_wayland_gbm
 
     Checks if Wayland must be compiled with dmabuf/gbm feature, which allows a
     multi-process hardware accelerated mode.
-
-use_webaudio_pffft
-    Current value = true
-      From //out/default/args.gn:56
-    Overridden from the default = true
-      From //third_party/blink/renderer/config.gni:20
-
-    If true, use PFFFT for WebAudio FFT support. Do not use for Mac because the
-    FFT library there is much faster.
 
 use_wuffs_gif_parser
     Current value (from the default) = true

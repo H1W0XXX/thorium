@@ -51,7 +51,7 @@ enable_nacl &#35;&#35; Set whether Native Client (NaCl) is built. Disabled in Th
 
 optimize_webui &#35;&#35; Set whether WebUI components are optimized. Uses polymer-bundler to combine/compress HTML5 resources. See > https://chromium.googlesource.com/chromium/src/+/HEAD/docs/optimizing_web_uis.md Enabled in Thorium for performance.
 
-enable_webui_tab_strip &#35;&#35; Set whether the Tab Strip, and some parts of the top bar (Top Chrome) are built using WebUI technologies. Should always be enabled, except on certain old linux distros.
+<!-- enable_webui_tab_strip &#35;&#35; Set whether the Tab Strip, and some parts of the top bar (Top Chrome) are built using WebUI technologies. Should always be enabled, except on certain old linux distros. -->
 
 use_lld &#35;&#35; Use LLVM lld instead of GNU ld for linking. Should always be enabled unless you are using another linker like MOLD.
 
@@ -73,7 +73,7 @@ enable_hls_demuxer &#35;&#35; Enables HLS media demuxing. &#35;&#35; INCOMPLETE 
 
 enable_ink &#35;&#35; Enable experimental Ink (PDF Annotation) on CrOS. Breaks non-ChromiumOS builds. &#35;&#35; NOTE: Bug filed by me upstream.
 
-enable_discovery &#35;&#35; Enable the Discovery SWA (System Web App) on CrOS. Has no effect on non-ChromiumOS builds. Only fully works on internal ChromeOS builds.
+<!-- enable_discovery &#35;&#35; Enable the Discovery SWA (System Web App) on CrOS. Has no effect on non-ChromiumOS builds. Only fully works on internal ChromeOS builds. -->
 
 enable_cros_media_app &#35;&#35; Enable the CrOS Media App, a native app for viewing media on ChromiumOS, to replace the native Files App views component. Breaks non-ChromiumOS builds. Should be enabled in ThoriumOS. &#35;&#35; NOTE: Bug filed by me upstream.
 
@@ -87,7 +87,7 @@ is_component_ffmpeg &#35;&#35; Builds ffmpeg as a shared library even when is_co
 
 use_webaudio_ffmpeg &#35;&#35; Use ffmpeg for computing FFT's (Fast Fourier Transform) in audio streams. Disabled in Thorium for performance, and because of bugs when building for AVX.
 
-use_webaudio_pffft &#35;&#35; Use the pffft library for computing FFT's in audio streams. Enabled in Thorium for performance EXCEPT on MacOS, because the native FFT library there is much faster. See > https://bitbucket.org/jpommier/pffft/src
+<!-- use_webaudio_pffft &#35;&#35; Use the pffft library for computing FFT's in audio streams. Enabled in Thorium for performance EXCEPT on MacOS, because the native FFT library there is much faster. See > https://bitbucket.org/jpommier/pffft/src -->
 
 enable_av1_decoder &#35;&#35; Enable standard AV1 decoder. Commented out in Thorium to let ninja set appropriate value for the platform.
 

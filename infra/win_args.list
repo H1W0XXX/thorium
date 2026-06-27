@@ -1654,10 +1654,6 @@ enable_dav1d_decoder
     Current value (from the default) = true
       From //media/media_options.gni:108
 
-enable_discovery
-    Current value (from the default) = false
-      From //chrome/browser/sharing/buildflags.gni:6
-
 enable_downgrade_processing
     Current value (from the default) = true
       From //chrome/browser/downgrade/buildflags.gni:9
@@ -2614,12 +2610,6 @@ enable_webui_inline_sourcemaps
 
     Whether to inline source maps during build. Cannot be enabled when
     `optimize_webui=true`.
-
-enable_webui_tab_strip
-    Current value (from the default) = true
-      From //ui/webui/webui_features.gni:15
-
-    Enable the WebUI version of the browser's tab strip.
 
 enable_widevine
     Current value (from the default) = false
@@ -5671,13 +5661,6 @@ use_viz_debugger
     official builds due to security and performance reasons. test
     crbug/1466891 Fuchia threading model does not play well with the
     visual debugger multithreaded submission mechanism.
-
-use_webaudio_pffft
-    Current value (from the default) = true
-      From //third_party/blink/renderer/config.gni:20
-
-    If true, use PFFFT for WebAudio FFT support. Do not use for Mac because the
-    FFT library there is much faster.
 
 use_wuffs_gif_parser
     Current value (from the default) = true

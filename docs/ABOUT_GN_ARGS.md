@@ -64,7 +64,7 @@ __enable_nacl__ &#35; Set whether Native Client (NaCl) is built. Disabled in Tho
 
 __optimize_webui__ &#35; Set whether WebUI components are optimized. Uses polymer-bundler to combine/compress HTML5 resources. See > https://chromium.googlesource.com/chromium/src/+/HEAD/docs/optimizing_web_uis.md Enabled in Thorium for performance.
 
-__enable_webui_tab_strip__ &#35; Set whether the Tab Strip, and some parts of the top bar (Top Chrome) are built using WebUI technologies. Should always be enabled, except on certain old linux distros.
+<!-- __enable_webui_tab_strip__ &#35; Set whether the Tab Strip, and some parts of the top bar (Top Chrome) are built using WebUI technologies. Should always be enabled, except on certain old linux distros. -->
 
 __use_lld__ &#35; Use LLVM lld instead of GNU ld for linking. Should always be enabled unless you are using another linker like MOLD or building with GCC.
 
@@ -100,7 +100,7 @@ __enable_hls_demuxer__ &#35; Enables HLS media demuxing. &#35; INCOMPLETE upstre
 
 __enable_ink__ &#35; Enable experimental Ink (PDF Annotation) on CrOS. Breaks non-ChromiumOS builds. &#35; NOTE: Bug filed by me upstream.
 
-__enable_discovery__ &#35; Enable the Discovery SWA (System Web App) on CrOS. Has no effect on non-ChromiumOS builds. Only fully works on internal ChromeOS builds.
+<!-- __enable_discovery__ &#35; Enable the Discovery SWA (System Web App) on CrOS. Has no effect on non-ChromiumOS builds. Only fully works on internal ChromeOS builds. -->
 
 __enable_cros_media_app__ &#35; Enable the CrOS Media App, a native app for viewing media on ChromiumOS, to replace the native Files App views component. Breaks non-ChromiumOS builds. Should be enabled in ThoriumOS. &#35; NOTE: Bug filed by me upstream.
 
@@ -114,7 +114,7 @@ __enable_ffmpeg_video_decoders__ &#35; Set whether software ffmpeg video decoder
 
 __is_component_ffmpeg__ &#35; Builds ffmpeg as a shared library even when is_component_build is false or is_official_build is true. Disabled in Thorium to keep ffmpeg linked into the browser/framework and avoid platform-specific packaging problems with standalone libffmpeg/ffmpeg.dll files. Codec support is controlled by ffmpeg branding and media codec patches instead.
 
-__use_webaudio_pffft__ &#35; Use the pffft library for computing FFT's in audio streams. Enabled in Thorium for performance EXCEPT on MacOS, because the native FFT library there is much faster. See > https://bitbucket.org/jpommier/pffft/src
+<!-- __use_webaudio_pffft__ &#35; Use the pffft library for computing FFT's in audio streams. Enabled in Thorium for performance EXCEPT on MacOS, because the native FFT library there is much faster. See > https://bitbucket.org/jpommier/pffft/src -->
 
 __use_vaapi__ &#35; Set the availability of VAAPI in Chromium. Should always be enabled in Thorium, except on Windows.
 

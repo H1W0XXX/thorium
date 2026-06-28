@@ -1,7 +1,6 @@
 # Copyright (c) 2026 Alex313031 and gz83.
 
-# This file is the equivalent of make_portable_win.py.
-
+# This file is the Python equivalent of make_portable_win.sh.
 
 import os
 import shutil
@@ -89,7 +88,10 @@ def zip_files(installer_name):
     elif "SSE4" in installer_name:
         zip_filename = f"Thorium_SSE4_{version}.zip"
     else:
-        zip_filename = f"thorium_portable.zip"
+        zip_filename = "thorium_portable.zip"
+
+    if os.path.exists(zip_filename):
+        os.remove(zip_filename)
 
     with zipfile.ZipFile(zip_filename, "w", zipfile.ZIP_DEFLATED) as zf:
         for root, _, files in os.walk("./temp"):
@@ -119,6 +121,7 @@ def main():
     input("Press Enter to continue or Ctrl + C to abort.")
 
     print("Extracting files from installer file...\n")
+    clean_up()
     extract_and_copy_files(installer_name)
 
     print("\nZipping up...\n")

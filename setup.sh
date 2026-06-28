@@ -8,14 +8,13 @@ RED='\033[1;31m' # Red
 GRE='\033[1;32m' # Green
 c0='\033[0m' # Reset Text
 bold='\033[1m' # Bold Text
-underline='\033[4m' # Underline Text
 
 # Error handling.
 yell() { echo "$0: $*" >&2; }
 die() { yell "$*"; exit 111; }
 try() { "$@" || die "${RED}Failed $*"; }
 
-# --help
+# --help.
 displayHelp () {
 	printf "\n" &&
 	printf "${bold}${GRE}Script to copy Thorium source files over the Chromium source tree.${c0}\n" &&
@@ -38,10 +37,7 @@ displayHelp () {
 	printf "\n"
 }
 case $1 in
-	--help) displayHelp; exit 0;;
-esac
-case $1 in
-	-h) displayHelp; exit 0;;
+	--help|-h) displayHelp; exit 0;;
 esac
 
 # chromium/src dir env variable.
@@ -127,10 +123,7 @@ copyMacOS () {
 	printf "\n"
 }
 case $1 in
-	--mac) copyMacOS;
-esac
-case $1 in
-	--macos) copyMacOS;
+	--mac|--macos) copyMacOS;
 esac
 
 # Raspberry Pi Source Files.
@@ -148,10 +141,7 @@ copyRaspi () {
 	cat logos/raspi_ascii_art.txt
 }
 case $1 in
-	--raspi) copyRaspi;
-esac
-case $1 in
-	--arm64) copyRaspi;
+	--raspi|--arm64) copyRaspi;
 esac
 
 # Windows on ARM64 files.

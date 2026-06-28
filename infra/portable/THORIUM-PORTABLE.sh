@@ -5,9 +5,9 @@
 # found in the LICENSE file.
 
 # Let the wrapped binary know that it has been run through the wrapper.
-export CHROME_WRAPPER="`readlink -f "$0"`"
+export CHROME_WRAPPER="$(readlink -f "$0")"
 
-HERE="`dirname "$CHROME_WRAPPER"`"
+HERE="$(dirname "$CHROME_WRAPPER")"
 
 # We include some xdg utilities next to the binary, and we want to prefer them
 # over the system versions when we know the system versions are very old. We
@@ -25,8 +25,7 @@ else
   [ -f "$xdg_app_dir/mimeapps.list" ] || touch "$xdg_app_dir/mimeapps.list"
 fi
 
-# Always use our versions of ffmpeg libs.
-# This also makes RPMs find the compatibly-named library symlinks.
+# Always use bundled libraries first.
 if [[ -n "$LD_LIBRARY_PATH" ]]; then
   LD_LIBRARY_PATH="$HERE/lib:$LD_LIBRARY_PATH"
 else
@@ -42,17 +41,13 @@ find "$(pwd)/.config/thorium/Crash Reports/pending/" -mtime +30 \
 # APPNAME for GTK.
 APPNAME=thorium
 
-# Set DESKTOP variable
-# DESKTOP="thorium-portable"
-
-# Set XDG Title variable
+# Set XDG Title variable.
 TITLE="Thorium Portable"
 
-# Set the correct file name for the desktop file
+# Set the correct file name for the desktop file.
 export CHROME_DESKTOP="thorium-portable.desktop"
 
-# Set CHROME_VERSION_EXTRA text, which is displayed in the About dialog on chrome://help
-# DIST=`cat /etc/debian_version`
+# Set CHROME_VERSION_EXTRA text, which is displayed in the About dialog on chrome://help.
 export CHROME_VERSION_EXTRA="stable, (Portable)"
 
 # We don't want bug-buddy intercepting our crashes. http://crbug.com/24120
@@ -86,10 +81,10 @@ while [ $# -gt 0 ]; do
     --safe-mode )
       is_safe_mode=1
       shift ;;
-    -- ) # Stop option processing
+    -- ) # Stop option processing.
       shift
       break ;;
-    * ) # Else
+    * ) # Else.
       break ;;
   esac
 done
@@ -118,13 +113,12 @@ else
   CACHE="$HERE/.config/cache"
   export PROFILE
   export CACHE
-  CHROME_USER_FLAGS="$CHROME_USER_FLAGS"
 fi
 
 if [ $is_safe_mode -eq 1 ] ; then
   CHROME_USER_FLAGS="$CHROME_USER_FLAGS --no-experiments"
 fi
 
-# Launch Thorium
+# Launch Thorium.
 # Note: exec -a below is a bashism.
 exec -a "$0" "$HERE/thorium" "--disable-machine-id" "--disable-encryption" "--user-data-dir=$PROFILE" "--disk-cache-dir=$CACHE" $CHROME_USER_FLAGS "$@"

@@ -7,14 +7,8 @@ RED='\033[1;31m' # Red
 GRE='\033[1;32m' # Green
 c0=$'\033[0m' # Reset Text
 bold=$'\033[1m' # Bold Text
-underline=$'\033[4m' # Underline Text
 
-# Error handling
-yell() { echo "$0: $*" >&2; }
-die() { yell "$*"; exit 111; }
-try() { "$@" || die "${RED}Failed $*"; }
-
-# --help
+# --help.
 displayHelp () {
 	printf "\n" &&
 	printf "${bold}${GRE}Script to build Thorium .AppImage on Linux.${c0}\n" &&
@@ -34,7 +28,7 @@ rm -r -f ./temp/ &&
 
 sleep 2 &&
 
-# Extract data.tar.xz
+# Extract data.tar.xz.
 mkdir -v ./temp &&
 ar xv *.deb &&
 tar xvf ./data.tar.xz &&
@@ -51,7 +45,7 @@ printf "${c0}\n" &&
 
 sleep 2 &&
 
-# Build appimage
+# Build AppImage.
 # chmod +x pkg2appimage &&
 ./pkg2appimage Thorium.yml &&
 
@@ -61,7 +55,7 @@ printf "${c0}\n" &&
 
 sleep 2 &&
 
-# Cleanup
+# Cleanup.
 rm -r -v -f ./opt &&
 rm -r -v -f ./etc &&
 rm -r -v -f ./usr &&

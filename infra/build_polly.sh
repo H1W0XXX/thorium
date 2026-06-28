@@ -5,19 +5,11 @@
 ## Clones current LLVM being used by the Chromium Project, and builds a local LLVM toolchain with Polly to use the Polly optimizations in the main Thorium BUILD.gn
 
 YEL='\033[1;33m' # Yellow
-CYA='\033[1;96m' # Cyan
-RED='\033[1;31m' # Red
 GRE='\033[1;32m' # Green
 c0='\033[0m' # Reset Text
 bold='\033[1m' # Bold Text
-underline='\033[4m' # Underline Text
 
-# Error handling
-yell() { echo "$0: $*" >&2; }
-die() { yell "$*"; exit 111; }
-try() { "$@" || die "${RED}Failed $*"; }
-
-# chromium/src dir env variable
+# chromium/src dir env variable.
 if [ -z "${CR_DIR}" ]; then 
     CR_SRC_DIR="$HOME/chromium/src"
     export CR_SRC_DIR
@@ -26,7 +18,7 @@ else
     export CR_SRC_DIR
 fi
 
-# --help
+# --help.
 displayHelp () {
 	cd ${CR_SRC_DIR} &&
 	python3 tools/clang/scripts/build.py --help &&
@@ -43,7 +35,7 @@ case $1 in
 	--help) displayHelp; exit 0;;
 esac
 
-# --version
+# --version.
 displayVersion () {
 	cd ${CR_SRC_DIR} &&
 	printf "\n" &&
@@ -54,7 +46,7 @@ case $1 in
 	--version) displayVersion; exit 0;;
 esac
 
-# Build with PGO
+# Build with PGO.
 buildPollyPGO () {
 	cd ${CR_SRC_DIR} &&
 

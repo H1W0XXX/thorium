@@ -7,14 +7,8 @@ RED='\033[1;31m' # Red
 GRE='\033[1;32m' # Green
 c0=$'\033[0m' # Reset Text
 bold=$'\033[1m' # Bold Text
-underline=$'\033[4m' # Underline Text
 
-# Error handling
-yell() { echo "$0: $*" >&2; }
-die() { yell "$*"; exit 111; }
-try() { "$@" || die "${RED}Failed $*"; }
-
-# --help
+# --help.
 displayHelp () {
 	printf "\n" &&
 	printf "${bold}${GRE}Script to extract Thorium .AppImage on Linux.${c0}\n" &&
@@ -27,19 +21,24 @@ esac
 
 printf "\n" &&
 printf "${bold}${RED}NOTE: You must run make_appimage.sh in this directory before running.${c0}\n" &&
-printf "${YEL}Extracting Thorium*.Appimage...\n" &&
+printf "${YEL}Extracting Thorium*.AppImage...\n" &&
 printf "${c0}\n" &&
 
 sleep 2 &&
 
-# Extract data.tar
-./Thorium_Browser_119.0.6045.214_AVX2.AppImage --appimage-extract &&
+# Extract AppImage.
+appimage_path=$(find . -maxdepth 1 -name 'Thorium_Browser_*.AppImage' -print -quit) &&
+if [ -z "${appimage_path}" ]; then
+	printf "${RED}No Thorium_Browser_*.AppImage found in this directory.${c0}\n"
+	exit 1
+fi
+"${appimage_path}" --appimage-extract &&
 
 printf "\n" &&
 printf "${YEL}Renaming squashfs-root to Thorium_squashfs-root...\n" &&
 printf "${c0}\n" &&
 
-# Rename
+# Rename.
 mv -v squashfs-root Thorium_squashfs-root &&
 
 printf "\n" &&

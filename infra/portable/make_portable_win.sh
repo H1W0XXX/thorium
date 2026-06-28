@@ -7,14 +7,12 @@ RED='\033[1;31m' # Red
 GRE='\033[1;32m' # Green
 c0=$'\033[0m' # Reset Text
 bold=$'\033[1m' # Bold Text
-underline=$'\033[4m' # Underline Text
 
-# Error handling
+# Error handling.
 yell() { echo "$0: $*" >&2; }
 die() { yell "$*"; exit 111; }
-try() { "$@" || die "${RED}Failed $*"; }
 
-# --help
+# --help.
 displayHelp () {
 	printf "\n" &&
 	printf "${bold}${GRE}Script to make a portable Thorium .zip for Windows.${c0}\n" &&
@@ -25,7 +23,7 @@ case $1 in
 	--help) displayHelp; exit 0;;
 esac
 
-# Detect which installer is present and set output zip name accordingly
+# Detect which installer is present and set output zip name accordingly.
 VERSION="150.0.7871.47"
 INSTALLER_NAME=""
 ZIP_NAME=""
@@ -67,7 +65,7 @@ printf "${bold}${RED}   AND you must have 7-Zip installed and in your PATH.${c0}
 printf "\n" &&
 printf "${bold}${YEL}Detected installer: ${GRE}${INSTALLER_NAME}${c0}\n" &&
 printf "${bold}${YEL}Output zip will be: ${GRE}${ZIP_NAME}${c0}\n" &&
-printf "${YEL}\n" &&
+printf "\n" &&
 
 read -p "Press Enter to continue or Ctrl + C to abort."
 printf "\n" &&
@@ -77,7 +75,10 @@ printf "${c0}\n" &&
 
 sleep 2 &&
 
-# Extract installer
+rm -r -f ./temp &&
+rm -f "./${ZIP_NAME}" &&
+
+# Extract installer.
 mkdir -v -p ./temp &&
 mkdir -v -p ./temp/USER_DATA &&
 7z x "$INSTALLER_NAME" &&
@@ -91,7 +92,7 @@ printf "\n" &&
 printf "${YEL}Zipping up...\n" &&
 printf "${c0}\n" &&
 
-# Build zip
+# Build zip.
 cd temp; zip -r "../${ZIP_NAME}" * &&
 
 printf "\n" &&
@@ -100,9 +101,9 @@ printf "${c0}\n" &&
 
 sleep 2 &&
 
-# Cleanup
+# Cleanup.
 cd .. &&
-rm -r -v chrome.7z &&
+rm -f -v chrome.7z &&
 rm -r -v temp &&
 
 printf "\n" &&

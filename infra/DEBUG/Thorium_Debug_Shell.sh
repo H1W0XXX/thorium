@@ -2,7 +2,7 @@
 
 # Copyright (c) 2026 Alex313031.
 
-# Export libs
+# Export libs.
 LD_LIBRARY_PATH="$(pwd)/lib"
 export LD_LIBRARY_PATH
 

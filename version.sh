@@ -10,12 +10,7 @@ c0='\033[0m' # Reset Text
 bold='\033[1m' # Bold Text
 underline='\033[4m' # Underline Text
 
-# Error handling
-yell() { echo "$0: $*" >&2; }
-die() { yell "$*"; exit 111; }
-try() { "$@" || die "${RED}Failed $*"; }
-
-# --help
+# --help.
 displayHelp () {
 	printf "\n" &&
 	printf "${bold}${YEL}Script to check out Chromium tag of current Thorium version.${c0}\n" &&
@@ -27,7 +22,7 @@ case $1 in
 	--help) displayHelp; exit 0;;
 esac
 
-# chromium/src dir env variable
+# chromium/src dir env variable.
 if [ -z "${CR_DIR}" ]; then 
     CR_SRC_DIR="$HOME/chromium/src"
     export CR_SRC_DIR
@@ -50,14 +45,6 @@ cd ${CR_SRC_DIR} &&
 
 git checkout -f tags/$THOR_VER &&
 
-cd ~/thorium &&
-
-# Use our artifacts hash
-cp -v src/build/vs_toolchain.py ${CR_SRC_DIR}/build/ &&
-
-cd ${CR_SRC_DIR} &&
-
-git clean -ffd &&
 git clean -ffd &&
 
 printf "${GRE}gclient sync${c0}\n"  &&
@@ -68,7 +55,7 @@ git clean -ffd &&
 printf "${GRE}gclient runhooks${c0}\n" &&
 gclient runhooks &&
 
-# Install sysroots (i.e. for ARM64)
+# Install sysroots (i.e. for ARM64).
 if [ -n "$MSYSTEM" ]; then
   printf "${GRE}Not Downloading Linux sysroot on Windows\n"
 else

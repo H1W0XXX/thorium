@@ -3,19 +3,12 @@
 # Copyright (c) 2026 Alex313031.
 
 YEL='\033[1;33m' # Yellow
-CYA='\033[1;96m' # Cyan
-RED='\033[1;31m' # Red
 GRE='\033[1;32m' # Green
 c0=$'\033[0m' # Reset Text
 bold=$'\033[1m' # Bold Text
 underline=$'\033[4m' # Underline Text
 
-# Error handling
-yell() { echo "$0: $*" >&2; }
-die() { yell "$*"; exit 111; }
-try() { "$@" || die "${RED}Failed $*"; }
-
-# --help
+# --help.
 displayHelp () {
 	printf "\n" &&
 	printf "${bold}${YEL}Script to build Thorium UI Debug Shell (views_examples_with_content).${c0}\n" &&
@@ -28,9 +21,9 @@ esac
 
 printf "\n" &&
 printf "${YEL}Building Thorium UI Debug Shell for Linux...\n" &&
-printf "${CYA}\n" &&
+printf "\n" &&
 
-# chromium/src dir env variable
+# chromium/src dir env variable.
 if [ -z "${CR_DIR}" ]; then 
     CR_SRC_DIR="$HOME/chromium/src"
     export CR_SRC_DIR
@@ -39,7 +32,7 @@ else
     export CR_SRC_DIR
 fi
 
-# Build Thorium UI Debug Shell
+# Build Thorium UI Debug Shell.
 export NINJA_SUMMARIZE_BUILD=1 &&
 
 cd ${CR_SRC_DIR} &&

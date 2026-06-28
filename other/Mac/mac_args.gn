@@ -86,4 +86,4 @@ enable_rust = true
 enable_updater = false
 enable_update_notifications = false
 chrome_pgo_phase = 2
-pgo_data_path = "/Users/macmini1/chromium/src/chrome/build/pgo_profiles/chrome-mac-7559-1770723120-532d39e7a26f4092a6bbb5d8cf65ae7873e76df7-46dc24a2b20158bbb66f1cf48eeffb7e513d8e67.profdata"
+pgo_data_path = "/Users/macmini1/chromium/src/chrome/build/pgo_profiles/chrome-mac-7871-1782236690-b2cfe6324d607a77036bbe97644bb237f4e223a1-3d4da56162112271e9a86f91f4696c964516a649.profdata"

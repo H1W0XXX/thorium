@@ -60,6 +60,7 @@ index 0000000000000..5860c1b32dd0b
 +#define THORIUM_EASTER_EGGS_H_
 +
 +#include "base/memory/ref_counted_memory.h"
++#include "base/strings/escape.h"
 +#include "chrome/browser/profiles/profile.h"
 +#include "chrome/common/webui_url_constants.h"
 +#include "content/public/browser/url_data_source.h"
@@ -67,6 +68,8 @@ index 0000000000000..5860c1b32dd0b
 +#include "content/public/browser/web_ui_controller.h"
 +#include "content/public/browser/webui_config.h"
 +#include "services/network/public/mojom/content_security_policy.mojom.h"
++#include "ui/base/resource/resource_bundle.h"
++#include "ui/webui/resources/grit/webui_resources.h"
 +
 +class ThoriumDataSource : public content::URLDataSource {
 + public:
@@ -224,8 +227,6 @@ index 0000000000000..5860c1b32dd0b
 +    network::mojom::CSPDirectiveName directive) {
 +  if (directive == network::mojom::CSPDirectiveName::ScriptSrc)
 +    return "script-src 'unsafe-inline'";
-+  if (directive == network::mojom::CSPDirectiveName::ConnectSrc)
-+    return "connect-src chrome://resources;";
 +  return std::string();
 +}
 +
@@ -233,10 +234,14 @@ index 0000000000000..5860c1b32dd0b
 +    const GURL& url,
 +    const content::WebContents::Getter& wc_getter,
 +    GotDataCallback callback) {
++  std::string authors = base::EscapeForHTML(
++      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
++          IDR_WEBUI_IMAGES_AUTHORS_TXT));
 +  std::string source = R"(
 +      <html>
 +      <head>
 +        <title>Thorium Authors</title>
++        <meta charset="utf-8">
 +        <meta name="color-scheme" content="light dark">
 +        <meta name="viewport" content="width=device-width, initial-scale=1">
 +        <link rel="shortcut icon" type="image/x-icon" href="chrome://theme/current-channel-logo@2x">
@@ -261,15 +266,8 @@ index 0000000000000..5860c1b32dd0b
 +      <body>
 +        <main>
 +          <h1>Thorium Authors</h1>
-+          <pre id="authors">Loading...</pre>
++          <pre>)" + authors + R"(</pre>
 +        </main>
-+        <script>
-+          const authors = document.getElementById('authors');
-+          fetch('chrome://resources/text/AUTHORS.txt')
-+              .then(response => response.text())
-+              .then(text => authors.textContent = text)
-+              .catch(error => authors.textContent = String(error));
-+        </script>
 +      </body>
 +      </html>
 +    )";

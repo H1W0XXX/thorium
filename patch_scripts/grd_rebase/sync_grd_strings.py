@@ -237,6 +237,11 @@ GRIT_PH_SELF_CLOSING_RE = re.compile(
 )
 GRIT_EX_BLOCK_RE = re.compile(r"<ex\b[^>]*>.*?</ex>", re.DOTALL)
 MARKUP_TAG_RE = re.compile(r"<[^>]+>")
+CHROMIUM_LINK_BLOCK_RE = re.compile(
+    r'<ph name="BEGIN_LINK_CHROMIUM"\s*/>.*?'
+    r'<ph name="END_LINK_CHROMIUM"\s*/>',
+    re.DOTALL,
+)
 
 
 def _grit_fingerprint(text: str) -> int:
@@ -572,6 +577,20 @@ def _replace_outside_markup_preserving_chrome(text: str) -> str:
     return "".join(parts)
 
 
+def _replace_outside_markup_preserving_chromium_link(text: str) -> str:
+    """Apply branding replacements while preserving Chromium project links."""
+    parts: list[str] = []
+    cursor = 0
+    for match in CHROMIUM_LINK_BLOCK_RE.finditer(text):
+        if match.start() > cursor:
+            parts.append(_replace_outside_markup(text[cursor : match.start()]))
+        parts.append(match.group(0))
+        cursor = match.end()
+    if cursor < len(text):
+        parts.append(_replace_outside_markup(text[cursor:]))
+    return "".join(parts)
+
+
 def _replace_message_body(body: str) -> str:
     """Apply replacements to message text while preserving placeholders.
 
@@ -854,7 +873,9 @@ def build_translation_insertions(
             if change.message_id in WEB_STORE_BRAND_MESSAGE_IDS:
                 replaced_body = _replace_outside_markup_preserving_chrome(match.body)
             else:
-                replaced_body = _replace_outside_markup(match.body)
+                replaced_body = _replace_outside_markup_preserving_chromium_link(
+                    match.body
+                )
             replaced_body = _apply_translation_specific_replacements(
                 change.message_id,
                 replaced_body,

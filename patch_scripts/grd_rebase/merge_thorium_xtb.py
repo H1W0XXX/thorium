@@ -16,6 +16,11 @@ TRANSLATION_RE = re.compile(
 )
 TRANSLATION_BUNDLE_END = "</translationbundle>"
 MARKUP_TAG_RE = re.compile(r"<[^>]+>")
+CHROMIUM_LINK_BLOCK_RE = re.compile(
+    r'<ph name="BEGIN_LINK_CHROMIUM"\s*/>.*?'
+    r'<ph name="END_LINK_CHROMIUM"\s*/>',
+    re.DOTALL,
+)
 WEB_STORE_BRAND_TRANSLATION_IDS = frozenset(
     {
         "1431202594789052745",
@@ -84,9 +89,34 @@ def replace_outside_markup(text: str, *, preserve_chrome: bool = False) -> str:
     return "".join(parts)
 
 
+def replace_outside_markup_preserving_chromium_link(
+    text: str,
+    *,
+    preserve_chrome: bool = False,
+) -> str:
+    """Apply replacements while preserving Chromium project link text."""
+    parts: list[str] = []
+    cursor = 0
+    for match in CHROMIUM_LINK_BLOCK_RE.finditer(text):
+        if match.start() > cursor:
+            parts.append(
+                replace_outside_markup(
+                    text[cursor : match.start()],
+                    preserve_chrome=preserve_chrome,
+                )
+            )
+        parts.append(match.group(0))
+        cursor = match.end()
+    if cursor < len(text):
+        parts.append(
+            replace_outside_markup(text[cursor:], preserve_chrome=preserve_chrome)
+        )
+    return "".join(parts)
+
+
 def normalize_xtb_translation_block(block: str, translation_id: str) -> str:
     """Normalize reviewed Thorium XTB additions before insertion."""
-    block = replace_outside_markup(
+    block = replace_outside_markup_preserving_chromium_link(
         block,
         preserve_chrome=translation_id in WEB_STORE_BRAND_TRANSLATION_IDS,
     )
@@ -118,6 +148,7 @@ class XtbMergeResult:
     addition_count: int
     inserted_count: int
     skipped_count: int
+    replaced_count: int
     merged_text: str
 
 
@@ -194,8 +225,8 @@ def merge_additions_into_text(
     target_text: str,
     additions: list[XtbAddition],
     target_path: str,
-) -> tuple[str, int, int]:
-    """Insert missing additions and reject conflicting existing IDs."""
+) -> tuple[str, int, int, int]:
+    """Insert missing additions and refresh reviewed existing additions."""
     existing: dict[str, str] = {}
     for match in TRANSLATION_RE.finditer(target_text):
         translation_id = match.group(1)
@@ -207,31 +238,35 @@ def merge_additions_into_text(
 
     pending: list[XtbAddition] = []
     skipped_count = 0
+    replaced_count = 0
     for addition in additions:
         existing_block = existing.get(addition.translation_id)
         if existing_block is None:
             pending.append(addition)
             continue
         if existing_block != addition.block:
-            raise ValueError(
-                "translation ID already exists with different content: "
-                f"{addition.translation_id} in {target_path}"
-            )
+            target_text = target_text.replace(existing_block, addition.block, 1)
+            replaced_count += 1
+            continue
         skipped_count += 1
 
-    if not pending:
-        return target_text, 0, skipped_count
+    if pending:
+        closing_index = target_text.rfind(TRANSLATION_BUNDLE_END)
+        if closing_index < 0:
+            raise ValueError(f"missing {TRANSLATION_BUNDLE_END} in {target_path}")
 
-    closing_index = target_text.rfind(TRANSLATION_BUNDLE_END)
-    if closing_index < 0:
-        raise ValueError(f"missing {TRANSLATION_BUNDLE_END} in {target_path}")
+        prefix = target_text[:closing_index]
+        suffix = target_text[closing_index:]
+        separator = "" if not prefix or prefix.endswith("\n") else "\n"
+        addition_text = "\n".join(addition.block for addition in pending)
+        target_text = f"{prefix}{separator}{addition_text}\n{suffix}"
 
-    prefix = target_text[:closing_index]
-    suffix = target_text[closing_index:]
-    separator = "" if not prefix or prefix.endswith("\n") else "\n"
-    addition_text = "\n".join(addition.block for addition in pending)
-    merged_text = f"{prefix}{separator}{addition_text}\n{suffix}"
-    return merged_text, len(pending), skipped_count
+    return (
+        target_text,
+        len(pending),
+        skipped_count,
+        replaced_count,
+    )
 
 
 def build_merge_results(
@@ -245,7 +280,12 @@ def build_merge_results(
         if not target_file.is_file():
             raise FileNotFoundError(f"XTB target is missing: {target_path}")
         target_text = target_file.read_text(encoding="utf-8", errors="strict")
-        merged_text, inserted_count, skipped_count = merge_additions_into_text(
+        (
+            merged_text,
+            inserted_count,
+            skipped_count,
+            replaced_count,
+        ) = merge_additions_into_text(
             target_text,
             additions,
             target_path,
@@ -256,6 +296,7 @@ def build_merge_results(
                 addition_count=len(additions),
                 inserted_count=inserted_count,
                 skipped_count=skipped_count,
+                replaced_count=replaced_count,
                 merged_text=merged_text,
             )
         )
@@ -268,7 +309,7 @@ def write_merge_results(
 ) -> None:
     """Write prepared XTB contents using UTF-8 without newline conversion."""
     for result in results:
-        if result.inserted_count == 0:
+        if result.inserted_count == 0 and result.replaced_count == 0:
             continue
         (chromium_root / result.target_path).write_bytes(
             result.merged_text.encode("utf-8")
@@ -311,14 +352,19 @@ def main() -> int:
     total_additions = sum(result.addition_count for result in results)
     inserted_count = sum(result.inserted_count for result in results)
     skipped_count = sum(result.skipped_count for result in results)
-    touched_count = sum(result.inserted_count > 0 for result in results)
+    replaced_count = sum(result.replaced_count for result in results)
+    touched_count = sum(
+        result.inserted_count > 0 or result.replaced_count > 0
+        for result in results
+    )
     if not args.dry_run:
         write_merge_results(args.chromium_root, results)
     mode = "validated" if args.dry_run else "merged"
     print(
         f"{mode} {total_additions} Thorium translations across "
         f"{len(results)} XTB files: {inserted_count} inserted, "
-        f"{skipped_count} already present, {touched_count} files changed"
+        f"{replaced_count} refreshed, {skipped_count} already present, "
+        f"{touched_count} files changed"
     )
     return 0
 

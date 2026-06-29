@@ -35,13 +35,9 @@ sudo chmod -v +x setup.sh &&
 
 sudo chmod -v +x trunk.sh &&
 
-sudo chmod -v +x tot.sh &&
-
 sudo chmod -v +x reset_depot_tools.sh &&
 
 sudo chmod -v +x version.sh &&
-
-sudo chmod -v +x upstream_version.sh &&
 
 sudo chmod -v +x get_repo.sh &&
 

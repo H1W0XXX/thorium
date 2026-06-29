@@ -7,7 +7,6 @@ sysroot. At the same time, download only the PGO file for win64.
 """
 
 import os
-import shutil
 import subprocess
 import sys
 
@@ -26,15 +25,6 @@ def try_run(command):
         fail(f"Failed {command}")
 
 
-def copy(src, dst):
-    # Copy a file and print verbose output like cp -v
-    try:
-        print(f"Copying {src} to {dst}")
-        shutil.copy(src, dst)
-    except FileNotFoundError as e:
-        fail(f"File copy failed: {e}")
-
-
 # --help
 def display_help():
     print(f"\nScript to check out Chromium tag of current Thorium version.\n")
@@ -48,9 +38,6 @@ if "--help" in sys.argv:
 
 # Set chromium/src dir from Windows environment variable
 cr_src_dir = os.getenv("CR_DIR", r"C:/src/chromium/src")
-# Set Thorium dir from Windows environment variable
-thor_src_dir = os.path.expandvars(
-    os.getenv("THOR_DIR", r"%USERPROFILE%/thorium"))
 
 
 # Set thor_ver

@@ -524,13 +524,14 @@ diff --git a/content/browser/renderer_host/ipc_utils.cc b/content/browser/render
 index 4e9bf143e8a03..cfc3908b89645 100644
 --- a/content/browser/renderer_host/ipc_utils.cc
 +++ b/content/browser/renderer_host/ipc_utils.cc
-@@ -25,5 +25,6 @@
+@@ -25,6 +25,7 @@
  #include "content/public/common/url_constants.h"
  #include "mojo/public/cpp/system/message_pipe.h"
  #include "net/http/http_request_headers.h"
 +#include "third_party/blink/public/common/loader/loader_constants.h"
  #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
  #include "ui/base/window_open_disposition.h"
+ 
 @@ -480,7 +481,8 @@ bool VerifyNavigationHeaders(RenderProcessHost* process,
          header.name() != net::HttpRequestHeaders::kContentType &&
          header.name() != net::HttpRequestHeaders::kUserAgent &&

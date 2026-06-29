@@ -13,10 +13,10 @@ index 779262fae00af..2c6afd4602195 100644
        <part file="access_code_cast_strings.grdp" />
  
 diff --git a/chrome/app/generated_resources.grd.gritdeps b/chrome/app/generated_resources.grd.gritdeps
-index a3c285fe3b6ed..40f75662a06d4 100644
+index 390da83b4e12c..5366103b7837b 100644
 --- a/chrome/app/generated_resources.grd.gritdeps
 +++ b/chrome/app/generated_resources.grd.gritdeps
-@@ -103,5 +103,6 @@ chrome/app/sharesheet_strings.grdp
+@@ -105,5 +105,6 @@ chrome/app/sharesheet_strings.grdp
  chrome/app/shortcut_input_strings.grdp
  chrome/app/skills_strings.grdp
  chrome/app/support_tool_strings.grdp

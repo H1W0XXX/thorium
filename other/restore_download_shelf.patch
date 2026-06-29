@@ -845,7 +845,7 @@ index 1ee466974803d..3188b13884009 100644
    // Returns the DownloadBubbleUIController. Returns null if Download Bubble
    // UI is not enabled, or if the download toolbar button does not exist.
 diff --git a/chrome/browser/ui/chrome_pages.cc b/chrome/browser/ui/chrome_pages.cc
-index a1575736b1f8e..67b33bfcee75a 100644
+index a1575736b1f8e..159a78656dbaa 100644
 --- a/chrome/browser/ui/chrome_pages.cc
 +++ b/chrome/browser/ui/chrome_pages.cc
 @@ -24,6 +24,7 @@
@@ -1202,10 +1202,10 @@ index e788d9f41ded9..9de76b4f8106f 100644
        "download_ui_context_menu_view.cc",
 diff --git a/chrome/browser/ui/views/download/download_item_view.cc b/chrome/browser/ui/views/download/download_item_view.cc
 new file mode 100644
-index 0000000000000..25d6421c12f4b
+index 0000000000000..9e38c0489fb4a
 --- /dev/null
 +++ b/chrome/browser/ui/views/download/download_item_view.cc
-@@ -0,0 +1,1384 @@
+@@ -0,0 +1,1386 @@
 +// Copyright 2026 The Chromium Authors and Alex313031
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -2932,7 +2932,7 @@ index 0000000000000..21811f0927226
 +#endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_ITEM_VIEW_H_
 diff --git a/chrome/browser/ui/views/download/download_shelf_started_animation_views.cc b/chrome/browser/ui/views/download/download_shelf_started_animation_views.cc
 new file mode 100644
-index 0000000000000..06a399a26559f
+index 0000000000000..864c3c105e79f
 --- /dev/null
 +++ b/chrome/browser/ui/views/download/download_shelf_started_animation_views.cc
 @@ -0,0 +1,48 @@
@@ -3024,7 +3024,7 @@ index 0000000000000..75a6a2b9e6bbd
 +#endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_DOWNLOAD_SHELF_STARTED_ANIMATION_VIEWS_H_
 diff --git a/chrome/browser/ui/views/download/download_shelf_view.cc b/chrome/browser/ui/views/download/download_shelf_view.cc
 new file mode 100644
-index 0000000000000..f1e6c6e3e5428
+index 0000000000000..7f26d3e17f005
 --- /dev/null
 +++ b/chrome/browser/ui/views/download/download_shelf_view.cc
 @@ -0,0 +1,363 @@
@@ -4048,10 +4048,10 @@ index 0000000000000..1b81639eeca46
 +#endif  // CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_DEEP_SCANNING_MODAL_DIALOG_H_
 diff --git a/chrome/browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog.cc b/chrome/browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog.cc
 new file mode 100644
-index 0000000000000..fc7bafdbfab71
+index 0000000000000..12e67e53cad5b
 --- /dev/null
 +++ b/chrome/browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog.cc
-@@ -0,0 +1,128 @@
+@@ -0,0 +1,129 @@
 +// Copyright 2020 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -4183,10 +4183,10 @@ index 0000000000000..fc7bafdbfab71
 +}  // namespace safe_browsing
 diff --git a/chrome/browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog.h b/chrome/browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog.h
 new file mode 100644
-index 0000000000000..15b16719f004e
+index 0000000000000..1a1ed5c839ed2
 --- /dev/null
 +++ b/chrome/browser/ui/views/safe_browsing/prompt_for_scanning_modal_dialog.h
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,56 @@
 +// Copyright 2020 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.

@@ -11,6 +11,19 @@ index d73a95f06d14b..59cc7015d4451 100644
          # For Android Desktop x64, orderfile is disabled, see
          # https://crbug.com/422005929.
          webview_orderfile_path = ""
+diff --git a/base/allocator/partition_alloc_features.cc b/base/allocator/partition_alloc_features.cc
+index 00422b2d4079e..7a1d41b2bf67a 100644
+--- a/base/allocator/partition_alloc_features.cc
++++ b/base/allocator/partition_alloc_features.cc
+@@ -177,7 +177,7 @@ BASE_FEATURE_ENUM_PARAM(BackupRefPtrEnabledProcesses,
+                         &kPartitionAllocBackupRefPtr,
+                         kPAFeatureEnabledProcessesStr,
+ // Exception for IS_DESKTOP_ANDROID approved in crbug.com/482155132.
+-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
++#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+                         BackupRefPtrEnabledProcesses::kNonRenderer,
+ #else
+                         BackupRefPtrEnabledProcesses::kAllProcesses,
 diff --git a/base/allocator/partition_allocator/src/partition_alloc/BUILD.gn b/base/allocator/partition_allocator/src/partition_alloc/BUILD.gn
 index 8385dac71a408..602afb2d200ca 100644
 --- a/base/allocator/partition_allocator/src/partition_alloc/BUILD.gn
@@ -24,19 +37,6 @@ index 8385dac71a408..602afb2d200ca 100644
      "IS_CASTOS=$is_castos",
      "IS_CHROMEOS=$is_chromeos",
      "IS_COMPONENT_BUILD=$is_component_build",
-diff --git a/base/allocator/partition_alloc_features.cc b/base/allocator/partition_alloc_features.cc
-index e5d0b4f6aa09d..2527022c7d8f8 100644
---- a/base/allocator/partition_alloc_features.cc
-+++ b/base/allocator/partition_alloc_features.cc
-@@ -177,7 +177,7 @@ BASE_FEATURE_ENUM_PARAM(BackupRefPtrEnabledProcesses,
-                         &kPartitionAllocBackupRefPtr,
-                         kPAFeatureEnabledProcessesStr,
- // Exception for IS_DESKTOP_ANDROID approved in crbug.com/482155132.
--#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
-+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
-                         BackupRefPtrEnabledProcesses::kNonRenderer,
- #else
-                         BackupRefPtrEnabledProcesses::kAllProcesses,
 diff --git a/base/android/device_info.cc b/base/android/device_info.cc
 index f69a39d59a7e7..ba46c32454577 100644
 --- a/base/android/device_info.cc
@@ -2690,7 +2690,7 @@ index af8a8aafba46a..de4bdf191703a 100644
      } else {
        deps += [ "//chrome/test:test_support_ui" ]
 diff --git a/chrome/browser/ui/prefs/prefs_tab_helper.cc b/chrome/browser/ui/prefs/prefs_tab_helper.cc
-index 87dc1b8b9a63e..23f95fc4fced8 100644
+index 87dc1b8b9a63e..6df97cd6c2323 100644
 --- a/chrome/browser/ui/prefs/prefs_tab_helper.cc
 +++ b/chrome/browser/ui/prefs/prefs_tab_helper.cc
 @@ -66,7 +66,7 @@
@@ -3457,6 +3457,132 @@ index 31dce31614ba7..dc93e7b3c6fdf 100644
    }
  
    return true;
+diff --git a/content/browser/service_worker/service_worker_context_core.cc b/content/browser/service_worker/service_worker_context_core.cc
+index d6bfd3c020555..b7cf01786f589 100644
+--- a/content/browser/service_worker/service_worker_context_core.cc
++++ b/content/browser/service_worker/service_worker_context_core.cc
+@@ -1518,7 +1518,7 @@ void ServiceWorkerContextCore::SetServiceWorkerHidDelegateObserverForTesting(
+ }
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ ServiceWorkerUsbDelegateObserver*
+ ServiceWorkerContextCore::usb_delegate_observer() {
+   if (!usb_delegate_observer_) {
+@@ -1532,6 +1532,6 @@ void ServiceWorkerContextCore::SetServiceWorkerUsbDelegateObserverForTesting(
+     std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer) {
+   usb_delegate_observer_ = std::move(usb_delegate_observer);
+ }
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+ }  // namespace content
+diff --git a/content/browser/service_worker/service_worker_context_core.h b/content/browser/service_worker/service_worker_context_core.h
+index 63cf887a77aa2..34736a43cf7b2 100644
+--- a/content/browser/service_worker/service_worker_context_core.h
++++ b/content/browser/service_worker/service_worker_context_core.h
+@@ -59,9 +59,9 @@ struct ServiceWorkerContextSynchronousObserverList;
+ class ServiceWorkerHidDelegateObserver;
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ class ServiceWorkerUsbDelegateObserver;
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+ // A smart pointer of `ServiceWorkerClient`.
+ //
+@@ -575,7 +575,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
+       std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer);
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   // In the service worker case, WebUSB is only available in extension service
+   // workers. Limit ServiceWorkerUsbDelegateObserver to platforms that support
+   // extensions.
+@@ -583,7 +583,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
+ 
+   void SetServiceWorkerUsbDelegateObserverForTesting(
+       std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer);
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+  private:
+   friend class ServiceWorkerContextCoreTest;
+@@ -704,9 +704,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
+   std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer_;
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer_;
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+   base::ObserverList<TestVersionObserver> test_version_observers_;
+ 
+diff --git a/content/browser/service_worker/service_worker_version.cc b/content/browser/service_worker/service_worker_version.cc
+index c97a981aeec04..4eb59f792e5e7 100644
+--- a/content/browser/service_worker/service_worker_version.cc
++++ b/content/browser/service_worker/service_worker_version.cc
+@@ -443,12 +443,12 @@ void ServiceWorkerVersion::SetStatus(Status status) {
+         registration_id_, has_hid_event_handlers_);
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+     // Notify the usb delegate observer if the active service worker has any usb
+     // event handlers. This is limited to platforms that support extensions.
+     context_->usb_delegate_observer()->UpdateHasEventHandlers(
+         registration_id_, has_usb_event_handlers_);
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   } else if (status == REDUNDANT) {
+     embedded_worker_->OnWorkerVersionDoomed();
+ 
+diff --git a/content/browser/usb/web_usb_service_impl.cc b/content/browser/usb/web_usb_service_impl.cc
+index c9c7bd0c9bac9..e050d79563051 100644
+--- a/content/browser/usb/web_usb_service_impl.cc
++++ b/content/browser/usb/web_usb_service_impl.cc
+@@ -142,7 +142,7 @@ WebUsbServiceImpl::WebUsbServiceImpl(
+   if (delegate && render_frame_host_) {
+     delegate->AddObserver(GetBrowserContext(), this);
+   } else if (service_worker_version_) {
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+     // For service worker case, it relies on ServiceWorkerUsbDelegateObserver to
+     // be the broker between UsbDelegate and UsbService. This is limited to
+     // platforms that support extensions.
+@@ -154,7 +154,7 @@ WebUsbServiceImpl::WebUsbServiceImpl(
+     }
+ #else
+     NOTREACHED();
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   }
+ }
+ 
+@@ -364,7 +364,7 @@ void WebUsbServiceImpl::SetClient(
+         client) {
+   DCHECK(client);
+   clients_.Add(std::move(client));
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   if (service_worker_version_ && service_worker_version_->context()) {
+     // WebUsbService is expected to have only one DeviceManagerClient when it is
+     // for a service worker. One renderer side of a service worker has its own
+@@ -382,7 +382,7 @@ void WebUsbServiceImpl::SetClient(
+         ->usb_delegate_observer()
+         ->ProcessPendingCallbacks(service_worker_version_.get());
+   }
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ }
+ 
+ void WebUsbServiceImpl::OnPermissionRevoked(const url::Origin& origin) {
 diff --git a/content/public/android/java/src/org/chromium/content/browser/ContentUiEventHandler.java b/content/public/android/java/src/org/chromium/content/browser/ContentUiEventHandler.java
 index 3207ba881da2f..c47d23d85acdf 100644
 --- a/content/public/android/java/src/org/chromium/content/browser/ContentUiEventHandler.java
@@ -3595,7 +3721,7 @@ index 46c329f4a7489..5326c5f8c86d6 100644
    // initialization flow is different.
    // ExtensionsAPIClient is instantiated as part of the ExtensionsBrowserClient,
 diff --git a/extensions/browser/extension_frame_host.cc b/extensions/browser/extension_frame_host.cc
-index 85d93336eed85..a3bb85be529e8 100644
+index 85d93336eed85..e28eeb4cf0ce5 100644
 --- a/extensions/browser/extension_frame_host.cc
 +++ b/extensions/browser/extension_frame_host.cc
 @@ -7,6 +7,7 @@
@@ -3606,7 +3732,7 @@ index 85d93336eed85..a3bb85be529e8 100644
  #include "base/strings/strcat.h"
  #include "base/strings/string_number_conversions.h"
  #include "base/trace_event/typed_macros.h"
-@@ -247,12 +247,20 @@ void ExtensionFrameHost::OpenChannelToExtension(
+@@ -247,12 +248,20 @@ void ExtensionFrameHost::OpenChannelToExtension(
      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
          port_host) {
@@ -4228,129 +4354,3 @@ index 91cc473cde764..cab09724c2a3f 100644
      in_files += [ "md_colors.css" ]
    }
  }
-diff --git a/content/browser/service_worker/service_worker_context_core.h b/content/browser/service_worker/service_worker_context_core.h
-index 63cf887a77aa2..34736a43cf7b2 100644
---- a/content/browser/service_worker/service_worker_context_core.h
-+++ b/content/browser/service_worker/service_worker_context_core.h
-@@ -59,9 +59,9 @@ struct ServiceWorkerContextSynchronousObserverList;
- class ServiceWorkerHidDelegateObserver;
- #endif  // !BUILDFLAG(IS_ANDROID)
- 
--#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
- class ServiceWorkerUsbDelegateObserver;
--#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
- 
- // A smart pointer of `ServiceWorkerClient`.
- //
-@@ -575,7 +575,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
-       std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer);
- #endif  // !BUILDFLAG(IS_ANDROID)
- 
--#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
-   // In the service worker case, WebUSB is only available in extension service
-   // workers. Limit ServiceWorkerUsbDelegateObserver to platforms that support
-   // extensions.
-@@ -583,7 +583,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
- 
-   void SetServiceWorkerUsbDelegateObserverForTesting(
-       std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer);
--#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
- 
-  private:
-   friend class ServiceWorkerContextCoreTest;
-@@ -704,9 +704,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
-   std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer_;
- #endif  // !BUILDFLAG(IS_ANDROID)
- 
--#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
-   std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer_;
--#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
- 
-   base::ObserverList<TestVersionObserver> test_version_observers_;
- 
-diff --git a/content/browser/service_worker/service_worker_context_core.cc b/content/browser/service_worker/service_worker_context_core.cc
-index d6bfd3c020555..b7cf01786f589 100644
---- a/content/browser/service_worker/service_worker_context_core.cc
-+++ b/content/browser/service_worker/service_worker_context_core.cc
-@@ -1518,7 +1518,7 @@ void ServiceWorkerContextCore::SetServiceWorkerHidDelegateObserverForTesting(
- }
- #endif  // !BUILDFLAG(IS_ANDROID)
- 
--#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
- ServiceWorkerUsbDelegateObserver*
- ServiceWorkerContextCore::usb_delegate_observer() {
-   if (!usb_delegate_observer_) {
-@@ -1532,6 +1532,6 @@ void ServiceWorkerContextCore::SetServiceWorkerUsbDelegateObserverForTesting(
-     std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer) {
-   usb_delegate_observer_ = std::move(usb_delegate_observer);
- }
--#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
- 
- }  // namespace content
-diff --git a/content/browser/service_worker/service_worker_version.cc b/content/browser/service_worker/service_worker_version.cc
-index c97a981aeec04..4eb59f792e5e7 100644
---- a/content/browser/service_worker/service_worker_version.cc
-+++ b/content/browser/service_worker/service_worker_version.cc
-@@ -443,12 +443,12 @@ void ServiceWorkerVersion::SetStatus(Status status) {
-         registration_id_, has_hid_event_handlers_);
- #endif  // !BUILDFLAG(IS_ANDROID)
- 
--#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
-     // Notify the usb delegate observer if the active service worker has any usb
-     // event handlers. This is limited to platforms that support extensions.
-     context_->usb_delegate_observer()->UpdateHasEventHandlers(
-         registration_id_, has_usb_event_handlers_);
--#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
-   } else if (status == REDUNDANT) {
-     embedded_worker_->OnWorkerVersionDoomed();
- 
-diff --git a/content/browser/usb/web_usb_service_impl.cc b/content/browser/usb/web_usb_service_impl.cc
-index c9c7bd0c9bac9..e050d79563051 100644
---- a/content/browser/usb/web_usb_service_impl.cc
-+++ b/content/browser/usb/web_usb_service_impl.cc
-@@ -142,7 +142,7 @@ WebUsbServiceImpl::WebUsbServiceImpl(
-   if (delegate && render_frame_host_) {
-     delegate->AddObserver(GetBrowserContext(), this);
-   } else if (service_worker_version_) {
--#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
-     // For service worker case, it relies on ServiceWorkerUsbDelegateObserver to
-     // be the broker between UsbDelegate and UsbService. This is limited to
-     // platforms that support extensions.
-@@ -154,7 +154,7 @@ WebUsbServiceImpl::WebUsbServiceImpl(
-     }
- #else
-     NOTREACHED();
--#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
-   }
- }
- 
-@@ -364,7 +364,7 @@ void WebUsbServiceImpl::SetClient(
-         client) {
-   DCHECK(client);
-   clients_.Add(std::move(client));
--#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
-   if (service_worker_version_ && service_worker_version_->context()) {
-     // WebUsbService is expected to have only one DeviceManagerClient when it is
-     // for a service worker. One renderer side of a service worker has its own
-@@ -382,7 +382,7 @@ void WebUsbServiceImpl::SetClient(
-         ->usb_delegate_observer()
-         ->ProcessPendingCallbacks(service_worker_version_.get());
-   }
--#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
-+#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
- }
- 
- void WebUsbServiceImpl::OnPermissionRevoked(const url::Origin& origin) {

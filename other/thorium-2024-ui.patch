@@ -215,7 +215,7 @@ diff --git a/chrome/browser/resources/downloads/item.css b/chrome/browser/resour
 index 7e38038946592..66d358e813d29 100644
 --- a/chrome/browser/resources/downloads/item.css
 +++ b/chrome/browser/resources/downloads/item.css
-@@ -274,3 +274,8 @@ cr-button {
+@@ -274,6 +274,11 @@ cr-button {
    flex-wrap: nowrap;
    margin-top: 6px;
  }
@@ -224,6 +224,9 @@ index 7e38038946592..66d358e813d29 100644
 +  max-width: 100%;
 +  overflow-wrap: anywhere;
 +}
+ 
+ :host-context([dir=rtl]) #name {
+   direction: ltr;
 @@ -341,7 +346,7 @@ cr-button {
    --cr-icon-button-icon-size: 20px;
    --cr-icon-button-margin-end: 0;
@@ -234,7 +237,7 @@ index 7e38038946592..66d358e813d29 100644
    margin-inline-start: 12px;
    margin-inline-end: 12px;
 diff --git a/chrome/browser/resources/downloads/item.html.ts b/chrome/browser/resources/downloads/item.html.ts
-index 03b09f0363609..1584af5457863 100644
+index 03b09f0363609..77978adef64b8 100644
 --- a/chrome/browser/resources/downloads/item.html.ts
 +++ b/chrome/browser/resources/downloads/item.html.ts
 @@ -48,6 +48,9 @@ export function getHtml(this: DownloadsItemElement) {
@@ -880,28 +883,9 @@ index ef083215f22db..a85062a7aeb96 100644
 +    CommandNewTabToLeft,
      CommandNewTabToRight,
      CommandReload,
-    CommandDuplicate,
-diff --git a/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc b/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc
-index bc7c354550ad4..1c59bd5517619 100644
---- a/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc
-+++ b/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc
-@@ -102,6 +102,14 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
-       return "--tab-strip-height";
-     case kTabStripPadding:
-       return "--tab-strip-padding";
-+    case kTabMargin:
-+      return "--tab-margin";
-+    case kTabInactivePadding:
-+      return "--tab-inactive-padding";
-+    case kTabSearchPadding:
-+      return "--tab-search-padding";
-+    case kTabButtonOffset:
-+      return "--tab-button-offset";
-     case kTabSeparatorHeight:
-       return "--tab-separator-height";
-     case kTabPreTitlePadding:
+     CommandDuplicate,
 diff --git a/chrome/browser/ui/tabs/tab_style.cc b/chrome/browser/ui/tabs/tab_style.cc
-index fbfe095b4c1a3..8c91b5b7157fa 100644
+index fbfe095b4c1a3..f328a417432ff 100644
 --- a/chrome/browser/ui/tabs/tab_style.cc
 +++ b/chrome/browser/ui/tabs/tab_style.cc
 @@ -5,7 +5,9 @@
@@ -914,7 +898,7 @@ index fbfe095b4c1a3..8c91b5b7157fa 100644
  #include "chrome/browser/ui/layout_constants.h"
  #include "chrome/browser/ui/tabs/features.h"
  #include "chrome/browser/ui/ui_features.h"
-@@ -19,13 +21,18 @@ namespace {
+@@ -19,17 +21,20 @@ namespace {
  
  // Thickness in DIPs of the separator painted on the left and right edges of
  // the tab.
@@ -934,7 +918,10 @@ index fbfe095b4c1a3..8c91b5b7157fa 100644
  
 -// The standard tab width is 232 DIP, excluding separators and overlap.
 -constexpr int kTabWidth = 232;
-@@ -40,13 +47,35 @@ int TabStyle::GetStandardHeight() const {
+ 
+ }  // namespace
+ 
+@@ -40,13 +45,35 @@ int TabStyle::GetStandardHeight() const {
  }
  
  int TabStyle::GetStandardWidth(const bool is_split) const {
@@ -972,7 +959,7 @@ index fbfe095b4c1a3..8c91b5b7157fa 100644
    }
  }
  
-@@ -98,16 +127,34 @@ int TabStyle::GetMinimumInactiveWidth() const {
+@@ -98,16 +125,34 @@ int TabStyle::GetMinimumInactiveWidth() const {
  }
  
  int TabStyle::GetTopCornerRadius() const {
@@ -1010,7 +997,7 @@ index fbfe095b4c1a3..8c91b5b7157fa 100644
        GetSeparatorMargins().width() + GetSeparatorSize().width();
    return 2 * GetBottomCornerRadius() - total_separator_width;
  }
-@@ -119,10 +166,20 @@ gfx::Size TabStyle::GetPreviewImageSize() const {
+@@ -119,10 +164,20 @@ gfx::Size TabStyle::GetPreviewImageSize() const {
  }
  
  gfx::Size TabStyle::GetSeparatorSize() const {
@@ -1031,7 +1018,7 @@ index fbfe095b4c1a3..8c91b5b7157fa 100644
    return gfx::Insets::TLBR(GetLayoutConstant(LayoutConstant::kTabStripPadding),
                             kSeparatorHorizontalMargin,
                             GetLayoutConstant(LayoutConstant::kTabStripPadding),
-@@ -130,6 +187,9 @@ gfx::Insets TabStyle::GetSeparatorMargins() const {
+@@ -130,6 +185,9 @@ gfx::Insets TabStyle::GetSeparatorMargins() const {
  }
  
  int TabStyle::GetSeparatorCornerRadius() const {
@@ -1041,7 +1028,7 @@ index fbfe095b4c1a3..8c91b5b7157fa 100644
    return GetSeparatorSize().width() / 2;
  }
  
-@@ -268,6 +328,15 @@ SkColor TabStyle::GetCurrentTabBackgroundColor(
+@@ -268,6 +326,15 @@ SkColor TabStyle::GetCurrentTabBackgroundColor(
  }
  
  gfx::Insets TabStyle::GetContentsInsets() const {
@@ -1559,7 +1546,7 @@ index 63985d1fed4c9..75fda623256d5 100644
  }
  
 diff --git a/chrome/browser/ui/views/frame/opaque_browser_frame_view.cc b/chrome/browser/ui/views/frame/opaque_browser_frame_view.cc
-index be7c8cc4c6bb1..d7d6615a4c3ed 100644
+index be7c8cc4c6bb1..fa6fa652598e8 100644
 --- a/chrome/browser/ui/views/frame/opaque_browser_frame_view.cc
 +++ b/chrome/browser/ui/views/frame/opaque_browser_frame_view.cc
 @@ -298,7 +298,9 @@ void OpaqueBrowserFrameView::MaybeAddAppIconToLayoutParams(
@@ -2204,7 +2191,7 @@ index b7663b7b03f9b..38e9815a42650 100644
        GetColorProvider()->GetColor(kColorSidePanelHoverResizeAreaHandle);
    SetBackground(CreateRoundedRectBackground(resize_handle_color, 2));
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index d9287b9ed5296..40b11b6e5deab 100644
+index d9287b9ed5296..dba4f54caa781 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -1,4 +1,4 @@
@@ -2875,6 +2862,25 @@ index a35723a40c9b7..5a7e248f4ff9b 100644
  };
  
  // The chrome colors selected and ordered by |kCustomizeChromeColorIds|.
+diff --git a/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc b/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc
+index bc7c354550ad4..1c59bd5517619 100644
+--- a/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc
++++ b/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc
+@@ -102,6 +102,14 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
+       return "--tab-strip-height";
+     case kTabStripPadding:
+       return "--tab-strip-padding";
++    case kTabMargin:
++      return "--tab-margin";
++    case kTabInactivePadding:
++      return "--tab-inactive-padding";
++    case kTabSearchPadding:
++      return "--tab-search-padding";
++    case kTabButtonOffset:
++      return "--tab-button-offset";
+     case kTabSeparatorHeight:
+       return "--tab-separator-height";
+     case kTabPreTitlePadding:
 diff --git a/chrome/common/chrome_paths.cc b/chrome/common/chrome_paths.cc
 index eae95c5f35740..af46f59fc2691 100644
 --- a/chrome/common/chrome_paths.cc
@@ -3657,7 +3663,7 @@ index f22907bb8d3c8..559b43a5ee39d 100644
    MenuDelegate* delegate = GetDelegate();
    if (type_ == Type::kCheckbox && delegate &&
 diff --git a/ui/views/controls/tree/tree_view.cc b/ui/views/controls/tree/tree_view.cc
-index d6274d19a8bb5..04e243f65cfb8 100644
+index d6274d19a8bb5..a31e27d751fbd 100644
 --- a/ui/views/controls/tree/tree_view.cc
 +++ b/ui/views/controls/tree/tree_view.cc
 @@ -109,14 +109,34 @@ TreeView::TreeView()
@@ -3788,7 +3794,7 @@ index d243aa338748a..3d88159c1fb1d 100644
  #include "base/containers/fixed_flat_map.h"
  #include "base/logging.h"
  #include "ui/base/ui_base_features.h"
-@@ -82,6 +82,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
+@@ -82,6 +83,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
    DCHECK_GE(metric, VIEWS_DISTANCE_START);
    DCHECK_LT(metric, VIEWS_DISTANCE_END);
  
@@ -3796,7 +3802,7 @@ index d243aa338748a..3d88159c1fb1d 100644
    switch (static_cast<DistanceMetric>(metric)) {
      case DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE:
        return 20;
-@@ -92,11 +93,11 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
+@@ -92,11 +94,11 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
      case DISTANCE_BUTTON_MAX_LINKABLE_WIDTH:
        return 112;
      case DISTANCE_CLOSE_BUTTON_MARGIN:
@@ -3810,7 +3816,7 @@ index d243aa338748a..3d88159c1fb1d 100644
      case DISTANCE_TABLE_VERTICAL_TEXT_PADDING:
        return 6;
      case DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH:
-@@ -139,7 +140,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
+@@ -139,7 +141,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
      case DISTANCE_TABLE_CELL_HORIZONTAL_MARGIN:
        return 12;
      case DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING:
@@ -3819,7 +3825,7 @@ index d243aa338748a..3d88159c1fb1d 100644
      case DISTANCE_UNRELATED_CONTROL_HORIZONTAL:
        return 16;
      case DISTANCE_UNRELATED_INFOBAR_CONTAINER_HORIZONTAL:
-@@ -226,6 +227,40 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
+@@ -226,6 +228,38 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
  
  int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
                                            const gfx::Size& size) const {

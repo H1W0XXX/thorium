@@ -48,10 +48,10 @@ index c978f8f218b40..790e66f2c87d8 100644
  }
 diff --git a/chrome/browser/ui/webui/thorium_easter_eggs.h b/chrome/browser/ui/webui/thorium_easter_eggs.h
 new file mode 100644
-index 0000000000000..5860c1b32dd0b
+index 0000000000000..e183c1f64b82a
 --- /dev/null
 +++ b/chrome/browser/ui/webui/thorium_easter_eggs.h
-@@ -0,0 +1,241 @@
+@@ -0,0 +1,239 @@
 +// Copyright 2026 Alex313031
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.

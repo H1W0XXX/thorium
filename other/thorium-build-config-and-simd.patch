@@ -1,5 +1,5 @@
 diff --git a/build/config/BUILDCONFIG.gn b/build/config/BUILDCONFIG.gn
-index 12595c1e36678..cef5ed3749f71 100644
+index 12595c1e36678..b27740f060eef 100644
 --- a/build/config/BUILDCONFIG.gn
 +++ b/build/config/BUILDCONFIG.gn
 @@ -1,4 +1,4 @@
@@ -20,7 +20,7 @@ index 12595c1e36678..cef5ed3749f71 100644
  assert(!(is_debug && is_official_build), "Can't do official debug builds")
  assert(!(current_os == "ios" && is_component_build),
         "Can't use component build on iOS")
-@@ -432,6 +436,13 @@ if (current_os == "zos") {
+@@ -432,6 +437,13 @@ if (current_os == "zos") {
    default_compiler_configs += [ "//build/config/zos:compiler" ]
  }
  
@@ -34,7 +34,7 @@ index 12595c1e36678..cef5ed3749f71 100644
  # Static libraries and source sets use only the compiler ones.
  set_defaults("static_library") {
    configs = default_compiler_configs
-@@ -464,7 +475,10 @@ if (is_win) {
+@@ -464,7 +476,10 @@ if (is_win) {
  } else if (is_android) {
    # Warn whenever linking code that could unintentionally switch off
    # branch target identification (BTI) on Arm systems.
@@ -795,7 +795,7 @@ index 56238a14ae8fb..7e93a084210b9 100644
      }
    }
 diff --git a/build/config/win/BUILD.gn b/build/config/win/BUILD.gn
-index 101c2339697ca..8ee700651c4eb 100644
+index 101c2339697ca..f261f3c85d0d8 100644
 --- a/build/config/win/BUILD.gn
 +++ b/build/config/win/BUILD.gn
 @@ -1,8 +1,9 @@

@@ -1,8 +1,8 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 2288e24a..9c3b6792 100644
+index 2288e24a..5e3e32d6 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -209,6 +210,7 @@ static_library("libyuv_internal") {
+@@ -209,6 +209,7 @@ static_library("libyuv_internal") {
  
  if (libyuv_use_neon) {
    static_library("libyuv_neon") {
@@ -10,7 +10,7 @@ index 2288e24a..9c3b6792 100644
      sources = [
        # ARM Source Files
        "source/compare_neon.cc",
-@@ -237,6 +239,7 @@ if (libyuv_use_neon) {
+@@ -237,6 +238,7 @@ if (libyuv_use_neon) {
  
  if (libyuv_use_sve) {
    static_library("libyuv_sve") {
@@ -18,7 +18,7 @@ index 2288e24a..9c3b6792 100644
      sources = [ "source/row_sve.cc" ]
  
      deps = [ ":libyuv_internal" ]
-@@ -253,6 +256,7 @@ if (libyuv_use_sve) {
+@@ -253,6 +255,7 @@ if (libyuv_use_sve) {
  
  if (libyuv_use_sme) {
    static_library("libyuv_sme") {
@@ -26,7 +26,7 @@ index 2288e24a..9c3b6792 100644
      sources = [
        "source/rotate_sme.cc",
        "source/row_sme.cc",
-@@ -273,6 +277,7 @@ if (libyuv_use_sme) {
+@@ -273,6 +276,7 @@ if (libyuv_use_sme) {
  
  if (libyuv_use_lsx) {
    static_library("libyuv_lsx") {
@@ -34,7 +34,7 @@ index 2288e24a..9c3b6792 100644
      sources = [
        # LSX Source Files
        "source/rotate_lsx.cc",
-@@ -293,6 +298,7 @@ if (libyuv_use_lsx) {
+@@ -293,6 +297,7 @@ if (libyuv_use_lsx) {
  
  if (libyuv_use_lasx) {
    static_library("libyuv_lasx") {

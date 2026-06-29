@@ -721,7 +721,7 @@ index 0000000000000..a9c9f539a4427
 +#endif  // NET_FTP_FTP_AUTH_CACHE_H_
 diff --git a/net/ftp/ftp_ctrl_response_buffer.cc b/net/ftp/ftp_ctrl_response_buffer.cc
 new file mode 100644
-index 0000000000000..fee68f1b19ce2
+index 0000000000000..04f03b7fc16b5
 --- /dev/null
 +++ b/net/ftp/ftp_ctrl_response_buffer.cc
 @@ -0,0 +1,159 @@
@@ -4600,10 +4600,10 @@ index d1ff7329e9fcb..36e4379236c1d 100644
    bool suppress_setting_socket_performance_watcher_factory_for_testing_ = false;
 diff --git a/net/url_request/url_request_ftp_job.cc b/net/url_request/url_request_ftp_job.cc
 new file mode 100644
-index 0000000000000..ba989bd3ae344
+index 0000000000000..c9f57d89b2384
 --- /dev/null
 +++ b/net/url_request/url_request_ftp_job.cc
-@@ -0,0 +1,324 @@
+@@ -0,0 +1,325 @@
 +// Copyright (c) 2012 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -5327,10 +5327,10 @@ index 31a834fa1ec36..7ac972633e2f3 100644
      "mixed_content.cc",
 diff --git a/third_party/blink/renderer/platform/loader/ftp_directory_listing.cc b/third_party/blink/renderer/platform/loader/ftp_directory_listing.cc
 new file mode 100644
-index 0000000000000..73d3eddbd8c0d
+index 0000000000000..ae34f43abd764
 --- /dev/null
 +++ b/third_party/blink/renderer/platform/loader/ftp_directory_listing.cc
-@@ -0,0 +1,111 @@
+@@ -0,0 +1,110 @@
 +// Copyright 2018 The Chromium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.

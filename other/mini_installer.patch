@@ -298,7 +298,7 @@ index e2b6155fe43fc..08b937f7793e6 100644
    bool should_delete_extracted_files_;
  
 diff --git a/chrome/installer/mini_installer/mini_installer.cc b/chrome/installer/mini_installer/mini_installer.cc
-index 6aae112356a1a..738b3d01651ca 100644
+index 6aae112356a1a..adee78b9db1db 100644
 --- a/chrome/installer/mini_installer/mini_installer.cc
 +++ b/chrome/installer/mini_installer/mini_installer.cc
 @@ -1,4 +1,4 @@
@@ -325,7 +325,7 @@ index 6aae112356a1a..738b3d01651ca 100644
  
  #include "build/branding_buildflags.h"
  #include "chrome/installer/mini_installer/appid.h"
-@@ -53,11 +57,54 @@
+@@ -53,11 +57,57 @@
  #include "chrome/installer/mini_installer/memory_range.h"
  #include "chrome/installer/mini_installer/mini_file.h"
  #include "chrome/installer/mini_installer/mini_installer_constants.h"
@@ -375,12 +375,15 @@ index 6aae112356a1a..738b3d01651ca 100644
 +  return msg;
 +}
 +
-+static Configuration conf;
++Configuration& GetConfiguration() {
++  static Configuration* const configuration = new Configuration();
++  return *configuration;
++}
 +
  // Deletes |path|, updating |max_delete_attempts| if more attempts were taken
  // than indicated in |max_delete_attempts|.
  void DeleteWithRetryAndMetrics(const wchar_t* path, int& max_delete_attempts) {
-@@ -709,21 +756,236 @@ bool GetWorkDir(HMODULE module,
+@@ -709,11 +759,198 @@ bool GetWorkDir(HMODULE module,
           CreateWorkDir(base_path.get(), work_dir, exit_code);
  }
  
@@ -401,7 +404,7 @@ index 6aae112356a1a..738b3d01651ca 100644
 +  ProcessExitResult install_code = ProcessExitResult(GENERIC_INITIALIZATION_FAILURE);
 +  if (GetShouldInstall()) {
 +    std::wcout << kInstallingActiveMessage << std::endl;
-+    install_code = WMainImpl(true, hModule, conf);
++    install_code = WMainImpl(true, hModule, GetConfiguration());
 +    if (install_code.IsSuccess()) {
 +      success = true;
 +    }
@@ -578,29 +581,25 @@ index 6aae112356a1a..738b3d01651ca 100644
  
    // Parse configuration from the command line and resources.
 -  Configuration configuration;
--  if (!configuration.Initialize()) {
-+  if (!conf.Initialize()) {
++  Configuration& configuration = GetConfiguration();
+   if (!configuration.Initialize()) {
      return ProcessExitResult(GENERIC_INITIALIZATION_FAILURE, ::GetLastError());
    }
- 
-   // Exit early if an invalid switch (e.g., "--chrome-frame") was found on the
-   // command line.
--  if (configuration.has_invalid_switch()) {
-+  if (conf.has_invalid_switch()) {
+@@ -724,6 +961,35 @@ ProcessExitResult WMain(HMODULE module) {
      return ProcessExitResult(INVALID_OPTION);
    }
  
-+  if (conf.enable_logging()) {
++  if (configuration.enable_logging()) {
 +    RouteStdioToConsole(false);
 +  }
 +
 +  static constexpr bool force_disable_dialog = false;
 +  if (force_disable_dialog) {
-+    return WMainImpl(true, hModule, conf);
++    return WMainImpl(true, hModule, configuration);
 +  } else {
-+    if (conf.is_silent_install()) {
++    if (configuration.is_silent_install()) {
 +      std::wcout << L"Running silent install" << std::endl;
-+      return WMainImpl(true, hModule, conf);
++      return WMainImpl(true, hModule, configuration);
 +    } else {
 +        ProcessExitResult wnd_status = ProcessExitResult(SUCCESS_EXIT_CODE);
 +        if (!InitWndInstance(hInstance, nCmdShow)) {
@@ -622,12 +621,12 @@ index 6aae112356a1a..738b3d01651ca 100644
    // First get a path where we can extract payload
    PathString base_path;
    if (!GetWorkDir(module, &base_path, &exit_code)) {
-@@ -771,4 +1033,11 @@ ProcessExitResult WMain(HMODULE module) {
+@@ -771,4 +1037,11 @@ ProcessExitResult WMain(HMODULE module) {
    return exit_code;
  }
  
 +int HandleExit(ProcessExitResult result) {
-+  if (conf.enable_logging()) {
++  if (GetConfiguration().enable_logging()) {
 +    //system("pause");
 +  }
 +  return result.exit_code;
@@ -904,7 +903,7 @@ index 0000000000000..0930463ef38fc
 +
 +#endif // CHROME_INSTALLER_MINI_INSTALLER_MINI_INSTALLER_VERSION_H_
 diff --git a/chrome/installer/setup/install_worker.cc b/chrome/installer/setup/install_worker.cc
-index 59679ed4c8b5d..bbf1530b4b4d8 100644
+index 59679ed4c8b5d..9e1279391927b 100644
 --- a/chrome/installer/setup/install_worker.cc
 +++ b/chrome/installer/setup/install_worker.cc
 @@ -1,4 +1,4 @@
@@ -948,7 +947,15 @@ index 59679ed4c8b5d..bbf1530b4b4d8 100644
  // Adds work items to register the Elevation Service with Windows. Only for
  // system level installs.
  void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
-@@ -265,6 +272,46 @@ void AddDeleteUninstallEntryForMSIWorkItems(
+@@ -131,6 +138,7 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
+       {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
+   list->AddWorkItem(install_service_work_item);
+ }
++#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ 
+ // Create Version key for a product (if not already present) and sets the new
+ // product version as the last step.
+@@ -265,6 +273,46 @@ void AddDeleteUninstallEntryForMSIWorkItems(
    delete_reg_key->set_best_effort(true);
  }
  
@@ -995,7 +1002,7 @@ index 59679ed4c8b5d..bbf1530b4b4d8 100644
  // Adds Chrome specific install work items to |install_list|.
  void AddChromeWorkItems(const InstallParams& install_params,
                          WorkItemList* install_list) {
-@@ -276,6 +323,11 @@ void AddChromeWorkItems(const InstallParams& install_params,
+@@ -276,6 +324,11 @@ void AddChromeWorkItems(const InstallParams& install_params,
  
    const base::FilePath& target_path = installer_state.target_path();
  
@@ -1007,14 +1014,13 @@ index 59679ed4c8b5d..bbf1530b4b4d8 100644
    if (current_version.IsValid()) {
      // TODO(crbug.com/441478433): Delete this cleanup some time in 2027.
      // Delete the archive from an existing install to save some disk space.
-@@ -308,12 +360,19 @@ void AddChromeWorkItems(const InstallParams& install_params,
+@@ -308,12 +361,18 @@ void AddChromeWorkItems(const InstallParams& install_params,
    // Copy installer in install directory.
    AddInstallerCopyTasks(install_params, install_list);
  
 +  // Add Thorium-specific files.
 +  install_list->AddCopyTreeWorkItem(src_path.Append(kThorVer),
-+                                    target_path.Append(kThorVer), temp_path,
-+                                    WorkItem::ALWAYS);
++                                    target_path.Append(kThorVer), temp_path);
 +
 +#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
    if (installer_state.system_install()) {
@@ -1027,7 +1033,15 @@ index 59679ed4c8b5d..bbf1530b4b4d8 100644
  
    // Move chrome.exe to new_chrome.exe if the target is in use; otherwise,
    // delete a pre-existing new_chrome.exe and overwrite the target.
-@@ -426,7 +485,6 @@ void AddTracingServiceWorkItems(const InstallationState& original_state,
+@@ -365,6 +424,7 @@ void AddChromeWorkItems(const InstallParams& install_params,
+   install_list->AddWorkItem(manifest_item.release());
+ }
+ 
++#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ // Adds work items to register or unregister the elevated tracing service.
+ void AddTracingServiceWorkItems(const InstallationState& original_state,
+                                 const base::FilePath& tracing_service_path,
+@@ -426,7 +486,6 @@ void AddTracingServiceWorkItems(const InstallationState& original_state,
    }
  }
  
@@ -1035,7 +1049,7 @@ index 59679ed4c8b5d..bbf1530b4b4d8 100644
  // Adds work items to add the "store-dmtoken" command to Chrome's version key.
  // This method is a no-op if this is anything other than system-level Chrome.
  // The command is used when enrolling Chrome browser instances into enterprise
-@@ -1015,7 +1073,7 @@ void AddInstallWorkItems(const InstallParams& install_params,
+@@ -1015,7 +1074,7 @@ void AddInstallWorkItems(const InstallParams& install_params,
                                      install_list);
    AddPlatformExperienceHelperWorkItems(installer_state, new_version,
                                         install_list);
@@ -1044,7 +1058,7 @@ index 59679ed4c8b5d..bbf1530b4b4d8 100644
    AddFirewallRulesWorkItems(installer_state, !current_version.IsValid(),
                              install_list);
  
-@@ -1294,10 +1352,12 @@ void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
+@@ -1294,10 +1353,12 @@ void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
    AddWerHelperRegistration(installer_state.root_key(),
                             GetWerHelperPath(target_path, new_version), list);
  

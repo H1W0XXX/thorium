@@ -51,7 +51,7 @@ new file mode 100644
 index 0000000000000..5860c1b32dd0b
 --- /dev/null
 +++ b/chrome/browser/ui/webui/thorium_easter_eggs.h
-@@ -0,0 +1,209 @@
+@@ -0,0 +1,241 @@
 +// Copyright 2026 Alex313031
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -142,12 +142,26 @@ index 0000000000000..5860c1b32dd0b
 +  ThoriumRobotDataSource() {}
 +  ThoriumRobotDataSource(const ThoriumRobotDataSource&) = delete;
 +  ThoriumRobotDataSource& operator=(const ThoriumRobotDataSource&) = delete;
-+  std::string GetSource() override { return chrome::kChromeUIRobotHost; }
-+  std::string GetMimeType(const GURL& url) override { return "text/html"; }
++  std::string GetSource() override;
++  std::string GetMimeType(const GURL& url) override;
 +  void StartDataRequest(const GURL& url,
 +                        const content::WebContents::Getter& wc_getter,
-+                        GotDataCallback callback) override {
-+    std::string source = R"(
++                        GotDataCallback callback) override;
++};
++
++std::string ThoriumRobotDataSource::GetSource() {
++  return chrome::kChromeUIRobotHost;
++}
++
++std::string ThoriumRobotDataSource::GetMimeType(const GURL& url) {
++  return "text/html";
++}
++
++void ThoriumRobotDataSource::StartDataRequest(
++    const GURL& url,
++    const content::WebContents::Getter& wc_getter,
++    GotDataCallback callback) {
++  std::string source = R"(
 +      <html>
 +      <head>
 +        <title>Thorium Robot</title>
@@ -165,9 +179,9 @@ index 0000000000000..5860c1b32dd0b
 +      </body>
 +      </html>
 +    )";
-+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(std::move(source)));
-+  }
-+};
++  std::move(callback).Run(
++      base::MakeRefCounted<base::RefCountedString>(std::move(source)));
++}
 +
 +class ThoriumRobotUI;
 +class ThoriumRobotUIConfig : public content::DefaultWebUIConfig<ThoriumRobotUI> {
@@ -189,19 +203,37 @@ index 0000000000000..5860c1b32dd0b
 +  ThoriumAuthorsDataSource() {}
 +  ThoriumAuthorsDataSource(const ThoriumAuthorsDataSource&) = delete;
 +  ThoriumAuthorsDataSource& operator=(const ThoriumAuthorsDataSource&) = delete;
-+  std::string GetSource() override { return chrome::kChromeUIAuthorsHost; }
-+  std::string GetMimeType(const GURL& url) override { return "text/html"; }
-+  std::string GetContentSecurityPolicy(network::mojom::CSPDirectiveName directive) override {
-+    if (directive == network::mojom::CSPDirectiveName::ScriptSrc)
-+      return "script-src 'unsafe-inline'";
-+    if (directive == network::mojom::CSPDirectiveName::ConnectSrc)
-+      return "connect-src chrome://resources;";
-+    return std::string();
-+  }
++  std::string GetSource() override;
++  std::string GetMimeType(const GURL& url) override;
++  std::string GetContentSecurityPolicy(
++      network::mojom::CSPDirectiveName directive) override;
 +  void StartDataRequest(const GURL& url,
 +                        const content::WebContents::Getter& wc_getter,
-+                        GotDataCallback callback) override {
-+    std::string source = R"(
++                        GotDataCallback callback) override;
++};
++
++std::string ThoriumAuthorsDataSource::GetSource() {
++  return chrome::kChromeUIAuthorsHost;
++}
++
++std::string ThoriumAuthorsDataSource::GetMimeType(const GURL& url) {
++  return "text/html";
++}
++
++std::string ThoriumAuthorsDataSource::GetContentSecurityPolicy(
++    network::mojom::CSPDirectiveName directive) {
++  if (directive == network::mojom::CSPDirectiveName::ScriptSrc)
++    return "script-src 'unsafe-inline'";
++  if (directive == network::mojom::CSPDirectiveName::ConnectSrc)
++    return "connect-src chrome://resources;";
++  return std::string();
++}
++
++void ThoriumAuthorsDataSource::StartDataRequest(
++    const GURL& url,
++    const content::WebContents::Getter& wc_getter,
++    GotDataCallback callback) {
++  std::string source = R"(
 +      <html>
 +      <head>
 +        <title>Thorium Authors</title>
@@ -241,9 +273,9 @@ index 0000000000000..5860c1b32dd0b
 +      </body>
 +      </html>
 +    )";
-+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(std::move(source)));
-+  }
-+};
++  std::move(callback).Run(
++      base::MakeRefCounted<base::RefCountedString>(std::move(source)));
++}
 +
 +class ThoriumAuthorsUI;
 +class ThoriumAuthorsUIConfig : public content::DefaultWebUIConfig<ThoriumAuthorsUI> {

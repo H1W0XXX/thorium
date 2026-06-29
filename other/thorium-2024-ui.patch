@@ -225,7 +225,7 @@ index 7e38038946592..1ac0066eead46 100644
    margin-inline-start: 12px;
    margin-inline-end: 12px;
 diff --git a/chrome/browser/resources/downloads/item.html.ts b/chrome/browser/resources/downloads/item.html.ts
-index 03b09f0363609..09141d9160a7c 100644
+index 03b09f0363609..1584af5457863 100644
 --- a/chrome/browser/resources/downloads/item.html.ts
 +++ b/chrome/browser/resources/downloads/item.html.ts
 @@ -48,6 +48,9 @@ export function getHtml(this: DownloadsItemElement) {
@@ -234,7 +234,7 @@ index 03b09f0363609..09141d9160a7c 100644
          </div>
 +        <a id="url" target="_blank"
 +          @click="${this.onUrlClick_}" focus-row-control
-+          focus-type="url">${this.getDisplayUrlStr_()}</a>
++          focus-type="url">${this.data?.url || ''}</a>
        </div>
  
        <div class="description" role="gridcell"
@@ -246,21 +246,6 @@ index 03b09f0363609..09141d9160a7c 100644
              class="dropdown-trigger" title="$i18n{moreActions}"
              @click="${this.onMoreActionsClick_}" aria-haspopup="menu"
              focus-row-control focus-type="actionMenuButton">
-diff --git a/chrome/browser/resources/downloads/item.ts b/chrome/browser/resources/downloads/item.ts
-index a5d82d77c9c28..b33f64bf76aa2 100644
---- a/chrome/browser/resources/downloads/item.ts
-+++ b/chrome/browser/resources/downloads/item.ts
-@@ -184,6 +184,10 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
-     return menu;
-   }
- 
-+  protected getDisplayUrlStr_(): string {
-+    return this.data ? this.data.displayUrl : '';
-+  }
-+
-   protected computeClass_(): string {
-     const classes = [];
- 
 diff --git a/chrome/browser/resources/pdf/manifest.json b/chrome/browser/resources/pdf/manifest.json
 index 04e1e8868ef79..4644ea31cb39d 100644
 --- a/chrome/browser/resources/pdf/manifest.json
@@ -886,7 +871,26 @@ index ef083215f22db..a85062a7aeb96 100644
 +    CommandNewTabToLeft,
      CommandNewTabToRight,
      CommandReload,
-     CommandDuplicate,
+    CommandDuplicate,
+diff --git a/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc b/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc
+index bc7c354550ad4..1c59bd5517619 100644
+--- a/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc
++++ b/chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.cc
+@@ -102,6 +102,14 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
+       return "--tab-strip-height";
+     case kTabStripPadding:
+       return "--tab-strip-padding";
++    case kTabMargin:
++      return "--tab-margin";
++    case kTabInactivePadding:
++      return "--tab-inactive-padding";
++    case kTabSearchPadding:
++      return "--tab-search-padding";
++    case kTabButtonOffset:
++      return "--tab-button-offset";
+     case kTabSeparatorHeight:
+       return "--tab-separator-height";
+     case kTabPreTitlePadding:
 diff --git a/chrome/browser/ui/tabs/tab_style.cc b/chrome/browser/ui/tabs/tab_style.cc
 index fbfe095b4c1a3..8c91b5b7157fa 100644
 --- a/chrome/browser/ui/tabs/tab_style.cc
@@ -919,36 +923,46 @@ index fbfe095b4c1a3..8c91b5b7157fa 100644
 +constexpr int kThoriumTabHorizontalPadding = 6;
  constexpr int kTabHorizontalPadding = 8;
  
- // The standard tab width is 232 DIP, excluding separators and overlap.
-@@ -40,6 +47,28 @@ int TabStyle::GetStandardHeight() const {
+-// The standard tab width is 232 DIP, excluding separators and overlap.
+-constexpr int kTabWidth = 232;
+@@ -40,13 +47,35 @@ int TabStyle::GetStandardHeight() const {
  }
  
  int TabStyle::GetStandardWidth(const bool is_split) const {
 +  const std::string custom_tab_width =
 +      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
 +          "custom-tab-width");
-+  int kTabWidthValue;
++  int tab_width_value;
 +  if (custom_tab_width == "60") {
-+    kTabWidthValue = 60;
++    tab_width_value = 60;
 +  } else if (custom_tab_width == "120") {
-+    kTabWidthValue = 120;
++    tab_width_value = 120;
 +  } else if (custom_tab_width == "180") {
-+    kTabWidthValue = 180;
++    tab_width_value = 180;
 +  } else if (custom_tab_width == "240") {
-+    kTabWidthValue = 240;
++    tab_width_value = 240;
 +  } else if (custom_tab_width == "300") {
-+    kTabWidthValue = 300;
++    tab_width_value = 300;
 +  } else if (custom_tab_width == "400") {
-+    kTabWidthValue = 400;
++    tab_width_value = 400;
 +  } else {
 +    // The standard tab width is 232 DIP, excluding separators and overlap.
-+    kTabWidthValue = 232;
++    tab_width_value = 232;
 +  }
 +
-+  const int kTabWidth = kTabWidthValue;
++  const int tab_width = tab_width_value;
    if (is_split) {
      // Split tabs appear as half width with one bottom extension. They also must
      // include half the tab overlap as the tabs fill the space between them.
+-    return kTabWidth / 2 + GetBottomCornerRadius() + GetTabOverlap() / 2;
++    return tab_width / 2 + GetBottomCornerRadius() + GetTabOverlap() / 2;
+   } else {
+     // The full width includes two extensions with the bottom corner radius.
+-    return kTabWidth + 2 * GetBottomCornerRadius();
++    return tab_width + 2 * GetBottomCornerRadius();
+   }
+ }
+ 
 @@ -98,16 +127,34 @@ int TabStyle::GetMinimumInactiveWidth() const {
  }
  
@@ -1544,7 +1558,7 @@ index be7c8cc4c6bb1..d7d6615a4c3ed 100644
  
  int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
 -  return layout_->NonClientTopHeight(restored);
-+  return browser_view()->ShouldDrawTabStrip() && features::IsThorium2024()
++  return GetBrowserView()->ShouldDrawTabStrip() && features::IsThorium2024()
 +             ? layout_->GetTabStripInsetsTop(restored)
 +             : layout_->NonClientTopHeight(restored);
  }
@@ -2292,7 +2306,7 @@ index d9287b9ed5296..40b11b6e5deab 100644
 +      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
 +          "tab-hover-cards") == "tooltip";
 +  if (tab_hover_cards_tooltip) {
-+    return GetTooltipText(data_.title, GetAlertStateToShow(data_.alert_state));
++    return GetTooltipText(data_.title, data_.alert_state);
 +  }
 +  return std::u16string();
 +}
@@ -3657,7 +3671,7 @@ index d6274d19a8bb5..04e243f65cfb8 100644
 +  if (features::IsThorium2024()) {
 +    if (kUseMdIcons) {
 +      closed_icon_ = open_icon_ = ui::ImageModel::FromVectorIcon(
-+          vector_icons::kFolderIcon, ui::kColorIcon);
++          vector_icons::kFolderChromeRefreshOldIcon, ui::kColorIcon);
 +    } else {
 +      closed_icon_ = ui::ImageModel::FromImage(
 +          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
@@ -3754,9 +3768,17 @@ index 07eab46b85ef2..dacd335baf4c3 100644
    std::vector<ui::ImageModel> icons_;
  
 diff --git a/ui/views/layout/layout_provider.cc b/ui/views/layout/layout_provider.cc
-index d243aa338748a..04d03068b1a11 100644
+index d243aa338748a..3d88159c1fb1d 100644
 --- a/ui/views/layout/layout_provider.cc
 +++ b/ui/views/layout/layout_provider.cc
+@@ -6,6 +6,7 @@
+ 
+ #include <algorithm>
+ 
++#include "base/command_line.h"
+ #include "base/containers/fixed_flat_map.h"
+ #include "base/logging.h"
+ #include "ui/base/ui_base_features.h"
 @@ -82,6 +82,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
    DCHECK_GE(metric, VIEWS_DISTANCE_START);
    DCHECK_LT(metric, VIEWS_DISTANCE_END);
@@ -3817,8 +3839,6 @@ index d243aa338748a..04d03068b1a11 100644
 +      }
 +      case ShapeContextTokens::kTextfieldRadius:
 +        return 4.0f; // 2.0f normally, should be 4.0f in Th24
-+      case ShapeContextTokens::kSidePanelContentRadius:
-+        return 16; // 8
 +      case ShapeContextTokens::kContentSeparatorRadius:
 +        return 8;
 +      default:

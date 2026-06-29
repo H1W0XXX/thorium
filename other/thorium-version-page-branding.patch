@@ -32,12 +32,11 @@ index 474768656bdae..7b24d52abb246 100644
  }
 @@ -86,6 +92,7 @@ body {
  
- .version-wide {
-   font-family: monospace;
-+  max-width: auto;
-   padding-inline-start: 5px;
-   vertical-align: bottom;
- }
+.version-wide {
+  font-family: monospace;
+  padding-inline-start: 5px;
+  vertical-align: bottom;
+}
 diff --git a/components/webui/version/resources/about_version.html b/components/webui/version/resources/about_version.html
 index 3b689206909bf..b4eeb06d4f83e 100644
 --- a/components/webui/version/resources/about_version.html

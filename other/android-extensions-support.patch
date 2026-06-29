@@ -24,6 +24,19 @@ index 8385dac71a408..602afb2d200ca 100644
      "IS_CASTOS=$is_castos",
      "IS_CHROMEOS=$is_chromeos",
      "IS_COMPONENT_BUILD=$is_component_build",
+diff --git a/base/allocator/partition_alloc_features.cc b/base/allocator/partition_alloc_features.cc
+index e5d0b4f6aa09d..2527022c7d8f8 100644
+--- a/base/allocator/partition_alloc_features.cc
++++ b/base/allocator/partition_alloc_features.cc
+@@ -177,7 +177,7 @@ BASE_FEATURE_ENUM_PARAM(BackupRefPtrEnabledProcesses,
+                         &kPartitionAllocBackupRefPtr,
+                         kPAFeatureEnabledProcessesStr,
+ // Exception for IS_DESKTOP_ANDROID approved in crbug.com/482155132.
+-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
++#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+                         BackupRefPtrEnabledProcesses::kNonRenderer,
+ #else
+                         BackupRefPtrEnabledProcesses::kAllProcesses,
 diff --git a/base/android/device_info.cc b/base/android/device_info.cc
 index f69a39d59a7e7..ba46c32454577 100644
 --- a/base/android/device_info.cc
@@ -940,11 +953,19 @@ index e7e795e1e7208..640a9073717f1 100644
    // Enables desktop page web prefs for large displays on Android.
    // TODO(crbug.com/433519850): Remove once feature is enabled by default.
 diff --git a/chrome/browser/chrome_browser_interface_binders_webui.cc b/chrome/browser/chrome_browser_interface_binders_webui.cc
-index b636ad2726268..0d060c123edd0 100644
+index b636ad2726268..370bfede7be7c 100644
 --- a/chrome/browser/chrome_browser_interface_binders_webui.cc
 +++ b/chrome/browser/chrome_browser_interface_binders_webui.cc
-@@ -90,7 +90,7 @@
- #endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+@@ -84,13 +84,13 @@
+ #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+ #endif
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ #include "ui/webui/color_change_listener/color_change_handler.h"
+ #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
  
  #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
 -    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)
@@ -952,6 +973,37 @@ index b636ad2726268..0d060c123edd0 100644
  #include "chrome/browser/ui/webui/discards/discards.mojom.h"
  #include "chrome/browser/ui/webui/discards/discards_ui.h"
  #include "chrome/browser/ui/webui/discards/site_data.mojom.h"
+@@ -106,7 +106,7 @@ namespace chrome::internal {
+ using content::RegisterWebUIControllerInterfaceBinder;
+ 
+ namespace {
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ void BindColorChangeListener(
+     content::RenderFrameHost* frame_host,
+     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+@@ -115,7 +115,7 @@ void BindColorChangeListener(
+       ui::ColorChangeHandler::GetOrCreateForCurrentDocument(frame_host);
+   color_change_handler->Bind(std::move(pending_receiver));
+ }
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+ void BindTrackedElementHandler(
+     content::RenderFrameHost* frame_host,
+@@ -278,10 +278,10 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
+   }
+ #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   map->Add<color_change_listener::mojom::PageHandler>(
+       base::BindRepeating(&BindColorChangeListener));
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+ // TODO(b/502297163): Implement for Android.
+ #if BUILDFLAG(ENABLE_WEBUI_NTP) && BUILDFLAG(IS_ANDROID)
 @@ -337,7 +337,7 @@ void PopulateChromeWebUIFrameBinders(
  #endif  // BUILDFLAG(IS_CHROMEOS)
  
@@ -961,6 +1013,32 @@ index b636ad2726268..0d060c123edd0 100644
    RegisterWebUIControllerInterfaceBinder<discards::mojom::DetailsProvider,
                                           DiscardsUI>(map);
  
+@@ -370,10 +370,10 @@ void PopulateTrustedChromeWebUIFrameInterfaceBrokers(
+   PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsDesktop(registry);
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   registry.AddGlobal<color_change_listener::mojom::PageHandler>(
+       base::BindRepeating(&BindColorChangeListener));
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+   registry.AddGlobal<tracked_element::mojom::TrackedElementHandler>(
+       base::BindRepeating(&BindTrackedElementHandler));
+@@ -394,10 +394,10 @@ void PopulateUntrustedChromeWebUIFrameInterfaceBrokers(
+   PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(registry);
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   registry.AddGlobal<color_change_listener::mojom::PageHandler>(
+       base::BindRepeating(&BindColorChangeListener));
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+   registry.AddGlobal<tracked_element::mojom::TrackedElementHandler>(
+       base::BindRepeating(&BindTrackedElementHandler));
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
 index fee5e79b792f4..4c812af1c60ed 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
@@ -2615,6 +2693,15 @@ diff --git a/chrome/browser/ui/prefs/prefs_tab_helper.cc b/chrome/browser/ui/pre
 index 87dc1b8b9a63e..23f95fc4fced8 100644
 --- a/chrome/browser/ui/prefs/prefs_tab_helper.cc
 +++ b/chrome/browser/ui/prefs/prefs_tab_helper.cc
+@@ -66,7 +66,7 @@
+ #endif
+ 
+ #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
+-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
++    BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS_THORIUM)
+ // If a font name in prefs default values starts with a comma, consider it's a
+ // comma-separated font list and resolve it to the first available font.
+ #define PREFS_FONT_LIST 1
 @@ -80,7 +80,7 @@ using content::WebContents;
  
  namespace {
@@ -3511,6 +3598,14 @@ diff --git a/extensions/browser/extension_frame_host.cc b/extensions/browser/ext
 index 85d93336eed85..a3bb85be529e8 100644
 --- a/extensions/browser/extension_frame_host.cc
 +++ b/extensions/browser/extension_frame_host.cc
+@@ -7,6 +7,7 @@
+ #include <string>
+ 
+ #include "base/check.h"
++#include "base/logging.h"
+ #include "base/strings/strcat.h"
+ #include "base/strings/string_number_conversions.h"
+ #include "base/trace_event/typed_macros.h"
 @@ -247,12 +247,20 @@ void ExtensionFrameHost::OpenChannelToExtension(
      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
@@ -4133,3 +4228,129 @@ index 91cc473cde764..cab09724c2a3f 100644
      in_files += [ "md_colors.css" ]
    }
  }
+diff --git a/content/browser/service_worker/service_worker_context_core.h b/content/browser/service_worker/service_worker_context_core.h
+index 63cf887a77aa2..34736a43cf7b2 100644
+--- a/content/browser/service_worker/service_worker_context_core.h
++++ b/content/browser/service_worker/service_worker_context_core.h
+@@ -59,9 +59,9 @@ struct ServiceWorkerContextSynchronousObserverList;
+ class ServiceWorkerHidDelegateObserver;
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ class ServiceWorkerUsbDelegateObserver;
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+ // A smart pointer of `ServiceWorkerClient`.
+ //
+@@ -575,7 +575,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
+       std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer);
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   // In the service worker case, WebUSB is only available in extension service
+   // workers. Limit ServiceWorkerUsbDelegateObserver to platforms that support
+   // extensions.
+@@ -583,7 +583,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
+ 
+   void SetServiceWorkerUsbDelegateObserverForTesting(
+       std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer);
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+  private:
+   friend class ServiceWorkerContextCoreTest;
+@@ -704,9 +704,9 @@ class CONTENT_EXPORT ServiceWorkerContextCore
+   std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer_;
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer_;
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+   base::ObserverList<TestVersionObserver> test_version_observers_;
+ 
+diff --git a/content/browser/service_worker/service_worker_context_core.cc b/content/browser/service_worker/service_worker_context_core.cc
+index d6bfd3c020555..b7cf01786f589 100644
+--- a/content/browser/service_worker/service_worker_context_core.cc
++++ b/content/browser/service_worker/service_worker_context_core.cc
+@@ -1518,7 +1518,7 @@ void ServiceWorkerContextCore::SetServiceWorkerHidDelegateObserverForTesting(
+ }
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ ServiceWorkerUsbDelegateObserver*
+ ServiceWorkerContextCore::usb_delegate_observer() {
+   if (!usb_delegate_observer_) {
+@@ -1532,6 +1532,6 @@ void ServiceWorkerContextCore::SetServiceWorkerUsbDelegateObserverForTesting(
+     std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer) {
+   usb_delegate_observer_ = std::move(usb_delegate_observer);
+ }
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ 
+ }  // namespace content
+diff --git a/content/browser/service_worker/service_worker_version.cc b/content/browser/service_worker/service_worker_version.cc
+index c97a981aeec04..4eb59f792e5e7 100644
+--- a/content/browser/service_worker/service_worker_version.cc
++++ b/content/browser/service_worker/service_worker_version.cc
+@@ -443,12 +443,12 @@ void ServiceWorkerVersion::SetStatus(Status status) {
+         registration_id_, has_hid_event_handlers_);
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+     // Notify the usb delegate observer if the active service worker has any usb
+     // event handlers. This is limited to platforms that support extensions.
+     context_->usb_delegate_observer()->UpdateHasEventHandlers(
+         registration_id_, has_usb_event_handlers_);
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   } else if (status == REDUNDANT) {
+     embedded_worker_->OnWorkerVersionDoomed();
+ 
+diff --git a/content/browser/usb/web_usb_service_impl.cc b/content/browser/usb/web_usb_service_impl.cc
+index c9c7bd0c9bac9..e050d79563051 100644
+--- a/content/browser/usb/web_usb_service_impl.cc
++++ b/content/browser/usb/web_usb_service_impl.cc
+@@ -142,7 +142,7 @@ WebUsbServiceImpl::WebUsbServiceImpl(
+   if (delegate && render_frame_host_) {
+     delegate->AddObserver(GetBrowserContext(), this);
+   } else if (service_worker_version_) {
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+     // For service worker case, it relies on ServiceWorkerUsbDelegateObserver to
+     // be the broker between UsbDelegate and UsbService. This is limited to
+     // platforms that support extensions.
+@@ -154,7 +154,7 @@ WebUsbServiceImpl::WebUsbServiceImpl(
+     }
+ #else
+     NOTREACHED();
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   }
+ }
+ 
+@@ -364,7 +364,7 @@ void WebUsbServiceImpl::SetClient(
+         client) {
+   DCHECK(client);
+   clients_.Add(std::move(client));
+-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+   if (service_worker_version_ && service_worker_version_->context()) {
+     // WebUsbService is expected to have only one DeviceManagerClient when it is
+     // for a service worker. One renderer side of a service worker has its own
+@@ -382,7 +382,7 @@ void WebUsbServiceImpl::SetClient(
+         ->usb_delegate_observer()
+         ->ProcessPendingCallbacks(service_worker_version_.get());
+   }
+-#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
++#endif  // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID_THORIUM)
+ }
+ 
+ void WebUsbServiceImpl::OnPermissionRevoked(const url::Origin& origin) {

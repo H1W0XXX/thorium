@@ -11,10 +11,64 @@ index 66dcefc524411..368d6b766dcf5 100644
    }
  
 diff --git a/components/browsing_data/content/browsing_data_model.cc b/components/browsing_data/content/browsing_data_model.cc
-index 8b130bc3a328f..5d19636e48967 100644
+index 8b130bc3a328f..c2c52b67c938a 100644
 --- a/components/browsing_data/content/browsing_data_model.cc
 +++ b/components/browsing_data/content/browsing_data_model.cc
-@@ -995,12 +995,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
+@@ -54,8 +54,6 @@ namespace {
+ // imperceptible, but non-0 amount of space, such as Trust Tokens.
+ constexpr int kSmallAmountOfDataInBytes = 100;
+ 
+-// An estimate of storage size of an Interest Group object.
+-constexpr int kModerateAmountOfDataInBytes = 1024;
+ 
+ // Visitor which returns the appropriate data owner for a given `data_key`
+ // and `storage_type`.
+@@ -471,44 +469,6 @@ void OnSharedStorageLoaded(
+   std::move(loaded_callback).Run();
+ }
+ 
+-void OnInterestGroupsLoaded(
+-    BrowsingDataModel* model,
+-    base::OnceClosure loaded_callback,
+-    std::vector<content::InterestGroupManager::InterestGroupDataKey>
+-        interest_groups) {
+-  for (const auto& data_key : interest_groups) {
+-    model->AddBrowsingData(data_key,
+-                           BrowsingDataModel::StorageType::kInterestGroup,
+-                           kModerateAmountOfDataInBytes);
+-  }
+-  std::move(loaded_callback).Run();
+-}
+-
+-void OnAttributionReportingLoaded(
+-    BrowsingDataModel* model,
+-    base::OnceClosure loaded_callback,
+-    std::set<content::AttributionDataModel::DataKey> attribution_reporting) {
+-  for (const auto& data_key : attribution_reporting) {
+-    model->AddBrowsingData(
+-        data_key, BrowsingDataModel::StorageType::kAttributionReporting,
+-        kSmallAmountOfDataInBytes);
+-  }
+-  std::move(loaded_callback).Run();
+-}
+-
+-void OnPrivateAggregationLoaded(
+-    BrowsingDataModel* model,
+-    base::OnceClosure loaded_callback,
+-    std::set<content::PrivateAggregationDataModel::DataKey>
+-        private_aggregation) {
+-  for (const auto& data_key : private_aggregation) {
+-    model->AddBrowsingData(data_key,
+-                           BrowsingDataModel::StorageType::kPrivateAggregation,
+-                           kSmallAmountOfDataInBytes);
+-  }
+-  std::move(loaded_callback).Run();
+-}
+-
+ void OnQuotaStorageLoaded(
+     BrowsingDataModel* model,
+     base::OnceClosure loaded_callback,
+@@ -995,12 +955,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
        base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
    bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
        network::features::kCompressionDictionaryTransport);
@@ -27,7 +81,7 @@ index 8b130bc3a328f..5d19636e48967 100644
  
    base::RepeatingClosure completion =
        base::BindRepeating([](const base::OnceClosure&) {},
-@@ -1037,27 +1031,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
+@@ -1037,27 +991,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
          base::BindOnce(&OnSharedDictionaryUsageLoaded, this, completion));
    }
  
@@ -145,10 +199,44 @@ index 90e887eef88c6..688fd654b5449 100644
  
  PrivacySandboxSettingsImpl::Status
 diff --git a/content/browser/attribution_reporting/attribution_suitable_context.cc b/content/browser/attribution_reporting/attribution_suitable_context.cc
-index 12f09023269e2..3e75e63a5982d 100644
+index 12f09023269e2..3226fce7668d4 100644
 --- a/content/browser/attribution_reporting/attribution_suitable_context.cc
 +++ b/content/browser/attribution_reporting/attribution_suitable_context.cc
-@@ -44,82 +44,13 @@ bool UkmSourceIdAllowed(RenderFrameHostImpl* rfh) {
+@@ -10,116 +10,25 @@
+ #include <tuple>
+ #include <utility>
+ 
+-#include "base/check.h"
+-#include "base/feature_list.h"
+ #include "base/memory/weak_ptr.h"
+-#include "components/attribution_reporting/features.h"
+ #include "components/attribution_reporting/suitable_origin.h"
+ #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+-#include "content/browser/attribution_reporting/attribution_host.h"
+ #include "content/browser/attribution_reporting/attribution_input_event.h"
+-#include "content/browser/attribution_reporting/attribution_manager.h"
+-#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+-#include "content/browser/renderer_host/policy_container_host.h"
+-#include "content/browser/renderer_host/render_frame_host_impl.h"
+-#include "content/browser/web_contents/web_contents_impl.h"
+ #include "content/public/browser/navigation_handle.h"
+-#include "content/public/browser/render_frame_host.h"
+ #include "services/metrics/public/cpp/ukm_source_id.h"
+-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+ 
+ namespace content {
+ 
+-namespace {
+-
+-using attribution_reporting::SuitableOrigin;
+-
+-bool UkmSourceIdAllowed(RenderFrameHostImpl* rfh) {
+-  return rfh->GetLifecycleState() !=
+-         RenderFrameHost::LifecycleState::kPrerendering;
+-}
+-
+-}  // namespace
+-
  // static
  std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
      NavigationHandle* navigation_handle) {

@@ -809,12 +809,12 @@ index 0000000000000..fee68f1b19ce2
 +
 +namespace {
 +
-+base::Value::Dict NetLogFtpCtrlResponseParams(const FtpCtrlResponse* response) {
-+  base::Value::List lines;
++base::DictValue NetLogFtpCtrlResponseParams(const FtpCtrlResponse* response) {
++  base::ListValue lines;
 +  for (const auto& line : response->lines)
 +    lines.Append(NetLogStringValue(line));
 +
-+  base::Value::Dict dict;
++  base::DictValue dict;
 +  dict.Set("status_code", response->status_code);
 +  dict.Set("lines", std::move(lines));
 +  return dict;
@@ -4706,7 +4706,8 @@ index 0000000000000..ba989bd3ae344
 +    DCHECK_EQ(request_->context()->proxy_resolution_service(),
 +              proxy_resolution_service_);
 +    rv = proxy_resolution_service_->ResolveProxy(
-+        request_->url(), "GET", NetworkAnonymizationKey(), &proxy_info_,
++        request_->url(), "GET", NetworkAnonymizationKey(),
++        request_->target_network(), &proxy_info_,
 +        base::BindOnce(&URLRequestFtpJob::OnResolveProxyComplete,
 +                       base::Unretained(this)),
 +        &proxy_resolve_request_, request_->net_log(), request_->priority());
@@ -5396,13 +5397,13 @@ index 0000000000000..73d3eddbd8c0d
 +      base::UnescapeURLComponent(gurl.path(), unescape_rules);
 +  const std::string header =
 +      net::GetDirectoryListingHeader(ConvertPathToUTF16(unescaped_path));
-+  output->Append(base::span<const char>(header.data(), header.size()));
++  output->Append(base::as_byte_span(header));
 +
 +  // If this isn't top level directory (i.e. the path isn't "/",)
 +  // add a link to the parent directory.
 +  if (gurl.path().length() > 1) {
 +    const std::string link = net::GetParentDirectoryLink();
-+    output->Append(base::span<const char>(link.data(), link.size()));
++    output->Append(base::as_byte_span(link));
 +  }
 +
 +  std::string flatten;
@@ -5417,7 +5418,7 @@ index 0000000000000..73d3eddbd8c0d
 +#endif
 +  if (rv != net::OK) {
 +    const std::string script = "<script>onListingParsingError();</script>\n";
-+    output->Append(base::span<const char>(script.data(), script.size()));
++    output->Append(base::as_byte_span(script));
 +    return output;
 +  }
 +  for (const net::FtpDirectoryListingEntry& entry : entries) {
@@ -5433,8 +5434,7 @@ index 0000000000000..73d3eddbd8c0d
 +        entry.type == net::FtpDirectoryListingEntry::FILE ? entry.size : 0);
 +    std::string entry_string = net::GetDirectoryListingEntry(
 +        entry.name, entry.raw_name, is_directory, size, entry.last_modified);
-+    output->Append(
-+        base::span<const char>(entry_string.data(), entry_string.size()));
++    output->Append(base::as_byte_span(entry_string));
 +  }
 +
 +  return output;

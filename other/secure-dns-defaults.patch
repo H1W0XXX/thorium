@@ -18,7 +18,7 @@ index e5a2aadcc85f6..3ce7e0d2088fd 100644
  }
  
 diff --git a/chrome/browser/net/stub_resolver_config_reader.cc b/chrome/browser/net/stub_resolver_config_reader.cc
-index 3d9047c1cf558..49bee0a177409 100644
+index 3d9047c1cf558..444429525ca4a 100644
 --- a/chrome/browser/net/stub_resolver_config_reader.cc
 +++ b/chrome/browser/net/stub_resolver_config_reader.cc
 @@ -1,4 +1,4 @@
@@ -27,7 +27,41 @@ index 3d9047c1cf558..49bee0a177409 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
-@@ -238,42 +238,11 @@ void StubResolverConfigReader::UpdateNetworkService(bool record_metrics) {
+@@ -20,12 +20,10 @@
+ #include "base/values.h"
+ #include "build/build_config.h"
+ #include "build/chromeos_buildflags.h"
+-#include "chrome/browser/browser_process.h"
+ #include "chrome/browser/net/default_dns_over_https_config_source.h"
+ #include "chrome/browser/net/dns_over_https_config_source.h"
+ #include "chrome/browser/net/secure_dns_config.h"
+ #include "chrome/browser/net/secure_dns_util.h"
+-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+ #include "chrome/common/chrome_features.h"
+ #include "chrome/common/pref_names.h"
+ #include "components/prefs/pref_registry_simple.h"
+@@ -46,20 +44,13 @@
+ #endif
+ 
+ #if BUILDFLAG(IS_WIN)
+-#include "base/enterprise_util.h"
+ #include "base/scoped_native_library.h"
+-#include "base/win/win_util.h"
+ #include "base/win/windows_version.h"
+-#include "chrome/browser/win/parental_controls.h"
+ #endif
+ 
+ namespace {
+ 
+ #if BUILDFLAG(IS_WIN)
+-bool ShouldDisableDohForWindowsParentalControls() {
+-  return GetWinParentalControls().web_filter;
+-}
+-
+ // Defines the base::Feature for controlling the ZTDNS check.
+ BASE_FEATURE(kZeroTrustDNS, base::FEATURE_ENABLED_BY_DEFAULT);
+ 
+@@ -238,42 +229,11 @@ void StubResolverConfigReader::UpdateNetworkService(bool record_metrics) {
  }
  
  bool StubResolverConfigReader::ShouldDisableDohForManaged() {

@@ -1,15 +1,7 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 2288e24a..87089bf1 100644
+index 2288e24a..9c3b6792 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -195,6 +195,7 @@ static_library("libyuv_internal") {
-     # Enable optimize for speed (-O2) over size (-Os).
-     configs += [ "//build/config/compiler:optimize_max" ]
-   }
-+  configs -= [ "//build/config/compiler:thorium_simd_optimization" ]
- 
-   # To enable AVX2 or other cpu optimization, pass flag here
-   if (!is_win) {
 @@ -209,6 +210,7 @@ static_library("libyuv_internal") {
  
  if (libyuv_use_neon) {

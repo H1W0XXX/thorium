@@ -1,5 +1,5 @@
 diff --git a/components/download/internal/common/base_file.cc b/components/download/internal/common/base_file.cc
-index fc570b5d32d35..cbc0ff74512a8 100644
+index fc570b5d32d35..02de6067a6e26 100644
 --- a/components/download/internal/common/base_file.cc
 +++ b/components/download/internal/common/base_file.cc
 @@ -1,4 +1,4 @@
@@ -16,7 +16,7 @@ index fc570b5d32d35..cbc0ff74512a8 100644
  #include "crypto/hash.h"
  #include "crypto/secure_hash.h"
  
-@@ -543,84 +542,10 @@ DownloadInterruptReason BaseFile::PublishDownload() {
+@@ -543,94 +542,10 @@ DownloadInterruptReason BaseFile::PublishDownload() {
  }
  #endif  // BUILDFLAG(IS_ANDROID)
  
@@ -98,11 +98,21 @@ index fc570b5d32d35..cbc0ff74512a8 100644
 -  quarantine_service_.reset();
 -  std::move(on_annotation_done_callback_)
 -      .Run(QuarantineFileResultToReason(result));
+-}
+-
+-void BaseFile::OnQuarantineServiceError(const GURL& source_url,
+-                                        const GURL& referrer_url) {
+-#if BUILDFLAG(IS_WIN)
+-  OnFileQuarantined(quarantine::SetInternetZoneIdentifierDirectly(
+-      full_path_, source_url, referrer_url));
+-#else   // !BUILDFLAG(IS_WIN)
+-  NOTREACHED() << "In-process quarantine service should not have failed.";
+-#endif  // !BUILDFLAG(IS_WIN)
 +  return source_url;
  }
  
- void BaseFile::OnQuarantineServiceError(const GURL& source_url,
-@@ -640,32 +565,7 @@ void BaseFile::AnnotateWithSourceInformation(
+ void BaseFile::AnnotateWithSourceInformation(
+@@ -640,32 +555,7 @@ void BaseFile::AnnotateWithSourceInformation(
      const std::optional<url::Origin>& request_initiator,
      mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
      OnAnnotationDoneCallback on_annotation_done_callback) {
@@ -136,6 +146,46 @@ index fc570b5d32d35..cbc0ff74512a8 100644
  }
  
  }  // namespace download
+diff --git a/components/download/public/common/base_file.h b/components/download/public/common/base_file.h
+index d46c5c570d6cf..4a4c518e33de6 100644
+--- a/components/download/public/common/base_file.h
++++ b/components/download/public/common/base_file.h
+@@ -26,7 +26,6 @@
+ #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
+ #include "crypto/secure_hash.h"
+ #include "mojo/public/cpp/bindings/pending_remote.h"
+-#include "mojo/public/cpp/bindings/remote.h"
+ #include "net/base/net_errors.h"
+ #include "url/gurl.h"
+ #include "url/origin.h"
+@@ -271,14 +270,6 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
+                                              int os_error,
+                                              DownloadInterruptReason reason);
+ 
+-  // Callback invoked when quarantine service has an error.
+-  void OnQuarantineServiceError(const GURL& source_url,
+-                                const GURL& referrer_url);
+-
+-  // Callback invoked by quarantine service. Also called by
+-  // OnQuarantineServiceError after manually applying mark-of-the-web.
+-  void OnFileQuarantined(quarantine::mojom::QuarantineFileResult result);
+-
+   // Full path to the file including the file name.
+   base::FilePath full_path_;
+ 
+@@ -306,12 +297,6 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
+   // ID of the download, used for trace events.
+   uint32_t download_id_;
+ 
+-  // Mojo remote for quarantine service.
+-  mojo::Remote<quarantine::mojom::Quarantine> quarantine_service_;
+-
+-  // Callback invoked after quarantine service finishes.
+-  OnAnnotationDoneCallback on_annotation_done_callback_;
+-
+   SEQUENCE_CHECKER(sequence_checker_);
+ 
+   base::WeakPtrFactory<BaseFile> weak_factory_{this};
 diff --git a/content/browser/BUILD.gn b/content/browser/BUILD.gn
 index d5d3ddea66a6f..6b34e149fe700 100644
 --- a/content/browser/BUILD.gn

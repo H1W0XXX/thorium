@@ -482,7 +482,7 @@ index 0000000000000..572f5522d8955
 +
 +#endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_H_
 diff --git a/chrome/browser/download/download_ui_controller.cc b/chrome/browser/download/download_ui_controller.cc
-index fa41c5a267ca5..a6081634377a2 100644
+index fa41c5a267ca5..9192b1646c474 100644
 --- a/chrome/browser/download/download_ui_controller.cc
 +++ b/chrome/browser/download/download_ui_controller.cc
 @@ -1,4 +1,4 @@
@@ -491,7 +491,7 @@ index fa41c5a267ca5..a6081634377a2 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
-@@ -33,6 +33,8 @@
+@@ -33,18 +33,23 @@
  #include "content/public/common/content_features.h"
  #else
  #include "chrome/browser/profiles/profile.h"
@@ -500,7 +500,11 @@ index fa41c5a267ca5..a6081634377a2 100644
  #include "chrome/browser/ui/browser_tabstrip.h"
  #include "chrome/browser/ui/browser_window.h"
  #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-@@ -43,8 +45,10 @@
+ #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
++#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+ #include "chrome/browser/ui/tabs/tab_strip_model.h"
+ #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
+ #include "extensions/browser/extension_util.h"
  #endif
  
  #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -511,7 +515,7 @@ index fa41c5a267ca5..a6081634377a2 100644
  #endif
  
  #if BUILDFLAG(IS_CHROMEOS)
-@@ -58,6 +62,8 @@
+@@ -58,6 +63,8 @@
  
  namespace {
  
@@ -520,7 +524,7 @@ index fa41c5a267ca5..a6081634377a2 100644
  #if BUILDFLAG(IS_ANDROID)
  
  class AndroidUIControllerDelegate : public DownloadUIController::Delegate {
-@@ -87,6 +93,71 @@ void InitializeDownloadBubbleUpdateService(Profile* profile,
+@@ -87,6 +94,76 @@ void InitializeDownloadBubbleUpdateService(Profile* profile,
    download_bubble_update_service->Initialize(manager);
  }
  
@@ -577,7 +581,12 @@ index fa41c5a267ca5..a6081634377a2 100644
 +  // As a last resort, use the last active browser for this profile. Not ideal,
 +  // but better than not showing the download at all.
 +  if (browser == nullptr) {
-+    browser = chrome::FindLastActiveWithProfile(profile_);
++    BrowserWindowInterface* last_active_browser =
++        ProfileBrowserCollection::GetForProfile(profile_)
++            ->GetLastActiveBrowser();
++    browser = last_active_browser
++                  ? last_active_browser->GetBrowserForMigrationOnly()
++                  : nullptr;
 +  }
 +
 +  if (browser && browser->window() && browser->window()->GetDownloadShelf() &&
@@ -592,7 +601,7 @@ index fa41c5a267ca5..a6081634377a2 100644
  class DownloadBubbleUIControllerDelegate
      : public DownloadUIController::Delegate {
   public:
-@@ -173,8 +244,12 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
+@@ -173,8 +250,12 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
  #if BUILDFLAG(IS_CHROMEOS)
      delegate_ = std::make_unique<DownloadNotificationManager>(profile);
  #else
@@ -851,8 +860,8 @@ index a1575736b1f8e..67b33bfcee75a 100644
          ->GetDownloadDisplayController()
          ->HideBubble();
    }
-+  if (browser->window() && browser->window()->IsDownloadShelfVisible()) {
-+    browser->window()->GetDownloadShelf()->Close();
++  if (browser_window && browser_window->IsDownloadShelfVisible()) {
++    browser_window->GetDownloadShelf()->Close();
 +  }
  #endif
    ShowSingletonTabOverwritingNTP(browser, GURL(kChromeUIDownloadsURL));
@@ -1295,6 +1304,7 @@ index 0000000000000..25d6421c12f4b
 +#include "ui/views/controls/label.h"
 +#include "ui/views/controls/progress_ring_utils.h"
 +#include "ui/views/controls/styled_label.h"
++#include "ui/views/property_effects.h"
 +#include "ui/views/style/typography.h"
 +#include "ui/views/style/typography_provider.h"
 +#include "ui/views/vector_icons.h"
@@ -2267,6 +2277,7 @@ index 0000000000000..25d6421c12f4b
 +    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
 +    case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
 +    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
++    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_ONEDRIVE:
 +    case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
 +    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
 +    case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
@@ -2414,10 +2425,10 @@ index 0000000000000..25d6421c12f4b
 +  const ui::ColorProvider* cp = GetColorProvider();
 +  views::SetImageFromVectorIconWithColor(
 +      dropdown_button_,
-+      dropdown_pressed_ ? vector_icons::kCaretDownIcon
-+                        : vector_icons::kCaretUpIcon,
-+      cp->GetColor(kColorToolbarButtonIcon),
-+      cp->GetColor(kColorToolbarButtonIconInactive));
++      dropdown_pressed_ ? vector_icons::kCaretDownOldIcon
++                        : vector_icons::kCaretUpOldIcon,
++      views::IconColors(cp->GetColor(kColorToolbarButtonIcon),
++                        cp->GetColor(kColorToolbarButtonIconInactive)));
 +  dropdown_button_->SizeToPreferredSize();
 +}
 +
@@ -2947,7 +2958,7 @@ index 0000000000000..06a399a26559f
 +          web_contents,
 +          base::Milliseconds(600),
 +          ui::ImageModel::FromVectorIcon(
-+              kFileDownloadShelfIcon,
++              kDownloadIcon,
 +              kColorDownloadStartedAnimationForeground,
 +              72)) {}
 +
@@ -3364,9 +3375,9 @@ index 0000000000000..f1e6c6e3e5428
 +
 +  const ui::ColorProvider* cp = GetColorProvider();
 +  views::SetImageFromVectorIconWithColor(
-+      close_button_, vector_icons::kCloseRoundedIcon,
-+      cp->GetColor(kColorDownloadShelfButtonIcon),
-+      cp->GetColor(kColorDownloadShelfButtonIconDisabled));
++      close_button_, vector_icons::kCloseRoundedOldIcon,
++      views::IconColors(cp->GetColor(kColorDownloadShelfButtonIcon),
++                        cp->GetColor(kColorDownloadShelfButtonIconDisabled)));
 +}
 +
 +views::View* DownloadShelfView::GetDefaultFocusableChild() {
@@ -4070,6 +4081,7 @@ index 0000000000000..fc7bafdbfab71
 +#include "ui/base/window_open_disposition_utils.h"
 +#include "ui/views/controls/button/md_text_button.h"
 +#include "ui/views/controls/styled_label.h"
++#include "ui/views/property_effects.h"
 +#include "ui/views/window/dialog_delegate.h"
 +
 +namespace safe_browsing {
@@ -4188,6 +4200,7 @@ index 0000000000000..15b16719f004e
 +#include "ui/base/mojom/dialog_button.mojom.h"
 +#include "ui/base/ui_base_types.h"
 +#include "ui/views/controls/styled_label.h"
++#include "ui/views/property_effects.h"
 +#include "ui/views/window/dialog_delegate.h"
 +
 +namespace content {

@@ -1401,7 +1401,7 @@ index 63985d1fed4c9..75fda623256d5 100644
 -            features::IsRoundedIconsEnabled() ? vector_icons::kAddWeight500Icon
 -                                              : vector_icons::kAddOldIcon,
 +            features::IsThorium2024()
-+                ? kAddIcon
++                ? vector_icons::kAddOldIcon
 +                : features::IsRoundedIconsEnabled()
 +                    ? vector_icons::kAddWeight500Icon
 +                    : vector_icons::kAddOldIcon,

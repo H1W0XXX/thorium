@@ -17,9 +17,14 @@ index 3c310d91b5591..5d982ca610494 100644
  }
  
  bool IsFeatureSupportedOnChannel(const LabInfo& lab) {
-@@ -140,7 +140,8 @@ bool AreNewChromeLabsExperimentsAvailable(Profile* profile) {
+@@ -140,7 +140,13 @@ bool AreNewChromeLabsExperimentsAvailable(Profile* profile) {
  
  bool IsChromeLabsEnabled() {
++  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
++          "disable-chrome-labs")) {
++    return false;
++  }
++
    // Always early out on the stable channel regardless of other conditions.
 -  if (chrome::GetChannel() == version_info::Channel::STABLE) {
 +  if (chrome::GetChannel() == version_info::Channel::STABLE &&
@@ -27,7 +32,7 @@ index 3c310d91b5591..5d982ca610494 100644
      return false;
    }
    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-@@ -160,7 +161,7 @@ bool IsChromeLabsEnabled() {
+@@ -160,7 +166,7 @@ bool IsChromeLabsEnabled() {
    }
  
    // The percentage of users that should see the feature.

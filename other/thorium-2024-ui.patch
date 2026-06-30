@@ -1383,7 +1383,7 @@ index f829637e45840..ba2527b8315c9 100644
    caption_button_container_->SetBounds(
        CaptionButtonsOnLeadingEdge()
 diff --git a/chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.cc b/chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.cc
-index 63985d1fed4c9..75fda623256d5 100644
+index 63985d1fed4c9..c31f93b7ae51c 100644
 --- a/chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.cc
 +++ b/chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.cc
 @@ -10,6 +10,7 @@

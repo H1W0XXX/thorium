@@ -159,6 +159,47 @@ const FeatureEntry::Choice kCloseWindowWithLastTab[] = {
      "never"},
 };
 
+constexpr FeatureEntry::FeatureParam kHoverActivateTab250ms[] = {
+    {"hover_delay_ms", "250"}};
+constexpr FeatureEntry::FeatureParam kHoverActivateTab500ms[] = {
+    {"hover_delay_ms", "500"}};
+constexpr FeatureEntry::FeatureParam kHoverActivateTab750ms[] = {
+    {"hover_delay_ms", "750"}};
+constexpr FeatureEntry::FeatureParam kHoverActivateTab1000ms[] = {
+    {"hover_delay_ms", "1000"}};
+
+constexpr FeatureEntry::FeatureVariation kHoverActivateTabVariations[] = {
+    {"250ms delay", kHoverActivateTab250ms, std::size(kHoverActivateTab250ms),
+     nullptr},
+    {"500ms delay (default)", kHoverActivateTab500ms,
+     std::size(kHoverActivateTab500ms), nullptr},
+    {"750ms delay", kHoverActivateTab750ms, std::size(kHoverActivateTab750ms),
+     nullptr},
+    {"1000ms delay", kHoverActivateTab1000ms,
+     std::size(kHoverActivateTab1000ms), nullptr}};
+
+constexpr FeatureEntry::FeatureParam kOpenBookmarksInNewTabForeground[] = {
+    {"mode", "foreground"}};
+constexpr FeatureEntry::FeatureParam kOpenBookmarksInNewTabBackground[] = {
+    {"mode", "background"}};
+
+constexpr FeatureEntry::FeatureVariation kOpenBookmarksInNewTabVariations[] = {
+    {"Open in foreground tab (default)", kOpenBookmarksInNewTabForeground,
+     std::size(kOpenBookmarksInNewTabForeground), nullptr},
+    {"Open in background tab", kOpenBookmarksInNewTabBackground,
+     std::size(kOpenBookmarksInNewTabBackground), nullptr}};
+
+constexpr FeatureEntry::FeatureParam kOpenOmniboxUrlInNewTabForeground[] = {
+    {"mode", "foreground"}};
+constexpr FeatureEntry::FeatureParam kOpenOmniboxUrlInNewTabBackground[] = {
+    {"mode", "background"}};
+
+constexpr FeatureEntry::FeatureVariation kOpenOmniboxUrlInNewTabVariations[] = {
+    {"Open in foreground tab (default)", kOpenOmniboxUrlInNewTabForeground,
+     std::size(kOpenOmniboxUrlInNewTabForeground), nullptr},
+    {"Open in background tab", kOpenOmniboxUrlInNewTabBackground,
+     std::size(kOpenOmniboxUrlInNewTabBackground), nullptr}};
+
 #if BUILDFLAG(IS_LINUX)
 const FeatureEntry::Choice kPasswordStoreChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},

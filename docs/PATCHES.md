@@ -40,9 +40,14 @@ overlay-derived, or still need separate provenance review.
 | [`add-flag-for-close-confirmation.patch`](../other/add-flag-for-close-confirmation.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) close confirmation flag patch |
 | [`add-flag-to-close-window-with-last-tab.patch`](../other/add-flag-to-close-window-with-last-tab.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) close-window-with-last-tab flag patch, adapted to Thorium behavior |
 | [`add-flag-to-scroll-tabs.patch`](../other/add-flag-to-scroll-tabs.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) scroll-tabs flag patch |
+| [`add-flag-for-right-click-close-tab.patch`](../other/add-flag-for-right-click-close-tab.patch) | Ported from local `chromium-unstable` history; right-click closes tabs while Shift+right-click keeps the context menu |
+| [`add-flag-for-hover-activate-tab.patch`](../other/add-flag-for-hover-activate-tab.patch) | Ported from local `chromium-unstable` history; hover-to-activate tab behavior |
+| [`add-flag-for-open-bookmarks-in-new-tab.patch`](../other/add-flag-for-open-bookmarks-in-new-tab.patch) | Ported from local `chromium-unstable` history; bookmark foreground/background new-tab behavior |
+| [`add-flag-for-open-omnibox-url-in-new-tab.patch`](../other/add-flag-for-open-omnibox-url-in-new-tab.patch) | Ported from local `chromium-unstable` history; omnibox foreground/background new-tab behavior |
 | [`add-flag-for-custom-ntp.patch`](../other/add-flag-for-custom-ntp.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) custom NTP flag patch |
 | [`add-flag-for-tab-hover-cards.patch`](../other/add-flag-for-tab-hover-cards.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) tab hover cards flag patch |
 | [`add-flag-to-keep-all-history.patch`](../other/add-flag-to-keep-all-history.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) disable local history expiration flag patch |
+| [`add-flag-to-clear-data-on-exit.patch`](../other/add-flag-to-clear-data-on-exit.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) clear-data-on-exit flag patch |
 | [`disable-download-quarantine.patch`](../other/disable-download-quarantine.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) disable download quarantine patch |
 | [`keep-expired-flags.patch`](../other/keep-expired-flags.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) keep expired flags patch |
 | [`allow_manifest_v2_extensions.patch`](../other/allow_manifest_v2_extensions.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) Manifest V2 extension support patch |
@@ -148,6 +153,10 @@ overlay-derived, or still need separate provenance review.
 - [`add-flag-for-close-confirmation.patch`](../other/add-flag-for-close-confirmation.patch)
 - [`add-flag-to-close-window-with-last-tab.patch`](../other/add-flag-to-close-window-with-last-tab.patch)
 - [`add-flag-to-scroll-tabs.patch`](../other/add-flag-to-scroll-tabs.patch)
+- [`add-flag-for-right-click-close-tab.patch`](../other/add-flag-for-right-click-close-tab.patch)
+- [`add-flag-for-hover-activate-tab.patch`](../other/add-flag-for-hover-activate-tab.patch)
+- [`add-flag-for-open-bookmarks-in-new-tab.patch`](../other/add-flag-for-open-bookmarks-in-new-tab.patch)
+- [`add-flag-for-open-omnibox-url-in-new-tab.patch`](../other/add-flag-for-open-omnibox-url-in-new-tab.patch)
 - [`add-flag-for-custom-ntp.patch`](../other/add-flag-for-custom-ntp.patch)
 - [`add-flag-for-tab-hover-cards.patch`](../other/add-flag-for-tab-hover-cards.patch)
 - [`force-disable-tab-outlines.patch`](../other/force-disable-tab-outlines.patch)
@@ -157,6 +166,7 @@ overlay-derived, or still need separate provenance review.
 - [`reduce-doh-request-headers.patch`](../other/reduce-doh-request-headers.patch)
 - [`disable-alternate-error-pages-by-default.patch`](../other/disable-alternate-error-pages-by-default.patch)
 - [`add-flag-to-keep-all-history.patch`](../other/add-flag-to-keep-all-history.patch)
+- [`add-flag-to-clear-data-on-exit.patch`](../other/add-flag-to-clear-data-on-exit.patch)
 - [`enable-parallel-downloading-by-default.patch`](../other/enable-parallel-downloading-by-default.patch)
 - [`disable-background-mode-by-default.patch`](../other/disable-background-mode-by-default.patch)
 - [`thorium-dino-game.patch`](../other/thorium-dino-game.patch)

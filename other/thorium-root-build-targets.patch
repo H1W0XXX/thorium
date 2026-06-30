@@ -1,5 +1,5 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 6fb99965414bf..2caaceb1a6830 100644
+index 6fb99965414bf..60980504b38d3 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
 @@ -1,4 +1,4 @@
@@ -107,7 +107,7 @@ index 6fb99965414bf..2caaceb1a6830 100644
 +    if (current_cpu == "arm") {
 +      deps += [ "//android_webview:system_webview_apk" ]
 +    } else if (current_cpu == "arm64") {
-+      deps += [ "//android_webview:system_webview_64_apk" ]
++      deps += [ "//android_webview:system_webview_apk" ]
 +    }
 +  }
 +  public_deps = deps

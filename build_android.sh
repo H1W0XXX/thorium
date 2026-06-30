@@ -66,12 +66,12 @@ buildARM64 () {
 	printf "${YEL}Note: You may want ADB installed.${c0}\n" &&
 	printf "\n" &&
 
-	# Build Thorium, Thorium Shell, and System WebView64.
+	# Build Thorium, Thorium Shell, and the ABI-matched System WebView.
 	export NINJA_SUMMARIZE_BUILD=1 &&
 	export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] " &&
 
 	cd ${CR_SRC_DIR} &&
-	autoninja -C out/thorium chrome_public_apk content_shell_apk system_webview_64_apk -j${cr_build_jobs} &&
+	autoninja -C out/thorium chrome_public_apk content_shell_apk system_webview_apk -j${cr_build_jobs} &&
 	printf "\n" &&
 	cat ~/thorium/logos/thorium_logo_ascii_art.txt &&
 	printf "\n" &&
@@ -112,7 +112,7 @@ buildX64 () {
 	printf "${YEL}Note: You may want ADB installed.${c0}\n" &&
 	printf "\n" &&
 
-	# Build Thorium, Thorium Shell, and System WebView x64.
+	# Build Thorium, Thorium Shell, and the ABI-matched System WebView.
 	export NINJA_SUMMARIZE_BUILD=1 &&
 	export NINJA_STATUS="[%r processes, %f/%t @ %o/s | %e sec. ] " &&
 

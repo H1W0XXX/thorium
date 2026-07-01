@@ -212,22 +212,23 @@ index b4757546d8fc2..39eb4cf98d6d7 100644
    // Try to read the path using the Chromium-specific registry for Chromium.
    // If that fails, fallback to Chrome-specific registry key below.
 diff --git a/chrome/browser/resources/downloads/item.css b/chrome/browser/resources/downloads/item.css
-index 7e38038946592..66d358e813d29 100644
+index 7e38038946592..77cde1ad94857 100644
 --- a/chrome/browser/resources/downloads/item.css
 +++ b/chrome/browser/resources/downloads/item.css
-@@ -274,6 +274,11 @@ cr-button {
-   flex-wrap: nowrap;
+@@ -275,6 +275,12 @@ cr-button {
    margin-top: 6px;
  }
+ 
 +#url {
 +  display: block;
 +  max-width: 100%;
 +  overflow-wrap: anywhere;
 +}
- 
++
  :host-context([dir=rtl]) #name {
    direction: ltr;
-@@ -341,7 +346,7 @@ cr-button {
+ }
+@@ -341,7 +347,7 @@ cr-button {
    --cr-icon-button-icon-size: 20px;
    --cr-icon-button-margin-end: 0;
    --cr-icon-button-margin-start: 0;

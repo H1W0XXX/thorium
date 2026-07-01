@@ -29,7 +29,7 @@ index 1466c54bc0364..282691e5cfb63 100644
  BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
  
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index dba4f54caa781..49f0b318c36a8 100644
+index dba4f54caa781..1e02381713739 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -23,6 +23,7 @@
@@ -85,7 +85,7 @@ index dba4f54caa781..49f0b318c36a8 100644
 +                                           CloseTabSource::kFromMouse);
 +              }
 +            },
-+            weak_factory_.GetWeakPtr()));
++            weak_ptr_factory_.GetWeakPtr()));
 +
 +    // Keep suppress_context_menu_ set so the context menu controller ignores
 +    // the matching release event.

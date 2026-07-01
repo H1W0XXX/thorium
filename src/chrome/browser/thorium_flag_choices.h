@@ -159,46 +159,49 @@ const FeatureEntry::Choice kCloseWindowWithLastTab[] = {
      "never"},
 };
 
-constexpr FeatureEntry::FeatureParam kHoverActivateTab250ms[] = {
+constexpr flags_ui::FeatureEntry::FeatureParam kHoverActivateTab250ms[] = {
     {"hover_delay_ms", "250"}};
-constexpr FeatureEntry::FeatureParam kHoverActivateTab500ms[] = {
+constexpr flags_ui::FeatureEntry::FeatureParam kHoverActivateTab500ms[] = {
     {"hover_delay_ms", "500"}};
-constexpr FeatureEntry::FeatureParam kHoverActivateTab750ms[] = {
+constexpr flags_ui::FeatureEntry::FeatureParam kHoverActivateTab750ms[] = {
     {"hover_delay_ms", "750"}};
-constexpr FeatureEntry::FeatureParam kHoverActivateTab1000ms[] = {
+constexpr flags_ui::FeatureEntry::FeatureParam kHoverActivateTab1000ms[] = {
     {"hover_delay_ms", "1000"}};
 
-constexpr FeatureEntry::FeatureVariation kHoverActivateTabVariations[] = {
-    {"250ms delay", kHoverActivateTab250ms, std::size(kHoverActivateTab250ms),
-     nullptr},
-    {"500ms delay (default)", kHoverActivateTab500ms,
-     std::size(kHoverActivateTab500ms), nullptr},
-    {"750ms delay", kHoverActivateTab750ms, std::size(kHoverActivateTab750ms),
-     nullptr},
-    {"1000ms delay", kHoverActivateTab1000ms,
-     std::size(kHoverActivateTab1000ms), nullptr}};
+constexpr flags_ui::FeatureEntry::FeatureVariation
+    kHoverActivateTabVariations[] = {
+    {"250ms delay", kHoverActivateTab250ms, nullptr},
+    {"500ms delay (default)", kHoverActivateTab500ms, nullptr},
+    {"750ms delay", kHoverActivateTab750ms, nullptr},
+    {"1000ms delay", kHoverActivateTab1000ms, nullptr}};
 
-constexpr FeatureEntry::FeatureParam kOpenBookmarksInNewTabForeground[] = {
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kOpenBookmarksInNewTabForeground[] = {
     {"mode", "foreground"}};
-constexpr FeatureEntry::FeatureParam kOpenBookmarksInNewTabBackground[] = {
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kOpenBookmarksInNewTabBackground[] = {
     {"mode", "background"}};
 
-constexpr FeatureEntry::FeatureVariation kOpenBookmarksInNewTabVariations[] = {
+constexpr flags_ui::FeatureEntry::FeatureVariation
+    kOpenBookmarksInNewTabVariations[] = {
     {"Open in foreground tab (default)", kOpenBookmarksInNewTabForeground,
-     std::size(kOpenBookmarksInNewTabForeground), nullptr},
+     nullptr},
     {"Open in background tab", kOpenBookmarksInNewTabBackground,
-     std::size(kOpenBookmarksInNewTabBackground), nullptr}};
+     nullptr}};
 
-constexpr FeatureEntry::FeatureParam kOpenOmniboxUrlInNewTabForeground[] = {
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kOpenOmniboxUrlInNewTabForeground[] = {
     {"mode", "foreground"}};
-constexpr FeatureEntry::FeatureParam kOpenOmniboxUrlInNewTabBackground[] = {
+constexpr flags_ui::FeatureEntry::FeatureParam
+    kOpenOmniboxUrlInNewTabBackground[] = {
     {"mode", "background"}};
 
-constexpr FeatureEntry::FeatureVariation kOpenOmniboxUrlInNewTabVariations[] = {
+constexpr flags_ui::FeatureEntry::FeatureVariation
+    kOpenOmniboxUrlInNewTabVariations[] = {
     {"Open in foreground tab (default)", kOpenOmniboxUrlInNewTabForeground,
-     std::size(kOpenOmniboxUrlInNewTabForeground), nullptr},
+     nullptr},
     {"Open in background tab", kOpenOmniboxUrlInNewTabBackground,
-     std::size(kOpenOmniboxUrlInNewTabBackground), nullptr}};
+     nullptr}};
 
 #if BUILDFLAG(IS_LINUX)
 const FeatureEntry::Choice kPasswordStoreChoices[] = {

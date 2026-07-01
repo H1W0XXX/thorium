@@ -1,5 +1,5 @@
 diff --git a/chrome/app/vector_icons/BUILD.gn b/chrome/app/vector_icons/BUILD.gn
-index 7549ff5614f9e..bd7fd7857f514 100644
+index 7549ff5614f9e..ea923e97a0364 100644
 --- a/chrome/app/vector_icons/BUILD.gn
 +++ b/chrome/app/vector_icons/BUILD.gn
 @@ -1,4 +1,4 @@
@@ -24,7 +24,7 @@ index 7549ff5614f9e..bd7fd7857f514 100644
      "travel_explore.icon",
      "travel_explore_old.icon",
      "tv.icon",
-@@ -421,6 +423,23 @@ aggregate_vector_icons("chrome_vector_icons") {
+@@ -421,6 +423,27 @@ aggregate_vector_icons("chrome_vector_icons") {
      # go/keep-sorted end
    ]
  
@@ -34,8 +34,11 @@ index 7549ff5614f9e..bd7fd7857f514 100644
 +      "thorium/browser_tools_chrome_refresh_thorium.icon",
 +      "thorium/chrome_labs_thorium.icon",
 +      "thorium/chrome_labs_chrome_refresh_thorium.icon",
++      "thorium/incognito_thorium.icon",
++      "thorium/incognito_refresh_menu_thorium.icon",
 +      "thorium/navigate_home_thorium.icon",
 +      "thorium/navigate_home_chrome_refresh_thorium.icon",
++      "thorium/navigate_stop_chrome_refresh_thorium.icon",
 +      "thorium/science_thorium.icon",
 +      "thorium/side_panel_left_thorium.icon",
 +      "thorium/side_panel_left_chrome_refresh_thorium.icon",
@@ -43,6 +46,7 @@ index 7549ff5614f9e..bd7fd7857f514 100644
 +      "thorium/side_panel_thorium.icon",
 +      "thorium/side_panel_chrome_refresh_thorium.icon",
 +      "thorium/side_panel_touch_thorium.icon",
++      "thorium/trash_can_refresh_thorium.icon",
 +    ]
 +  }
    if (is_mac) {

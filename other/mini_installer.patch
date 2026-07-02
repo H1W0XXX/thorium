@@ -1,5 +1,5 @@
 diff --git a/chrome/installer/mini_installer/BUILD.gn b/chrome/installer/mini_installer/BUILD.gn
-index 37a9269380b70..6ff86c7fc3aa8 100644
+index 37a9269380b70..f982f4346ed4c 100644
 --- a/chrome/installer/mini_installer/BUILD.gn
 +++ b/chrome/installer/mini_installer/BUILD.gn
 @@ -1,7 +1,8 @@
@@ -41,9 +41,9 @@ index 37a9269380b70..6ff86c7fc3aa8 100644
 +    print("No SIMD")
 +  }
 +
-+  if (use_fma) {
-+    cflags += [ "/fp:fast", ]
-+  }
++  # Avoid /fp:fast here: clang-cl lowers it to -ffast-math, which conflicts
++  # with Chromium's mini_installer -ffp-contract=off and fails under /WX.
++  cflags += [ "/clang:-Wno-overriding-option", ]
  }
  
  source_set("lib") {

@@ -1744,7 +1744,7 @@ index e3684b3b3d..241c90ba98 100644
 +    &ff_hevc_parser,
      NULL };
 diff --git a/ffmpeg_generated.gni b/ffmpeg_generated.gni
-index 145ceba51b..cbd0461e15 100644
+index 145ceba51b..c0155e91cd 100644
 --- a/ffmpeg_generated.gni
 +++ b/ffmpeg_generated.gni
 @@ -298,6 +298,27 @@ if (((current_cpu == "arm64" || current_cpu == "arm64e") &&
@@ -1817,19 +1817,21 @@ index 145ceba51b..cbd0461e15 100644
    ffmpeg_c_sources += [
      "libavcodec/riscv/aacpsdsp_init.c",
      "libavcodec/riscv/autorename_libavcodec_riscv_videodsp_init.c",
-@@ -452,6 +501,20 @@ if (use_linux_config && current_cpu == "riscv64" &&
+@@ -452,6 +501,22 @@ if (use_linux_config && current_cpu == "riscv64" &&
  
  if ((current_cpu == "arm64" || current_cpu == "arm64e") &&
      ffmpeg_branding == "Chrome") {
 +
 +  ffmpeg_c_sources += [
-+    "libavcodec/aarch64/hevcdsp_init_aarch64.c"
++    "libavcodec/aarch64/hevcdsp_init_aarch64.c",
++    "libavcodec/aarch64/hevcpred_init_aarch64.c"
 +  ]
 +
 +  ffmpeg_gas_sources += [
 +    "libavcodec/aarch64/autorename_libavcodec_aarch64_hevcdsp_idct_neon.S",
 +    "libavcodec/aarch64/hevcdsp_deblock_neon.S",
 +    "libavcodec/aarch64/hevcdsp_dequant_neon.S",
++    "libavcodec/aarch64/hevcpred_neon.S",
 +    "libavcodec/aarch64/h26x/epel_neon.S",
 +    "libavcodec/aarch64/h26x/qpel_neon.S",
 +    "libavcodec/aarch64/h26x/sao_neon.S"
@@ -1838,7 +1840,7 @@ index 145ceba51b..cbd0461e15 100644
    ffmpeg_c_sources += [
      "libavcodec/aarch64/aacpsdsp_init_aarch64.c",
      "libavcodec/aarch64/h264chroma_init_aarch64.c",
-@@ -476,6 +539,8 @@ if ((current_cpu == "arm64" || current_cpu == "arm64e") &&
+@@ -476,6 +541,8 @@ if ((current_cpu == "arm64" || current_cpu == "arm64e") &&
  
  if (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome") {
    ffmpeg_c_sources += [
@@ -1847,7 +1849,7 @@ index 145ceba51b..cbd0461e15 100644
      "libavcodec/arm/h264chroma_init_arm.c",
      "libavcodec/arm/h264dsp_init_arm.c",
      "libavcodec/arm/h264pred_init_arm.c",
-@@ -484,6 +549,10 @@ if (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome") {
+@@ -484,6 +551,10 @@ if (use_linux_config && current_cpu == "arm" && ffmpeg_branding == "Chrome") {
      "libavcodec/arm/videodsp_init_armv5te.c",
    ]
    ffmpeg_gas_sources += [

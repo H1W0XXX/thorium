@@ -3,9 +3,12 @@
 ### Instructions
 This directory contains files to generate an .AppImage of Thorium.
 
-You __must__ place the .deb file (generated from running `package.sh`) in this directory, and then run `./make_appimage.sh`
+Build dependencies: `desktop-file-utils` and `imagemagick`.
 
-When it is done, you will have an appimage in *out*, I.E. it should be something like `//thorium/infra/APPIMAGE/out/Thorium_Browser-104.0.5107.0.glibc2.17-x86_64.AppImage`
+You __must__ place the .deb file (generated from running `package.sh`) in this directory, and then run `./make_appimage.sh`.
+You can also pass a package path directly, I.E. `./make_appimage.sh thorium-browser_150.0.7871.47_SSE3.deb`.
+
+When it is done, you will have an appimage in *out* named after the .deb package, I.E. it should be something like `//thorium/infra/APPIMAGE/out/Thorium_Browser_150.0.7871.47_SSE3.AppImage`
 
 You can use it standalone, after making it executable with `sudo chmod +x Thorium_Browser-*`, or (*recommended*) to integrate it with your system you can use [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher).
 

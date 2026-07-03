@@ -130,7 +130,6 @@ esac
 copyRaspi () {
 	printf "\n" &&
 	printf "${YEL}Copying Raspberry Pi build files...${c0}\n" &&
-	cp -v arm/raspi/raspi_args.gn ${CR_SRC_DIR}/ &&
 	cp -r -v arm/third_party/widevine/* ${CR_SRC_DIR}/third_party/widevine/ &&
 	cp -v arm/thorium_version.txt ${CR_SRC_DIR}/ui/webui/resources/text/ &&
 	cp -v other/thor_ver_linux/wrapper-raspi ${CR_SRC_DIR}/chrome/installer/linux/common/wrapper &&

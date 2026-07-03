@@ -1,5 +1,5 @@
 diff --git a/chrome/BUILD.gn b/chrome/BUILD.gn
-index 18417167ff8dd..5866c9a4ee934 100644
+index 18417167ff8dd..bb2b63f790f57 100644
 --- a/chrome/BUILD.gn
 +++ b/chrome/BUILD.gn
 @@ -1,4 +1,4 @@
@@ -52,12 +52,3 @@ index 18417167ff8dd..5866c9a4ee934 100644
  
        if (current_cpu == "x86") {
          # GYP used "ia32" so keep that naming for back-compat.
-@@ -1830,6 +1836,8 @@ if (is_linux || is_chromeos) {
-     sources = [ "//chrome/tools/build/linux/chrome-wrapper" ]
-     if (is_linux) {
-       sources += [
-+        "//third_party/xdg-utils/scripts/xdg-mime",
-+        "//third_party/xdg-utils/scripts/xdg-settings",
-         "//chrome/app/theme/$branding_path_component/linux/product_logo_48.png",
-       ]
-     } else {

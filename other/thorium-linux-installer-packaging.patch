@@ -963,6 +963,52 @@ index 395c019f7dd5f..e3a5d49c2a50c 100644
  
 -RDN="org.chromium.Chromium"
 +RDN="org.chromium.Thorium"
+diff --git a/chrome/installer/linux/common/default-app-block.template b/chrome/installer/linux/common/default-app-block.template
+index 4fd9143619164..6c5a7bfa5fc34 100644
+--- a/chrome/installer/linux/common/default-app-block.template
++++ b/chrome/installer/linux/common/default-app-block.template
+@@ -1,10 +1,10 @@
+     <web-browser>
+-      <name>@@MENUNAME</name>
+-      <executable>@@INSTALLDIR/@@PACKAGE</executable>
+-      <command>@@INSTALLDIR/@@PACKAGE %s</command>
+-      <icon-name>@@PACKAGE</icon-name>
++      <name>@@MENUNAME@@</name>
++      <executable>@@INSTALLDIR@@/@@PACKAGE@@</executable>
++      <command>@@INSTALLDIR@@/@@PACKAGE@@ %s</command>
++      <icon-name>@@PACKAGE@@</icon-name>
+       <run-in-terminal>false</run-in-terminal>
+       <netscape-remote>true</netscape-remote>
+-      <tab-command>@@INSTALLDIR/@@PACKAGE %s</tab-command>
+-      <win-command>@@INSTALLDIR/@@PACKAGE --new-window %s</win-command>
++      <tab-command>@@INSTALLDIR@@/@@PACKAGE@@ %s</tab-command>
++      <win-command>@@INSTALLDIR@@/@@PACKAGE@@ --new-window %s</win-command>
+     </web-browser>
+diff --git a/chrome/installer/linux/common/default-app.template b/chrome/installer/linux/common/default-app.template
+index 4b6ea67c64bbc..3f7e6f7dca019 100644
+--- a/chrome/installer/linux/common/default-app.template
++++ b/chrome/installer/linux/common/default-app.template
+@@ -7,14 +7,14 @@
+ <default-apps>
+   <web-browsers>
+     <web-browser>
+-      <name>@@MENUNAME</name>
+-      <executable>@@INSTALLDIR/@@PACKAGE</executable>
+-      <command>@@INSTALLDIR/@@PACKAGE %s</command>
+-      <icon-name>@@PACKAGE</icon-name>
++      <name>@@MENUNAME@@</name>
++      <executable>@@INSTALLDIR@@/@@PACKAGE@@</executable>
++      <command>@@INSTALLDIR@@/@@PACKAGE@@ %s</command>
++      <icon-name>@@PACKAGE@@</icon-name>
+       <run-in-terminal>false</run-in-terminal>
+       <netscape-remote>true</netscape-remote>
+-      <tab-command>@@INSTALLDIR/@@PACKAGE %s</tab-command>
+-      <win-command>@@INSTALLDIR/@@PACKAGE --new-window %s</win-command>
++      <tab-command>@@INSTALLDIR@@/@@PACKAGE@@ %s</tab-command>
++      <win-command>@@INSTALLDIR@@/@@PACKAGE@@ --new-window %s</win-command>
+     </web-browser>
+   </web-browsers>
+ </default-apps>
 diff --git a/chrome/installer/linux/common/desktop.template b/chrome/installer/linux/common/desktop.template
 index bf572f69720a0..14c45f437b5bc 100644
 --- a/chrome/installer/linux/common/desktop.template
@@ -2664,6 +2710,115 @@ index a9bbec28188c9..fdaf23bf5e714 100644
                              relaxed_expected_perms = 0o775
  
                          if relaxed_expected_perms == actual_perms:
+diff --git a/chrome/installer/linux/common/postinst.include b/chrome/installer/linux/common/postinst.include
+index d237a1affe90b..52994eb478845 100644
+--- a/chrome/installer/linux/common/postinst.include
++++ b/chrome/installer/linux/common/postinst.include
+@@ -4,10 +4,10 @@ if [ ! -x "$XDG_ICON_RESOURCE" ]; then
+   echo "Error: Could not find xdg-icon-resource" >&2
+   exit 1
+ fi
+-for icon in @@logo_resources_png; do
++for icon in @@LOGO_RESOURCES_PNG@@; do
+   size="$(echo ${icon} | sed 's/[^0-9]//g')"
+-  "$XDG_ICON_RESOURCE" install --size "${size}" "@@INSTALLDIR/${icon}" \
+-    "@@PACKAGE"
++  "$XDG_ICON_RESOURCE" install --size "${size}" "@@INSTALLDIR@@/${icon}" \
++    "@@PACKAGE@@"
+ done
+ 
+ # Update cache of .desktop file MIME types. Non-fatal since it's just a cache.
+@@ -45,7 +45,7 @@ update_defaults_list() {
+   done
+ }
+ 
+-update_defaults_list "@@PACKAGE.desktop"
++update_defaults_list "@@PACKAGE@@.desktop"
+ 
+ # This function uses sed to insert the contents of one file into another file,
+ # after the first line matching a given regular expression. If there is no
+@@ -67,10 +67,10 @@ GNOME_DFL_APPS=/usr/share/gnome-control-center/default-apps/gnome-default-applic
+ if [ -f "$GNOME_DFL_APPS" ]; then
+ # Conditionally insert the contents of the file "default-app-block" after the
+ # first "<web-browsers>" line we find in gnome-default-applications.xml
+-  fgrep -q "@@MENUNAME" "$GNOME_DFL_APPS" || insert_after_first_match \
++  fgrep -q "@@MENUNAME@@" "$GNOME_DFL_APPS" || insert_after_first_match \
+     "$GNOME_DFL_APPS" \
+     "^[ 	]*<web-browsers>[ 	]*$" \
+-    "@@INSTALLDIR/default-app-block"
++    "@@INSTALLDIR@@/default-app-block"
+ fi
+ 
+ # This function performs the setup for the chrome management service process.
+@@ -88,11 +88,11 @@ chrome_management_service_setup() {
+ 
+   getent group chromemgmt > /dev/null || groupadd chromemgmt
+ 
+-  chgrp chromemgmt "@@INSTALLDIR/chrome-management-service"
+-  chmod 2755 "@@INSTALLDIR/chrome-management-service"
++  chgrp chromemgmt "@@INSTALLDIR@@/chrome-management-service"
++  chmod 2755 "@@INSTALLDIR@@/chrome-management-service"
+ 
+-  mkdir -p "@@ENROLLMENTDIR"
+-  SIGNING_KEY_FILE="@@ENROLLMENTDIR/DeviceTrustSigningKey"
++  mkdir -p "@@ENROLLMENTDIR@@"
++  SIGNING_KEY_FILE="@@ENROLLMENTDIR@@/DeviceTrustSigningKey"
+   if [ ! -e "$SIGNING_KEY_FILE" ]; then
+     touch "$SIGNING_KEY_FILE"
+   fi
+@@ -104,17 +104,17 @@ chrome_management_service_setup() {
+ chrome_management_service_setup
+ 
+ # Reload AppArmor profile
+-if [ -f "@@INSTALLDIR/apparmor.d/@@usr_bin_symlink_name" ]; then
++if [ -f "@@INSTALLDIR@@/apparmor.d/@@USR_BIN_SYMLINK_NAME@@" ]; then
+   if [ -f "/etc/apparmor.d/abi/4.0" ] && [ -x /sbin/apparmor_parser ]; then
+     # Check for exact attachment collision with Ubuntu's native chrome profile.
+-    if [ "@@usr_bin_symlink_name" = "google-chrome-stable" ] && \
++    if [ "@@USR_BIN_SYMLINK_NAME@@" = "google-chrome-stable" ] && \
+        [ -f "/etc/apparmor.d/chrome" ]; then
+       # Skip installation if a conflicting profile exists.
+       true
+     else
+-      cp "@@INSTALLDIR/apparmor.d/@@usr_bin_symlink_name" \
+-        "/etc/apparmor.d/@@usr_bin_symlink_name"
+-      /sbin/apparmor_parser -r "/etc/apparmor.d/@@usr_bin_symlink_name" || true
++      cp "@@INSTALLDIR@@/apparmor.d/@@USR_BIN_SYMLINK_NAME@@" \
++        "/etc/apparmor.d/@@USR_BIN_SYMLINK_NAME@@"
++      /sbin/apparmor_parser -r "/etc/apparmor.d/@@USR_BIN_SYMLINK_NAME@@" || true
+     fi
+   fi
+ fi
+diff --git a/chrome/installer/linux/common/prerm.include b/chrome/installer/linux/common/prerm.include
+index 3ca7333a9eff0..f4baec809b042 100644
+--- a/chrome/installer/linux/common/prerm.include
++++ b/chrome/installer/linux/common/prerm.include
+@@ -4,9 +4,9 @@ if [ ! -x "$XDG_ICON_RESOURCE" ]; then
+   echo "Error: Could not find xdg-icon-resource" >&2
+   exit 1
+ fi
+-for icon in @@logo_resources_png; do
++for icon in @@LOGO_RESOURCES_PNG@@; do
+   size="$(echo ${icon} | sed 's/[^0-9]//g')"
+-  "$XDG_ICON_RESOURCE" uninstall --size "${size}" "@@PACKAGE"
++  "$XDG_ICON_RESOURCE" uninstall --size "${size}" "@@PACKAGE@@"
+ done
+ 
+ # Update cache of .desktop file MIME types. Non-fatal since it's just a cache.
+@@ -15,10 +15,10 @@ update-desktop-database > /dev/null 2>&1 || true
+ # Unload AppArmor profile
+ # "remove" is for Debian/Ubuntu, "0" is for RPM distributions.
+ if [ "$1" = "remove" ] || [ "$1" = "0" ]; then
+-  if [ -f "/etc/apparmor.d/@@usr_bin_symlink_name" ]; then
++  if [ -f "/etc/apparmor.d/@@USR_BIN_SYMLINK_NAME@@" ]; then
+     if [ -x /sbin/apparmor_parser ]; then
+-      /sbin/apparmor_parser -R "/etc/apparmor.d/@@usr_bin_symlink_name" || true
++      /sbin/apparmor_parser -R "/etc/apparmor.d/@@USR_BIN_SYMLINK_NAME@@" || true
+     fi
+-    rm -f "/etc/apparmor.d/@@usr_bin_symlink_name"
++    rm -f "/etc/apparmor.d/@@USR_BIN_SYMLINK_NAME@@"
+   fi
+ fi
 diff --git a/chrome/installer/linux/common/repo.cron b/chrome/installer/linux/common/repo.cron
 index 571fb836f3ac1..b33aad334b206 100755
 --- a/chrome/installer/linux/common/repo.cron
@@ -2706,6 +2861,17 @@ index 571fb836f3ac1..b33aad334b206 100755
 -  install_deb822_sources
 -fi
 +## Removed repo cron job since this is Thorium.
+diff --git a/chrome/installer/linux/common/repo_variables.include b/chrome/installer/linux/common/repo_variables.include
+index 4e9adb714c49b..06b20b7e77379 100644
+--- a/chrome/installer/linux/common/repo_variables.include
++++ b/chrome/installer/linux/common/repo_variables.include
+@@ -1,3 +1,3 @@
+-# sources.list setting for @@PACKAGE updates.
+-REPOCONFIG="@@repoconfig"
+-REPOCONFIGREGEX="@@repoconfigregex"
++# sources.list setting for @@PACKAGE@@ updates.
++REPOCONFIG="@@REPOCONFIG@@"
++REPOCONFIGREGEX="@@REPOCONFIGREGEX@@"
 diff --git a/chrome/installer/linux/common/rpm.include b/chrome/installer/linux/common/rpm.include
 index 9965c8227052c..3a861e870eecc 100644
 --- a/chrome/installer/linux/common/rpm.include
@@ -2959,6 +3125,43 @@ index 90ff896ea5ede..3374b31a4d75c 100755
 -else
 -  update_bad_repo
 -fi
+diff --git a/chrome/installer/linux/common/symlinks.include b/chrome/installer/linux/common/symlinks.include
+index 3574a81f6b0b2..700215c4c9d1b 100644
+--- a/chrome/installer/linux/common/symlinks.include
++++ b/chrome/installer/linux/common/symlinks.include
+@@ -7,9 +7,9 @@ add_nss_symlinks() {
+   do
+     target=$(echo $f | sed 's/\.[01]d$//')
+     if [ -f "/$LIBDIR/$target" ]; then
+-      ln -snf "/$LIBDIR/$target" "@@INSTALLDIR/$f"
++      ln -snf "/$LIBDIR/$target" "@@INSTALLDIR@@/$f"
+     elif [ -f "/usr/$LIBDIR/$target" ]; then
+-      ln -snf "/usr/$LIBDIR/$target" "@@INSTALLDIR/$f"
++      ln -snf "/usr/$LIBDIR/$target" "@@INSTALLDIR@@/$f"
+     else
+       echo $f not found in "/$LIBDIR/$target" or "/usr/$LIBDIR/$target".
+       exit 1
+@@ -20,10 +20,10 @@ add_nss_symlinks() {
+ remove_nss_symlinks() {
+   for f in $NSS_FILES
+   do
+-    rm -rf "@@INSTALLDIR/$f"
++    rm -rf "@@INSTALLDIR@@/$f"
+   done
+ }
+ 
+ remove_udev_symlinks() {
+-  rm -rf "@@INSTALLDIR/libudev.so.0"
++  rm -rf "@@INSTALLDIR@@/libudev.so.0"
+ }
+diff --git a/chrome/installer/linux/common/variables.include b/chrome/installer/linux/common/variables.include
+index 2722dc0fbfe6b..5533249633665 100644
+--- a/chrome/installer/linux/common/variables.include
++++ b/chrome/installer/linux/common/variables.include
+@@ -1,2 +1,2 @@
+ # System-wide package configuration.
+-DEFAULTS_FILE="/etc/default/@@PACKAGE"
++DEFAULTS_FILE="/etc/default/@@PACKAGE@@"
 diff --git a/chrome/installer/linux/common/wrapper b/chrome/installer/linux/common/wrapper
 index 5ee3f9ff0f521..7498ac74324df 100755
 --- a/chrome/installer/linux/common/wrapper

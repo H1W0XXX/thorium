@@ -1,5 +1,5 @@
 diff --git a/chrome/installer/linux/BUILD.gn b/chrome/installer/linux/BUILD.gn
-index e1aca5fd6ecd1..7db72ede49842 100644
+index e1aca5fd6ecd1..db3398fe5bedd 100644
 --- a/chrome/installer/linux/BUILD.gn
 +++ b/chrome/installer/linux/BUILD.gn
 @@ -1,17 +1,16 @@
@@ -282,7 +282,7 @@ index e1aca5fd6ecd1..7db72ede49842 100644
    }
  
    deb_target_name = "${target_name}_deb"
-@@ -516,8 +499,36 @@ template("linux_package") {
+@@ -516,8 +499,39 @@ template("linux_package") {
      visibility = [ ":*" ]
      script = "debian/build.py"
  
@@ -307,9 +307,12 @@ index e1aca5fd6ecd1..7db72ede49842 100644
 +    }
 +
 +    # For x64, the SIMD suffix alone identifies the build variant (drop arch).
++    # i386 builds are named by arch only, without an SSE2 suffix.
 +    # For all other architectures, keep the arch identifier.
 +    if (current_cpu == "x64") {
 +      _deb_name_suffix = _simd_suffix
++    } else if (current_cpu == "x86" && _simd_suffix == "_SSE2") {
++      _deb_name_suffix = "_${deb_arch}"
 +    } else {
 +      _deb_name_suffix = "_${deb_arch}${_simd_suffix}"
 +    }
@@ -320,7 +323,7 @@ index e1aca5fd6ecd1..7db72ede49842 100644
  
      args = [
        "-a",
-@@ -528,14 +539,14 @@ template("linux_package") {
+@@ -528,14 +542,14 @@ template("linux_package") {
        invoker.channel,
        "-d",
        branding_path_component,
@@ -337,7 +340,7 @@ index e1aca5fd6ecd1..7db72ede49842 100644
      ]
      if (is_official_build) {
        args += [ "-f" ]
-@@ -552,8 +563,36 @@ template("linux_package") {
+@@ -552,8 +566,39 @@ template("linux_package") {
        visibility = [ ":*" ]
        script = "rpm/build.py"
  
@@ -362,9 +365,12 @@ index e1aca5fd6ecd1..7db72ede49842 100644
 +      }
 +
 +      # For x64, the SIMD suffix alone identifies the build variant (drop arch).
++      # i386 builds are named by arch only, without an SSE2 suffix.
 +      # For all other architectures, keep the arch identifier.
 +      if (current_cpu == "x64") {
 +        _rpm_name_suffix = _simd_suffix
++      } else if (current_cpu == "x86" && _simd_suffix == "_SSE2") {
++        _rpm_name_suffix = "_${rpm_arch}"
 +      } else {
 +        _rpm_name_suffix = "_${rpm_arch}${_simd_suffix}"
 +      }
@@ -375,7 +381,7 @@ index e1aca5fd6ecd1..7db72ede49842 100644
  
        args = [
          "-a",
-@@ -564,6 +603,8 @@ template("linux_package") {
+@@ -564,6 +609,8 @@ template("linux_package") {
          invoker.channel,
          "-d",
          branding_path_component,
@@ -384,7 +390,7 @@ index e1aca5fd6ecd1..7db72ede49842 100644
          "-o",
          rebase_path(root_out_dir, root_build_dir),
          "-t",
-@@ -591,12 +632,3 @@ template("linux_package") {
+@@ -591,12 +638,3 @@ template("linux_package") {
  linux_package("stable") {
    channel = "stable"
  }

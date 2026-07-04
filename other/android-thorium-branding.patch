@@ -87,10 +87,10 @@ index 6f1aa2dcd2822..0750b64fd75ef 100644
        ":chrome_test_apk_template_resources",
        ":chrome_test_java",
 diff --git a/chrome/android/chrome_java_resources.gni b/chrome/android/chrome_java_resources.gni
-index a13c34ab9fdbc..c8d163eecea8d 100644
+index a13c34ab9fdbc..d8348d20b8335 100644
 --- a/chrome/android/chrome_java_resources.gni
 +++ b/chrome/android/chrome_java_resources.gni
-@@ -53,9 +53,11 @@ chrome_java_resources = [
+@@ -53,6 +53,7 @@ chrome_java_resources = [
    "java/res/drawable-hdpi/ic_exit_to_app_white_24dp.png",
    "java/res/drawable-hdpi/ic_file_download_white_24dp.png",
    "java/res/drawable-hdpi/ic_link_grey600_36dp.png",
@@ -98,11 +98,7 @@ index a13c34ab9fdbc..c8d163eecea8d 100644
    "java/res/drawable-hdpi/ic_phone_googblue_36dp.png",
    "java/res/drawable-hdpi/ic_photo_camera.png",
    "java/res/drawable-hdpi/ic_place_googblue_36dp.png",
-+  "java/res/drawable-hdpi/ic_warning_white_24dp.png",
-   "java/res/drawable-hdpi/ic_spark_4c_16dp.png",
-   "java/res/drawable-hdpi/incognito_splash.png",
-   "java/res/drawable-hdpi/infobar_chrome.png",
-@@ -95,9 +97,11 @@ chrome_java_resources = [
+@@ -95,6 +96,7 @@ chrome_java_resources = [
    "java/res/drawable-mdpi/ic_exit_to_app_white_24dp.png",
    "java/res/drawable-mdpi/ic_file_download_white_24dp.png",
    "java/res/drawable-mdpi/ic_link_grey600_36dp.png",
@@ -110,11 +106,7 @@ index a13c34ab9fdbc..c8d163eecea8d 100644
    "java/res/drawable-mdpi/ic_phone_googblue_36dp.png",
    "java/res/drawable-mdpi/ic_photo_camera.png",
    "java/res/drawable-mdpi/ic_place_googblue_36dp.png",
-+  "java/res/drawable-mdpi/ic_warning_white_24dp.png",
-   "java/res/drawable-mdpi/ic_spark_4c_16dp.png",
-   "java/res/drawable-mdpi/incognito_splash.png",
-   "java/res/drawable-mdpi/infobar_chrome.png",
-@@ -139,9 +143,11 @@ chrome_java_resources = [
+@@ -139,6 +141,7 @@ chrome_java_resources = [
    "java/res/drawable-xhdpi/ic_exit_to_app_white_24dp.png",
    "java/res/drawable-xhdpi/ic_file_download_white_24dp.png",
    "java/res/drawable-xhdpi/ic_link_grey600_36dp.png",
@@ -122,11 +114,7 @@ index a13c34ab9fdbc..c8d163eecea8d 100644
    "java/res/drawable-xhdpi/ic_phone_googblue_36dp.png",
    "java/res/drawable-xhdpi/ic_photo_camera.png",
    "java/res/drawable-xhdpi/ic_place_googblue_36dp.png",
-+  "java/res/drawable-xhdpi/ic_warning_white_24dp.png",
-   "java/res/drawable-xhdpi/ic_spark_4c_16dp.png",
-   "java/res/drawable-xhdpi/incognito_splash.png",
-   "java/res/drawable-xhdpi/infobar_chrome.png",
-@@ -180,9 +186,11 @@ chrome_java_resources = [
+@@ -180,6 +183,7 @@ chrome_java_resources = [
    "java/res/drawable-xxhdpi/ic_exit_to_app_white_24dp.png",
    "java/res/drawable-xxhdpi/ic_file_download_white_24dp.png",
    "java/res/drawable-xxhdpi/ic_link_grey600_36dp.png",
@@ -134,11 +122,7 @@ index a13c34ab9fdbc..c8d163eecea8d 100644
    "java/res/drawable-xxhdpi/ic_phone_googblue_36dp.png",
    "java/res/drawable-xxhdpi/ic_photo_camera.png",
    "java/res/drawable-xxhdpi/ic_place_googblue_36dp.png",
-+  "java/res/drawable-xxhdpi/ic_warning_white_24dp.png",
-   "java/res/drawable-xxhdpi/ic_spark_4c_16dp.png",
-   "java/res/drawable-xxhdpi/incognito_splash.png",
-   "java/res/drawable-xxhdpi/infobar_chrome.png",
-@@ -219,9 +227,11 @@ chrome_java_resources = [
+@@ -219,6 +223,7 @@ chrome_java_resources = [
    "java/res/drawable-xxxhdpi/ic_exit_to_app_white_24dp.png",
    "java/res/drawable-xxxhdpi/ic_file_download_white_24dp.png",
    "java/res/drawable-xxxhdpi/ic_link_grey600_36dp.png",
@@ -146,10 +130,6 @@ index a13c34ab9fdbc..c8d163eecea8d 100644
    "java/res/drawable-xxxhdpi/ic_phone_googblue_36dp.png",
    "java/res/drawable-xxxhdpi/ic_photo_camera.png",
    "java/res/drawable-xxxhdpi/ic_place_googblue_36dp.png",
-+  "java/res/drawable-xxxhdpi/ic_warning_white_24dp.png",
-   "java/res/drawable-xxxhdpi/ic_spark_4c_16dp.png",
-   "java/res/drawable-xxxhdpi/incognito_splash.png",
-   "java/res/drawable-xxxhdpi/infobar_chrome.png",
 diff --git a/chrome/android/chrome_public_apk_tmpl.gni b/chrome/android/chrome_public_apk_tmpl.gni
 index 9bf07d2470457..26c1c75715df1 100644
 --- a/chrome/android/chrome_public_apk_tmpl.gni
@@ -179,6 +159,19 @@ index 9bf07d2470457..26c1c75715df1 100644
  
  default_chrome_public_jinja_variables = [
    "channel=$android_channel",
+diff --git a/chrome/android/java/res/drawable/ic_warning_white_24dp.xml b/chrome/android/java/res/drawable/ic_warning_white_24dp.xml
+index 6e6325a258830..48a67b1c452b6 100644
+--- a/chrome/android/java/res/drawable/ic_warning_white_24dp.xml
++++ b/chrome/android/java/res/drawable/ic_warning_white_24dp.xml
+@@ -10,6 +10,6 @@ found in the LICENSE file.
+     android:height="24dp"
+     android:viewportWidth="960"
+     android:viewportHeight="960">
+-    <path android:fillColor="@android:color/white"
++    <path android:fillColor="#FBBC04"
+         android:pathData="M40,840L480,80L920,840L40,840ZM480,720Q497,720 508.5,708.5Q520,697 520,680Q520,663 508.5,651.5Q497,640 480,640Q463,640 451.5,651.5Q440,663 440,680Q440,697 451.5,708.5Q463,720 480,720ZM440,600L520,600L520,400L440,400L440,600Z"/>
+ </vector>
+\ No newline at end of file
 diff --git a/chrome/android/java/res_base/drawable/ic_launcher_round.xml b/chrome/android/java/res_base/drawable/ic_launcher_round.xml
 index 2159da0bd9866..cb5e738e61240 100644
 --- a/chrome/android/java/res_base/drawable/ic_launcher_round.xml

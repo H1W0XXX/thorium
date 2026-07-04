@@ -311,21 +311,6 @@ index 58206529e71f5..2bf1e39648297 100644
 -</ScrollView>
 \ No newline at end of file
 +</ScrollView>
-diff --git a/chrome/android/java/res/xml/developer_preferences.xml b/chrome/android/java/res/xml/developer_preferences.xml
-index 60ff8f392b964..90948b5925cb0 100644
---- a/chrome/android/java/res/xml/developer_preferences.xml
-+++ b/chrome/android/java/res/xml/developer_preferences.xml
-@@ -20,4 +20,10 @@ found in the LICENSE file.
-         android:title="Hint: You can also enable Developer options on Beta/Stable channels by tapping the Chrome version in &quot;Settings > About Chrome&quot; multiple times."
-         app:allowDividerAbove="false"
-         app:allowDividerBelow="false" />
-+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-+        android:key="enable_extensions_android"
-+        android:title="@string/android_extensions_title"
-+        android:summary="@string/android_extensions_summary"
-+        app:featureName="enable-extensions-android"
-+        app:needRestart="true" />
- </PreferenceScreen>
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/ChromeBaseAppCompatActivity.java b/chrome/android/java/src/org/chromium/chrome/browser/ChromeBaseAppCompatActivity.java
 index 2b393556d95f3..cce19e66f77ce 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/ChromeBaseAppCompatActivity.java

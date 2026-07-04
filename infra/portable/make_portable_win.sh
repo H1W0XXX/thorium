@@ -33,6 +33,7 @@ INSTALLER_LIST=(
 	"thorium_AVX_mini_installer.exe"
 	"thorium_SSE4_mini_installer.exe"
 	"thorium_SSE3_mini_installer.exe"
+	"thorium_ARM64_installer.exe"
 	"thorium_mini_installer.exe"
 )
 
@@ -55,6 +56,8 @@ elif [[ "$INSTALLER_NAME" == *"SSE4"* ]]; then
 	ZIP_NAME="Thorium_SSE4_${VERSION}.zip"
 elif [[ "$INSTALLER_NAME" == *"SSE3"* ]]; then
 	ZIP_NAME="Thorium_SSE3_${VERSION}.zip"
+elif [[ "$INSTALLER_NAME" == *"ARM64"* ]]; then
+	ZIP_NAME="Thorium_ARM64_${VERSION}.zip"
 else
 	ZIP_NAME="thorium_portable.zip"
 fi

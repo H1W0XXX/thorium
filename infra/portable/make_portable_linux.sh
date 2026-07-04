@@ -30,6 +30,7 @@ DEB_PATTERNS=(
 	"*AVX*.deb"
 	"*SSE4*.deb"
 	"*SSE3*.deb"
+	"*i386*.deb"
 	"*arm64*.deb"
 	"*.deb"
 )

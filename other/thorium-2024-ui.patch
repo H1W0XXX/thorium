@@ -1328,30 +1328,34 @@ index 6625553e74359..8a84bac61c076 100644
 +  return (!features::IsThorium2024() && delegate_->IsTabStripVisible()) ? 0 : kExtraTopBorder;
  }
 diff --git a/chrome/browser/ui/views/frame/browser_frame_view_win.cc b/chrome/browser/ui/views/frame/browser_frame_view_win.cc
-index f829637e45840..ba2527b8315c9 100644
+index f829637e45840..f6713d5d8185f 100644
 --- a/chrome/browser/ui/views/frame/browser_frame_view_win.cc
 +++ b/chrome/browser/ui/views/frame/browser_frame_view_win.cc
-@@ -369,7 +369,8 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
+@@ -369,7 +369,9 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
    constexpr int kResizeCornerWidth = 16;
  
    const int top_border_thickness =
 -      (GetBrowserView()->GetIsWebAppType() || IsFrameCondensed())
 +      (GetBrowserView()->GetIsWebAppType() || IsFrameCondensed() ||
-+       features::IsThorium2024())
++       (features::IsThorium2024() &&
++        ShouldBrowserCustomDrawTitlebar(GetBrowserView())))
            ? FrameTopBorderThickness(false)
            : GetLayoutConstant(LayoutConstant::kTabStripPadding);
  
-@@ -570,7 +571,8 @@ int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
+@@ -570,7 +572,11 @@ int BrowserFrameViewWin::FrameTopBorderThickness(bool restored) const {
      // default. When maximized, the OS sizes the window such that the border
      // extends beyond the screen edges. In that case, we must return the
      // default value.
 -    return 0;
 +    constexpr int kThoriumTopResizeFrameArea = 8;
-+    return features::IsThorium2024() ? kThoriumTopResizeFrameArea : 0;
++    return features::IsThorium2024() &&
++                   ShouldBrowserCustomDrawTitlebar(GetBrowserView())
++               ? kThoriumTopResizeFrameArea
++               : 0;
    }
  
    // Mouse and touch locations are floored but GetSystemMetricsInDIP is rounded,
-@@ -856,16 +858,24 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
+@@ -856,16 +862,26 @@ void BrowserFrameViewWin::LayoutCaptionButtons() {
  
    const gfx::Size preferred_size =
        caption_button_container_->GetPreferredSize();
@@ -1366,9 +1370,11 @@ index f829637e45840..ba2527b8315c9 100644
            ? 0
            : caption_button_metrics_->GetCaptionButtonWidth();
  
-+  const int caption_height = features::IsThorium2024()
-+                                 ? std::min(GetFrameHeight(), init_height)
-+                                 : GetFrameHeight();
++  const int caption_height =
++      features::IsThorium2024() &&
++              ShouldBrowserCustomDrawTitlebar(GetBrowserView())
++          ? std::min(GetFrameHeight(), init_height)
++          : GetFrameHeight();
    const int height =
        !GetBrowserView()->GetWebAppFrameToolbarPreferredSize().IsEmpty()
            ? (TitlebarHeight(false) - WindowTopY())

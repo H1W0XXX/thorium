@@ -16,6 +16,7 @@ third_party/ffmpeg: other/ffmpeg-branding.patch
 third_party/widevine: other/widevine-cdm-support.patch
 third_party/search_engines_data/resources: other/thorium-search-engines-data.patch
 third_party/libyuv: other/libyuv-arm-simd-compat.patch
+third_party/abseil-cpp: other/abseil-bmi2-include-immintrin.patch
 v8: other/thorium-v8-simd-opts.patch
 [sse2] third_party/angle: other/SSE2/angle-lockfree.patch
 

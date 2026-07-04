@@ -69,6 +69,7 @@ overlay-derived, or still need separate provenance review.
 - [`widevine-cdm-support.patch`](../other/widevine-cdm-support.patch) (apply root: `third_party/widevine`)
 - [`thorium-search-engines-data.patch`](../other/thorium-search-engines-data.patch) (apply root: `third_party/search_engines_data/resources`)
 - [`libyuv-arm-simd-compat.patch`](../other/libyuv-arm-simd-compat.patch) (apply root: `third_party/libyuv`)
+- [`abseil-bmi2-include-immintrin.patch`](../other/abseil-bmi2-include-immintrin.patch) (apply root: `third_party/abseil-cpp`)
 - [`thorium-v8-simd-opts.patch`](../other/thorium-v8-simd-opts.patch) (apply root: `v8`)
 - [`angle-lockfree.patch`](../other/SSE2/angle-lockfree.patch) (apply root: `third_party/angle/src`; condition: `sse2`)
 
@@ -211,6 +212,6 @@ overlay-derived, or still need separate provenance review.
 ## Maintenance Notes
 
 - Add, remove, and reorder active patches in `patch_scripts/series/series` first.
-- Keep patch files under `other/`; use an apply root in the series for child repositories such as `third_party/ffmpeg`, `third_party/widevine`, `third_party/libyuv`, `third_party/search_engines_data/resources`, and `v8`.
+- Keep patch files under `other/`; use an apply root in the series for child repositories such as `third_party/ffmpeg`, `third_party/widevine`, `third_party/libyuv`, `third_party/abseil-cpp`, `third_party/search_engines_data/resources`, and `v8`.
 - Use one `--condition` per run for mutually exclusive build variants such as `sse2` or `raspi`.
 - After changing patch inventory, run `py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src` to validate the ordered series without modifying the Chromium checkout.

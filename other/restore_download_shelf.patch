@@ -3603,19 +3603,19 @@ index aeb07c5b420a9..9c8db9d24388a 100644
  
    base::OnceClosure on_menu_will_show_callback_;
 diff --git a/chrome/browser/ui/views/frame/browser_frame_view_mac.mm b/chrome/browser/ui/views/frame/browser_frame_view_mac.mm
-index 624c29498f8db..0040a3bd6f4a4 100644
+index 624c29498f8db..fcbc56f8ee583 100644
 --- a/chrome/browser/ui/views/frame/browser_frame_view_mac.mm
 +++ b/chrome/browser/ui/views/frame/browser_frame_view_mac.mm
 @@ -237,10 +237,12 @@ void BrowserFrameViewMac::UpdateFullscreenTopUI() {
    // Update to the new toolbar style if needed.
    FullscreenToolbarStyle new_style;
    if (fullscreen_utils::IsInContentFullscreen(browser)) {
-+    browser_view()->HideDownloadShelf();
++    GetBrowserView()->HideDownloadShelf();
      new_style = FullscreenToolbarStyle::TOOLBAR_NONE;
    } else {
      bool always_show = fullscreen_utils::IsAlwaysShowToolbarEnabled(browser);
      new_style = GetUserPreferredToolbarStyle(always_show);
-+    browser_view()->UnhideDownloadShelf();
++    GetBrowserView()->UnhideDownloadShelf();
    }
  
    if (WindowFeatureController::From(GetBrowserView()->browser())

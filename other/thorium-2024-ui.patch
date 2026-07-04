@@ -1635,7 +1635,7 @@ index 4a92fd22a44b2..ed30c8f2f60fe 100644
    void SetWindowControlsOverlayEnabled(bool enabled, views::View* host);
  
 diff --git a/chrome/browser/ui/views/location_bar/location_bar_view.cc b/chrome/browser/ui/views/location_bar/location_bar_view.cc
-index 24c769cf019fe..80b2e6f400848 100644
+index 24c769cf019fe..f6d45b638d1ab 100644
 --- a/chrome/browser/ui/views/location_bar/location_bar_view.cc
 +++ b/chrome/browser/ui/views/location_bar/location_bar_view.cc
 @@ -11,6 +11,7 @@
@@ -1835,15 +1835,7 @@ index 24c769cf019fe..80b2e6f400848 100644
  }
  
  SkColor LocationBarView::GetIconLabelBubbleBackgroundColor() const {
-@@ -1566,6 +1602,7 @@ void LocationBarView::RefreshBackground() {
-   const double opacity = hover_animation_.GetCurrentValue();
-   const bool is_caret_visible =
-       GetOmniboxController()->edit_model()->is_caret_visible();
-+  const bool is_open = GetOmniboxController()->IsPopupOpen();
-   const bool input_in_progress =
-       GetOmniboxController()->edit_model()->user_input_in_progress();
-   const bool high_contrast = GetNativeTheme()->preferred_contrast() ==
-@@ -1582,7 +1619,7 @@ void LocationBarView::RefreshBackground() {
+@@ -1582,7 +1618,7 @@ void LocationBarView::RefreshBackground() {
      // focused.
      background_color_ =
          color_provider->GetColor(kColorOmniboxResultsBackground);
@@ -1852,7 +1844,7 @@ index 24c769cf019fe..80b2e6f400848 100644
      // Under CR23 guidelines, if the Omnibox is unfocused, but still contains
      // in-progress user input, the background color matches the popup (unless
      // high-contrast mode is enabled).
-@@ -1592,6 +1629,20 @@ void LocationBarView::RefreshBackground() {
+@@ -1592,6 +1628,21 @@ void LocationBarView::RefreshBackground() {
    }
  
    SkColor border_color = SK_ColorTRANSPARENT;
@@ -1865,6 +1857,7 @@ index 24c769cf019fe..80b2e6f400848 100644
 +
 +// Alex313031: Looks ugly on Mac
 +#if !BUILDFLAG(IS_MAC)
++  const bool is_open = GetOmniboxController()->IsPopupOpen();
 +  if (is_caret_visible && !is_open && features::IsThorium2024()) {
 +    border_color = color_provider->GetColor(ui::kColorFocusableBorderFocused);
 +  }

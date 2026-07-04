@@ -195,6 +195,10 @@ else:
 def copy_woa():
     print("\nCopying Windows on Arm build files\n")
     copy(
+        os.path.normpath(os.path.join(thor_src_dir, "arm", "thor_ver")),
+        os.path.normpath(os.path.join(cr_src_dir, "out", "thorium")),
+    )
+    copy(
         os.path.normpath(os.path.join(thor_src_dir, "arm", "thorium_version.txt")),
         os.path.normpath(os.path.join(cr_src_dir, "ui", "webui", "resources", "text")),
     )

@@ -791,27 +791,21 @@ index 608a5c38e6dd8..286b51f64679d 100644
    kTabSeparatorHeight,
  
 diff --git a/chrome/browser/ui/omnibox/omnibox_pedal_implementations.cc b/chrome/browser/ui/omnibox/omnibox_pedal_implementations.cc
-index 4357fc482b7f4..5aa109ba1826a 100644
+index 4357fc482b7f4..ef2ff5bce8c7e 100644
 --- a/chrome/browser/ui/omnibox/omnibox_pedal_implementations.cc
 +++ b/chrome/browser/ui/omnibox/omnibox_pedal_implementations.cc
-@@ -2001,15 +2001,22 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
- // =============================================================================
- 
- const gfx::VectorIcon& GetSharingHubVectorIcon() {
-+  const bool thorium_2024 = features::IsThorium2024();
- #if BUILDFLAG(IS_MAC)
-   return features::IsRoundedIconsEnabled()
+@@ -2006,10 +2006,16 @@ const gfx::VectorIcon& GetSharingHubVectorIcon() {
               ? omnibox::kIosShareIcon
               : omnibox::kShareMacChromeRefreshOldIcon;
  #elif BUILDFLAG(IS_WIN)
-+  if (thorium_2024) {
++  if (features::IsThorium2024()) {
 +    return omnibox::kShareChromeRefreshOldIcon;
 +  }
    return features::IsRoundedIconsEnabled()
               ? omnibox::kShareWindowsIcon
               : omnibox::kShareWinChromeRefreshOldIcon;
  #elif BUILDFLAG(IS_LINUX)
-+  if (thorium_2024) {
++  if (features::IsThorium2024()) {
 +    return omnibox::kShareChromeRefreshOldIcon;
 +  }
    return features::IsRoundedIconsEnabled()

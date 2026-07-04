@@ -60,22 +60,23 @@ index 1f4c79ab791ef..cf0a26f1a8cd3 100644
          android:title="@string/preload_pages_title"
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/GpcSettings.java b/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/GpcSettings.java
 new file mode 100644
-index 0000000000000..4fcad6a04ed9b
+index 0000000000000..506ca6fa69cce
 --- /dev/null
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/GpcSettings.java
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,58 @@
 +package org.chromium.chrome.browser.privacy.settings;
 +
 +import android.os.Bundle;
 +
-+import org.chromium.base.supplier.ObservableSupplier;
-+import org.chromium.base.supplier.ObservableSupplierImpl;
++import org.chromium.base.supplier.MonotonicObservableSupplier;
++import org.chromium.base.supplier.ObservableSuppliers;
++import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 +
 +import org.chromium.chrome.R;
 +import org.chromium.chrome.browser.preferences.Pref;
 +import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
-+import org.chromium.components.browser_ui.settings.SettingsFragment;
 +import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
++import org.chromium.components.browser_ui.settings.SettingsFragment;
 +import org.chromium.components.browser_ui.settings.SettingsUtils;
 +import org.chromium.components.prefs.PrefService;
 +import org.chromium.components.user_prefs.UserPrefs;
@@ -83,7 +84,8 @@ index 0000000000000..4fcad6a04ed9b
 +public class GpcSettings extends ChromeBaseSettingsFragment {
 +    private static final String PREF_SWITCH = "gpc_switch";
 +
-+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
++    private final SettableMonotonicObservableSupplier<String> mPageTitle =
++            ObservableSuppliers.createMonotonic();
 +
 +    @Override
 +    public @SettingsFragment.AnimationType int getAnimationType() {
@@ -116,7 +118,7 @@ index 0000000000000..4fcad6a04ed9b
 +    }
 +
 +    @Override
-+    public ObservableSupplier<String> getPageTitle() {
++    public MonotonicObservableSupplier<String> getPageTitle() {
 +        return mPageTitle;
 +    }
 +}

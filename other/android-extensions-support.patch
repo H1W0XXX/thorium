@@ -225,6 +225,19 @@ index 2c84cf8929ac2..7888b3dc2913e 100644
      // On android desktop, where JavaBitmap ensures 4 byte alignment, uploading
      // ALPHA_8 to angle_vulkan_image_backing may fail because it expects 1 byte
      // alignment stride. Workaround via copying it to N32.
+diff --git a/cc/scheduler/scheduler_state_machine.cc b/cc/scheduler/scheduler_state_machine.cc
+index ae87756c7fb14..6ff2d1a34b1e2 100644
+--- a/cc/scheduler/scheduler_state_machine.cc
++++ b/cc/scheduler/scheduler_state_machine.cc
+@@ -35,7 +35,7 @@ const int kMaxPendingSubmitFrames = 1;
+ bool IsEligibleToThrottleMainFrameRate() {
+ #if BUILDFLAG(IS_ANDROID)
+   // Still requires balancing tradeoffs for desktop Android, not enabled yet.
+-  return !base::android::device_info::is_desktop();
++  return !base::android::device_info::is_desktop_false();
+ #else
+   return true;
+ #endif
 diff --git a/chrome/android/BUILD.gn b/chrome/android/BUILD.gn
 index 0750b64fd75ef..99c3f9f7ae776 100644
 --- a/chrome/android/BUILD.gn
@@ -462,7 +475,7 @@ index 29c5930f5d1fd..2644f29c214fb 100644
                  windowAndroid,
                  activityTabProvider,
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImpl.java b/chrome/android/java/src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImpl.java
-index ca3657e4202b6..700b01b67a012 100644
+index ca3657e4202b6..cdf663f521455 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImpl.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImpl.java
 @@ -306,6 +306,9 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
@@ -475,8 +488,43 @@ index ca3657e4202b6..700b01b67a012 100644
          if (!url.getSpec().startsWith(UrlConstants.CHROME_EXTENSIONS_URL)) {
              return null;
          }
+@@ -334,7 +337,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
+                 && params.isInitialNavigationInFrame()
+                 // TODO(crbug.com/452537438): Figure out a better way to check whether we are in
+                 // desktop windowing mode or if the device can enter desktop windowing mode.
+-                && (DeviceInfo.isDesktop() || params.isInDesktopWindowingMode());
++                && (DeviceInfo.isDesktopFalse() || params.isInDesktopWindowingMode());
+     }
+ 
+     @Override
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderMediator.java b/chrome/android/java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderMediator.java
+index d375e5065262e..491b25b1d9ab0 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderMediator.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderMediator.java
+@@ -86,7 +86,7 @@ public class DocumentPictureInPictureHeaderMediator
+         mOpenerWebContents = openerWebContents;
+         mWebContents = webContents;
+ 
+-        boolean isDesktop = DeviceInfo.isDesktop();
++        boolean isDesktop = DeviceInfo.isDesktopFalse();
+         int minHeaderHeightRes =
+                 isDesktop
+                         ? R.dimen.document_picture_in_picture_header_min_height_desktop
+diff --git a/chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManagerApi31.java b/chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManagerApi31.java
+index 2f7dba0c21b0c..b7fa9a61ce27c 100644
+--- a/chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManagerApi31.java
++++ b/chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManagerApi31.java
+@@ -447,7 +447,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
+ 
+             boolean instanceExists = ChromeMultiInstancePersistentStore.hasInstance(i);
+             if (instanceExists
+-                    && (DeviceInfo.isDesktop()
++                    && (DeviceInfo.isDesktopFalse()
+                             && ChromeFeatureList.sOnStartupWindowPolicy.isEnabled())) {
+                 // This supports updated default id allocation / startup behavior where a newly
+                 // created activity will refrain from using existing instance state and will be
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java b/chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java
-index 3b962153e100d..4e8e9172b6a51 100644
+index 3b962153e100d..7bdc6d6436b1a 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java
 @@ -219,7 +219,7 @@ public class MultiWindowUtils implements ActivityStateListener {
@@ -487,6 +535,15 @@ index 3b962153e100d..4e8e9172b6a51 100644
 +        if (DeviceInfo.isDesktopFalse()) {
              return TabWindowManager.MAX_SELECTORS_1000;
          }
+ 
+@@ -652,7 +652,7 @@ public class MultiWindowUtils implements ActivityStateListener {
+      */
+     public static boolean shouldShowInstanceSwitcherIph() {
+         int instanceCount = getInstanceCount(PersistedInstanceType.ANY);
+-        int threshold = DeviceInfo.isDesktop() ? 10 : 1;
++        int threshold = DeviceInfo.isDesktopFalse() ? 10 : 1;
+         return instanceCount > threshold;
+     }
  
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java b/chrome/android/java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java
 index c8250e849de3c..da51d17a53501 100644
@@ -721,6 +778,19 @@ index c90acf5dc7efd..812ef2225a35a 100644
  #if BUILDFLAG(ENABLE_EXTENSIONS)
      {"api-mime-handler", flag_descriptions::kApiMimeHandlerName,
       flag_descriptions::kApiMimeHandlerDescription, kOsDesktop,
+diff --git a/chrome/browser/android/metrics/android_atoms_logger.cc b/chrome/browser/android/metrics/android_atoms_logger.cc
+index e457fbd338f65..1a8ee714a2e11 100644
+--- a/chrome/browser/android/metrics/android_atoms_logger.cc
++++ b/chrome/browser/android/metrics/android_atoms_logger.cc
+@@ -26,7 +26,7 @@ void AndroidAtomsLogger::Initialize() {
+ 
+ // static
+ bool AndroidAtomsLogger::IsDesktop() {
+-  return base::android::device_info::is_desktop();
++  return base::android::device_info::is_desktop_false();
+ }
+ 
+ AndroidAtomsLogger::AndroidAtomsLogger()
 diff --git a/chrome/browser/android/selection/chrome_selection_dropdown_menu_delegate.cc b/chrome/browser/android/selection/chrome_selection_dropdown_menu_delegate.cc
 index 0b57028f530e3..62834ab507059 100644
 --- a/chrome/browser/android/selection/chrome_selection_dropdown_menu_delegate.cc
@@ -743,6 +813,19 @@ index 0b57028f530e3..62834ab507059 100644
    std::unique_ptr<extensions::ExtensionMenuModel> extension_menu_model =
        std::make_unique<extensions::ExtensionMenuModel>(render_frame_host,
                                                         params);
+diff --git a/chrome/browser/bookmarks/android/bookmark_bridge.cc b/chrome/browser/bookmarks/android/bookmark_bridge.cc
+index fa78cab1139ce..6347f070c809e 100644
+--- a/chrome/browser/bookmarks/android/bookmark_bridge.cc
++++ b/chrome/browser/bookmarks/android/bookmark_bridge.cc
+@@ -733,7 +733,7 @@ BookmarkBridge::GetDefaultBookmarkFolder(JNIEnv* env) {
+   // On Desktop builds of Android, default to the "Other bookmarks" folder
+   // rather than the "Mobile bookmarks" folder, which we will use on non-Desktop
+   // builds.
+-  if (base::android::device_info::is_desktop()) {
++  if (base::android::device_info::is_desktop_false()) {
+     if (bookmark_model_->account_other_node()) {
+       return GetAccountOtherFolderId(env);
+     }
 diff --git a/chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java b/chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java
 index 428ea1e6ca2fb..ff635862ebb72 100644
 --- a/chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java
@@ -785,6 +868,19 @@ index da9c36383e3f4..4f952873d743b 100644
              mDevicePrefsListener =
                      (sharedPreferences, key) -> {
                          if (key != null
+diff --git a/chrome/browser/bookmarks/chrome_bookmark_client.cc b/chrome/browser/bookmarks/chrome_bookmark_client.cc
+index 9c1b318a89e34..cf86faf9c6542 100644
+--- a/chrome/browser/bookmarks/chrome_bookmark_client.cc
++++ b/chrome/browser/bookmarks/chrome_bookmark_client.cc
+@@ -219,7 +219,7 @@ bool ChromeBookmarkClient::IsNodeManaged(const bookmarks::BookmarkNode* node) {
+ 
+ bookmarks::BookmarkFormFactor ChromeBookmarkClient::GetBookmarkFormFactor() {
+ #if BUILDFLAG(IS_ANDROID)
+-  return base::android::device_info::is_desktop()
++  return base::android::device_info::is_desktop_false()
+              ? bookmarks::BookmarkFormFactor::kDesktop
+              : bookmarks::BookmarkFormFactor::kMobile;
+ #else
 diff --git a/chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsUtils.java b/chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsUtils.java
 index 0c58de6f01b36..9f325087247b9 100644
 --- a/chrome/browser/browser_controls/android/java/src/org/chromium/chrome/browser/browser_controls/BrowserControlsUtils.java
@@ -1061,6 +1157,19 @@ index fee5e79b792f4..4c812af1c60ed 100644
    // Enabling the FontFamilyCache needs some KeyedService that might not be
    // available for some irregular profiles, like the System Profile.
    if (!AreKeyedServicesDisabledForProfileByDefault(profile)) {
+diff --git a/chrome/browser/composeplate/android/java/src/org/chromium/chrome/browser/composeplate/ComposeplateUtils.java b/chrome/browser/composeplate/android/java/src/org/chromium/chrome/browser/composeplate/ComposeplateUtils.java
+index 1d082e6b0a98d..71538a6c01d18 100644
+--- a/chrome/browser/composeplate/android/java/src/org/chromium/chrome/browser/composeplate/ComposeplateUtils.java
++++ b/chrome/browser/composeplate/android/java/src/org/chromium/chrome/browser/composeplate/ComposeplateUtils.java
+@@ -48,7 +48,7 @@ public class ComposeplateUtils {
+      * @param profile The current profile.
+      */
+     public static boolean canShowComposeplateButtonOnNtp(Profile profile) {
+-        return !DeviceInfo.isDesktop() && isComposeplateEnabled(profile);
++        return !DeviceInfo.isDesktopFalse() && isComposeplateEnabled(profile);
+     }
+ 
+     /**
 diff --git a/chrome/browser/devtools/BUILD.gn b/chrome/browser/devtools/BUILD.gn
 index 802955898f7d6..ed6292049d174 100644
 --- a/chrome/browser/devtools/BUILD.gn
@@ -1458,20 +1567,27 @@ index 6238051f9a215..9cbc079533775 100644
    });
  }
 diff --git a/chrome/browser/extensions/extension_util.cc b/chrome/browser/extensions/extension_util.cc
-index 3c832b93140a8..9283d3ab70d71 100644
+index 3c832b93140a8..c25b4480e1323 100644
 --- a/chrome/browser/extensions/extension_util.cc
 +++ b/chrome/browser/extensions/extension_util.cc
-@@ -48,6 +48,10 @@
- #include "chromeos/ash/components/file_manager/app_id.h"
- #endif
- 
+@@ -10,6 +10,7 @@
+ #include "base/check_is_test.h"
+ #include "base/check_op.h"
+ #include "base/command_line.h"
++#include "base/logging.h"
+ #include "build/build_config.h"
+ #include "build/chromeos_buildflags.h"
+ #include "chrome/browser/extensions/sync/extension_sync_service.h"
+@@ -36,6 +37,9 @@
+ #include "extensions/browser/user_script_manager.h"
+ #include "extensions/buildflags/buildflags.h"
+ #include "extensions/common/extension.h"
 +#if BUILDFLAG(IS_ANDROID)
 +#include "extensions/common/extension_features.h"
 +#endif
-+
- static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
- 
- namespace extensions::util {
+ #include "extensions/common/features/feature_developer_mode_only.h"
+ #include "extensions/common/icons/extension_icon_set.h"
+ #include "extensions/common/manifest_handlers/incognito_info.h"
 @@ -334,6 +338,13 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
  
  bool AreExtensionsDisabled(const base::CommandLine& command_line,
@@ -1575,6 +1691,19 @@ index 94c2191e6dcd0..4662d0f100603 100644
      public static final CachedFlag sReportNotificationContentDetectionData =
              newCachedFlag(
                      REPORT_NOTIFICATION_CONTENT_DETECTION_DATA,
+diff --git a/chrome/browser/glic/BUILD.gn b/chrome/browser/glic/BUILD.gn
+index 53aa3c15f737b..fb4452d131f41 100644
+--- a/chrome/browser/glic/BUILD.gn
++++ b/chrome/browser/glic/BUILD.gn
+@@ -869,7 +869,7 @@ source_set("browser_tests") {
+     ]
+   }
+ 
+-  if (is_android && !is_desktop_android) {
++  if (is_android && !is_desktop_android_thorium) {
+     sources += [ "service/glic_android_peek_browsertest.cc" ]
+   }
+ 
 diff --git a/chrome/browser/glic/public/features.cc b/chrome/browser/glic/public/features.cc
 index 0c0bb126fd130..6482566b78558 100644
 --- a/chrome/browser/glic/public/features.cc
@@ -1766,6 +1895,19 @@ index 7bffc96c135ee..9594c0288652c 100644
      }
  
      private OpenInAppUtils() {}
+diff --git a/chrome/browser/performance_manager/policies/process_rank_policy_android.cc b/chrome/browser/performance_manager/policies/process_rank_policy_android.cc
+index 33ae2ec1c298f..85c7bf1d2fbd0 100644
+--- a/chrome/browser/performance_manager/policies/process_rank_policy_android.cc
++++ b/chrome/browser/performance_manager/policies/process_rank_policy_android.cc
+@@ -129,7 +129,7 @@ class WebViewUpdater : public PageNodeObserver,
+ namespace {
+ 
+ bool IsChangeUnfocusedPriorityEnabled() {
+-  return base::android::device_info::is_desktop() ||
++  return base::android::device_info::is_desktop_false() ||
+          base::FeatureList::IsEnabled(
+              chrome::android::kChangeUnfocusedPriority);
+ }
 diff --git a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc b/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
 index ca154d6788c54..721e6fa1f855b 100644
 --- a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
@@ -2078,7 +2220,7 @@ index 21c413d3f709d..77a6fb37f942f 100644
        "webui/discards/discards_ui.cc",
        "webui/discards/discards_ui.h",
 diff --git a/chrome/browser/ui/android/BUILD.gn b/chrome/browser/ui/android/BUILD.gn
-index 589bb2f89bc73..249e7ef6b3cd6 100644
+index 589bb2f89bc73..dbb60632cc5ac 100644
 --- a/chrome/browser/ui/android/BUILD.gn
 +++ b/chrome/browser/ui/android/BUILD.gn
 @@ -76,7 +76,7 @@ if (is_android) {
@@ -2090,6 +2232,15 @@ index 589bb2f89bc73..249e7ef6b3cd6 100644
        # extension_menu_model_android.h is in the chrome/browser/extensions/
        # directory; dep on that target to make it accessible.
        deps += [ "//chrome/browser/extensions" ]
+@@ -86,7 +86,7 @@ if (is_android) {
+ 
+ # TODO(crbug.com/473636857): Include once all Android builds correctly use
+ # BrowserWindowInterface.
+-if (is_desktop_android) {
++if (is_desktop_android_thorium) {
+   source_set("browser_tests") {
+     testonly = true
+     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 diff --git a/chrome/browser/ui/android/context_menu_helper.cc b/chrome/browser/ui/android/context_menu_helper.cc
 index 33e54e0caf21c..0c57c7dd03fd1 100644
 --- a/chrome/browser/ui/android/context_menu_helper.cc
@@ -2212,14 +2363,15 @@ index d979dfba3ab31..b79bbe7b3bbc2 100644
  }
  
 diff --git a/chrome/browser/ui/android/extensions/extension_actions_bridge.cc b/chrome/browser/ui/android/extensions/extension_actions_bridge.cc
-index 7e85367ba88c8..1e0aea8e613d0 100644
+index 7e85367ba88c8..473c343b3f663 100644
 --- a/chrome/browser/ui/android/extensions/extension_actions_bridge.cc
 +++ b/chrome/browser/ui/android/extensions/extension_actions_bridge.cc
-@@ -8,12 +8,15 @@
+@@ -8,12 +8,16 @@
  #include <variant>
  
  #include "base/android/jni_string.h"
 +#include "base/files/file_util.h"
++#include "base/logging.h"
 +#include "base/task/thread_pool.h"
  #include "chrome/browser/extensions/extension_management.h"
  #include "chrome/browser/profiles/profile.h"
@@ -2231,7 +2383,7 @@ index 7e85367ba88c8..1e0aea8e613d0 100644
  #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionAction_jni.h"
  #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionActionsBridge_jni.h"
  
-@@ -28,6 +31,26 @@ ExtensionActionsBridge::ExtensionActionsBridge(
+@@ -28,6 +32,26 @@ ExtensionActionsBridge::ExtensionActionsBridge(
  
  ExtensionActionsBridge::~ExtensionActionsBridge() = default;
  
@@ -2413,6 +2565,29 @@ index 85a2567522853..d373ff950270c 100644
  
    raw_ptr<WindowControllerListObserverForTesting>
        window_controller_list_observer_for_testing_;
+diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+index 4535e54346fde..1858d120d7b26 100644
+--- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
++++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
+@@ -5622,6 +5622,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
+       <message name="IDS_STORAGE_MANAGEMENT_CLEAR_ALL_DATA_BUTTON" desc="Text on the button to clear all Chrome data. [CHAR_LIMIT=30]">
+         Clear All Data
+       </message>
++      <message name="IDS_STORAGE_MANAGEMENT_EXTENSION_STORAGE_DESCRIPTION" desc="Text used to describe all storage space used by extensions.">
++        Total data used by extensions
++      </message>
++      <message name="IDS_STORAGE_MANAGEMENT_CLEAR_ALL_EXTENSION_BUTTON" desc="Text on the button to clear all extension data. [CHAR_LIMIT=30]">
++        Clear Extension Data
++      </message>
++      <message name="IDS_STORAGE_MANAGEMENT_EXTENSION_RESET_APP_DIALOG_TITLE" desc="Title of the reset extension data dialog in the storage UI.">
++        Delete extension data?
++      </message>
++      <message name="IDS_STORAGE_MANAGEMENT_EXTENSION_RESET_APP_DIALOG_TEXT" desc="Text of the reset extension data dialog in the storage UI.">
++        All extension data will be deleted permanently.
++      </message>
+       <message name="IDS_STORAGE_MANAGEMENT_RESET_APP_DIALOG_TITLE" desc="Title of the reset app dialog in the storage UI used to reset the app.">
+         Delete app data?
+       </message>
 diff --git a/chrome/browser/ui/android/tab_model/tab_model.cc b/chrome/browser/ui/android/tab_model/tab_model.cc
 index cb5a9e6119182..cb51091357568 100644
 --- a/chrome/browser/ui/android/tab_model/tab_model.cc
@@ -3037,6 +3212,19 @@ index ee95b69c461a3..62512c3b12f73 100644
      sources += [
        "../browser/ui/webui/management/management_ui_handler_unittest.cc",
        "../browser/ui/webui/management/management_ui_unittest.cc",
+diff --git a/chrome/test/data/webui/cr_components/BUILD.gn b/chrome/test/data/webui/cr_components/BUILD.gn
+index bfc4a0ba29d7d..8f29a47781466 100644
+--- a/chrome/test/data/webui/cr_components/BUILD.gn
++++ b/chrome/test/data/webui/cr_components/BUILD.gn
+@@ -4,7 +4,7 @@
+ 
+ import("../build_webui_tests.gni")
+ 
+-assert((!is_android && !is_ios) || is_desktop_android)
++assert((!is_android && !is_ios) || is_desktop_android_thorium)
+ 
+ build_webui_tests("build") {
+   cc_test_files = [
 diff --git a/chrome/version.gni b/chrome/version.gni
 index 934e5d9ea8136..4d9f061be910d 100644
 --- a/chrome/version.gni
@@ -3217,6 +3405,19 @@ index 6e9922af171d7..f9bebfe07fdc1 100644
    // Returns a pointer to a controller host that sends media commands related to
    // mirroring within a route.
    virtual MirroringMediaControllerHost* GetMirroringMediaControllerHost(
+diff --git a/components/omnibox/common/android/java/src/org/chromium/components/omnibox/OmniboxCapabilities.java b/components/omnibox/common/android/java/src/org/chromium/components/omnibox/OmniboxCapabilities.java
+index 3d9a79fb3e1bd..1c9eec1f18cf7 100644
+--- a/components/omnibox/common/android/java/src/org/chromium/components/omnibox/OmniboxCapabilities.java
++++ b/components/omnibox/common/android/java/src/org/chromium/components/omnibox/OmniboxCapabilities.java
+@@ -100,7 +100,7 @@ public class OmniboxCapabilities {
+         if (sIsDesktopPlatformForTesting != null) {
+             return sIsDesktopPlatformForTesting;
+         }
+-        return DeviceInfo.isDesktop();
++        return DeviceInfo.isDesktopFalse();
+     }
+ 
+     /** Modifies the output of {@link #isDesktopPlatform()} for testing. */
 diff --git a/components/policy/android/java/src/org/chromium/components/policy/CombinedPolicyProvider.java b/components/policy/android/java/src/org/chromium/components/policy/CombinedPolicyProvider.java
 index 93d8c93989b02..26b2552badc6c 100644
 --- a/components/policy/android/java/src/org/chromium/components/policy/CombinedPolicyProvider.java
@@ -3403,6 +3604,19 @@ index b4eeb06d4f83e..46f349abed5db 100644
          <tr>
            <td class="label">Desktop Android</td>
            <td class="version">true</td>
+diff --git a/content/browser/BUILD.gn b/content/browser/BUILD.gn
+index 6b34e149fe700..dcc008d0495a4 100644
+--- a/content/browser/BUILD.gn
++++ b/content/browser/BUILD.gn
+@@ -3642,7 +3642,7 @@ source_set("browser") {
+   # For platforms that support extension service workers.
+   # NOTE: Fuchsia depends on this class, but probably shouldn't, as it doesn't
+   # support extensions.
+-  if (is_win || is_apple || is_linux || is_chromeos || is_desktop_android ||
++  if (is_win || is_apple || is_linux || is_chromeos || is_desktop_android_thorium ||
+       is_fuchsia) {
+     sources += [
+       "service_worker/service_worker_usb_delegate_observer.cc",
 diff --git a/content/browser/android/selection/selection_popup_controller.cc b/content/browser/android/selection/selection_popup_controller.cc
 index fefd6ea6aa448..982594882483d 100644
 --- a/content/browser/android/selection/selection_popup_controller.cc
@@ -4001,6 +4215,19 @@ index 0a1deaa88c290..d6c83822ae3c2 100644
      return false;
    }
  #endif
+diff --git a/media/audio/android/audio_manager_android.cc b/media/audio/android/audio_manager_android.cc
+index de207cc84d4a2..2c79d113af9c6 100644
+--- a/media/audio/android/audio_manager_android.cc
++++ b/media/audio/android/audio_manager_android.cc
+@@ -399,7 +399,7 @@ AudioManagerAndroid::AudioManagerAndroid(
+       communication_mode_is_on_(false),
+       output_volume_override_set_(false),
+       output_volume_override_(0) {
+-  const int max_output_streams = base::android::device_info::is_desktop()
++  const int max_output_streams = base::android::device_info::is_desktop_false()
+                                      ? kDesktopMaxOutputStreams
+                                      : kMaxOutputStreams;
+   SetMaxOutputStreamsAllowed(max_output_streams);
 diff --git a/media/base/android/java/src/org/chromium/media/AudioManagerAndroid.java b/media/base/android/java/src/org/chromium/media/AudioManagerAndroid.java
 index 58901270b9879..2ecf4e82fe2f5 100644
 --- a/media/base/android/java/src/org/chromium/media/AudioManagerAndroid.java
@@ -4139,6 +4366,31 @@ index 46713bd30ba2b..f664d9a12759a 100644
              if (shouldShowImageTypes() && camera != null) extraIntents.add(camera);
              if (shouldShowVideoTypes() && camcorder != null) extraIntents.add(camcorder);
              if (shouldShowAudioTypes() && soundRecorder != null) extraIntents.add(soundRecorder);
+diff --git a/ui/android/java/src/org/chromium/ui/base/TouchDevice.java b/ui/android/java/src/org/chromium/ui/base/TouchDevice.java
+index 873e17281c84e..e560b8cb467ef 100644
+--- a/ui/android/java/src/org/chromium/ui/base/TouchDevice.java
++++ b/ui/android/java/src/org/chromium/ui/base/TouchDevice.java
+@@ -149,7 +149,7 @@ public class TouchDevice {
+         // mode. Kept in case other Samsung configurations do report it.
+         // TODO(crbug.com/502461774): Find a reliable DeX detection heuristic
+         // that covers the phone-as-trackpad case.
+-        if (DeviceInfo.isDesktop()) { // nocheck
++        if (DeviceInfo.isDesktopFalse()) { // nocheck
+             return true;
+         }
+         UiModeManager uiModeManager =
+diff --git a/ui/android/java/src/org/chromium/ui/util/StyleUtils.java b/ui/android/java/src/org/chromium/ui/util/StyleUtils.java
+index 683e6f41c6a1a..5ec0b4080003e 100644
+--- a/ui/android/java/src/org/chromium/ui/util/StyleUtils.java
++++ b/ui/android/java/src/org/chromium/ui/util/StyleUtils.java
+@@ -89,6 +89,6 @@ public class StyleUtils {
+      * Returns Whether the desktop density should be applied.
+      */
+     public static boolean shouldApplyDesktopDensity() {
+-        return DeviceInfo.isDesktop();
++        return DeviceInfo.isDesktopFalse();
+     }
+ }
 diff --git a/ui/android/java/src/org/chromium/ui/widget/PopupSpecCalculator.java b/ui/android/java/src/org/chromium/ui/widget/PopupSpecCalculator.java
 index ad95baec18da8..21198aa74321c 100644
 --- a/ui/android/java/src/org/chromium/ui/widget/PopupSpecCalculator.java
@@ -4233,6 +4485,28 @@ index 5cc65ab1ef046..96556d3a163ff 100644
      return DEVICE_FORM_FACTOR_DESKTOP;
    }
  
+diff --git a/ui/base/pointer/pointer_device_android.cc b/ui/base/pointer/pointer_device_android.cc
+index c62fceb610d26..ab2adb1cbae9d 100644
+--- a/ui/base/pointer/pointer_device_android.cc
++++ b/ui/base/pointer/pointer_device_android.cc
+@@ -36,7 +36,7 @@ int MaxTouchPoints() {
+ PointerType GetPrimaryPointerType() {
+   const int available_pointer_types = GetAvailablePointerAndHoverTypes().first;
+   // In desktop mode, prefer fine pointer (mouse/trackpad) as primary.
+-  if (base::android::device_info::is_desktop()) {
++  if (base::android::device_info::is_desktop_false()) {
+     if (available_pointer_types & POINTER_TYPE_FINE) {
+       return POINTER_TYPE_FINE;
+     }
+@@ -55,7 +55,7 @@ HoverType GetPrimaryHoverType() {
+   auto [available_pointer_types, available_hover_types] =
+       GetAvailablePointerAndHoverTypes();
+   // In desktop mode, the mouse is the primary input, so report hover.
+-  if (base::android::device_info::is_desktop()) {
++  if (base::android::device_info::is_desktop_false()) {
+     if (available_hover_types & HOVER_TYPE_HOVER) {
+       return HOVER_TYPE_HOVER;
+     }
 diff --git a/ui/gl/features.gni b/ui/gl/features.gni
 index e0bdd667233d5..02931a0e96d03 100644
 --- a/ui/gl/features.gni
@@ -4266,6 +4540,19 @@ index 120ebdc3b601e..e2cbb33993dbf 100644
          <if expr="not is_android">
            <structure type="chrome_html" name="IDR_FINGERPRINT_COMPLETE_CHECK_DARK" file="vector/common/check_dark.json" compress="gzip" />
            <structure type="chrome_html" name="IDR_FINGERPRINT_COMPLETE_CHECK_LIGHT" file="vector/common/check_light.json" compress="gzip" />
+diff --git a/ui/webui/BUILD.gn b/ui/webui/BUILD.gn
+index 38910fd023e7c..2a49b6e924451 100644
+--- a/ui/webui/BUILD.gn
++++ b/ui/webui/BUILD.gn
+@@ -38,7 +38,7 @@ if (use_blink) {
+       "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
+     ]
+ 
+-    if ((!is_android && !is_ios) || is_desktop_android) {
++    if ((!is_android && !is_ios) || is_desktop_android_thorium) {
+       public_deps +=
+           [ "//ui/webui/resources/cr_components/color_change_listener:mojom" ]
+       sources += [
 diff --git a/ui/webui/resources/BUILD.gn b/ui/webui/resources/BUILD.gn
 index 9cb5e00971323..780f3c7fad75d 100644
 --- a/ui/webui/resources/BUILD.gn
@@ -4279,6 +4566,32 @@ index 9cb5e00971323..780f3c7fad75d 100644
      public_deps += [
        "cr_components/app_management:build_grdp",
        "cr_components/color_change_listener:build_grdp",
+diff --git a/ui/webui/resources/cr_components/app_management/BUILD.gn b/ui/webui/resources/cr_components/app_management/BUILD.gn
+index 72179fc1de639..8efacc06d99ff 100644
+--- a/ui/webui/resources/cr_components/app_management/BUILD.gn
++++ b/ui/webui/resources/cr_components/app_management/BUILD.gn
+@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert((!is_android && !is_ios) || is_desktop_android)
++assert((!is_android && !is_ios) || is_desktop_android_thorium)
+ 
+ mojom("mojo_bindings") {
+   sources = [ "app_management.mojom" ]
+diff --git a/ui/webui/resources/cr_components/color_change_listener/BUILD.gn b/ui/webui/resources/cr_components/color_change_listener/BUILD.gn
+index f89af6f653728..77dc664110199 100644
+--- a/ui/webui/resources/cr_components/color_change_listener/BUILD.gn
++++ b/ui/webui/resources/cr_components/color_change_listener/BUILD.gn
+@@ -7,7 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert((!is_android && !is_ios) || is_desktop_android)
++assert((!is_android && !is_ios) || is_desktop_android_thorium)
+ 
+ mojom("mojom") {
+   sources = [ "color_change_listener.mojom" ]
 diff --git a/ui/webui/resources/cr_components/cr_shortcut_input/BUILD.gn b/ui/webui/resources/cr_components/cr_shortcut_input/BUILD.gn
 index 5adcca50200bd..aa8cb974533c8 100644
 --- a/ui/webui/resources/cr_components/cr_shortcut_input/BUILD.gn
@@ -4292,6 +4605,84 @@ index 5adcca50200bd..aa8cb974533c8 100644
  
  build_webui("build") {
    grd_prefix = "cr_components_cr_shortcut_input"
+diff --git a/ui/webui/resources/cr_components/customize_color_scheme_mode/BUILD.gn b/ui/webui/resources/cr_components/customize_color_scheme_mode/BUILD.gn
+index f49c789412408..7331a626d6414 100644
+--- a/ui/webui/resources/cr_components/customize_color_scheme_mode/BUILD.gn
++++ b/ui/webui/resources/cr_components/customize_color_scheme_mode/BUILD.gn
+@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert((!is_android && !is_ios) || is_desktop_android)
++assert((!is_android && !is_ios) || is_desktop_android_thorium)
+ 
+ mojom("mojom") {
+   sources = [ "customize_color_scheme_mode.mojom" ]
+diff --git a/ui/webui/resources/cr_components/help_bubble/BUILD.gn b/ui/webui/resources/cr_components/help_bubble/BUILD.gn
+index 4be1f8f4dede6..934263c672e00 100644
+--- a/ui/webui/resources/cr_components/help_bubble/BUILD.gn
++++ b/ui/webui/resources/cr_components/help_bubble/BUILD.gn
+@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert((!is_android && !is_ios) || is_desktop_android)
++assert((!is_android && !is_ios) || is_desktop_android_thorium)
+ 
+ mojom("mojo_bindings") {
+   sources = [
+diff --git a/ui/webui/resources/cr_components/history/BUILD.gn b/ui/webui/resources/cr_components/history/BUILD.gn
+index 0cd84c6ce5e11..45feef106a62f 100644
+--- a/ui/webui/resources/cr_components/history/BUILD.gn
++++ b/ui/webui/resources/cr_components/history/BUILD.gn
+@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert((!is_android && !is_ios) || is_desktop_android)
++assert((!is_android && !is_ios) || is_desktop_android_thorium)
+ 
+ mojom("mojo_bindings") {
+   sources = [
+diff --git a/ui/webui/resources/cr_components/history_clusters/BUILD.gn b/ui/webui/resources/cr_components/history_clusters/BUILD.gn
+index e3570e4fe625e..40ef23f4a239e 100644
+--- a/ui/webui/resources/cr_components/history_clusters/BUILD.gn
++++ b/ui/webui/resources/cr_components/history_clusters/BUILD.gn
+@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert(!is_android || is_desktop_android)
++assert(!is_android || is_desktop_android_thorium)
+ 
+ mojom("mojo_bindings") {
+   sources = [ "history_clusters.mojom" ]
+diff --git a/ui/webui/resources/cr_components/history_embeddings/BUILD.gn b/ui/webui/resources/cr_components/history_embeddings/BUILD.gn
+index 66bcedd982454..ebdab2d49e1f9 100644
+--- a/ui/webui/resources/cr_components/history_embeddings/BUILD.gn
++++ b/ui/webui/resources/cr_components/history_embeddings/BUILD.gn
+@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert(!is_android || is_desktop_android)
++assert(!is_android || is_desktop_android_thorium)
+ 
+ mojom("mojo_bindings") {
+   sources = [ "history_embeddings.mojom" ]
+diff --git a/ui/webui/resources/cr_components/managed_dialog/BUILD.gn b/ui/webui/resources/cr_components/managed_dialog/BUILD.gn
+index 4c64f0572a59a..0bef3becdfa34 100644
+--- a/ui/webui/resources/cr_components/managed_dialog/BUILD.gn
++++ b/ui/webui/resources/cr_components/managed_dialog/BUILD.gn
+@@ -5,7 +5,7 @@
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert((!is_android && !is_ios) || is_desktop_android)
++assert((!is_android && !is_ios) || is_desktop_android_thorium)
+ 
+ build_webui("build") {
+   grd_prefix = "cr_components_managed_dialog"
 diff --git a/ui/webui/resources/cr_components/managed_footnote/BUILD.gn b/ui/webui/resources/cr_components/managed_footnote/BUILD.gn
 index 9f6536aa1d387..d45b19ae2f855 100644
 --- a/ui/webui/resources/cr_components/managed_footnote/BUILD.gn
@@ -4305,6 +4696,45 @@ index 9f6536aa1d387..d45b19ae2f855 100644
  
  build_webui("build") {
    grd_prefix = "cr_components_managed_footnote"
+diff --git a/ui/webui/resources/cr_components/most_visited/BUILD.gn b/ui/webui/resources/cr_components/most_visited/BUILD.gn
+index ea43770304f5f..29ad37ebc2c51 100644
+--- a/ui/webui/resources/cr_components/most_visited/BUILD.gn
++++ b/ui/webui/resources/cr_components/most_visited/BUILD.gn
+@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert((!is_android && !is_ios) || is_desktop_android)
++assert((!is_android && !is_ios) || is_desktop_android_thorium)
+ 
+ mojom("mojom") {
+   sources = [ "most_visited.mojom" ]
+diff --git a/ui/webui/resources/cr_components/page_image_service/BUILD.gn b/ui/webui/resources/cr_components/page_image_service/BUILD.gn
+index b2d27149dd107..1e942cccbb879 100644
+--- a/ui/webui/resources/cr_components/page_image_service/BUILD.gn
++++ b/ui/webui/resources/cr_components/page_image_service/BUILD.gn
+@@ -5,7 +5,7 @@
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert((!is_android && !is_ios) || is_desktop_android)
++assert((!is_android && !is_ios) || is_desktop_android_thorium)
+ 
+ build_webui("build") {
+   grd_prefix = "cr_components_page_image_service"
+diff --git a/ui/webui/resources/cr_components/theme_color_picker/BUILD.gn b/ui/webui/resources/cr_components/theme_color_picker/BUILD.gn
+index 7d295bd6979f6..8b677b664d5d0 100644
+--- a/ui/webui/resources/cr_components/theme_color_picker/BUILD.gn
++++ b/ui/webui/resources/cr_components/theme_color_picker/BUILD.gn
+@@ -6,7 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
+ import("//ui/webui/resources/tools/build_webui.gni")
+ import("//ui/webui/webui_features.gni")
+ 
+-assert((!is_android && !is_ios) || is_desktop_android)
++assert((!is_android && !is_ios) || is_desktop_android_thorium)
+ 
+ mojom("mojom") {
+   sources = [ "theme_color_picker.mojom" ]
 diff --git a/ui/webui/resources/cr_elements/BUILD.gn b/ui/webui/resources/cr_elements/BUILD.gn
 index 60af355958f8f..22302fc6dece8 100644
 --- a/ui/webui/resources/cr_elements/BUILD.gn
@@ -4354,3 +4784,48 @@ index 91cc473cde764..cab09724c2a3f 100644
      in_files += [ "md_colors.css" ]
    }
  }
+diff --git a/ui/webui/resources/images/BUILD.gn b/ui/webui/resources/images/BUILD.gn
+index c7275ffa49c1a..0be83c5e1626c 100644
+--- a/ui/webui/resources/images/BUILD.gn
++++ b/ui/webui/resources/images/BUILD.gn
+@@ -62,7 +62,7 @@ generate_grd("build_grdp") {
+     ]
+   }
+ 
+-  if ((!is_android && !is_ios) || is_desktop_android) {
++  if ((!is_android && !is_ios) || is_desktop_android_thorium) {
+     input_files += [
+       "arrow_right.svg",
+       "business.svg",
+diff --git a/ui/webui/resources/js/BUILD.gn b/ui/webui/resources/js/BUILD.gn
+index 4fba94dd93e76..97f5827e20de9 100644
+--- a/ui/webui/resources/js/BUILD.gn
++++ b/ui/webui/resources/js/BUILD.gn
+@@ -57,7 +57,7 @@ build_webui("build") {
+   mojo_files_deps = [ "./metrics_reporter:mojo_bindings_ts__generator" ]
+   mojo_files = [ "$root_gen_dir/ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-webui.ts" ]
+ 
+-  if ((!is_android && !is_ios) || is_desktop_android) {
++  if ((!is_android && !is_ios) || is_desktop_android_thorium) {
+     ts_files += [ "browser_command/browser_command_proxy.ts" ]
+     mojo_files_deps += [ "./browser_command:mojo_bindings_ts__generator" ]
+     mojo_files += [ "$root_gen_dir/ui/webui/resources/js/browser_command/browser_command.mojom-webui.ts" ]
+diff --git a/ui/webui/webui_features.gni b/ui/webui/webui_features.gni
+index 4b773074206d9..d58182f470488 100644
+--- a/ui/webui/webui_features.gni
++++ b/ui/webui/webui_features.gni
+@@ -44,12 +44,12 @@ if (enable_cast_receiver || is_cast_android || is_castos) {
+     # Enable the WebUI version of the New Tab Page.
+     enable_webui_ntp =
+         target_os == "win" || target_os == "mac" || target_os == "linux" ||
+-        target_os == "chromeos" || is_desktop_android
++        target_os == "chromeos" || is_desktop_android_thorium
+   }
+   declare_args() {
+     # Enable WebUI Contextual Tasks Composebox.
+     enable_webui_contextual_tasks_composebox =
+-        enable_webui_ntp || is_desktop_android
++        enable_webui_ntp || is_desktop_android_thorium
+   }
+   if (enable_webui_ntp) {
+     # NTP relies on chrome.metricsPrivate, which is an extensions API.

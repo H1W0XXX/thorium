@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/browser.cc b/chrome/browser/ui/browser.cc
-index db5e84795b137..1e498d8ede16f 100644
+index db5e84795b137..9aca8d595610d 100644
 --- a/chrome/browser/ui/browser.cc
 +++ b/chrome/browser/ui/browser.cc
 @@ -150,6 +150,7 @@
@@ -45,7 +45,7 @@ index db5e84795b137..1e498d8ede16f 100644
    UnloadController::From(this)->ResetTryToCloseWindow();
  }
  
-@@ -3135,6 +3142,78 @@ bool Browser::CanCloseWithInProgressDownloads() {
+@@ -3135,6 +3142,82 @@ bool Browser::CanCloseWithInProgressDownloads() {
    return false;
  }
  
@@ -95,15 +95,19 @@ index db5e84795b137..1e498d8ede16f 100644
 +      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
 +          "close-confirmation");
 +  bool show_confirmation_last_window = flag_value == "last";
++  bool show_confirmation_multiple_windows = flag_value == "multiple";
++  bool show_confirmation_any_window = flag_value == "any";
 +
 +  if (show_confirmation_last_window) {
 +    if (total_window_count >= 1 || tab_count <= 1) {
 +      return true;
 +    }
-+  } else {
++  } else if (show_confirmation_multiple_windows) {
 +    if (total_window_count == 0) {
 +      return true;
 +    }
++  } else if (!show_confirmation_any_window) {
++    return true;
 +  }
 +
 +  close_multitab_confirmation_state_ =
@@ -124,7 +128,7 @@ index db5e84795b137..1e498d8ede16f 100644
  void Browser::InProgressDownloadResponse(bool cancel_downloads) {
    if (cancel_downloads) {
      cancel_download_confirmation_state_ =
-@@ -3158,6 +3237,24 @@ void Browser::InProgressDownloadResponse(bool cancel_downloads) {
+@@ -3158,6 +3241,24 @@ void Browser::InProgressDownloadResponse(bool cancel_downloads) {
        .Run(WarnBeforeClosingResult::kDoNotClose);
  }
  

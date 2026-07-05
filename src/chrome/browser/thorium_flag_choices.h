@@ -150,6 +150,9 @@ const FeatureEntry::Choice kCloseConfirmation[] = {
     {"Show confirmation with multiple windows",
      "close-confirmation",
      "multiple"},
+    {"Show confirmation with any window",
+     "close-confirmation",
+     "any"},
 };
 
 const FeatureEntry::Choice kCloseWindowWithLastTab[] = {

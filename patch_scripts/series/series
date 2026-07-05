@@ -98,6 +98,7 @@ other/add-flag-for-right-click-close-tab.patch
 other/add-flag-for-hover-activate-tab.patch
 other/add-flag-for-open-bookmarks-in-new-tab.patch
 other/add-flag-for-open-omnibox-url-in-new-tab.patch
+other/add-flag-for-incognito-themes.patch
 other/add-flag-for-custom-ntp.patch
 other/add-flag-for-tab-hover-cards.patch
 other/force-disable-tab-outlines.patch

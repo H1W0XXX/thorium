@@ -44,6 +44,7 @@ overlay-derived, or still need separate provenance review.
 | [`add-flag-for-hover-activate-tab.patch`](../other/add-flag-for-hover-activate-tab.patch) | Ported from local `chromium-unstable` history; hover-to-activate tab behavior |
 | [`add-flag-for-open-bookmarks-in-new-tab.patch`](../other/add-flag-for-open-bookmarks-in-new-tab.patch) | Ported from local `chromium-unstable` history; bookmark foreground/background new-tab behavior |
 | [`add-flag-for-open-omnibox-url-in-new-tab.patch`](../other/add-flag-for-open-omnibox-url-in-new-tab.patch) | Ported from local `chromium-unstable` history; omnibox foreground/background new-tab behavior |
+| [`add-flag-for-incognito-themes.patch`](../other/add-flag-for-incognito-themes.patch) | Allow Incognito windows and web content to follow the browser theme color mode |
 | [`add-flag-for-custom-ntp.patch`](../other/add-flag-for-custom-ntp.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) custom NTP flag patch |
 | [`add-flag-for-tab-hover-cards.patch`](../other/add-flag-for-tab-hover-cards.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) tab hover cards flag patch |
 | [`add-flag-to-keep-all-history.patch`](../other/add-flag-to-keep-all-history.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) disable local history expiration flag patch |
@@ -159,6 +160,7 @@ overlay-derived, or still need separate provenance review.
 - [`add-flag-for-hover-activate-tab.patch`](../other/add-flag-for-hover-activate-tab.patch)
 - [`add-flag-for-open-bookmarks-in-new-tab.patch`](../other/add-flag-for-open-bookmarks-in-new-tab.patch)
 - [`add-flag-for-open-omnibox-url-in-new-tab.patch`](../other/add-flag-for-open-omnibox-url-in-new-tab.patch)
+- [`add-flag-for-incognito-themes.patch`](../other/add-flag-for-incognito-themes.patch)
 - [`add-flag-for-custom-ntp.patch`](../other/add-flag-for-custom-ntp.patch)
 - [`add-flag-for-tab-hover-cards.patch`](../other/add-flag-for-tab-hover-cards.patch)
 - [`force-disable-tab-outlines.patch`](../other/force-disable-tab-outlines.patch)

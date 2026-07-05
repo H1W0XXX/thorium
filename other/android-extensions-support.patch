@@ -1121,10 +1121,10 @@ index b636ad2726268..370bfede7be7c 100644
    registry.AddGlobal<tracked_element::mojom::TrackedElementHandler>(
        base::BindRepeating(&BindTrackedElementHandler));
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index fee5e79b792f4..4c812af1c60ed 100644
+index dd270782fc2ac..af9fe0160dc7c 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -4405,7 +4405,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
+@@ -4408,7 +4408,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
      // TODO(wenz): This should instead proceed with the selected certificate
      // when there are matching certificates in the OS.
  #if BUILDFLAG(ENABLE_EXTENSIONS) && \
@@ -1133,7 +1133,7 @@ index fee5e79b792f4..4c812af1c60ed 100644
      if (matching_certificates.empty() && nonmatching_certificates.empty()) {
        extensions::ProcessMap* process_map =
            extensions::ProcessMap::Get(profile);
-@@ -4698,7 +4698,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
+@@ -4701,7 +4701,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
  // Fill font preferences. These are not registered on Android unless we're built
  // with extensions (the chrome.fontSettings API can change these).
  // - http://crbug.com/40337093, http://crbug.com/41304476.

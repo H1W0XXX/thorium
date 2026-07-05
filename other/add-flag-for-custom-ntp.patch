@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index edab63d18ffd0..fee5e79b792f4 100644
+index d11d5757b6c9c..dd270782fc2ac 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
 @@ -859,11 +859,22 @@ bool HandleNewTabPageLocationOverride(

@@ -113,6 +113,7 @@ other/disable-background-mode-by-default.patch
 other/thorium-dino-game.patch
 other/allow-insecure-downloads.patch
 other/disable-download-quarantine.patch
+other/notify-shell-after-download-complete.patch
 other/disable-vulkan-gpu-log-warnings.patch
 other/thorium-sandbox-compat.patch
 other/thoriumos-ash-vector-icons.patch

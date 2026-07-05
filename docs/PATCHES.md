@@ -49,6 +49,7 @@ overlay-derived, or still need separate provenance review.
 | [`add-flag-to-keep-all-history.patch`](../other/add-flag-to-keep-all-history.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) disable local history expiration flag patch |
 | [`add-flag-to-clear-data-on-exit.patch`](../other/add-flag-to-clear-data-on-exit.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) clear-data-on-exit flag patch |
 | [`disable-download-quarantine.patch`](../other/disable-download-quarantine.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) disable download quarantine patch |
+| [`notify-shell-after-download-complete.patch`](../other/notify-shell-after-download-complete.patch) | Windows shell refresh notification after completed downloads |
 | [`keep-expired-flags.patch`](../other/keep-expired-flags.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) keep expired flags patch |
 | [`allow_manifest_v2_extensions.patch`](../other/allow_manifest_v2_extensions.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) Manifest V2 extension support patch |
 | [`android-extensions-support.patch`](../other/android-extensions-support.patch) | [uazo/Cromite](https://github.com/uazo/cromite) experimental Android extensions support patch |
@@ -173,6 +174,7 @@ overlay-derived, or still need separate provenance review.
 - [`thorium-dino-game.patch`](../other/thorium-dino-game.patch)
 - [`allow-insecure-downloads.patch`](../other/allow-insecure-downloads.patch)
 - [`disable-download-quarantine.patch`](../other/disable-download-quarantine.patch)
+- [`notify-shell-after-download-complete.patch`](../other/notify-shell-after-download-complete.patch)
 - [`disable-vulkan-gpu-log-warnings.patch`](../other/disable-vulkan-gpu-log-warnings.patch)
 - [`thorium-sandbox-compat.patch`](../other/thorium-sandbox-compat.patch)
 - [`thoriumos-ash-vector-icons.patch`](../other/thoriumos-ash-vector-icons.patch)

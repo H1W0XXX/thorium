@@ -2185,7 +2185,7 @@ index b7663b7b03f9b..38e9815a42650 100644
        GetColorProvider()->GetColor(kColorSidePanelHoverResizeAreaHandle);
    SetBackground(CreateRoundedRectBackground(resize_handle_color, 2));
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index d9287b9ed5296..dba4f54caa781 100644
+index d9287b9ed5296..28011b608d1e0 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -1,4 +1,4 @@
@@ -2266,20 +2266,7 @@ index d9287b9ed5296..dba4f54caa781 100644
        }
      }
      const gfx::Size image_size = alert_indicator_button_->GetPreferredSize();
-@@ -655,7 +673,11 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
-   // Close tab on middle click, but only if the button is released over the tab
-   // (normal windows behavior is to discard presses of a UI element where the
-   // releases happen off the element).
--  if (event.IsOnlyMiddleMouseButton()) {
-+  if (event.IsOnlyMiddleMouseButton() ||
-+      // Close tab on double click, mirror of IsOnlyMiddleMouseButton
-+      // Based on gz83's work.
-+      ((event.IsOnlyLeftMouseButton() && event.GetClickCount() == 2) &&
-+        base::CommandLine::ForCurrentProcess()->HasSwitch("double-click-close-tab"))) {
-     if (HitTestPoint(event.location())) {
-       controller_->CloseTab(this, CloseTabSource::kFromMouse);
-     } else if (closing_) {
-@@ -925,6 +947,7 @@ void Tab::ActiveStateChanged() {
+@@ -925,6 +943,7 @@ void Tab::ActiveStateChanged() {
    icon_->SetActiveState(IsActive());
    alert_indicator_button_->OnParentTabButtonColorChanged();
    alert_indicator_button_->UpdateEnabledForMuteToggle();
@@ -2287,7 +2274,7 @@ index d9287b9ed5296..dba4f54caa781 100644
    DeprecatedLayoutImmediately();
  }
  
-@@ -1005,6 +1028,16 @@ void Tab::HideHover(TabStyle::HideHoverStyle style) {
+@@ -1005,6 +1024,16 @@ void Tab::HideHover(TabStyle::HideHoverStyle style) {
    DeprecatedLayoutImmediately();
  }
  
@@ -2304,7 +2291,7 @@ index d9287b9ed5296..dba4f54caa781 100644
  // static
  std::u16string Tab::GetTooltipText(const std::u16string& title,
                                     std::optional<tabs::TabAlert> alert_state) {
-@@ -1062,6 +1095,7 @@ void Tab::UpdateIconVisibility() {
+@@ -1062,6 +1091,7 @@ void Tab::UpdateIconVisibility() {
    // a non-narrow tab.
    if (!closing_) {
      center_icon_ = false;
@@ -2312,7 +2299,7 @@ index d9287b9ed5296..dba4f54caa781 100644
    }
  
    showing_icon_ = showing_alert_indicator_ = false;
-@@ -1099,6 +1133,7 @@ void Tab::UpdateIconVisibility() {
+@@ -1099,6 +1129,7 @@ void Tab::UpdateIconVisibility() {
      // While animating to or from the pinned state, pinned tabs are rendered as
      // normal tabs. Force the extra padding on so the favicon doesn't jitter
      // left and then back right again as it resizes through layout regimes.
@@ -2320,7 +2307,7 @@ index d9287b9ed5296..dba4f54caa781 100644
      extra_alert_indicator_padding_ = true;
      return;
    }
-@@ -1227,6 +1262,16 @@ void Tab::UpdateIconVisibility() {
+@@ -1227,6 +1258,16 @@ void Tab::UpdateIconVisibility() {
      }
    }
  

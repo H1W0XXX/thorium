@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/views/extensions/extensions_toolbar_desktop.cc b/chrome/browser/ui/views/extensions/extensions_toolbar_desktop.cc
-index 7b772874717df..35cc31dd6d21a 100644
+index 7b772874717df..92129582c40ea 100644
 --- a/chrome/browser/ui/views/extensions/extensions_toolbar_desktop.cc
 +++ b/chrome/browser/ui/views/extensions/extensions_toolbar_desktop.cc
 @@ -7,6 +7,7 @@
@@ -35,13 +35,13 @@ index 7b772874717df..35cc31dd6d21a 100644
 +  // and extension-uninstall-dialog may be out of the window border on Linux.
 +  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
 +          "hide-extensions-menu")) {
-+    views::View* anchor_view =
++    views::View* app_menu_anchor_view =
 +        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
 +            kToolbarAppMenuButtonElementId,
 +            views::ElementTrackerViews::GetContextForView(
 +                BrowserView::GetBrowserViewForBrowser(browser_)));
 +    widget->widget_delegate()->AsBubbleDialogDelegate()->SetAnchorView(
-+        anchor_view);
++        app_menu_anchor_view);
 +  }
 +
    widget->Show();

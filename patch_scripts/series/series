@@ -89,6 +89,7 @@ other/restore_download_shelf.patch
 other/mini_installer.patch
 other/thorium-mini-installer-manifest.patch
 other/open_in_same_tab.patch
+other/windows-thorium-flags-conf.patch
 
 # 70 - Thorium user-facing flags and feature behavior.
 other/add-flag-for-close-confirmation.patch

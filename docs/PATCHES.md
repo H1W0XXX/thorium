@@ -45,6 +45,8 @@ overlay-derived, or still need separate provenance review.
 | [`add-flag-for-open-bookmarks-in-new-tab.patch`](../other/add-flag-for-open-bookmarks-in-new-tab.patch) | Ported from local `chromium-unstable` history; bookmark foreground/background new-tab behavior |
 | [`add-flag-for-open-omnibox-url-in-new-tab.patch`](../other/add-flag-for-open-omnibox-url-in-new-tab.patch) | Ported from local `chromium-unstable` history; omnibox foreground/background new-tab behavior |
 | [`add-flag-for-incognito-themes.patch`](../other/add-flag-for-incognito-themes.patch) | Allow Incognito windows and web content to follow the browser theme color mode |
+| [`add-flag-to-hide-extensions-menu.patch`](../other/add-flag-to-hide-extensions-menu.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) hide extensions menu flag patch, adapted to Thorium flags |
+| [`add-flag-to-hide-tab-close-buttons.patch`](../other/add-flag-to-hide-tab-close-buttons.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) hide tab close buttons flag patch, adapted to Thorium flags |
 | [`add-flag-for-custom-ntp.patch`](../other/add-flag-for-custom-ntp.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) custom NTP flag patch |
 | [`add-flag-for-tab-hover-cards.patch`](../other/add-flag-for-tab-hover-cards.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) tab hover cards flag patch |
 | [`add-flag-to-keep-all-history.patch`](../other/add-flag-to-keep-all-history.patch) | [ungoogled-chromium](https://github.com/ungoogled-software/ungoogled-chromium) disable local history expiration flag patch |
@@ -161,6 +163,8 @@ overlay-derived, or still need separate provenance review.
 - [`add-flag-for-open-bookmarks-in-new-tab.patch`](../other/add-flag-for-open-bookmarks-in-new-tab.patch)
 - [`add-flag-for-open-omnibox-url-in-new-tab.patch`](../other/add-flag-for-open-omnibox-url-in-new-tab.patch)
 - [`add-flag-for-incognito-themes.patch`](../other/add-flag-for-incognito-themes.patch)
+- [`add-flag-to-hide-extensions-menu.patch`](../other/add-flag-to-hide-extensions-menu.patch)
+- [`add-flag-to-hide-tab-close-buttons.patch`](../other/add-flag-to-hide-tab-close-buttons.patch)
 - [`add-flag-for-custom-ntp.patch`](../other/add-flag-for-custom-ntp.patch)
 - [`add-flag-for-tab-hover-cards.patch`](../other/add-flag-for-tab-hover-cards.patch)
 - [`force-disable-tab-outlines.patch`](../other/force-disable-tab-outlines.patch)

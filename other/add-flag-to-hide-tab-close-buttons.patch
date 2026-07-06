@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index 96d629bafaba0..336bfd421e8bb 100644
+index 830267eed9d41..42548c8e223de 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
-@@ -1229,6 +1229,10 @@ void Tab::UpdateIconVisibility() {
+@@ -1219,6 +1219,10 @@ void Tab::UpdateIconVisibility() {
      // Close button is shown on active tabs regardless of the size.
      showing_close_button_ = true;
  #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -13,7 +13,7 @@ index 96d629bafaba0..336bfd421e8bb 100644
  
      if (features::IsTabStripDeclutterEnabled() && showing_close_button_) {
        const bool alert_fits_without_close =
-@@ -1287,6 +1291,8 @@ void Tab::UpdateIconVisibility() {
+@@ -1277,6 +1281,8 @@ void Tab::UpdateIconVisibility() {
          features::IsTabStripDeclutterEnabled() &&
          available_width <= TabStyle::kTabStripDeclutterMaxTabWidthForCloseHide;
      showing_close_button_ =
@@ -23,18 +23,10 @@ index 96d629bafaba0..336bfd421e8bb 100644
          should_show_close_button &&
  #endif
 diff --git a/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.cc b/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.cc
-index eb9e13ce3d2dc..3eedb7f7f85d6 100644
+index b60e1eb76bc6c..0aeab1dcd4717 100644
 --- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.cc
 +++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.cc
-@@ -7,6 +7,7 @@
- #include <optional>
- #include <string>
- 
-+#include "base/command_line.h"
- #include "base/functional/callback_helpers.h"
- #include "base/metrics/histogram_functions.h"
- #include "base/metrics/user_metrics.h"
-@@ -768,6 +769,11 @@ bool VerticalTabView::IsChildVisible(const views::View* child_view,
+@@ -838,6 +838,11 @@ bool VerticalTabView::IsChildVisible(const views::View* child_view,
        return false;
      }
  

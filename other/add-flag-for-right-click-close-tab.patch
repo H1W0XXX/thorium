@@ -29,7 +29,7 @@ index 1466c54bc0364..282691e5cfb63 100644
  BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
  
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index dba4f54caa781..1e02381713739 100644
+index dcb7cb43a33d8..7079f4c665056 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -23,6 +23,7 @@
@@ -113,10 +113,10 @@ index dba4f54caa781..1e02381713739 100644
  
  void Tab::OnMouseMoved(const ui::MouseEvent& event) {
 diff --git a/chrome/browser/ui/views/tabs/tab.h b/chrome/browser/ui/views/tabs/tab.h
-index f8cda54ba1921..0791e3ee673f1 100644
+index 4bb45b158f396..302c0c71785bc 100644
 --- a/chrome/browser/ui/views/tabs/tab.h
 +++ b/chrome/browser/ui/views/tabs/tab.h
-@@ -181,6 +181,9 @@ class Tab : public gfx::AnimationDelegate,
+@@ -180,6 +180,9 @@ class Tab : public gfx::AnimationDelegate,
  
    bool mouse_hovered() const { return mouse_hovered_; }
  
@@ -126,7 +126,7 @@ index f8cda54ba1921..0791e3ee673f1 100644
    void ShowHover(TabStyle::ShowHoverStyle style);
    void HideHover(TabStyle::HideHoverStyle style);
  
-@@ -338,6 +341,10 @@ class Tab : public gfx::AnimationDelegate,
+@@ -337,6 +340,10 @@ class Tab : public gfx::AnimationDelegate,
    // up.
    bool shift_pressed_on_mouse_down_ = false;
  
@@ -151,3 +151,113 @@ index dc2fe4f2e1f7e..a1a4cea1b573a 100644
    parent_->ShowContextMenuForTab(tab, point, source_type);
  }
  
+diff --git a/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.cc b/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.cc
+index 468c9d61b4ecb..0640815463641 100644
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.cc
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.cc
+@@ -8,12 +8,14 @@
+ #include <string>
+ 
+ #include "base/command_line.h"
++#include "base/feature_list.h"
+ #include "base/functional/callback_helpers.h"
+ #include "base/metrics/histogram_functions.h"
+ #include "base/metrics/user_metrics.h"
+ #include "base/metrics/user_metrics_action.h"
+ #include "base/notimplemented.h"
+ #include "base/strings/utf_string_conversions.h"
++#include "base/task/sequenced_task_runner.h"
+ #include "base/time/time.h"
+ #include "chrome/browser/glic/browser_ui/tab_underline_controller.h"
+ #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
+@@ -30,6 +32,7 @@
+ #include "chrome/browser/ui/tabs/tab_muted_utils.h"
+ #include "chrome/browser/ui/tabs/tab_strip_model.h"
+ #include "chrome/browser/ui/tabs/tab_style.h"
++#include "chrome/browser/ui/ui_features.h"
+ #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+ #include "chrome/browser/ui/views/event_utils.h"
+ #include "chrome/browser/ui/views/frame/browser_frame_view.h"
+@@ -361,7 +364,15 @@ bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
+ 
+   auto* controller = collection_node_->GetController();
+   shift_pressed_on_mouse_down_ = event.IsShiftDown();
++  suppress_context_menu_ = false;
+   RecordMousePressedInTab();
++  // Right-click closes the tab when enabled. Shift+right-click keeps the
++  // normal tab context menu, and touch-generated right-clicks keep drag support.
++  if (event.IsOnlyRightMouseButton() &&
++      base::FeatureList::IsEnabled(features::kRightClickToCloseTab) &&
++      !event.IsShiftDown() && !(event.flags() & ui::EF_FROM_TOUCH)) {
++    suppress_context_menu_ = true;
++  }
+   UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kEvent);
+ 
+   // Capture the selection model before selection changes.
+@@ -397,6 +408,34 @@ void VerticalTabView::OnMouseReleased(const ui::MouseEvent& event) {
+ 
+   auto* controller = collection_node_->GetController();
+   base::WeakPtr<VerticalTabView> self = weak_ptr_factory_.GetWeakPtr();
++  if (event.IsOnlyRightMouseButton() &&
++      base::FeatureList::IsEnabled(features::kRightClickToCloseTab) &&
++      suppress_context_menu_ && HitTestPoint(event.location())) {
++    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
++        FROM_HERE,
++        base::BindOnce(
++            [](base::WeakPtr<VerticalTabView> tab) {
++              if (tab && tab->collection_node_) {
++                if (auto* controller = tab->collection_node_->GetController()) {
++                  controller->CloseTab(tab->GetTabInterface());
++                }
++              }
++            },
++            weak_ptr_factory_.GetWeakPtr()));
++
++    // Keep suppress_context_menu_ set so the context menu hook ignores the
++    // matching release event.
++    shift_pressed_on_mouse_down_ = false;
++    controller->GetDragHandler().EndDrag(EndDragReason::kCancel);
++    return;
++  }
++
++  if (event.IsOnlyRightMouseButton()) {
++    shift_pressed_on_mouse_down_ = false;
++    suppress_context_menu_ = false;
++    controller->GetDragHandler().EndDrag(EndDragReason::kCancel);
++    return;
++  }
+   if (event.IsOnlyMiddleMouseButton() ||
+       // Close tab on double click, mirror of IsOnlyMiddleMouseButton.
+       // Based on gz83's work.
+@@ -419,6 +458,7 @@ void VerticalTabView::OnMouseReleased(const ui::MouseEvent& event) {
+     return;
+   }
+   shift_pressed_on_mouse_down_ = false;
++  suppress_context_menu_ = false;
+ }
+ 
+ void VerticalTabView::OnMouseMoved(const ui::MouseEvent& event) {
+@@ -894,6 +934,9 @@ void VerticalTabView::ShowContextMenuForViewImpl(
+     views::View* source,
+     const gfx::Point& point,
+     ui::mojom::MenuSourceType source_type) {
++  if (suppress_context_menu_) {
++    return;
++  }
+   if (collection_node_) {
+     if (auto* controller = collection_node_->GetController()) {
+       controller->ShowContextMenuForNode(collection_node_, source, point,
+diff --git a/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h b/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h
+index 30bddac23a66d..7f7e9e12c8d5f 100644
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h
+@@ -242,6 +242,9 @@ class VerticalTabView : public views::View,
+   bool pinned_ = false;
+   bool shift_pressed_on_mouse_down_ = false;
+ 
++  // Set between a right-button press and release when right-click-to-close is
++  // enabled and the gesture should not open the tab context menu.
++  bool suppress_context_menu_ = false;
+   std::unique_ptr<GlowHoverController> hover_controller_;
+   float hover_opacity_min_;
+   float hover_opacity_max_;

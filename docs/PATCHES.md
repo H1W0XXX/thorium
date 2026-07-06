@@ -153,7 +153,7 @@ overlay-derived, or still need separate provenance review.
 - [`mini_installer.patch`](../other/mini_installer.patch)
 - [`thorium-mini-installer-manifest.patch`](../other/thorium-mini-installer-manifest.patch)
 - [`open_in_same_tab.patch`](../other/open_in_same_tab.patch)
-- [`windows-thorium-flags-conf.patch`](../other/windows-thorium-flags-conf.patch)
+- [`windows-thorium-flags-conf.patch`](../other/windows-thorium-flags-conf.patch) - reads `thorium-flags.conf` from the install directory and `%AppData%\Thorium`, avoiding the removable `%LocalAppData%\Thorium` profile root during uninstall.
 
 ### 70 - Thorium user-facing flags and feature behavior.
 

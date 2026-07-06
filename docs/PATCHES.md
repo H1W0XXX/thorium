@@ -214,6 +214,7 @@ overlay-derived, or still need separate provenance review.
 - [`android-extensions-support.patch`](../other/android-extensions-support.patch)
 - [`chrome-web-store-protection.patch`](../other/chrome-web-store-protection.patch)
 - [`enable-extension-in-incognito.patch`](../other/enable-extension-in-incognito.patch)
+- [`add-quick-extension-toggle-menu.patch`](../other/add-quick-extension-toggle-menu.patch) - Adds a default-off, `chrome://flags`-controlled quick enable/disable section to the extensions menu.
 
 ### 95 - Conditional / platform-specific overlays that are still active.
 

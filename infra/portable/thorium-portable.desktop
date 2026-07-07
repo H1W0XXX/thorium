@@ -105,7 +105,7 @@ Comment[vi]=Truy cập Internet
 Comment[zh_CN]=访问互联网
 Comment[zh_HK]=連線到網際網路
 Comment[zh_TW]=連線到網際網路
-Exec=./thorium-browser %U
+Exec=./THORIUM-PORTABLE %U
 StartupWMClass=thorium
 Keywords=browser
 StartupNotify=true
@@ -169,19 +169,19 @@ Name[uk]=Нове вікно
 Name[vi]=Cửa sổ Mới
 Name[zh_CN]=新建窗口
 Name[zh_TW]=開新視窗
-Exec=./thorium-browser
+Exec=./THORIUM-PORTABLE
 
 [Desktop Action content-shell]
 Name=Open Thorium Shell
-Exec=./thorium-shell %U
+Exec=./THORIUM-SHELL %U
 
 [Desktop Action safe-mode]
 Name=Open in Safe Mode
-Exec=./thorium-browser --no-experiments %U
+Exec=./THORIUM-PORTABLE --no-experiments %U
 
 [Desktop Action dark-mode]
 Name=Open in Dark Mode
-Exec=./thorium-browser --force-dark-mode %U
+Exec=./THORIUM-PORTABLE --force-dark-mode %U
 
 [Desktop Action new-private-window]
 Name=New Incognito Window
@@ -233,4 +233,4 @@ Name[uk]=Нове вікно в режимі анонімного перегля
 Name[vi]=Cửa sổ ẩn danh mới
 Name[zh_CN]=新建隐身窗口
 Name[zh_TW]=新增無痕式視窗
-Exec=./thorium-browser --incognito
+Exec=./THORIUM-PORTABLE --incognito

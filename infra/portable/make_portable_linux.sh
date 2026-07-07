@@ -78,10 +78,11 @@ makeARM () {
 	rm -r -v ./temp/cron &&
 	rm -r -v ./temp/thorium-browser &&
 	cp -r -v ./README.linux temp/README.txt &&
-	cp -r -v ./THORIUM-PORTABLE.sh temp/ &&
+	cp -v ./THORIUM-PORTABLE.sh temp/THORIUM-PORTABLE &&
 	cp -r -v ./thorium-portable.desktop temp/ &&
-	cp -r -v ./THORIUM-SHELL.sh temp/ &&
+	cp -v ./THORIUM-SHELL.sh temp/THORIUM-SHELL &&
 	cp -r -v ./thorium-shell.desktop temp/ &&
+	chmod +x temp/THORIUM-PORTABLE temp/THORIUM-SHELL &&
 
 	printf "\n" &&
 	printf "${YEL}Zipping up...\n" &&
@@ -141,10 +142,17 @@ cp -r -v ./opt/chromium.org/thorium/* ./temp/ &&
 rm -r -v ./temp/cron &&
 rm -r -v ./temp/thorium-browser &&
 cp -r -v ./README.linux temp/README.txt &&
-cp -r -v ./THORIUM-PORTABLE temp/ &&
 cp -r -v ./thorium-portable.desktop temp/ &&
-cp -r -v ./THORIUM-SHELL temp/ &&
 cp -r -v ./thorium-shell.desktop temp/ &&
+
+if [[ "$DEB_NAME" == *i386*.deb ]]; then
+	cp -v ./THORIUM-PORTABLE.sh temp/THORIUM-PORTABLE &&
+	cp -v ./THORIUM-SHELL.sh temp/THORIUM-SHELL &&
+	chmod +x temp/THORIUM-PORTABLE temp/THORIUM-SHELL
+else
+	cp -r -v ./THORIUM-PORTABLE temp/ &&
+	cp -r -v ./THORIUM-SHELL temp/
+fi &&
 
 printf "\n" &&
 printf "${YEL}Zipping up...\n" &&

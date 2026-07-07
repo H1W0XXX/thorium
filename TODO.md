@@ -19,13 +19,11 @@
 
 &#45; Update Flatpak directory.
 
-&#45; Re-add ffmpeg AC3/EAC3 patch.
-
 &#45; Convert *.sh scripts to *.py.
 
 &#45; Resolve issues raised on GitHub.
 
-&#45; Inspect M150 finished products and i18n workflow.
+&#45; Inspect i18n workflow.
 
 ### Notes to self
 

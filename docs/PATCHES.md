@@ -177,6 +177,7 @@ overlay-derived, or still need separate provenance review.
 - [`quiet-notification-defaults.patch`](../other/quiet-notification-defaults.patch)
 - [`disable-thorium-dns-config.patch`](../other/disable-thorium-dns-config.patch)
 - [`secure-dns-defaults.patch`](../other/secure-dns-defaults.patch)
+- [`add-flag-for-encrypted-client-hello.patch`](../other/add-flag-for-encrypted-client-hello.patch)
 - [`reduce-doh-request-headers.patch`](../other/reduce-doh-request-headers.patch)
 - [`disable-alternate-error-pages-by-default.patch`](../other/disable-alternate-error-pages-by-default.patch)
 - [`add-flag-to-keep-all-history.patch`](../other/add-flag-to-keep-all-history.patch)

@@ -111,6 +111,7 @@ other/force-disable-tab-outlines.patch
 other/quiet-notification-defaults.patch
 other/disable-thorium-dns-config.patch
 other/secure-dns-defaults.patch
+other/add-flag-for-encrypted-client-hello.patch
 other/reduce-doh-request-headers.patch
 other/disable-alternate-error-pages-by-default.patch
 other/add-flag-to-keep-all-history.patch

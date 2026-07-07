@@ -62,6 +62,10 @@
      "Thorium Rectangular Tabs UI",
      "Changes the look of browser tabs to appear with a rectangular shape, similar to Vivaldi or Cent Browser.",
      kOsDesktop, SINGLE_VALUE_TYPE("rectangular-tabs")},
+    {"ctrl-tab-mru",
+     "Ctrl+Tab Switches to Most Recently Used Tab",
+     "Makes Ctrl+Tab switch to the previously used tab instead of the next adjacent tab.",
+     kOsDesktop, FEATURE_VALUE_TYPE(features::kCtrlTabMru)},
 
     {"custom-tab-width",
      "Custom Tab Width",

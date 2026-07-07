@@ -97,6 +97,7 @@ other/windows-thorium-flags-conf.patch
 other/add-flag-for-close-confirmation.patch
 other/add-flag-to-close-window-with-last-tab.patch
 other/add-flag-to-scroll-tabs.patch
+other/enable-ctrl-tab-mru.patch
 other/add-flag-for-double-click-close-tab.patch
 other/add-flag-for-right-click-close-tab.patch
 other/add-flag-for-hover-activate-tab.patch

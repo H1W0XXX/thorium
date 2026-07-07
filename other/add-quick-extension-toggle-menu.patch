@@ -16,7 +16,7 @@ index 46264bc11768e..07e4ec67017d9 100644
            More options
          </message>
 diff --git a/chrome/browser/ui/ui_features.cc b/chrome/browser/ui/ui_features.cc
-index 5748bc53a2024..8d506c1b03a02 100644
+index 1b70d0ec404b9..c1385bd50b39f 100644
 --- a/chrome/browser/ui/ui_features.cc
 +++ b/chrome/browser/ui/ui_features.cc
 @@ -93,6 +93,9 @@ BASE_FEATURE(kFewerUpdateConfirmations, base::FEATURE_ENABLED_BY_DEFAULT);

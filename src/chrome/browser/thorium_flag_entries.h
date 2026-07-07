@@ -15,6 +15,10 @@
      "GTK Auto Dark Mode",
      "Enables Thorium to automatically change to Dark Mode according to the system GTK Theme.",
      kOsLinux, SINGLE_VALUE_TYPE("auto-dark-mode")},
+    {"use-system-linux-theme",
+     "Use GTK/Qt System Theme",
+     "Allows Thorium to use the detected GTK or Qt system theme on Linux instead of the default Thorium 2024 UI theme behavior.",
+     kOsLinux, SINGLE_VALUE_TYPE("use-system-linux-theme")},
 #endif // BUILDFLAG(IS_LINUX)
 
     {"thorium-2024",

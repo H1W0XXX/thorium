@@ -148,6 +148,7 @@ overlay-derived, or still need separate provenance review.
 - [`ftp-support-thorium.patch`](../other/ftp-support-thorium.patch)
 - [`GPC.patch`](../other/GPC.patch)
 - [`thorium-2024-ui.patch`](../other/thorium-2024-ui.patch)
+- [`add-flag-for-system-linux-theme.patch`](../other/add-flag-for-system-linux-theme.patch)
 - [`restore_download_shelf.patch`](../other/restore_download_shelf.patch)
 
 ### 60 - Windows installer and shell integration.

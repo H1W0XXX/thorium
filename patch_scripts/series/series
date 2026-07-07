@@ -84,6 +84,7 @@ other/fix-policy-templates.patch
 other/ftp-support-thorium.patch
 other/GPC.patch
 other/thorium-2024-ui.patch
+other/add-flag-for-system-linux-theme.patch
 other/restore_download_shelf.patch
 
 # 60 - Windows installer and shell integration.

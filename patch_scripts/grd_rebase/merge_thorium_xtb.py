@@ -167,7 +167,7 @@ def readable_file(path: str) -> Path:
 
 
 def load_inventory(path: Path) -> list[dict[str, str]]:
-    with path.open(encoding="utf-8-sig", newline="") as input_file:
+    with path.open(encoding="utf-8", newline="") as input_file:
         reader = csv.DictReader(input_file, delimiter="\t")
         required = {"target_path", "translation_id", "translation_block"}
         missing = required - set(reader.fieldnames or ())

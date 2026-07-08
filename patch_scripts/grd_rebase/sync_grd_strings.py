@@ -412,8 +412,8 @@ def load_csv_rows(
     path: Path,
     required_columns: set[str] | None = None,
 ) -> list[dict[str, str]]:
-    """Read CSV rows, accepting UTF-8 files with or without a BOM."""
-    with path.open(newline="", encoding="utf-8-sig") as csv_file:
+    """Read UTF-8 CSV rows."""
+    with path.open(newline="", encoding="utf-8") as csv_file:
         reader = csv.DictReader(csv_file)
         fieldnames = set(reader.fieldnames or ())
         missing_columns = (required_columns or set()) - fieldnames

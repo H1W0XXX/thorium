@@ -41,14 +41,13 @@ def normalize_path(value: str | Path) -> str:
 
 
 def read_csv(path: Path) -> tuple[list[str], list[dict[str, str]]]:
-    with path.open(newline="", encoding="utf-8-sig") as csv_file:
+    with path.open(newline="", encoding="utf-8") as csv_file:
         reader = csv.DictReader(csv_file)
         return list(reader.fieldnames or []), list(reader)
 
 
 def write_csv(path: Path, fieldnames: list[str], rows: Iterable[dict[str, str]]) -> None:
-    encoding = "utf-8-sig" if path.exists() and path.read_bytes().startswith(b"\xef\xbb\xbf") else "utf-8"
-    with path.open("w", newline="", encoding=encoding) as csv_file:
+    with path.open("w", newline="", encoding="utf-8") as csv_file:
         writer = csv.DictWriter(
             csv_file,
             fieldnames=fieldnames,
@@ -282,12 +281,8 @@ def main(argv: list[str] | None = None) -> int:
     patch_paths = parse_series(args.series.resolve())
     changes = extract_patch_changes(thorium_root, patch_paths)
 
-    original_feature = (config_dir / "feature_patch_message_ownership.csv").read_text(
-        encoding="utf-8"
-    )
-    original_file_allowlist = (config_dir / "file_allowlist.csv").read_text(
-        encoding="utf-8"
-    )
+    original_feature = (config_dir / "feature_patch_message_ownership.csv").read_bytes()
+    original_file_allowlist = (config_dir / "file_allowlist.csv").read_bytes()
 
     feature_added, feature_removed = update_feature_ownership(
         config_dir, changes
@@ -295,12 +290,10 @@ def main(argv: list[str] | None = None) -> int:
     file_added = update_file_allowlist(config_dir, changes)
 
     if args.dry_run:
-        (config_dir / "feature_patch_message_ownership.csv").write_text(
-            original_feature, encoding="utf-8"
+        (config_dir / "feature_patch_message_ownership.csv").write_bytes(
+            original_feature
         )
-        (config_dir / "file_allowlist.csv").write_text(
-            original_file_allowlist, encoding="utf-8"
-        )
+        (config_dir / "file_allowlist.csv").write_bytes(original_file_allowlist)
 
     mode = "dry-run" if args.dry_run else "write"
     print(

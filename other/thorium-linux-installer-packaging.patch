@@ -1016,7 +1016,7 @@ index 4b6ea67c64bbc..3f7e6f7dca019 100644
    </web-browsers>
  </default-apps>
 diff --git a/chrome/installer/linux/common/desktop.template b/chrome/installer/linux/common/desktop.template
-index bf572f69720a0..14c45f437b5bc 100644
+index bf572f69720a0..06ae1f8a6a870 100644
 --- a/chrome/installer/linux/common/desktop.template
 +++ b/chrome/installer/linux/common/desktop.template
 @@ -1,6 +1,6 @@
@@ -1033,7 +1033,7 @@ index bf572f69720a0..14c45f437b5bc 100644
  Comment[zh_TW]=連線到網際網路
 -Exec=/usr/bin/@@usr_bin_symlink_name %U
 +Exec=/usr/bin/@@USR_BIN_SYMLINK_NAME@@ %U
-+StartupWMClass=thorium
++StartupWMClass=thorium-browser
 +Keywords=browser
  StartupNotify=true
  Terminal=false

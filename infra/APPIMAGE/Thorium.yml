@@ -16,16 +16,16 @@ script:
   - cp -v -r ../../temp/* usr/bin/
   - mkdir -v -p usr/share/icons/hicolor/16x16/apps/
   - # Copy Logo/Icon 
-  - cp -v usr/bin/product_logo_256.png thorium.png
-  - cp -v usr/bin/product_logo_16.png usr/share/icons/hicolor/16x16/apps/thorium.png
-  - cp -v usr/bin/product_logo_22.png usr/share/icons/hicolor/22x22/apps/thorium.png
-  - cp -v usr/bin/product_logo_24.png usr/share/icons/hicolor/24x24/apps/thorium.png
-  - cp -v usr/bin/product_logo_32.png usr/share/icons/hicolor/32x32/apps/thorium.png
-  - cp -v usr/bin/product_logo_48.png usr/share/icons/hicolor/48x48/apps/thorium.png
-  - cp -v usr/bin/product_logo_64.png usr/share/icons/hicolor/64x64/apps/thorium.png
-  - cp -v usr/bin/product_logo_128.png usr/share/icons/hicolor/128x128/apps/thorium.png
-  - cp -v usr/bin/product_logo_256.png usr/share/icons/hicolor/256x256/apps/thorium.png
-  - cp -v usr/bin/product_logo_512.png usr/share/icons/hicolor/512x512/apps/thorium.png
+  - cp -v usr/bin/product_logo_256.png thorium-browser.png
+  - cp -v usr/bin/product_logo_16.png usr/share/icons/hicolor/16x16/apps/thorium-browser.png
+  - cp -v usr/bin/product_logo_22.png usr/share/icons/hicolor/22x22/apps/thorium-browser.png
+  - cp -v usr/bin/product_logo_24.png usr/share/icons/hicolor/24x24/apps/thorium-browser.png
+  - cp -v usr/bin/product_logo_32.png usr/share/icons/hicolor/32x32/apps/thorium-browser.png
+  - cp -v usr/bin/product_logo_48.png usr/share/icons/hicolor/48x48/apps/thorium-browser.png
+  - cp -v usr/bin/product_logo_64.png usr/share/icons/hicolor/64x64/apps/thorium-browser.png
+  - cp -v usr/bin/product_logo_128.png usr/share/icons/hicolor/128x128/apps/thorium-browser.png
+  - cp -v usr/bin/product_logo_256.png usr/share/icons/hicolor/256x256/apps/thorium-browser.png
+  - cp -v usr/bin/product_logo_512.png usr/share/icons/hicolor/512x512/apps/thorium-browser.png
   - # Set Version
   - ./usr/bin/thorium --version | cut -d ' ' -f2 > ../VERSION
   - # Add Desktop file 
@@ -36,12 +36,12 @@ script:
   - GenericName=Web Browser
   - Comment=Access the Internet
   - Exec=thorium --no-default-browser-check %U
-  - StartupWMClass=thorium
+  - StartupWMClass=thorium-browser
   - Keywords=browser
   - StartupNotify=true
   - Terminal=false
   - X-MultipleArgs=True
-  - Icon=thorium
+  - Icon=thorium-browser
   - Type=Application
   - Categories=Network;WebBrowser;
   - MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;

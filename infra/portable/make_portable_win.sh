@@ -24,7 +24,7 @@ case $1 in
 esac
 
 # Detect which installer is present and set output zip name accordingly.
-VERSION="150.0.7871.47"
+VERSION="150.0.7871.101"
 INSTALLER_NAME=""
 ZIP_NAME=""
 

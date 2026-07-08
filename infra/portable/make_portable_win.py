@@ -78,7 +78,7 @@ def extract_and_copy_files(installer_name):
 
 
 def zip_files(installer_name):
-    version = "150.0.7871.47"
+    version = "150.0.7871.101"
 
     if "AVX2" in installer_name:
         zip_filename = f"Thorium_AVX2_{version}.zip"

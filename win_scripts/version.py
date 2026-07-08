@@ -41,7 +41,7 @@ cr_src_dir = os.getenv("CR_DIR", r"C:/src/chromium/src")
 
 
 # Set thor_ver
-thor_ver = "150.0.7871.47"
+thor_ver = "150.0.7871.101"
 
 
 print(f"\nCurrent Thorium version is: {thor_ver}\n")

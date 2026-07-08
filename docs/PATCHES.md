@@ -142,6 +142,7 @@ overlay-derived, or still need separate provenance review.
 - [`thorium-vector-icons.patch`](../other/thorium-vector-icons.patch)
 - [`thorium-app-menu-icons.patch`](../other/thorium-app-menu-icons.patch)
 - [`prevent-url-elisions-by-default.patch`](../other/prevent-url-elisions-by-default.patch)
+- [`disable-ai-entrypoints-by-default.patch`](../other/disable-ai-entrypoints-by-default.patch)
 - [`enable-chrome-labs-by-default.patch`](../other/enable-chrome-labs-by-default.patch)
 - [`enable-whats-new-by-default.patch`](../other/enable-whats-new-by-default.patch)
 - [`fix-policy-templates.patch`](../other/fix-policy-templates.patch)

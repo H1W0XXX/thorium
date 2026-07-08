@@ -101,6 +101,8 @@ patchThor () {
 	cp -v other/mini_installer.patch ${CR_SRC_DIR}/ &&
 	cp -v other/open_in_same_tab.patch ${CR_SRC_DIR}/ &&
 	cp -v other/thorium_webui.patch ${CR_SRC_DIR}/ &&
+	cp -v other/thorium-debug-log-name.patch ${CR_SRC_DIR}/ &&
+	cp -v other/disable-ai-entrypoints-by-default.patch ${CR_SRC_DIR}/ &&
 	cp -v other/disable-privacy-sandbox.patch ${CR_SRC_DIR}/ &&
 	cp -v other/win_updater.patch ${CR_SRC_DIR}/ &&
 	cp -v other/keyboard_shortcuts.patch ${CR_SRC_DIR}/ &&
@@ -183,6 +185,10 @@ patchThor () {
 	git apply --reject ./allow_manifest_v2_extensions.patch &&
 	printf "${YEL}Thorium WebUI patch...${c0}\n" &&
 	git apply --reject ./thorium_webui.patch &&
+	printf "${YEL}Thorium debug log name patch...${c0}\n" &&
+	git apply --reject ./thorium-debug-log-name.patch &&
+	printf "${YEL}Disable AI entrypoints by default patch...${c0}\n" &&
+	git apply --reject ./disable-ai-entrypoints-by-default.patch &&
 	printf "${YEL}Thorium Updater patch...${c0}\n" &&
 	git apply --reject ./win_updater.patch &&
 	printf "${YEL}Thorium Keyboard Shortcuts patch...${c0}\n" &&

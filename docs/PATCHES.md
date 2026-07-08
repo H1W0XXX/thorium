@@ -61,6 +61,7 @@ overlay-derived, or still need separate provenance review.
 | [`chrome-web-store-protection.patch`](../other/chrome-web-store-protection.patch) | [uazo/Cromite](https://github.com/uazo/cromite) Chrome Web Store protection patch |
 | [`enable-extension-in-incognito.patch`](../other/enable-extension-in-incognito.patch) | [uazo/Cromite](https://github.com/uazo/cromite) enable extension in incognito patch |
 | [`GPC.patch`](../other/GPC.patch) | Global Privacy Control behavior adapted from privacy-focused Chromium patch references |
+| [`disable-middle-click-paste-with-autoscroll.patch`](../other/disable-middle-click-paste-with-autoscroll.patch) | Thorium-maintained Linux behavior fix for disabling selection clipboard paste paths when Blink MiddleClickAutoscroll is enabled |
 | [`mini_installer.patch`](../other/mini_installer.patch) | Thorium Windows mini_installer GUI patch; related installer-close-instance behavior references from Hibbiki Chromium builds |
 
 ## Series Patches
@@ -148,6 +149,7 @@ overlay-derived, or still need separate provenance review.
 - [`fix-policy-templates.patch`](../other/fix-policy-templates.patch)
 - [`ftp-support-thorium.patch`](../other/ftp-support-thorium.patch)
 - [`GPC.patch`](../other/GPC.patch)
+- [`disable-middle-click-paste-with-autoscroll.patch`](../other/disable-middle-click-paste-with-autoscroll.patch) - Disables Linux middle-click selection paste and paste-and-navigate paths when Blink MiddleClickAutoscroll is enabled.
 - [`thorium-2024-ui.patch`](../other/thorium-2024-ui.patch)
 - [`add-flag-for-system-linux-theme.patch`](../other/add-flag-for-system-linux-theme.patch)
 - [`restore_download_shelf.patch`](../other/restore_download_shelf.patch)

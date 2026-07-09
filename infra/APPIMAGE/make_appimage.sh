@@ -33,6 +33,7 @@ if [ -n "$1" ]; then
 	fi
 else
 	DEB_PATTERNS=(
+		"*AVX512*.deb"
 		"*AVX2*.deb"
 		"*AVX*.deb"
 		"*SSE4*.deb"

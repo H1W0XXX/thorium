@@ -29,6 +29,7 @@ INSTALLER_NAME=""
 ZIP_NAME=""
 
 INSTALLER_LIST=(
+	"thorium_AVX512_mini_installer.exe"
 	"thorium_AVX2_mini_installer.exe"
 	"thorium_AVX_mini_installer.exe"
 	"thorium_SSE4_mini_installer.exe"
@@ -48,7 +49,9 @@ if [ -z "$INSTALLER_NAME" ]; then
 	die "${RED}No installer file found. Place a thorium_*_mini_installer.exe in this directory."
 fi
 
-if [[ "$INSTALLER_NAME" == *"AVX2"* ]]; then
+if [[ "$INSTALLER_NAME" == *"AVX512"* ]]; then
+	ZIP_NAME="Thorium_AVX512_${VERSION}.zip"
+elif [[ "$INSTALLER_NAME" == *"AVX2"* ]]; then
 	ZIP_NAME="Thorium_AVX2_${VERSION}.zip"
 elif [[ "$INSTALLER_NAME" == *"AVX"* ]]; then
 	ZIP_NAME="Thorium_AVX_${VERSION}.zip"

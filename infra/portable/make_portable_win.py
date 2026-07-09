@@ -32,6 +32,7 @@ if "--help" in sys.argv:
 def copy_installer():
     cr_src_dir = os.getenv("CR_DIR", r"C:/src/chromium/src")
     installer_files = [
+        "thorium_AVX512_mini_installer.exe",
         "thorium_AVX2_mini_installer.exe",
         "thorium_AVX_mini_installer.exe",
         "thorium_SSE4_mini_installer.exe",
@@ -80,7 +81,9 @@ def extract_and_copy_files(installer_name):
 def zip_files(installer_name):
     version = "150.0.7871.101"
 
-    if "AVX2" in installer_name:
+    if "AVX512" in installer_name:
+        zip_filename = f"Thorium_AVX512_{version}.zip"
+    elif "AVX2" in installer_name:
         zip_filename = f"Thorium_AVX2_{version}.zip"
     elif "AVX" in installer_name:
         zip_filename = f"Thorium_AVX_{version}.zip"

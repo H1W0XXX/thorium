@@ -50,10 +50,12 @@
      "Hide Extensions Menu",
      "Hides the extensions container. This includes the puzzle piece icon as well as any pinned extensions.",
      kOsDesktop, SINGLE_VALUE_TYPE("hide-extensions-menu")},
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
     {"extensions-menu-quick-toggles",
      "Extensions Menu Quick Toggles",
      "Shows a quick enable/disable section for installed extensions in the extensions menu.",
      kOsDesktop, FEATURE_VALUE_TYPE(features::kExtensionsMenuQuickToggle)},
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
     {"classic-omnibox",
      "Classic Omnibox UI",
      "Changes the omnibox shape to be more square.",

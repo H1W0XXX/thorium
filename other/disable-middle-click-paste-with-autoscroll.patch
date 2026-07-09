@@ -63,15 +63,14 @@ index 0afe44c149a90..232b545579c48 100644
    if (auto* settings = frame_->GetSettings();
        settings && !settings->GetMiddleClickPasteAllowed()) {
 diff --git a/ui/base/clipboard/clipboard.cc b/ui/base/clipboard/clipboard.cc
-index db3cd03998742..ef237521363a3 100644
+index db3cd03998742..e253b6639f957 100644
 --- a/ui/base/clipboard/clipboard.cc
 +++ b/ui/base/clipboard/clipboard.cc
-@@ -12,11 +12,14 @@
+@@ -12,11 +12,13 @@
  #include <variant>
  
  #include "base/check.h"
 +#include "base/command_line.h"
-+#include "base/containers/contains.h"
  #include "base/json/json_reader.h"
  #include "base/memory/ptr_util.h"
  #include "base/no_destructor.h"
@@ -81,7 +80,7 @@ index db3cd03998742..ef237521363a3 100644
  #include "base/strings/utf_string_conversions.h"
  #include "base/types/optional_util.h"
  #include "build/build_config.h"
-@@ -36,6 +39,35 @@ namespace ui {
+@@ -36,6 +38,35 @@ namespace ui {
  
  namespace {
  
@@ -95,7 +94,7 @@ index db3cd03998742..ef237521363a3 100644
 +bool BlinkFeatureSwitchContains(const base::CommandLine& command_line,
 +                                const char* switch_name,
 +                                const char* feature_name) {
-+  return base::Contains(
++  return std::ranges::contains(
 +      base::SplitString(command_line.GetSwitchValueASCII(switch_name), ",",
 +                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY),
 +      feature_name);
@@ -117,7 +116,7 @@ index db3cd03998742..ef237521363a3 100644
  void OnCustomFormatDataRead(
      Clipboard::ExtractCustomPlatformNamesCallback callback,
      std::string custom_format_json) {
-@@ -116,6 +148,10 @@ bool Clipboard::IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
+@@ -116,6 +147,10 @@ bool Clipboard::IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
  // static
  bool Clipboard::IsMiddleClickPasteEnabled() {
  #if BUILDFLAG(IS_LINUX)

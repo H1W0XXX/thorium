@@ -104,7 +104,6 @@ overlay-derived, or still need separate provenance review.
 - [`thorium-app-metadata-branding.patch`](../other/thorium-app-metadata-branding.patch)
 - [`thorium-theme-resources.patch`](../other/thorium-theme-resources.patch)
 - [`thorium-app-vector-icons.patch`](../other/thorium-app-vector-icons.patch)
-- [`thorium-app-grd-registration.patch`](../other/thorium-app-grd-registration.patch)
 - [`default-apps-ublock-origin.patch`](../other/default-apps-ublock-origin.patch)
 - [`bookmark-default-prefs.patch`](../other/bookmark-default-prefs.patch)
 - [`thorium-browser-ui-default-prefs.patch`](../other/thorium-browser-ui-default-prefs.patch)

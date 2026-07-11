@@ -32,10 +32,10 @@ index 6fada0a2b1a1f..6b2ec4b67e015 100644
  			<key>CFBundleURLName</key>
  			<string>Local file URL</string>
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 2c6afd4602195..77a15c733cc98 100644
+index 779262fae00af..95dbe0e3915e5 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -14904,6 +14904,9 @@ This can include information about installed software, files, your browser, the
+@@ -14901,6 +14901,9 @@ This can include information about installed software, files, your browser, the
        <message name="IDS_DIRECTORY_LISTING_DATE_MODIFIED" desc="When viewing a local directory, this is the text for the column above the last modified dates.">
          Date Modified
        </message>

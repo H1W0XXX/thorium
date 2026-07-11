@@ -1,8 +1,8 @@
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 77a15c733cc98..c8aaca332d2ee 100644
+index 6e6031c2a1a60..5f0d8e51267fb 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -2291,6 +2291,10 @@ are declared in tools/grit/grit_args.gni.
+@@ -2294,6 +2294,10 @@ are declared in tools/grit/grit_args.gni.
           desc="Status that the file download will be opened when the download completes.">
          Opening when complete
        </message>
@@ -13,7 +13,7 @@ index 77a15c733cc98..c8aaca332d2ee 100644
        <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_SHORT" desc="Short status text that appears on unknown-sized downloads in progress.">
          In progress
        </message>
-@@ -2335,6 +2339,14 @@ are declared in tools/grit/grit_args.gni.
+@@ -2338,6 +2342,14 @@ are declared in tools/grit/grit_args.gni.
           desc="Message shown to the user to validate the download when the download content is classified as uncommon by safebrowsing. This variant is shown when the user is enrolled in the Advanced Protection program.">
          <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> was blocked by Advanced Protection.
        </message>
@@ -28,7 +28,7 @@ index 77a15c733cc98..c8aaca332d2ee 100644
        <message name="IDS_PROMPT_DEEP_SCANNING_APP_DOWNLOAD"
          desc="Message shown in the download shelf when a download is being scanned for an Advanced Protection user">
          <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is being scanned.
-@@ -2351,6 +2363,10 @@ are declared in tools/grit/grit_args.gni.
+@@ -2354,6 +2366,10 @@ are declared in tools/grit/grit_args.gni.
          desc="Message shown in the download shelf when a download is blocked for being encrypted">
          <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> is encrypted. Ask its owner to decrypt.
        </message>
@@ -39,7 +39,7 @@ index 77a15c733cc98..c8aaca332d2ee 100644
        <message name="IDS_PROMPT_DOWNLOAD_SENSITIVE_CONTENT_WARNING"
          desc="Message shown in the download shelf when a download contains sensitive content, and the admin has chosen to warn the user">
          Your organization's policies aren't met
-@@ -2530,6 +2546,15 @@ are declared in tools/grit/grit_args.gni.
+@@ -2533,6 +2549,15 @@ are declared in tools/grit/grit_args.gni.
        <message name="IDS_DOWNLOAD_NO_DOWNLOADS" desc="A message shown when the user has no downloads to show on chrome://downloads.">
          Files you download appear here
        </message>
@@ -55,7 +55,7 @@ index 77a15c733cc98..c8aaca332d2ee 100644
        <message name="IDS_DOWNLOAD_LINK_RESUME"
                 desc="In the download view, 'Resume' link text">
          Resume
-@@ -18357,6 +18382,37 @@ Please help our engineers fix this problem. Tell us what happened right before y
+@@ -18360,6 +18385,37 @@ Please help our engineers fix this problem. Tell us what happened right before y
        Data Sharing
      </message>
  

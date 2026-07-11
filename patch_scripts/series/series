@@ -42,7 +42,6 @@ other/thorium-startup-logging.patch
 other/thorium-app-metadata-branding.patch
 other/thorium-theme-resources.patch
 other/thorium-app-vector-icons.patch
-other/thorium-app-grd-registration.patch
 other/default-apps-ublock-origin.patch
 other/bookmark-default-prefs.patch
 other/thorium-browser-ui-default-prefs.patch

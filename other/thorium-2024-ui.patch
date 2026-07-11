@@ -185,6 +185,23 @@ index 2d72f112e9b9f..567503f15f329 100644
  // Used by LOG_IS_ON to lazy-evaluate stream arguments.
  BASE_EXPORT bool ShouldCreateLogMessage(int severity);
  
+diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
+index 95dbe0e3915e5..6e6031c2a1a60 100644
+--- a/chrome/app/generated_resources.grd
++++ b/chrome/app/generated_resources.grd
+@@ -1676,6 +1676,12 @@ are declared in tools/grit/grit_args.gni.
+       <message name="IDS_ACCNAME_ZOOM_MINUS2" desc="The accessible description of the Make Text Smaller menu item in the merged menu">
+         Make Text Smaller
+       </message>
++      <message name="IDS_RESTORE_TAB_BUTTON_NAME" desc="Accessible title for the restore tab button.">
++        Restore Tab
++      </message>
++      <message name="IDS_RESTORE_TAB_BUTTON_TOOLTIP" desc="Tooltip when hovering over the restore tab button.">
++        Restore Tab
++      </message>
+ 
+       <if expr="not use_titlecase">
+         <message name="IDS_VIEW_SOURCE" desc="The text label of the View Page Source menu item">
 diff --git a/chrome/browser/chrome_browser_main.cc b/chrome/browser/chrome_browser_main.cc
 index 057be98e715c6..89865a9d7fe82 100644
 --- a/chrome/browser/chrome_browser_main.cc

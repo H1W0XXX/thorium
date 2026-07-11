@@ -1,8 +1,8 @@
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 46264bc11768e..07e4ec67017d9 100644
+index 0688ef5b5c6c8..79fece9f06a87 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -6489,6 +6489,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
+@@ -6492,6 +6492,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
          <message name="IDS_EXTENSIONS_MENU_TITLE" desc="Title of the Extensions Menu" formatter_data="android_java">
            Extensions
          </message>

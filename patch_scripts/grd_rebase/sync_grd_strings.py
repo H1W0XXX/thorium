@@ -135,7 +135,6 @@ GRDP_PARENT_GRD_PATHS = {
     "chrome/app/settings_chromium_strings.grdp": "chrome/app/chromium_strings.grd",
     "chrome/app/settings_strings.grdp": "chrome/app/generated_resources.grd",
     "chrome/app/shared_settings_strings.grdp": "chrome/app/generated_resources.grd",
-    "chrome/app/thorium_strings.grdp": "chrome/app/generated_resources.grd",
     "components/autofill_payments_strings.grdp": "components/components_strings.grd",
     "components/autofill_strings.grdp": "components/components_strings.grd",
     "components/components_settings_strings.grdp": "components/components_strings.grd",

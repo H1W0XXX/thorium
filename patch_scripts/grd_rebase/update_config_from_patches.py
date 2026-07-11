@@ -204,7 +204,14 @@ def update_feature_ownership(
             }
         )
 
-    merged = kept_rows + added_rows
+    merged = sorted(
+        kept_rows + added_rows,
+        key=lambda row: (
+            row.get("patch_path", "").strip(),
+            row.get("chromium_path", "").strip(),
+            row.get("message_id", "").strip(),
+        ),
+    )
     write_csv(path, fieldnames, merged)
     return len(added_rows), removed
 

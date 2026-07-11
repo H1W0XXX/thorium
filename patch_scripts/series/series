@@ -84,6 +84,7 @@ other/enable-whats-new-by-default.patch
 other/fix-policy-templates.patch
 other/ftp-support-thorium.patch
 other/GPC.patch
+other/add-boss-key.patch
 other/disable-middle-click-paste-with-autoscroll.patch
 other/thorium-2024-ui.patch
 other/add-flag-for-system-linux-theme.patch

@@ -713,10 +713,10 @@ index ddc44638de809..2b275e79d9fe1 100644
            <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON" file="google_chrome/webstore_icon.png" />
            <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON_16" file="google_chrome/webstore_icon_16.png" />
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 0dd3464bdd1a6..050f4387c3d0d 100644
+index 69fd4abcc0376..6d9f4f9085b72 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -4994,7 +4994,7 @@ static_library("browser") {
+@@ -4999,7 +4999,7 @@ static_library("browser") {
  
    # TODO(https://crbug.com/356905053): Add more dependencies here and merge this
    # block with the `enable_extensions` block above.
@@ -725,7 +725,7 @@ index 0dd3464bdd1a6..050f4387c3d0d 100644
      sources += [
        # TODO(https://crbug.com/356905053): These files are temporary workarounds
        # allow for a lightweight extensions runtime in desktop-android builds.
-@@ -5455,7 +5455,7 @@ group("browser_generated_files") {
+@@ -5460,7 +5460,7 @@ group("browser_generated_files") {
            [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
      }
    }

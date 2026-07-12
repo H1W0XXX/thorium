@@ -150,7 +150,7 @@ index 5b3fdecca51c6..d564d286618aa 100644
          if (preloadPagesPreference != null) {
              preloadPagesPreference.setSummary(
 diff --git a/chrome/app/settings_strings.grdp b/chrome/app/settings_strings.grdp
-index 5c21f43b441c6..c3058f3427ae9 100644
+index 5c21f43b441c6..f050f0283ec03 100644
 --- a/chrome/app/settings_strings.grdp
 +++ b/chrome/app/settings_strings.grdp
 @@ -1884,6 +1884,18 @@
@@ -158,16 +158,16 @@ index 5c21f43b441c6..c3058f3427ae9 100644
        Learn more about Do Not Track
      </message>
 +    <message name="IDS_SETTINGS_ENABLE_GPC" desc="">
-+      Global Privacy Control "Sec-GPC"
++      Global Privacy Control (Sec-GPC)
 +    </message>
 +    <message name="IDS_SETTINGS_ENABLE_GPC_DIALOG_TITLE" desc="">
-+      Global Privacy Control "Sec-GPC"
++      Global Privacy Control (Sec-GPC)
 +    </message>
 +    <message name="IDS_SETTINGS_ENABLE_GPC_DIALOG_TEXT" desc="">
-+      Enables support for Global Privacy Control signals.
-+      Right to opt-out of sale or sharing: You may request that businesses stop selling or sharing your personal information (“opt-out”).
-+      Businesses cannot sell or share your personal information after they receive your opt-out request unless you later authorize them to do so again.
-+      Please note that it only applies to the states of California (under CCPA and CPRA) and Colorado (under CoPA).
++      Enables support for Global Privacy Control signals. When enabled, websites are told that you request to opt out of the sale or sharing of your personal information. Whether a website is legally required to honor this signal depends on applicable law.
++    </message>
++    <message name="IDS_SETTINGS_ENABLE_GPC_LEARN_MORE_ACCESSIBILITY_LABEL" desc="Accessibility label for the link to learn more about Global Privacy Control.">
++      Learn more about Global Privacy Control
 +    </message>
      <message name="IDS_SETTINGS_PERMISSIONS" desc="Name of the settings page which allows users to manage permissions and site content settings">
        Permissions and content settings
@@ -243,7 +243,7 @@ index ed8f26b9b46fd..da512213c65a8 100644
  import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 diff --git a/chrome/browser/resources/settings/privacy_page/gpc_toggle.html b/chrome/browser/resources/settings/privacy_page/gpc_toggle.html
 new file mode 100644
-index 0000000000000..74bd35b3907d9
+index 0000000000000..a0831ead976a6
 --- /dev/null
 +++ b/chrome/browser/resources/settings/privacy_page/gpc_toggle.html
 @@ -0,0 +1,39 @@
@@ -270,7 +270,7 @@ index 0000000000000..74bd35b3907d9
 +        <div slot="body">$i18n{gpcDialogMessage}
 +          <a href="https://globalprivacycontrol.org" target="_blank"
 +              aria-description="$i18n{opensInNewTab}"
-+              aria-label="Learn more about Global Privacy Control">
++              aria-label="$i18n{gpcLearnMoreAccessibilityLabel}">
 +            $i18n{learnMore}
 +          </a>
 +        </div>
@@ -405,21 +405,18 @@ index 0000000000000..d4c2ddde9d163
 +customElements.define(
 +  SettingsGpcToggleElement.is, SettingsGpcToggleElement);
 diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
-index c014cc23c9e7a..4535e54346fde 100644
+index c014cc23c9e7a..abd214d592024 100644
 --- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
 +++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
-@@ -1038,6 +1038,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
+@@ -1038,6 +1038,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
  
  For example, some websites may respond to this request by showing you ads that aren’t based on other websites you’ve visited. Many websites will still collect and use your browsing data — for example to improve security, to provide content, ads and recommendations, and to generate reporting statistics.
        </message>
 +      <message name="IDS_GPC_TITLE" desc="">
-+        Global Privacy Control "Sec-GPC"
++        Global Privacy Control (Sec-GPC)
 +      </message>
 +      <message name="IDS_GPC_DESCRIPTION" desc="">
-+        Enables support for Global Privacy Control signals.
-+        Right to opt-out of sale or sharing: You may request that businesses stop selling or sharing your personal information (“opt-out”).
-+        Businesses cannot sell or share your personal information after they receive your opt-out request unless you later authorize them to do so again.
-+        Please note that it only applies to the states of California (under CCPA and CPRA) and Colorado (under CoPA).
++        Enables support for Global Privacy Control signals. When enabled, websites are told that you request to opt out of the sale or sharing of your personal information. Whether a website is legally required to honor this signal depends on applicable law.
 +      </message>
        <message name="IDS_CAN_MAKE_PAYMENT_TITLE" desc="Title for preference to allow websites to know whether you have payment methods available through PaymentRequest.CanMakePayment interface">
          Access payment methods
@@ -467,16 +464,17 @@ index d97fca41eaa55..75efa47e47f25 100644
    void OnWebPrefChanged(const std::string& pref_name);
    void OnLiveCaptionEnabledPrefChanged(const std::string& pref_name);
 diff --git a/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc b/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
-index 1d656809eeeff..b6c29a26dc3a6 100644
+index 1d656809eeeff..b7b3ad9beb5f3 100644
 --- a/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
 +++ b/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
-@@ -2357,6 +2357,9 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
+@@ -2357,6 +2357,10 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
        {"doNotTrackDialogMessage", IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_TEXT},
        {"doNotTrackDialogLearnMoreA11yLabel",
         IDS_SETTINGS_ENABLE_DO_NOT_TRACK_DIALOG_LEARN_MORE_ACCESSIBILITY_LABEL},
 +      {"gpc", IDS_SETTINGS_ENABLE_GPC},
 +      {"gpcDialogTitle", IDS_SETTINGS_ENABLE_GPC_DIALOG_TITLE},
 +      {"gpcDialogMessage", IDS_SETTINGS_ENABLE_GPC_DIALOG_TEXT},
++      {"gpcLearnMoreAccessibilityLabel", IDS_SETTINGS_ENABLE_GPC_LEARN_MORE_ACCESSIBILITY_LABEL},
        // TODO(crbug.com/40122957): This string is no longer used. Remove.
        {"permissionsPageTitle", IDS_SETTINGS_PERMISSIONS},
        {"siteSettingsSublabel", IDS_SETTINGS_PERMISSIONS_DESCRIPTION},

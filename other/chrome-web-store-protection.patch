@@ -1,5 +1,5 @@
 diff --git a/chrome/app/extensions_strings.grdp b/chrome/app/extensions_strings.grdp
-index 75421913a1494..aecbd5ca351d0 100644
+index 75421913a1494..a485d8a5ccf46 100644
 --- a/chrome/app/extensions_strings.grdp
 +++ b/chrome/app/extensions_strings.grdp
 @@ -79,6 +79,12 @@
@@ -7,10 +7,10 @@ index 75421913a1494..aecbd5ca351d0 100644
      Developer Mode Off. Some extensions were disabled.
    </message>
 +  <message name="IDS_EXTENSIONS_EXTENSION_UPDATE_ENABLED" desc="The text displayed next to the checkbox to toggle extension auto update.">
-+    Enable Auto-Update
++    Enable automatic updates
 +  </message>
 +  <message name="IDS_EXTENSIONS_EXTENSION_UPDATE_ENABLED_NR" desc="The text displayed next to the checkbox to toggle extension auto update.">
-+    Need restart
++    Restart required
 +  </message>
    <message name="IDS_EXTENSIONS_DISABLED_UPDATE_REQUIRED_BY_POLICY" desc="Text shown in the extensions settings for extensions disabled due to minimum version requirement from enterprise policy">
      This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.

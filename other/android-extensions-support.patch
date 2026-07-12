@@ -2551,10 +2551,10 @@ index 85a2567522853..d373ff950270c 100644
    raw_ptr<WindowControllerListObserverForTesting>
        window_controller_list_observer_for_testing_;
 diff --git a/chrome/browser/ui/android/strings/android_chrome_strings.grd b/chrome/browser/ui/android/strings/android_chrome_strings.grd
-index 4535e54346fde..1858d120d7b26 100644
+index abd214d592024..725d996295c5b 100644
 --- a/chrome/browser/ui/android/strings/android_chrome_strings.grd
 +++ b/chrome/browser/ui/android/strings/android_chrome_strings.grd
-@@ -5622,6 +5622,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
+@@ -5619,6 +5619,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
        <message name="IDS_STORAGE_MANAGEMENT_CLEAR_ALL_DATA_BUTTON" desc="Text on the button to clear all Chrome data. [CHAR_LIMIT=30]">
          Clear All Data
        </message>
@@ -2562,7 +2562,7 @@ index 4535e54346fde..1858d120d7b26 100644
 +        Total data used by extensions
 +      </message>
 +      <message name="IDS_STORAGE_MANAGEMENT_CLEAR_ALL_EXTENSION_BUTTON" desc="Text on the button to clear all extension data. [CHAR_LIMIT=30]">
-+        Clear Extension Data
++        Clear extension data
 +      </message>
 +      <message name="IDS_STORAGE_MANAGEMENT_EXTENSION_RESET_APP_DIALOG_TITLE" desc="Title of the reset extension data dialog in the storage UI.">
 +        Delete extension data?

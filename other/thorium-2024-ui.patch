@@ -186,12 +186,12 @@ index 2d72f112e9b9f..567503f15f329 100644
  BASE_EXPORT bool ShouldCreateLogMessage(int severity);
  
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 95dbe0e3915e5..6e6031c2a1a60 100644
+index 4bcab8492ae4e..27d07cb637cfc 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -1676,6 +1676,12 @@ are declared in tools/grit/grit_args.gni.
-       <message name="IDS_ACCNAME_ZOOM_MINUS2" desc="The accessible description of the Make Text Smaller menu item in the merged menu">
-         Make Text Smaller
+@@ -1673,6 +1673,30 @@ are declared in tools/grit/grit_args.gni.
+       <message name="IDS_ACCNAME_ZOOM_PLUS2" desc="The accessible description of the Make Text Larger menu item in the merged menu">
+         Make Text Larger
        </message>
 +      <message name="IDS_RESTORE_TAB_BUTTON_NAME" desc="Accessible title for the restore tab button.">
 +        Restore Tab
@@ -199,9 +199,27 @@ index 95dbe0e3915e5..6e6031c2a1a60 100644
 +      <message name="IDS_RESTORE_TAB_BUTTON_TOOLTIP" desc="Tooltip when hovering over the restore tab button.">
 +        Restore Tab
 +      </message>
- 
-       <if expr="not use_titlecase">
-         <message name="IDS_VIEW_SOURCE" desc="The text label of the View Page Source menu item">
++      <message name="IDS_CHROMELABS_THORIUM_2024_NAME" desc="Name of the Thorium 2024 UI experiment in Chrome Labs.">
++        Enable Thorium 2024 UI
++      </message>
++      <message name="IDS_CHROMELABS_THORIUM_2024_DESCRIPTION" desc="Description of the Thorium 2024 UI experiment in Chrome Labs.">
++        Enable an experimental UI that restores many parts of the interface from before Chrome Refresh 2023.
++      </message>
++      <message name="IDS_CHROMELABS_RESTORE_TAB_BUTTON_NAME" desc="Name of the Restore Tab Button experiment in Chrome Labs.">
++        Restore Tab Button
++      </message>
++      <message name="IDS_CHROMELABS_RESTORE_TAB_BUTTON_DESCRIPTION" desc="Description of the Restore Tab Button experiment in Chrome Labs.">
++        Enable a toolbar button to restore recently closed tabs.
++      </message>
++      <message name="IDS_CHROMELABS_MIDDLE_CLICK_AUTOSCROLL_NAME" desc="Name of the Middle Click Autoscroll experiment in Chrome Labs.">
++        Middle Click Autoscroll
++      </message>
++      <message name="IDS_CHROMELABS_MIDDLE_CLICK_AUTOSCROLL_DESCRIPTION" desc="Description of the Middle Click Autoscroll experiment in Chrome Labs.">
++        Enable autoscrolling when the middle mouse button is pressed.
++      </message>
+       <message name="IDS_ACCNAME_ZOOM_MINUS2" desc="The accessible description of the Make Text Smaller menu item in the merged menu">
+         Make Text Smaller
+       </message>
 diff --git a/chrome/browser/chrome_browser_main.cc b/chrome/browser/chrome_browser_main.cc
 index 057be98e715c6..89865a9d7fe82 100644
 --- a/chrome/browser/chrome_browser_main.cc
@@ -1057,10 +1075,18 @@ index fbfe095b4c1a3..f328a417432ff 100644
        kTabVerticalPadding + GetLayoutConstant(LayoutConstant::kTabStripPadding),
        GetBottomCornerRadius() + kTabHorizontalPadding,
 diff --git a/chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.cc b/chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.cc
-index 1a0111b03f5dd..9e0e3aaa30627 100644
+index 1a0111b03f5dd..96a93ebf7e562 100644
 --- a/chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.cc
 +++ b/chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.cc
-@@ -36,8 +36,43 @@ const std::vector<LabInfo>& GetData() {
+@@ -10,6 +10,7 @@
+ #include "base/strings/utf_string_conversions.h"
+ #include "build/build_config.h"
+ #include "build/buildflag.h"
++#include "chrome/grit/generated_resources.h"
+ #include "ui/base/l10n/l10n_util.h"
+ 
+ namespace {
+@@ -36,8 +37,50 @@ const std::vector<LabInfo>& GetData() {
      return GetTestData().value();
    }
  
@@ -1070,8 +1096,10 @@ index 1a0111b03f5dd..9e0e3aaa30627 100644
 +    std::vector<LabInfo> lab_info;
 +
 +    const char kThorium2024FlagId[] = "thorium-2024";
-+    const std::u16string kThorium2024FlagName = u"Enable Thorium 2024 UI";
-+    const std::u16string kThorium2024FlagDescription = u"Enable an experimental UI, which restores many parts of the pre-Chrome Refresh 2023 UI.";
++    const std::u16string kThorium2024FlagName =
++        l10n_util::GetStringUTF16(IDS_CHROMELABS_THORIUM_2024_NAME);
++    const std::u16string kThorium2024FlagDescription =
++        l10n_util::GetStringUTF16(IDS_CHROMELABS_THORIUM_2024_DESCRIPTION);
 +
 +    lab_info.emplace_back(
 +        kThorium2024FlagId,
@@ -1080,8 +1108,10 @@ index 1a0111b03f5dd..9e0e3aaa30627 100644
 +        "chrome-labs-thorium-2024", version_info::Channel::BETA);
 +
 +    const char kRestoreTabsFlagId[] = "restore-tab-button";
-+    const std::u16string kRestoreTabsFlagName = u"Restore Tab Button";
-+    const std::u16string kRestoreTabsFlagDescription = u"Enable a new toolbar button to restore your recently closed tabs.";
++    const std::u16string kRestoreTabsFlagName =
++        l10n_util::GetStringUTF16(IDS_CHROMELABS_RESTORE_TAB_BUTTON_NAME);
++    const std::u16string kRestoreTabsFlagDescription =
++        l10n_util::GetStringUTF16(IDS_CHROMELABS_RESTORE_TAB_BUTTON_DESCRIPTION);
 +
 +    lab_info.emplace_back(
 +        kRestoreTabsFlagId,
@@ -1091,8 +1121,11 @@ index 1a0111b03f5dd..9e0e3aaa30627 100644
 +
 +#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 +    const char kMiddleScrollFlagId[] = "middle-click-autoscroll";
-+    const std::u16string kMiddleScrollFlagName = u"Middle Click Autoscroll";
-+    const std::u16string kMiddleScrollFlagDescription = u"Enables autoscrolling when the middle mouse button is pressed.";
++    const std::u16string kMiddleScrollFlagName =
++        l10n_util::GetStringUTF16(IDS_CHROMELABS_MIDDLE_CLICK_AUTOSCROLL_NAME);
++    const std::u16string kMiddleScrollFlagDescription =
++        l10n_util::GetStringUTF16(
++            IDS_CHROMELABS_MIDDLE_CLICK_AUTOSCROLL_DESCRIPTION);
 +
 +    lab_info.emplace_back(
 +        kMiddleScrollFlagId,

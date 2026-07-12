@@ -84,6 +84,7 @@ other/fix-policy-templates.patch
 other/ftp-support-thorium.patch
 other/GPC.patch
 other/add-boss-key.patch
+other/add-flag-for-close-confirmation.patch
 other/disable-middle-click-paste-with-autoscroll.patch
 other/thorium-2024-ui.patch
 other/add-flag-for-system-linux-theme.patch
@@ -96,7 +97,6 @@ other/open_in_same_tab.patch
 other/windows-thorium-flags-conf.patch
 
 # 70 - Thorium user-facing flags and feature behavior.
-other/add-flag-for-close-confirmation.patch
 other/add-flag-to-close-window-with-last-tab.patch
 other/add-flag-to-scroll-tabs.patch
 other/enable-ctrl-tab-mru.patch

@@ -1,8 +1,8 @@
 diff --git a/chrome/app/settings_strings.grdp b/chrome/app/settings_strings.grdp
-index c3058f3427ae9..44474516c2427 100644
+index f050f0283ec03..9caf62a8198df 100644
 --- a/chrome/app/settings_strings.grdp
 +++ b/chrome/app/settings_strings.grdp
-@@ -4041,6 +4041,24 @@
+@@ -4041,6 +4041,27 @@
        <message name="IDS_SETTINGS_SYSTEM" desc="Title of the system settings.">
          System
        </message>
@@ -23,6 +23,9 @@ index c3058f3427ae9..44474516c2427 100644
 +      </message>
 +      <message name="IDS_SETTINGS_BOSS_KEY_SHORTCUT_UNAVAILABLE" desc="Error shown when the operating system has rejected the boss key shortcut.">
 +        This shortcut is unavailable or is already used by another application
++      </message>
++      <message name="IDS_BOSS_KEY_COMMAND_DESCRIPTION" desc="Description shown by the operating system for the boss key global shortcut.">
++        Hide or restore browser windows
 +      </message>
      </if>
      <if expr="not is_chromeos">
@@ -45,10 +48,10 @@ index 0944c5f707fa3..5aac5d6482401 100644
        "//chrome/browser/ui/startup/default_browser_prompt",
 diff --git a/chrome/browser/boss_key/boss_key_service.cc b/chrome/browser/boss_key/boss_key_service.cc
 new file mode 100644
-index 0000000000000..2f3e4051f16cc
+index 0000000000000..b67102b7f340a
 --- /dev/null
 +++ b/chrome/browser/boss_key/boss_key_service.cc
-@@ -0,0 +1,374 @@
+@@ -0,0 +1,378 @@
 +// Copyright 2026 The Thorium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -62,11 +65,13 @@ index 0000000000000..2f3e4051f16cc
 +#include "chrome/browser/browser_process.h"
 +#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 +#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
++#include "chrome/grit/generated_resources.h"
 +#include "components/prefs/pref_registry_simple.h"
 +#include "components/prefs/pref_service.h"
 +#include "components/tabs/public/tab_interface.h"
 +#include "content/public/browser/web_contents.h"
 +#include "ui/base/accelerators/command.h"
++#include "ui/base/l10n/l10n_util.h"
 +#include "ui/base/base_window.h"
 +#include "ui/events/event_constants.h"
 +#include "ui/events/keycodes/dom/keycode_converter.h"
@@ -276,7 +281,9 @@ index 0000000000000..2f3e4051f16cc
 +  // Portal shortcuts remain registered while the input is focused. The
 +  // callback is ignored during capture, avoiding repeated portal sessions.
 +  if (listener->IsRegistrationHandledExternally()) {
-+    ui::Command command(kCommandId, u"Hide or restore browser windows", true);
++    ui::Command command(
++        kCommandId,
++        l10n_util::GetStringUTF16(IDS_BOSS_KEY_COMMAND_DESCRIPTION), true);
 +    command.set_accelerator(*accelerator);
 +    ui::CommandMap commands;
 +    commands.emplace(kCommandId, std::move(command));
@@ -897,10 +904,10 @@ index 7773fa7ed4bb9..a7355b7f67ce6 100644
      chrome.send('showProxySettings');
    }
 diff --git a/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc b/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
-index b6c29a26dc3a6..5d8122e2df3d2 100644
+index b7b3ad9beb5f3..00f85ee0b69d2 100644
 --- a/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
 +++ b/chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc
-@@ -4158,6 +4158,15 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
+@@ -4159,6 +4159,15 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
  void AddSystemStrings(content::WebUIDataSource* html_source) {
    static constexpr webui::LocalizedString kLocalizedStrings[] = {
        {"systemPageTitle", IDS_SETTINGS_SYSTEM},

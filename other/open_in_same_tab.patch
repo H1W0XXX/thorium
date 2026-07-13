@@ -11,7 +11,7 @@ index 0f50c4d73e0cf..204179d257ed3 100644
  // Image items.
  #define IDC_CONTENT_CONTEXT_SAVEIMAGEAS 50120
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 3b0d9be4627c3..84bb27dee7557 100644
+index 498c452d177f4..b759f76b3e848 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
 @@ -701,6 +701,9 @@ are declared in tools/grit/grit_args.gni.

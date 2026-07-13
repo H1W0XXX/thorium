@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index 37ff089951c38..dcb7cb43a33d8 100644
+index fd6f8a70d4cfd..cdd3caf062aa7 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
-@@ -673,7 +673,11 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
+@@ -672,7 +672,11 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
    // Close tab on middle click, but only if the button is released over the tab
    // (normal windows behavior is to discard presses of a UI element where the
    // releases happen off the element).

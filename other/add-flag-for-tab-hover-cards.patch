@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index 42548c8e223de..336bfd421e8bb 100644
+index 04ae77620f0ec..2d1faeee089cd 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
-@@ -1090,6 +1090,16 @@ void Tab::HideHover(TabStyle::HideHoverStyle style) {
+@@ -1089,6 +1089,16 @@ void Tab::HideHover(TabStyle::HideHoverStyle style) {
    DeprecatedLayoutImmediately();
  }
  

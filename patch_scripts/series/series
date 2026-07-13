@@ -28,7 +28,7 @@ other/enable-mpeg2-ac3-eac3-decoding.patch
 other/thorium-media-switches.patch
 other/widevine-cdm-host-verification.patch
 
-# 20 - Identity, API keys, resources, and branding.
+# 20 - Product defaults, identity, resources, branding, and browser preferences.
 other/thorium-default-api-keys.patch
 other/disable-fetching-field-trials.patch
 other/thorium-blink-feature-defaults.patch
@@ -44,6 +44,8 @@ other/thorium-theme-resources.patch
 other/thorium-app-vector-icons.patch
 other/default-apps-ublock-origin.patch
 other/bookmark-default-prefs.patch
+other/bookmark-dialog-default-folder.patch
+other/increase-bookmark-open-prompt-threshold.patch
 other/thorium-browser-ui-default-prefs.patch
 other/dom-distiller-reader-mode.patch
 
@@ -55,7 +57,7 @@ other/arm-third-party-simd-compat.patch
 other/thorium-build-platform-tools.patch
 other/llvm-optimized-avx2-build.patch
 
-# 40 - Linux and installer/platform integration.
+# 40 - Linux/platform integration, UI debug tools, and shared resource branding.
 other/linux-disable-custom-titlebar-default.patch
 other/linux-obsolete-system-policy.patch
 other/linux-memory-details-branding.patch
@@ -85,18 +87,35 @@ other/ftp-support-thorium.patch
 other/GPC.patch
 other/add-boss-key.patch
 other/add-flag-for-close-confirmation.patch
+other/thorium-debug-mode.patch
+other/thorium-first-run-welcome.patch
 other/disable-middle-click-paste-with-autoscroll.patch
-other/thorium-2024-ui.patch
+other/views-menu-delay.patch
+other/new-tab-to-left-context-menu.patch
+other/status-bubble-instant-expand.patch
+other/thorium-2024-ui-core.patch
+other/custom-tab-width.patch
+other/classic-bookmarks.patch
+other/expand-chrome-color-choices.patch
+other/windows-menu-style-overrides.patch
+other/classic-omnibox.patch
+other/rectangular-tabs.patch
+other/prominent-active-tab-titles.patch
+other/transparent-tabs.patch
+other/toolbar-avatar-button-visibility.patch
+other/restore-tab-button.patch
+other/thorium-chrome-labs-experiments.patch
 other/add-flag-for-system-linux-theme.patch
 other/restore_download_shelf.patch
+other/downloads-page-enhancements.patch
 
-# 60 - Windows installer and shell integration.
+# 60 - Installer, shell integration, and context-menu behavior.
 other/mini_installer.patch
 other/thorium-mini-installer-manifest.patch
 other/open_in_same_tab.patch
 other/windows-thorium-flags-conf.patch
 
-# 70 - Thorium user-facing flags and feature behavior.
+# 70 - User-facing flags, defaults, download/security behavior, and ThoriumOS.
 other/add-flag-to-close-window-with-last-tab.patch
 other/add-flag-to-scroll-tabs.patch
 other/enable-ctrl-tab-mru.patch
@@ -135,7 +154,7 @@ other/add-flag-for-auto-dark-mode.patch
 other/disable-thorium-icons.patch
 other/always-enable-reload-menu.patch
 
-# 80 - Extensions and Android extensions.
+# 80 - Extensions, privacy, install branding, and late platform overlays.
 other/allow_manifest_v2_extensions.patch
 other/increase-dnr-limits.patch
 other/show-hosted-apps-in-extensions.patch

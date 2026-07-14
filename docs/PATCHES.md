@@ -225,7 +225,6 @@ overlay-derived, or still need separate provenance review.
 - [`increase-dnr-limits.patch`](../other/increase-dnr-limits.patch)
 - [`show-hosted-apps-in-extensions.patch`](../other/show-hosted-apps-in-extensions.patch)
 - [`thorium_webui.patch`](../other/thorium_webui.patch)
-- [`win_updater.patch`](../other/win_updater.patch)
 - [`keyboard_shortcuts.patch`](../other/keyboard_shortcuts.patch)
 - [`keep-expired-flags.patch`](../other/keep-expired-flags.patch)
 - [`disable-privacy-sandbox.patch`](../other/disable-privacy-sandbox.patch)

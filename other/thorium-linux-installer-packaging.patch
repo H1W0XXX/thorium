@@ -1,5 +1,5 @@
 diff --git a/chrome/installer/linux/BUILD.gn b/chrome/installer/linux/BUILD.gn
-index e1aca5fd6ecd1..db3398fe5bedd 100644
+index e1aca5fd6ecd1..5054b0570b6dd 100644
 --- a/chrome/installer/linux/BUILD.gn
 +++ b/chrome/installer/linux/BUILD.gn
 @@ -1,17 +1,16 @@
@@ -22,7 +22,7 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
  import("//chrome/version.gni")
  import("//components/optimization_guide/features.gni")
  import("//third_party/angle/gni/angle.gni")
-@@ -23,44 +22,41 @@ if (bundle_widevine_cdm) {
+@@ -23,10 +22,14 @@ if (bundle_widevine_cdm) {
    import("//media/cdm/library_cdm/cdm_paths.gni")
  }
  
@@ -38,61 +38,54 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
  }
  
  assert(is_linux)
- 
--if (current_cpu == "x86") {
--  deb_arch = "i386"
--  rpm_arch = "i386"
--} else if (current_cpu == "x64") {
--  deb_arch = "amd64"
--  rpm_arch = "x86_64"
--} else if (current_cpu == "arm") {
--  deb_arch = "armhf"
--  rpm_arch = "armhf"
--} else if (current_cpu == "arm64") {
--  deb_arch = "arm64"
--  rpm_arch = "aarch64"
--} else if (current_cpu == "mipsel") {
--  deb_arch = "mipsel"
--  rpm_arch = "mipsel"
--} else if (current_cpu == "mips64el") {
--  deb_arch = "mips64el"
--  rpm_arch = "mips64el"
--} else if (current_cpu == "loong64") {
--  deb_arch = "loong64"
--  rpm_arch = "loongarch64"
--} else if (current_cpu == "riscv64") {
--  deb_arch = "riscv64"
--  rpm_arch = "riscv64"
--} else {
--  assert(false, "Linux installer not configured for this architecture.")
-+# Determine SIMD instruction set suffix for package naming,
-+# mirroring the logic in chrome/installer/mini_installer/BUILD.gn.
-+_simd_suffix = ""
-+if (current_cpu == "x86" || current_cpu == "x64") {
-+  if (use_sse2 && !use_sse3) {
-+    _simd_suffix = "_SSE2"
-+  } else if (use_sse3 && !use_sse41 && !use_sse42) {
-+    _simd_suffix = "_SSE3"
-+  } else if (use_sse41 && !use_sse42) {
-+    _simd_suffix = "_SSE4"
-+  } else if (use_sse42 && !use_avx) {
-+    _simd_suffix = "_SSE4.2"
-+  } else if (use_avx && !use_avx2) {
-+    _simd_suffix = "_AVX"
-+  } else if (use_avx2 && !use_avx512) {
-+    _simd_suffix = "_AVX2"
-+  } else if (use_avx512) {
-+    _simd_suffix = "_AVX512"
-+  }
+@@ -59,11 +62,34 @@ if (current_cpu == "x86") {
+   assert(false, "Linux installer not configured for this architecture.")
  }
  
++# Package naming consumes the canonical profile metadata and never derives CPU
++# capabilities independently from the compiler configuration.
++_simd_suffix = thorium_linux_package_suffix
++_simd_variant = string_replace(_simd_suffix, "_", "")
++
++thorium_package_extra_files = [
++  "$root_out_dir/chromedriver",
++  "$root_out_dir/content_shell.pak",
++  "$root_out_dir/pak",
++  "$root_out_dir/shell_resources.pak",
++  "$root_out_dir/thorium-shell",
++  "$root_out_dir/thorium-shell.desktop",
++  "$root_out_dir/thorium_shell.png",
++  "$root_out_dir/thorium_shell.stripped",
++]
++if (enable_library_cdms) {
++  thorium_package_extra_files +=
++      [ "$root_out_dir/$clearkey_cdm_path/libclearkeycdm.so.stripped" ]
++}
++
  packaging_files_executables = [
 -  "$root_out_dir/chrome",
 +  "$root_out_dir/thorium",
    "$root_out_dir/chrome_crashpad_handler",
    "$root_out_dir/chrome_management_service",
    "$root_out_dir/chrome_sandbox",
-@@ -99,6 +95,10 @@ packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
++  "$root_out_dir/chromedriver",
++  "$root_out_dir/pak",
++  "$root_out_dir/thorium_shell",
+ ]
+ 
+ packaging_files_shlibs = []
+@@ -93,12 +119,21 @@ if (build_with_internal_optimization_guide) {
+       [ "$root_out_dir/liboptimization_guide_internal.so" ]
+ }
+ 
++if (enable_library_cdms) {
++  packaging_files_shlibs +=
++      [ "$root_out_dir/$clearkey_cdm_path/libclearkeycdm.so" ]
++}
++
+ packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
+ 
+ # TODO(mmoss) Any convenient way to get all the relevant build files?
  # (e.g. all locales, resources, etc.)
  packaging_files = packaging_files_binaries + [
                      "common/installer.py",
@@ -103,7 +96,49 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
                      "$root_out_dir/locales/en-US.pak",
                      "$root_out_dir/MEIPreload/manifest.json",
                      "$root_out_dir/MEIPreload/preloaded_data.pb",
-@@ -198,7 +198,7 @@ action("merge_rpm_dependencies") {
+@@ -120,7 +155,11 @@ if (use_qt6) {
+ }
+ 
+ action_foreach("calculate_deb_dependencies") {
+-  deps = [ ":installer_deps" ]
++  testonly = true
++  deps = [
++    ":installer_deps",
++    ":thorium_package_extras",
++  ]
+   script = "debian/calculate_package_deps.py"
+   sources = packaging_files_binaries
+   inputs = [
+@@ -143,6 +182,7 @@ action_foreach("calculate_deb_dependencies") {
+ }
+ 
+ action("merge_deb_dependencies") {
++  testonly = true
+   deps = [ ":calculate_deb_dependencies" ]
+   script = "debian/merge_package_versions.py"
+   additional_deps = "debian/additional_deps"
+@@ -162,7 +202,11 @@ action("merge_deb_dependencies") {
+ }
+ 
+ action_foreach("calculate_rpm_dependencies") {
+-  deps = [ ":installer_deps" ]
++  testonly = true
++  deps = [
++    ":installer_deps",
++    ":thorium_package_extras",
++  ]
+   script = "rpm/calculate_package_deps.py"
+   sources = packaging_files_binaries
+   inputs = [
+@@ -181,6 +225,7 @@ action_foreach("calculate_rpm_dependencies") {
+ }
+ 
+ action("merge_rpm_dependencies") {
++  testonly = true
+   deps = [ ":calculate_rpm_dependencies" ]
+   script = "rpm/merge_package_deps.py"
+   additional_deps = "rpm/additional_deps"
+@@ -198,7 +243,7 @@ action("merge_rpm_dependencies") {
  }
  
  strip_binary("strip_chrome_binary") {
@@ -112,7 +147,7 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
    deps = [ "//chrome" ]
  }
  
-@@ -217,6 +217,35 @@ strip_binary("strip_chrome_sandbox") {
+@@ -217,6 +262,35 @@ strip_binary("strip_chrome_sandbox") {
    deps = [ "//sandbox/linux:chrome_sandbox" ]
  }
  
@@ -148,14 +183,15 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
  strip_binary("strip_libEGL_shlib") {
    binary_input = "$root_out_dir/libEGL.so"
    deps = [ "//third_party/angle:libEGL" ]
-@@ -265,55 +294,7 @@ if (use_qt6) {
+@@ -264,57 +338,8 @@ if (use_qt6) {
+ # This target builds all "normal" Linux installers.  You must set
  # is_component_build=false before building this target.
  group("linux") {
-   deps = [
+-  deps = [
 -    ":beta",
 -    ":canary",
 -    ":deb_repo_package",
-     ":stable",
+-    ":stable",
 -    ":unstable",
 -  ]
 -}
@@ -201,28 +237,36 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
 -    rebase_path(sysroot, root_build_dir),
 -    "-t",
 -    target_os,
-   ]
+-  ]
++  testonly = true
++  deps = [ ":stable" ]
  }
  
-@@ -325,13 +306,11 @@ copy("common_packaging_files") {
-   visibility = [ ":*" ]
-   sources = [
+ branding_dir = "//chrome/app/theme/$branding_path_component"
+@@ -327,17 +352,12 @@ copy("common_packaging_files") {
      "//chrome/app/resources/manpage.1.in",
--    "common/apparmor.template",
+     "common/apparmor.template",
      "common/appdata.xml.template",
-     "common/apt.include",
+-    "common/apt.include",
      "common/default-app-block.template",
      "common/default-app.template",
      "common/desktop.template",
 -    "common/key.include",
      "common/postinst.include",
      "common/prerm.include",
-     "common/repo.cron",
-@@ -357,16 +336,19 @@ copy("deb_packaging_files") {
+-    "common/repo.cron",
+-    "common/repo_variables.include",
+     "common/rpm.include",
+-    "common/rpmrepo.cron",
+     "common/symlinks.include",
+     "common/variables.include",
+     "common/wrapper",
+@@ -357,16 +377,20 @@ copy("deb_packaging_files") {
    sources = [
      "debian/changelog.template",
      "debian/control.template",
 -    "debian/control_repo.template",
++
 +    # "debian/manual_recommends",
      "debian/postinst",
 -    "debian/postinst_repo",
@@ -241,7 +285,7 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
  copy("theme_files") {
    visibility = [ ":*" ]
    sources = [
-@@ -410,7 +392,7 @@ copy("theme_files") {
+@@ -410,7 +434,7 @@ copy("theme_files") {
  if (!is_chromeos) {
    copy("rpm_packaging_files") {
      visibility = [ ":*" ]
@@ -250,7 +294,7 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
      outputs = [ "$root_out_dir/installer/rpm/{{source_file_part}}" ]
    }
  }
-@@ -442,6 +424,7 @@ group("installer_deps") {
+@@ -442,6 +466,7 @@ group("installer_deps") {
      ":strip_chrome_management_service",
      ":strip_chrome_sandbox",
      ":theme_files",
@@ -258,7 +302,7 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
      "//chrome",
      "//chrome:packed_resources",
      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:chrome_management_service",
-@@ -449,6 +432,8 @@ group("installer_deps") {
+@@ -449,6 +474,8 @@ group("installer_deps") {
      "//components/crash/core/app:chrome_crashpad_handler",
      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
      "//sandbox/linux:chrome_sandbox",
@@ -267,13 +311,13 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
    ]
    if (bundle_widevine_cdm) {
      public_deps += [ "//third_party/widevine/cdm" ]
-@@ -502,13 +487,11 @@ group("installer_deps") {
+@@ -502,22 +529,33 @@ group("installer_deps") {
  # channel:
  #   Name of the channel.
  template("linux_package") {
 -  assert(defined(invoker.channel))
 -  channel = invoker.channel
- 
+-
    if (is_chrome_branded) {
      package = "google-chrome"
    } else {
@@ -282,30 +326,13 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
    }
  
    deb_target_name = "${target_name}_deb"
-@@ -516,8 +499,39 @@ template("linux_package") {
+   action(deb_target_name) {
++    testonly = true
      visibility = [ ":*" ]
      script = "debian/build.py"
  
-+    if (current_cpu == "x86") {
-+      deb_arch = "i386"
-+    } else if (current_cpu == "x64") {
-+      deb_arch = "amd64"
-+    } else if (current_cpu == "arm") {
-+      deb_arch = "armhf"
-+    } else if (current_cpu == "arm64") {
-+      deb_arch = "arm64"
-+    } else if (current_cpu == "mipsel") {
-+      deb_arch = "mipsel"
-+    } else if (current_cpu == "mips64el") {
-+      deb_arch = "mips64el"
-+    } else if (current_cpu == "loong64") {
-+      deb_arch = "loong64"
-+    } else if (current_cpu == "riscv64") {
-+      deb_arch = "riscv64"
-+    } else {
-+      assert(false, "Linux installer not configured for this architecture.")
-+    }
-+
+-    inputs = packaging_files
+-    outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${deb_arch}.deb" ]
 +    # For x64, the SIMD suffix alone identifies the build variant (drop arch).
 +    # i386 builds are named by arch only, without an SSE2 suffix.
 +    # For all other architectures, keep the arch identifier.
@@ -317,22 +344,25 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
 +      _deb_name_suffix = "_${deb_arch}${_simd_suffix}"
 +    }
 +
-     inputs = packaging_files
--    outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}-1_${deb_arch}.deb" ]
-+    outputs = [ "$root_out_dir/${package}_${chrome_version_full}${_deb_name_suffix}.deb" ]
++    inputs = packaging_files + thorium_package_extra_files
++    outputs = [
++      "$root_out_dir/${package}_${chrome_version_full}${_deb_name_suffix}.deb",
++    ]
  
      args = [
        "-a",
-@@ -528,14 +542,14 @@ template("linux_package") {
+@@ -528,32 +566,51 @@ template("linux_package") {
        invoker.channel,
        "-d",
        branding_path_component,
 +      "-n",
 +      _deb_name_suffix,
++      "--simd-variant",
++      _simd_variant,
        "-o",
        rebase_path(root_out_dir, root_build_dir),
-       "-s",
-       rebase_path(sysroot, root_build_dir),
+-      "-s",
+-      rebase_path(sysroot, root_build_dir),
        "-t",
        target_os,
 -      "--xz-nthreads",
@@ -340,30 +370,29 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
      ]
      if (is_official_build) {
        args += [ "-f" ]
-@@ -552,8 +566,39 @@ template("linux_package") {
+     }
++    if (enable_library_cdms) {
++      args += [
++        "--clearkey-cdm-path",
++        "$clearkey_cdm_path/libclearkeycdm.so.stripped",
++      ]
++    }
+     deps = [
+       ":installer_deps",
+       ":merge_deb_dependencies",
++      ":thorium_package_extras",
+     ]
+   }
+ 
+   if (!is_chromeos) {
+     rpm_target_name = "${target_name}_rpm"
+     action(rpm_target_name) {
++      testonly = true
        visibility = [ ":*" ]
        script = "rpm/build.py"
  
-+      if (current_cpu == "x86") {
-+        rpm_arch = "i386"
-+      } else if (current_cpu == "x64") {
-+        rpm_arch = "x86_64"
-+      } else if (current_cpu == "arm") {
-+        rpm_arch = "armhf"
-+      } else if (current_cpu == "arm64") {
-+        rpm_arch = "aarch64"
-+      } else if (current_cpu == "mipsel") {
-+        rpm_arch = "mipsel"
-+      } else if (current_cpu == "mips64el") {
-+        rpm_arch = "mips64el"
-+      } else if (current_cpu == "loong64") {
-+        rpm_arch = "loongarch64"
-+      } else if (current_cpu == "riscv64") {
-+        rpm_arch = "riscv64"
-+      } else {
-+        assert(false, "Linux installer not configured for this architecture.")
-+      }
-+
+-      inputs = packaging_files
+-      outputs = [ "$root_out_dir/${package}-${channel}-${chrome_version_full}-1.${rpm_arch}.rpm" ]
 +      # For x64, the SIMD suffix alone identifies the build variant (drop arch).
 +      # i386 builds are named by arch only, without an SSE2 suffix.
 +      # For all other architectures, keep the arch identifier.
@@ -375,22 +404,46 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
 +        _rpm_name_suffix = "_${rpm_arch}${_simd_suffix}"
 +      }
 +
-       inputs = packaging_files
--      outputs = [ "$root_out_dir/${package}-${channel}-${chrome_version_full}-1.${rpm_arch}.rpm" ]
++      inputs = packaging_files + thorium_package_extra_files
 +      outputs = [ "$root_out_dir/${package}_${chrome_version_full}${_rpm_name_suffix}.rpm" ]
  
        args = [
          "-a",
-@@ -564,6 +609,8 @@ template("linux_package") {
+@@ -564,6 +621,10 @@ template("linux_package") {
          invoker.channel,
          "-d",
          branding_path_component,
 +        "-n",
 +        _rpm_name_suffix,
++        "--simd-variant",
++        _simd_variant,
          "-o",
          rebase_path(root_out_dir, root_build_dir),
          "-t",
-@@ -591,12 +638,3 @@ template("linux_package") {
+@@ -572,14 +633,22 @@ template("linux_package") {
+       if (is_official_build) {
+         args += [ "-f" ]
+       }
++      if (enable_library_cdms) {
++        args += [
++          "--clearkey-cdm-path",
++          "$clearkey_cdm_path/libclearkeycdm.so.stripped",
++        ]
++      }
+       deps = [
+         ":installer_deps",
+         ":merge_rpm_dependencies",
++        ":thorium_package_extras",
+       ]
+     }
+   }
+ 
+   group(target_name) {
++    testonly = true
+     deps = [ ":$deb_target_name" ]
+     if (!is_chromeos) {
+       deps += [ ":$rpm_target_name" ]
+@@ -591,12 +660,3 @@ template("linux_package") {
  linux_package("stable") {
    channel = "stable"
  }
@@ -403,8 +456,24 @@ index e1aca5fd6ecd1..db3398fe5bedd 100644
 -linux_package("canary") {
 -  channel = "canary"
 -}
+diff --git a/chrome/installer/linux/common/apparmor.template b/chrome/installer/linux/common/apparmor.template
+index 3e034ccac4b22..fa0d33195b411 100644
+--- a/chrome/installer/linux/common/apparmor.template
++++ b/chrome/installer/linux/common/apparmor.template
+@@ -6,9 +6,9 @@
+ abi <abi/4.0>,
+ include <tunables/global>
+ 
+-profile @@usr_bin_symlink_name @@INSTALLDIR/@@PROGNAME flags=(unconfined) {
++profile @@USR_BIN_SYMLINK_NAME@@ @@INSTALLDIR@@/@@PROGNAME@@ flags=(unconfined) {
+   userns,
+ 
+   # Site-specific additions and overrides. See local/README for details.
+-  include if exists <local/@@usr_bin_symlink_name>
++  include if exists <local/@@USR_BIN_SYMLINK_NAME@@>
+ }
 diff --git a/chrome/installer/linux/common/appdata.xml.template b/chrome/installer/linux/common/appdata.xml.template
-index bb8a0b129e2fa..e8fb665e457af 100644
+index bb8a0b129e2fa..7b4b82a1d2a15 100644
 --- a/chrome/installer/linux/common/appdata.xml.template
 +++ b/chrome/installer/linux/common/appdata.xml.template
 @@ -1,26 +1,34 @@
@@ -442,7 +511,7 @@ index bb8a0b129e2fa..e8fb665e457af 100644
    <screenshots>
      <screenshot type="default">
 -      <image>https://www.gstatic.com/chrome/appstream/chrome-2.png</image>
-+      <image>https://github.com/Alex313031/thorium/blob/main/logos/STAGING/Thorium_Screenshot.png</image>
++      <image>https://raw.githubusercontent.com/Alex313031/Thorium/main/logos/STAGING/Thorium_Screenshot.png</image>
        <caption/>
      </screenshot>
    </screenshots>
@@ -454,457 +523,6 @@ index bb8a0b129e2fa..e8fb665e457af 100644
 +  <url type="bugtracker">@@BUGTRACKERURL@@</url>
 +  <url type="help">@@HELPURL@@</url>
  </component>
-diff --git a/chrome/installer/linux/common/apt.include b/chrome/installer/linux/common/apt.include
-index b3368c18c9b0d..856db64d9e18f 100644
---- a/chrome/installer/linux/common/apt.include
-+++ b/chrome/installer/linux/common/apt.include
-@@ -1,143 +1,326 @@
- @@include@@repo_variables.include
--@@include@@key.include
- 
--APT_CONFIG="$(command -v apt-config 2>/dev/null)"
-+# Copyright (c) 2026 Alex313031.
- 
--GPG_FILE="/usr/share/keyrings/@@PACKAGE.gpg"
-+APT_GET="`command -v apt-get 2> /dev/null`"
-+APT_CONFIG="`command -v apt-config 2> /dev/null`"
-+
-+SOURCES_PREAMBLE="### THIS FILE IS AUTOMATICALLY CONFIGURED ###
-+# You may comment out this entry, but any other modifications may be lost.\n"
- 
- # Set variables for the locations of the apt trusted keyrings.
- find_apt_trusted() {
-   eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
- }
- 
--# Set variables for the locations of the apt sources lists.
--find_apt_sources() {
--  eval $("$APT_CONFIG" shell APT_SOURCESDIR 'Dir::Etc::sourceparts/d')
--  SOURCES_FILE="$APT_SOURCESDIR/@@PACKAGE.sources"
--}
--
--# Install the repository/package signing keys. The key cannot be part of the
--# package since it's still needed if the package is removed but not purged.
-+# Install the repository/package signing keys.
-+# (see also: https://www.google.com/linuxrepositories/)
- install_key() {
--  if [ ! -e /usr/share/keyrings ]; then
--    mkdir -p /usr/share/keyrings
--    chmod 755 /usr/share/keyrings
--  fi
-+  find_apt_trusted
-+  # ASCII-armored keyrings are only supported in apt 1.4 and later, but we must
-+  # continue supporting Trusty and Xenial which have older versions of apt, so
-+  # the keyring is installed as a binary blob.  base64 is used to decode the
-+  # ASCII keyring, which should always be available since it comes from the
-+  # coreutils.
-+  (base64 -d > "$APT_TRUSTEDDIR/@@PACKAGE@@.gpg") <<KEYDATA
-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
-+p6XgWgagKw==
- 
--  # Use a temporary file to ensure atomic updates
--  echo "$PGP_KEY_DATA" | base64 -d >"$GPG_FILE.$$.tmp"
--  chmod 644 "$GPG_FILE.$$.tmp"
--  mv "$GPG_FILE.$$.tmp" "$GPG_FILE"
-+KEYDATA
- }
- 
- uninstall_key() {
--  rm -f "$GPG_FILE"
--}
--
--remove_legacy_key() {
-   find_apt_trusted
--  rm -f "$APT_TRUSTEDDIR/@@PACKAGE.gpg"
--}
--
--remove_legacy_list() {
--  find_apt_sources
--  LEGACY_LIST="$APT_SOURCESDIR/@@PACKAGE.list"
--  if [ ! -f "$LEGACY_LIST" ]; then
--    return
--  fi
--
--  # Check for other sources (strict check for 'ours')
--  # If there are any lines starting with 'deb' (commented or not) that do NOT
--  # match our strict regex, keep the file.
--  if grep -E "^[[:space:]]*#?[[:space:]]*deb" "$LEGACY_LIST" |
--    grep -v -E \
--    "^[[:space:]]*#?[[:space:]]*$REPOCONFIGREGEX" >/dev/null;
--  then
--    # Other sources exist, comment out ours (strict match)
--    sed -i -E "s|^[[:space:]]*($REPOCONFIGREGEX)|# \1|" "$LEGACY_LIST"
--  else
--    # No other sources, safe to remove
--    rm -f "$LEGACY_LIST"
--  fi
--}
--
--# Generate the content of the .sources file
--gen_sources_content() {
--  cat <<EOF
--### THIS FILE IS AUTOMATICALLY CONFIGURED ###
--# Changes to this file will not be preserved.
--# This file will not be recreated if removed.
--X-Repolib-Name: @@MENUNAME
--Types: deb
--URIs: https://dl.google.com/linux/chrome-@@channel/deb/
--Suites: stable
--Components: main
--Architectures: @@architecture
--Signed-By: $GPG_FILE
--EOF
--}
--
--# Add the Google repository to the apt sources. The sources cannot be part of
--# the package since it's still needed if the package is removed but not purged.
--create_sources_lists() {
--  find_apt_sources
--
--  gen_sources_content >"$SOURCES_FILE.$$.tmp"
--  chmod 644 "$SOURCES_FILE.$$.tmp"
--  mv "$SOURCES_FILE.$$.tmp" "$SOURCES_FILE"
--
--  if [ -r "$DEFAULTS_FILE" ]; then
--    if grep -q "^[[:space:]]*repo_add_once=" "$DEFAULTS_FILE"; then
--      sed -i -e \
--        's/^[[:space:]]*repo_add_once=.*/repo_add_once="false"/' \
--        "$DEFAULTS_FILE"
--    else
--      echo 'repo_add_once="false"' >>"$DEFAULTS_FILE"
--    fi
--  fi
-+  rm -f "$APT_TRUSTEDDIR/@@PACKAGE@@.gpg"
- }
- 
--# Remove our custom sources file.
--clean_sources_lists() {
--  find_apt_sources
--  rm -f "$SOURCES_FILE"
-+# Set variables for the locations of the apt sources lists.
-+find_apt_sources() {
-+  eval $("$APT_CONFIG" shell APT_SOURCESDIR 'Dir::Etc::sourceparts/d')
- }
- 
--install_deb822_sources() {
--  find_apt_sources
--  LEGACY_LIST="$APT_SOURCESDIR/@@PACKAGE.list"
-+DEFAULT_ARCH="@@ARCHITECTURE@@"
- 
--  SHOULD_INSTALL_SOURCES=0
--  # Detect new installs.
--  if [ -r "$DEFAULTS_FILE" ]; then
--    if grep -E -q \
--      '^[[:space:]]*repo_add_once=[[:space:]]*["'\'']?true["'\'']?' \
--      "$DEFAULTS_FILE"; then
--      SHOULD_INSTALL_SOURCES=1
--    fi
-+get_lib_dir() {
-+  if [ "$DEFAULT_ARCH" = "i386" ]; then
-+    LIBDIR=lib/i386-linux-gnu
-+  elif [ "$DEFAULT_ARCH" = "amd64" ]; then
-+    LIBDIR=lib/x86_64-linux-gnu
-+  elif [ "$DEFAULT_ARCH" = "armhf" ]; then
-+    LIBDIR=lib/arm-linux-gnueabihf
-+  elif [ "$DEFAULT_ARCH" = "arm64" ]; then
-+    LIBDIR=lib/aarch64-linux-gnu
-+  elif [ "$DEFAULT_ARCH" = "mipsel" ]; then
-+    LIBDIR=lib/mipsel-linux-gnu
-+  elif [ "$DEFAULT_ARCH" = "mips64el" ]; then
-+    LIBDIR=lib/mips64el-linux-gnuabi64
-   else
--    SHOULD_INSTALL_SOURCES=1
--    echo 'repo_add_once="true"' >"$DEFAULTS_FILE"
--    echo 'repo_reenable_on_distupgrade="true"' >>"$DEFAULTS_FILE"
--  fi
--
--  if [ -f "$SOURCES_FILE" ]; then
--    # The new .sources file already exists. Recreate it in case it got disabled
--    # during a dist upgrade.
--    SHOULD_INSTALL_SOURCES=1
--  elif [ -f "$LEGACY_LIST" ]; then
--    # Migrate a legacy .list file to the new .sources format.
--    if grep -E -q "^[[:space:]]*$REPOCONFIGREGEX" "$LEGACY_LIST"; then
--      SHOULD_INSTALL_SOURCES=1
--    elif grep -E -q \
--      "^[[:space:]]*#[[:space:]]*$REPOCONFIGREGEX[[:space:]]*# disabled on \
--upgrade to .*" \
--      "$LEGACY_LIST"; then
--      SHOULD_INSTALL_SOURCES=1
--    fi
--  fi
--
--  if [ "$SHOULD_INSTALL_SOURCES" -eq 1 ]; then
--    create_sources_lists
-+    echo Unknown CPU Architecture: "$DEFAULT_ARCH"
-+    exit 1
-   fi
- }
 diff --git a/chrome/installer/linux/common/chromium-browser.info b/chrome/installer/linux/common/chromium-browser.info
 index 395c019f7dd5f..e3a5d49c2a50c 100644
 --- a/chrome/installer/linux/common/chromium-browser.info
@@ -1116,10 +734,10 @@ index bf572f69720a0..06ae1f8a6a870 100644
 +Name=Open in Dark Mode
 +Exec=/usr/bin/@@USR_BIN_SYMLINK_NAME@@ --force-dark-mode %U
 diff --git a/chrome/installer/linux/common/installer.py b/chrome/installer/linux/common/installer.py
-index a9bbec28188c9..fdaf23bf5e714 100644
+index a9bbec28188c9..b2b3057c9e278 100644
 --- a/chrome/installer/linux/common/installer.py
 +++ b/chrome/installer/linux/common/installer.py
-@@ -1,97 +1,20 @@
+@@ -1,97 +1,19 @@
 -# Copyright 2025 The Chromium Authors
 +# Copyright 2026 The Chromium Authors and Alex313031
  # Use of this source code is governed by a BSD-style license that can be
@@ -1128,7 +746,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
 -import argparse
 -import dataclasses
  import datetime
- import glob
+-import glob
  import logging
  import os
  import pathlib
@@ -1219,7 +837,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
      logging.info(" ".join(cmd))
  
      if os.environ.get("VERBOSE"):
-@@ -118,8 +41,7 @@ def run_command(
+@@ -118,8 +40,7 @@ def run_command(
              sys.exit(proc.returncode)
  
  
@@ -1229,7 +847,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
      expected = set(expected_deps)
      actual = set(actual_deps)
  
-@@ -137,22 +59,14 @@ def verify_package_deps(expected_deps: list[str],
+@@ -137,22 +58,14 @@ def verify_package_deps(expected_deps: list[str],
      sys.exit(1)
  
  
@@ -1257,7 +875,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
      elif channel == "canary":
          return "canary", "N/A"
      else:
-@@ -161,24 +75,20 @@ def normalize_channel(channel: str) -> tuple[str, str]:
+@@ -161,24 +74,20 @@ def normalize_channel(channel: str) -> tuple[str, str]:
          sys.exit(1)
  
  
@@ -1289,7 +907,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
  
      run_command([
          "debchange",
-@@ -187,12 +97,10 @@ def gen_changelog(config: "InstallerConfig",
+@@ -187,12 +96,10 @@ def gen_changelog(config: "InstallerConfig",
          "-m",
          "--changelog",
          str(deb_changelog),
@@ -1304,7 +922,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
      gzlog_dir.mkdir(parents=True, exist_ok=True)
      gzlog = gzlog_dir / "changelog.gz"
  
-@@ -209,12 +117,7 @@ def gen_changelog(config: "InstallerConfig",
+@@ -209,12 +116,7 @@ def gen_changelog(config: "InstallerConfig",
      gzlog.chmod(0o644)
  
  
@@ -1318,7 +936,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
      input_file = pathlib.Path(input_file)
      if input_file in include_stack:
          print(
-@@ -249,429 +152,458 @@ def _process_template_includes(input_file: pathlib.Path,
+@@ -249,429 +151,434 @@ def _process_template_includes(input_file: pathlib.Path,
      return "".join(output_lines)
  
  
@@ -1495,6 +1113,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
 +        arch,
 +        target_os,
 +        is_official_build,
++        clearkey_cdm_path=None,
 +    ):
 +        self.output_dir = pathlib.Path(output_dir)
 +        self.staging_dir = pathlib.Path(staging_dir)
@@ -1503,6 +1122,9 @@ index a9bbec28188c9..fdaf23bf5e714 100644
 +        self.arch = arch
 +        self.target_os = target_os
 +        self.is_official_build = is_official_build
++        self.clearkey_cdm_path = (
++            pathlib.Path(clearkey_cdm_path) if clearkey_cdm_path else None
++        )
 +        self.context = {}
 +
 +    def initialize(self):
@@ -1868,6 +1490,8 @@ index a9bbec28188c9..fdaf23bf5e714 100644
 +            "ui_resources_100_percent.pak",
 +            "pak",
 +        ]
++        if self.clearkey_cdm_path:
++            required_files.append(str(self.clearkey_cdm_path))
 +        missing_files = [
 +            filename for filename in required_files
 +            if not (self.output_dir / filename).is_file()
@@ -1875,26 +1499,9 @@ index a9bbec28188c9..fdaf23bf5e714 100644
 +        if missing_files:
 +            missing_list = ", ".join(missing_files)
 +            raise FileNotFoundError(
-+                "Missing Thorium package extras: "
-+                f"{missing_list}. Build "
-+                "//chrome/installer/linux:thorium_package_extras "
-+                "before building the Linux package."
++                "Missing declared Thorium package inputs: "
++                f"{missing_list}. Run setup.sh and rebuild the package target."
 +            )
-+
-+        clearkey_dir = self.output_dir / "ClearKeyCdm"
-+        clearkey_libraries = []
-+        if clearkey_dir.is_dir():
-+            clearkey_libraries = list(
-+                clearkey_dir.glob(
-+                    "_platform_specific/*/libclearkeycdm.so.stripped"
-+                )
-+            )
-+            if len(clearkey_libraries) != 1:
-+                raise FileNotFoundError(
-+                    "Expected exactly one stripped ClearKey CDM library. "
-+                    "Build //chrome/installer/linux:thorium_package_extras "
-+                    "before building the Linux package."
-+                )
 +
 +        for filename in [
 +            "content_shell.pak",
@@ -1936,18 +1543,10 @@ index a9bbec28188c9..fdaf23bf5e714 100644
 +            mode=0o644,
 +        )
 +
-+        if clearkey_libraries:
-+            clearkey_source = clearkey_libraries[0]
-+            clearkey_relative_dir = clearkey_source.parent.relative_to(
-+                clearkey_dir
-+            )
-+            clearkey_destination = (
-+                install_dir / "ClearKeyCdm" / clearkey_relative_dir /
-+                "libclearkeycdm.so"
-+            )
++        if self.clearkey_cdm_path:
 +            self._install(
-+                clearkey_source,
-+                clearkey_destination,
++                self.output_dir / self.clearkey_cdm_path,
++                install_dir / self.clearkey_cdm_path.with_suffix(""),
 +                mode=self.shlib_perms,
 +            )
 +
@@ -2018,11 +1617,6 @@ index a9bbec28188c9..fdaf23bf5e714 100644
 -                ))
 +            self._install_into_dir(
 +                self.output_dir / "theme_resources_100_percent.pak",
-+                install_dir,
-+                mode=0o644,
-+            )
-+            self._install_into_dir(
-+                self.output_dir / "ui_resources_100_percent.pak",
 +                install_dir,
 +                mode=0o644,
 +            )
@@ -2167,7 +1761,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
          icon_suffix = ""
          if self.branding == "google_chrome":
              if self.channel == "beta":
-@@ -686,112 +618,87 @@ class InstallerConfig:
+@@ -686,112 +593,97 @@ class InstallerConfig:
          for size in icon_sizes:
              logo = f"product_logo_{size}{icon_suffix}.png"
              logo_resources_png.append(logo)
@@ -2220,6 +1814,16 @@ index a9bbec28188c9..fdaf23bf5e714 100644
 +        wrapper_file.chmod(0o755)
 +        logging.info(f"DEBUG: Chmod 755 {wrapper_file}. "
 +                     f"Stat: {oct(stat.S_IMODE(wrapper_file.stat().st_mode))}")
++
++        apparmor_file = (
++            install_dir / "apparmor.d" /
++            self.context["USR_BIN_SYMLINK_NAME"])
++        process_template(
++            self.output_dir / "installer/common/apparmor.template",
++            apparmor_file,
++            self.context,
++        )
++        apparmor_file.chmod(0o644)
  
          # symlink for PACKAGE_ORIG
 -        package_orig = self.package_orig
@@ -2348,7 +1952,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
              "NoDisplay=true prevents\n"
              "# duplicate menu entries. This is required to match "
              "the application ID\n"
-@@ -800,210 +707,58 @@ class InstallerConfig:
+@@ -800,210 +692,58 @@ class InstallerConfig:
              "# The old desktop file is kept to preserve default "
              "browser settings.\n"
              "NoDisplay=true\n")
@@ -2604,7 +2208,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
          dest.parent.mkdir(parents=True, exist_ok=True)
  
          shutil.copy(src, dest)
-@@ -1012,12 +767,12 @@ class Installer:
+@@ -1012,12 +752,12 @@ class Installer:
          if mode is not None:
              dest.chmod(mode)
  
@@ -2619,7 +2223,14 @@ index a9bbec28188c9..fdaf23bf5e714 100644
              for f in files:
                  path = pathlib.Path(root) / f
                  if path.is_symlink():
-@@ -1039,7 +794,7 @@ class Installer:
+@@ -1033,13 +773,13 @@ class Installer:
+ 
+                 if "ELF" in output:
+                     # Check if outside install dir
+-                    if not str(path).startswith(str(install_dir)):
++                    if not path.is_relative_to(install_dir):
+                         elf_outside.append(path)
+ 
                      if "not stripped" in output:
                          unstripped.append(path)
  
@@ -2628,7 +2239,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
                          # Check RPATH
                          try:
                              readelf_out = subprocess.check_output(
-@@ -1058,10 +813,9 @@ class Installer:
+@@ -1058,10 +798,9 @@ class Installer:
  
          if rpath_bins:
              print(
@@ -2640,7 +2251,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
  
          if elf_outside:
              print(
-@@ -1071,10 +825,10 @@ class Installer:
+@@ -1071,10 +810,10 @@ class Installer:
              )
              sys.exit(1)
  
@@ -2653,16 +2264,20 @@ index a9bbec28188c9..fdaf23bf5e714 100644
              # On Cog, permission is always 0664 or 0775
              if os.getcwd().startswith("/google/cog/cloud/"):
                  on_cog = True
-@@ -1083,7 +837,7 @@ class Installer:
+@@ -1083,11 +822,7 @@ class Installer:
                      file=sys.stderr,
                  )
  
 -        for root, dirs, files in os.walk(self.config.staging_dir):
+-            # Check directories
+-            for d in dirs:
+-                pass
+-
 +        for root, dirs, files in os.walk(self.staging_dir):
-             # Check directories
-             for d in dirs:
-                 pass
-@@ -1095,15 +849,14 @@ class Installer:
+             # We iterate everything.
+             for item in dirs + files:
+                 path = pathlib.Path(root) / item
+@@ -1095,15 +830,14 @@ class Installer:
                  actual_perms = stat.S_IMODE(st.st_mode)
  
                  base_name = item
@@ -2681,7 +2296,7 @@ index a9bbec28188c9..fdaf23bf5e714 100644
                      else:
                          expect_exists = path.parent / target
  
-@@ -1124,26 +877,26 @@ class Installer:
+@@ -1124,26 +858,26 @@ class Installer:
                      file_type = ""
  
                  if base_name == "chrome-management-service":
@@ -2825,70 +2440,17 @@ index 3ca7333a9eff0..f4baec809b042 100644
 +    rm -f "/etc/apparmor.d/@@USR_BIN_SYMLINK_NAME@@"
    fi
  fi
-diff --git a/chrome/installer/linux/common/repo.cron b/chrome/installer/linux/common/repo.cron
-index 571fb836f3ac1..b33aad334b206 100755
---- a/chrome/installer/linux/common/repo.cron
-+++ b/chrome/installer/linux/common/repo.cron
-@@ -1,10 +1,10 @@
- #!/bin/sh
- #
--# Copyright 2009 The Chromium Authors
-+# Copyright 2026 The Chromium Authors and Alex313031
- # Use of this source code is governed by a BSD-style license that can be
- # found in the LICENSE file.
- #
--# This script is part of the @@PACKAGE package.
-+# This script is part of the @@PACKAGE@@ package.
- #
- # It creates the repository configuration file for package updates, and it
- # monitors that config to see if it has been disabled by the overly aggressive
-@@ -13,11 +13,9 @@
- # for any other reason, this won't re-enable it.
- #
- # This functionality can be controlled by creating the $DEFAULTS_FILE and
--# setting "repo_reenable_on_distupgrade" to "true" or "false" as desired.
--# An empty $DEFAULTS_FILE is the same as setting it to "false".
--#
--# The $DEFAULTS_FILE also has a setting "repo_add_once" which can be set
--# to "false" to prevent the package install from adding the repo altogether.
-+# setting "repo_add_once" and/or "repo_reenable_on_distupgrade" to "true" or
-+# "false" as desired. An empty $DEFAULTS_FILE is the same as setting both values
-+# to "false".
- 
- @@include@@../common/variables.include
- 
-@@ -30,8 +28,4 @@ fi
- 
- install_key
- 
--if [ "$repo_add_once" = "true" ]; then
--  create_sources_lists
--elif [ "$repo_reenable_on_distupgrade" = "true" ]; then
--  install_deb822_sources
--fi
-+## Removed repo cron job since this is Thorium.
-diff --git a/chrome/installer/linux/common/repo_variables.include b/chrome/installer/linux/common/repo_variables.include
-index 4e9adb714c49b..06b20b7e77379 100644
---- a/chrome/installer/linux/common/repo_variables.include
-+++ b/chrome/installer/linux/common/repo_variables.include
-@@ -1,3 +1,3 @@
--# sources.list setting for @@PACKAGE updates.
--REPOCONFIG="@@repoconfig"
--REPOCONFIGREGEX="@@repoconfigregex"
-+# sources.list setting for @@PACKAGE@@ updates.
-+REPOCONFIG="@@REPOCONFIG@@"
-+REPOCONFIGREGEX="@@REPOCONFIGREGEX@@"
 diff --git a/chrome/installer/linux/common/rpm.include b/chrome/installer/linux/common/rpm.include
-index 9965c8227052c..3a861e870eecc 100644
+index 9965c8227052c..45add57c7075e 100644
 --- a/chrome/installer/linux/common/rpm.include
 +++ b/chrome/installer/linux/common/rpm.include
-@@ -1,56 +1,9 @@
- @@include@@repo_variables.include
+@@ -1,239 +1,4 @@
+-@@include@@repo_variables.include
 -@@include@@key.include
- 
- # Install the repository signing key (see also:
- # https://www.google.com/linuxrepositories/)
- install_rpm_key() {
+-
+-# Install the repository signing key (see also:
+-# https://www.google.com/linuxrepositories/)
+-install_rpm_key() {
 -  KEY_PACKAGE="gpg-pubkey-d38b4796-570c8cd3"
 -  # Check to see if all keys already exists.
 -  # Make sure all the most recent signing subkeys are installed.
@@ -2936,23 +2498,62 @@ index 9965c8227052c..3a861e870eecc 100644
 -    fi
 -  fi
 -  return 1
-+  return 0
- }
- 
- determine_rpm_package_manager() {
-@@ -101,50 +54,17 @@ determine_rpm_package_manager() {
-   fi
- }
- 
+-}
+-
+-determine_rpm_package_manager() {
+-  local RELEASE
+-
+-  # Modern method using os-release(5)
+-  if [ -f "/etc/os-release" ]; then
+-    RELEASE=$(. "/etc/os-release"; echo "$ID")
+-    case $RELEASE in
+-    "fedora"|"rhel"|"centos"|"amzn"|"mageia"|"openmandriva")
+-      PACKAGEMANAGERS=(yum)
+-      ;;
+-    "suse"|"sles"|"sled"|"opensuse"|"opensuse-leap"|"opensuse-tumbleweed")
+-      PACKAGEMANAGERS=(zypp)
+-      ;;
+-    esac
+-  fi
+-
+-  if [ "$PACKAGEMANAGERS" ]; then
+-    return
+-  fi
+-
+-  # Fallback method using lsb_release(1)
+-  LSB_RELEASE="$(command -v lsb_release 2> /dev/null)"
+-  if [ -x "$LSB_RELEASE" ]; then
+-    RELEASE=$(lsb_release -i 2> /dev/null | sed 's/:\t/:/' | cut -d ':' -f 2-)
+-    case $RELEASE in
+-    "Fedora"|"Amazon"|"Mageia"|"OpenMandrivaLinux")
+-      PACKAGEMANAGERS=(yum)
+-      ;;
+-    "SUSE LINUX"|"openSUSE")
+-      PACKAGEMANAGERS=(zypp)
+-      ;;
+-    esac
+-  fi
+-
+-  if [ "$PACKAGEMANAGERS" ]; then
+-    return
+-  fi
+-
+-  # Fallback methods that are probably unnecessary on modern systems.
+-  if [ -f "/etc/fedora-release" ] || [ -f "/etc/redhat-release" ]; then
+-    PACKAGEMANAGERS=(yum)
+-  elif [ -f "/etc/system-release" ] && grep -Fq "Amazon Linux" "/etc/system-release"; then
+-    PACKAGEMANAGERS=(yum)
+-  elif [ -f "/etc/SuSE-release" ]; then
+-    PACKAGEMANAGERS=(zypp)
+-  fi
+-}
+-
 -DEFAULT_ARCH="@@architecture"
 -YUM_REPO_FILE="/etc/yum.repos.d/@@PACKAGE.repo"
 -ZYPPER_REPO_FILE="/etc/zypp/repos.d/@@PACKAGE.repo"
-+DEFAULT_ARCH="@@ARCHITECTURE@@"
-+YUM_REPO_FILE="/etc/yum.repos.d/@@PACKAGE@@.repo"
-+ZYPPER_REPO_FILE="/etc/zypp/repos.d/@@PACKAGE@@.repo"
- 
- install_yum() {
-   install_rpm_key
+-
+-install_yum() {
+-  install_rpm_key
 -
 -  if [ ! "$REPOCONFIG" ]; then
 -    return 0
@@ -2968,10 +2569,9 @@ index 9965c8227052c..3a861e870eecc 100644
 -gpgkey=https://dl.google.com/linux/linux_signing_key.pub
 -REPOCONTENT
 -  fi
-+  return 0
- }
- 
- install_zypp() {
+-}
+-
+-install_zypp() {
 -  if [ ! "$REPOCONFIG" ]; then
 -    return 0
 -  fi
@@ -2992,14 +2592,25 @@ index 9965c8227052c..3a861e870eecc 100644
 -keeppackages=0
 -REPOCONTENT
 -  fi
-+  return 0
- }
- 
- # Check if the automatic repository configuration is done, so we know when to
-@@ -164,59 +84,12 @@ verify_install() {
- 
- # Update the Google repository if it's not set correctly.
- update_bad_repo() {
+-}
+-
+-# Check if the automatic repository configuration is done, so we know when to
+-# stop trying.
+-verify_install() {
+-  # It's probably enough to see that the repo configs have been created. If they
+-  # aren't configured properly, update_bad_repo should catch that when it's run.
+-  case $1 in
+-  "yum")
+-    [ -f "$YUM_REPO_FILE" ]
+-    ;;
+-  "zypp")
+-    [ -f "$ZYPPER_REPO_FILE" ]
+-    ;;
+-  esac
+-}
+-
+-# Update the Google repository if it's not set correctly.
+-update_bad_repo() {
 -  if [ ! "$REPOCONFIG" ]; then
 -    return 0
 -  fi
@@ -3017,11 +2628,10 @@ index 9965c8227052c..3a861e870eecc 100644
 -      ;;
 -    esac
 -  done
-+  return 0
- }
- 
- update_repo_file() {
-   REPO_FILE="$1"
+-}
+-
+-update_repo_file() {
+-  REPO_FILE="$1"
 -
 -  # Don't do anything if the file isn't there, since that probably means the
 -  # user disabled it.
@@ -3054,83 +2664,27 @@ index 9965c8227052c..3a861e870eecc 100644
 -  # active, so fix it. This assumes there is a 'baseurl' setting, but if not,
 -  # then that's just another way of disabling, so we won't try to add it.
 -  sed -i -e "s,^baseurl=.*,baseurl=$REPOCONFIG/$DEFAULT_ARCH," "$REPO_FILE"
-+  return 0
- }
- 
- # We only remove the repository configuration during a purge. Since RPM has
-@@ -228,12 +101,12 @@ update_repo_file() {
- #}
- #
- #remove_zypp() {
+-}
+-
+-# We only remove the repository configuration during a purge. Since RPM has
+-# no equivalent to dpkg --purge, the code below is actually never used. We
+-# keep it only for reference purposes, should we ever need it.
+-#
+-#remove_yum() {
+-#  rm -f "$YUM_REPO_FILE"
+-#}
+-#
+-#remove_zypp() {
 -#  # Ideally, we would run: zypper removerepo "@@PACKAGE"
-+#  # Ideally, we would run: zypper removerepo "@@PACKAGE@@"
- #  # but that does not work when zypper is running.
+-#  # but that does not work when zypper is running.
 -#  rm -f /etc/zypp/repos.d/@@PACKAGE.repo
-+#  rm -f /etc/zypp/repos.d/@@PACKAGE@@.repo
- #}
- 
+-#}
+-
 -DEFAULT_ARCH="@@architecture"
 +DEFAULT_ARCH="@@ARCHITECTURE@@"
  
  get_lib_dir() {
    if [ "$DEFAULT_ARCH" = "i386" ] || [ "$DEFAULT_ARCH" = "armhf" ] || \
-diff --git a/chrome/installer/linux/common/rpmrepo.cron b/chrome/installer/linux/common/rpmrepo.cron
-index 90ff896ea5ede..3374b31a4d75c 100755
---- a/chrome/installer/linux/common/rpmrepo.cron
-+++ b/chrome/installer/linux/common/rpmrepo.cron
-@@ -1,13 +1,13 @@
- #!/bin/sh
- #
--# Copyright 2009 The Chromium Authors
-+# Copyright 2026 The Chromium Authors and Alex313031
- # Use of this source code is governed by a BSD-style license that can be
- # found in the LICENSE file.
- #
--# This script is part of the @@PACKAGE package.
-+# This script is part of the @@PACKAGE@@ package.
- #
- # It creates the repository configuration file for package updates, since
--# we cannot do this during the @@PACKAGE installation since the repository
-+# we cannot do this during the @@PACKAGE@@ installation since the repository
- # is locked.
- #
- # This functionality can be controlled by creating the $DEFAULTS_FILE and
-@@ -25,35 +25,3 @@ fi
- 
- install_rpm_key
- 
--if [ "$repo_add_once" = "true" ]; then
--  determine_rpm_package_manager
--
--  # Let's run through this for each supported package manager as detected...
--  for PACKAGEMANAGER in ${PACKAGEMANAGERS[*]}
--  do
--    # The initial install happens in the post-install scripts, but there have been
--    # reports of configuration problems, so just verify that everything looks
--    # good, and if not, try to install again.
--    verify_install $PACKAGEMANAGER
--    if [ $? -ne 0 ]; then
--      install_${PACKAGEMANAGER}
--    fi
--  done
--
--  if [ $? -eq 0 ]; then
--    # Do this for each supported package manager...
--    for PACKAGEMANAGER in ${PACKAGEMANAGERS[*]}
--    do
--      # Before we quit auto-configuration, check that everything looks sane, since
--      # part of this happened during package install and we don't have the return
--      # value of that process.
--      verify_install $PACKAGEMANAGER
--      if [ $? -eq 0 ]; then
--        sed -i -e 's/[[:space:]]*repo_add_once=.*/repo_add_once="false"/' \
--          "$DEFAULTS_FILE"
--      fi
--    done
--  fi
--else
--  update_bad_repo
--fi
 diff --git a/chrome/installer/linux/common/symlinks.include b/chrome/installer/linux/common/symlinks.include
 index 3574a81f6b0b2..700215c4c9d1b 100644
 --- a/chrome/installer/linux/common/symlinks.include
@@ -3169,7 +2723,7 @@ index 2722dc0fbfe6b..5533249633665 100644
 -DEFAULTS_FILE="/etc/default/@@PACKAGE"
 +DEFAULTS_FILE="/etc/default/@@PACKAGE@@"
 diff --git a/chrome/installer/linux/common/wrapper b/chrome/installer/linux/common/wrapper
-index 5ee3f9ff0f521..7498ac74324df 100755
+index 5ee3f9ff0f521..b68a104cd7eb7 100755
 --- a/chrome/installer/linux/common/wrapper
 +++ b/chrome/installer/linux/common/wrapper
 @@ -1,6 +1,6 @@
@@ -3180,7 +2734,7 @@ index 5ee3f9ff0f521..7498ac74324df 100755
  # Use of this source code is governed by a BSD-style license that can be
  # found in the LICENSE file.
  
-@@ -15,16 +15,106 @@ xdg_app_dir="${XDG_DATA_HOME:-$HOME/.local/share/applications}"
+@@ -15,16 +15,109 @@ xdg_app_dir="${XDG_DATA_HOME:-$HOME/.local/share/applications}"
  mkdir -p "$xdg_app_dir"
  [ -f "$xdg_app_dir/mimeapps.list" ] || touch "$xdg_app_dir/mimeapps.list"
  
@@ -3213,15 +2767,18 @@ index 5ee3f9ff0f521..7498ac74324df 100755
 +# Set the correct file name for the desktop file
 +export CHROME_DESKTOP="thorium-browser.desktop"
 +
-+# Set CHROME_VERSION_EXTRA text, which is displayed in the About dialog on chrome://help
-+# DIST=`cat /etc/debian_version`
-+export CHROME_VERSION_EXTRA="@@CHANNEL@@, built on Ubuntu (AVX)"
++# Set the build variant displayed in the About dialog.
++if [[ -n "@@SIMD_VARIANT@@" ]]; then
++  export CHROME_VERSION_EXTRA="@@CHANNEL@@ (@@SIMD_VARIANT@@)"
++else
++  export CHROME_VERSION_EXTRA="@@CHANNEL@@"
++fi
 +
 +# We don't want bug-buddy intercepting our crashes. http://crbug.com/24120
 +export GNOME_DISABLE_CRASH_DIALOG=SET_BY_THORIUM
 +
 +# Set config home.
-+XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-~/.config}
++XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-"$HOME/.config"}
 +
 +usage () {
 +  echo "thorium-browser [-h|--help] [--temp-profile] [options] [URL]"
@@ -3257,8 +2814,8 @@ index 5ee3f9ff0f521..7498ac74324df 100755
 +done
 +
 +# Allow users to override command-line options with a file.
-+if [[ -f $XDG_CONFIG_HOME/thorium/thorium-flags.conf ]]; then
-+   CHROME_USER_FLAGS="$(cat $XDG_CONFIG_HOME/thorium/thorium-flags.conf)"
++if [[ -f "$XDG_CONFIG_HOME/thorium/thorium-flags.conf" ]]; then
++   CHROME_USER_FLAGS="$(cat "$XDG_CONFIG_HOME/thorium/thorium-flags.conf")"
 +fi
  
  # Sanitize std{in,out,err} because they'll be shared with untrusted child
@@ -3315,7 +2872,7 @@ index 5f37c6777e7d1..33fc56feb33f7 100644
  libvulkan1
  
 diff --git a/chrome/installer/linux/debian/build.py b/chrome/installer/linux/debian/build.py
-index 2d023ed81b760..597267668bb93 100755
+index 2d023ed81b760..02d7722f85cd8 100755
 --- a/chrome/installer/linux/debian/build.py
 +++ b/chrome/installer/linux/debian/build.py
 @@ -1,5 +1,5 @@
@@ -3325,7 +2882,7 @@ index 2d023ed81b760..597267668bb93 100755
  # Use of this source code is governed by a BSD-style license that can be
  # found in the LICENSE file.
  
-@@ -11,35 +11,35 @@ import shutil
+@@ -11,35 +11,38 @@ import shutil
  import subprocess
  import sys
  
@@ -3343,13 +2900,7 @@ index 2d023ed81b760..597267668bb93 100755
 +        "-a", "--arch", required=True, help="deb package architecture")
 +    parser.add_argument(
 +        "-b", "--build-time", required=True, help="build timestamp")
-     parser.add_argument(
--        "-T",
--        "--xz-nthreads",
--        required=False,
--        help="Number of threads to run xz",
--        type=int,
--        default=0)
++    parser.add_argument(
 +        "-c", "--channel", required=True, help="package channel")
 +    parser.add_argument("-d", "--branding", required=True, help="branding")
 +    parser.add_argument(
@@ -3357,8 +2908,17 @@ index 2d023ed81b760..597267668bb93 100755
 +    parser.add_argument(
 +        "-n", "--name-suffix", default="", help="package filename suffix")
 +    parser.add_argument(
++        "--simd-variant", default="", help="SIMD variant shown by the browser")
++    parser.add_argument(
++        "--clearkey-cdm-path", help="relative path to the stripped ClearKey CDM")
+     parser.add_argument(
+-        "-T",
+-        "--xz-nthreads",
+-        required=False,
+-        help="Number of threads to run xz",
+-        type=int,
+-        default=0)
 +        "-o", "--output-dir", required=True, help="output directory")
-+    parser.add_argument("-s", "--sysroot", required=True, help="sysroot")
 +    parser.add_argument("-t", "--target-os", required=True, help="target os")
      return parser.parse_args()
  
@@ -3380,7 +2940,7 @@ index 2d023ed81b760..597267668bb93 100755
          f"-c{deb_control}",
          f"-l{deb_changelog}",
          f"-f{deb_files}",
-@@ -58,9 +58,8 @@ def gen_control(
+@@ -58,9 +61,8 @@ def gen_control(
      deb_control.unlink()
  
  
@@ -3392,7 +2952,7 @@ index 2d023ed81b760..597267668bb93 100755
      expected_depends = [d.strip() for d in depends.split(", ") if d.strip()]
  
      output = subprocess.check_output(["dpkg", "-I", str(deb_file)], text=True)
-@@ -74,9 +73,10 @@ def verify_package(config: installer.InstallerConfig,
+@@ -74,9 +76,10 @@ def verify_package(config: installer.InstallerConfig,
      installer.verify_package_deps(expected_depends, actual_depends)
  
  
@@ -3404,7 +2964,7 @@ index 2d023ed81b760..597267668bb93 100755
  
      log_level = logging.INFO if os.environ.get("VERBOSE") else logging.ERROR
      logging.basicConfig(level=log_level, format="%(message)s")
-@@ -84,151 +84,172 @@ def main() -> None:
+@@ -84,151 +87,147 @@ def main() -> None:
      script_dir = pathlib.Path(__file__).parent.absolute()
      output_dir = pathlib.Path(args.output_dir)
  
@@ -3520,6 +3080,7 @@ index 2d023ed81b760..597267668bb93 100755
 +        args.arch,
 +        args.target_os,
 +        is_official_build,
++        args.clearkey_cdm_path,
 +    )
 +
 +    inst.set_context({
@@ -3527,6 +3088,7 @@ index 2d023ed81b760..597267668bb93 100755
 +        "BRANDING": args.branding,
 +        "BUILD_TIMESTAMP": args.build_time,
 +        "IS_OFFICIAL_BUILD": 1,
++        "SIMD_VARIANT": args.simd_variant,
 +        "OUTPUTDIR": output_dir,
 +        "SCRIPTDIR": script_dir,
 +        "STAGEDIR": staging_dir,
@@ -3534,8 +3096,6 @@ index 2d023ed81b760..597267668bb93 100755
 +    })
 +
 +    inst.initialize()
-+    channel = inst.channel
-+
 +    # Export variables for dpkg tools
 +    os.environ["ARCHITECTURE"] = args.arch
 +    os.environ["DEBEMAIL"] = inst.context["MAINTMAIL"]
@@ -3550,16 +3110,10 @@ index 2d023ed81b760..597267668bb93 100755
 +
 +    inst.context["SHLIB_PERMS"] = 0o644
 +
-+    # Thorium does not install a Google Chrome apt repository.
-+    inst.context["REPOCONFIG"] = ""
-+    inst.context["REPOCONFIGREGEX"] = ""
-+
 +    # Prep staging debian
 +    inst.prep_staging_common()
 +    (staging_dir / "DEBIAN").mkdir(parents=True, exist_ok=True)
 +    (staging_dir / "DEBIAN").chmod(0o755)
-+    (staging_dir / "etc/cron.daily").mkdir(parents=True, exist_ok=True)
-+    (staging_dir / "etc/cron.daily").chmod(0o755)
 +    (staging_dir /
 +     f"usr/share/doc/{inst.context['USR_BIN_SYMLINK_NAME']}").mkdir(
 +         parents=True, exist_ok=True)
@@ -3569,25 +3123,6 @@ index 2d023ed81b760..597267668bb93 100755
 +    inst.stage_install_common()
 +
 +    logging.info(f"Staging Debian install files in '{staging_dir}'...")
-+    install_dir = staging_dir / inst.context["INSTALLDIR"].lstrip("/")
-+    cron_dir = install_dir / "cron"
-+    cron_dir.mkdir(parents=True, exist_ok=True)
-+    cron_dir.chmod(0o755)
-+
-+    cron_file = cron_dir / inst.context["PACKAGE"]
-+    installer.process_template(output_dir / "installer/common/repo.cron",
-+                               cron_file, inst.context)
-+    cron_file.chmod(0o755)
-+
-+    cron_daily_link = staging_dir / "etc/cron.daily" / inst.context["PACKAGE"]
-+    if cron_daily_link.is_symlink() or cron_daily_link.exists():
-+        cron_daily_link.unlink()
-+    os.symlink(
-+        os.path.join(inst.context["INSTALLDIR"], "cron",
-+                     inst.context["PACKAGE"]),
-+        cron_daily_link,
-+    )
-+
 +    for script in ["postinst", "prerm", "postrm"]:
 +        dest = staging_dir / "DEBIAN" / script
 +        installer.process_template(output_dir / f"installer/debian/{script}",
@@ -3660,9 +3195,9 @@ index 2d023ed81b760..597267668bb93 100755
 -            str(staging_dir),
 -            str(tmp_file_dir),
 +            "xz",
-+            "-z9",
++            "-z6",
++            "-e",
 +            "-T0",
-+            "--lzma2=dict=256MiB",
 +            str(tmp_file_dir / "data.tar"),
          ])
 +        installer.run_command(["xz", "-z0", str(tmp_file_dir / "control.tar")])
@@ -3763,7 +3298,7 @@ index 1d7dff3e689ed..78e723e7fac87 100644
 +Description: @@SHORTDESC@@
 + @@FULLDESC@@
 diff --git a/chrome/installer/linux/debian/postinst b/chrome/installer/linux/debian/postinst
-index 43f2b1138d3fa..0c0007f56c159 100755
+index 43f2b1138d3fa..7cbd189b1584d 100755
 --- a/chrome/installer/linux/debian/postinst
 +++ b/chrome/installer/linux/debian/postinst
 @@ -1,6 +1,6 @@
@@ -3783,7 +3318,7 @@ index 43f2b1138d3fa..0c0007f56c159 100755
  case $CHANNEL in
    stable )
      # Good enough to be the default.
-@@ -39,20 +39,17 @@ case $CHANNEL in
+@@ -39,29 +39,18 @@ case $CHANNEL in
      ;;
    unstable )
      # Unstable, give it the "lowest" priority.
@@ -3804,27 +3339,21 @@ index 43f2b1138d3fa..0c0007f56c159 100755
 -
 -update-alternatives --install /usr/bin/@@package_orig @@package_orig \
 -  /usr/bin/@@usr_bin_symlink_name $PRIORITY
+-
+-@@include@@../common/apt.include
 +  /usr/bin/@@USR_BIN_SYMLINK_NAME@@ $PRIORITY
  
- @@include@@../common/apt.include
+ @@include@@../common/symlinks.include
  
-@@ -61,7 +58,10 @@ update-alternatives --install /usr/bin/@@package_orig @@package_orig \
  remove_udev_symlinks
- 
- ## MAIN ##
+-
+-## MAIN ##
 -install_key
 -install_deb822_sources
 -remove_legacy_list
 -remove_legacy_key
-+if [ ! -e "$DEFAULTS_FILE" ]; then
-+  echo 'repo_add_once="false"' > "$DEFAULTS_FILE"
-+  echo 'repo_reenable_on_distupgrade="false"' >> "$DEFAULTS_FILE"
-+fi
-+
-+# Run the cron job immediately to perform repository configuration.
-+nohup sh /etc/cron.daily/@@PACKAGE@@ > /dev/null 2>&1 &
 diff --git a/chrome/installer/linux/debian/postrm b/chrome/installer/linux/debian/postrm
-index 3e1cadc8296ca..df8b6ea06bc88 100755
+index 3e1cadc8296ca..4399c73412ab0 100755
 --- a/chrome/installer/linux/debian/postrm
 +++ b/chrome/installer/linux/debian/postrm
 @@ -1,6 +1,6 @@
@@ -3835,12 +3364,29 @@ index 3e1cadc8296ca..df8b6ea06bc88 100755
  # Use of this source code is governed by a BSD-style license that can be
  # found in the LICENSE file.
  
-@@ -32,5 +32,4 @@ if [ -s "$DEFAULTS_FILE" ]; then
-   rm "$DEFAULTS_FILE" || exit 1
- fi
- # Remove any Google repository added by the package.
+@@ -15,22 +15,6 @@ fi
+ 
+ @@include@@../common/variables.include
+ 
+-@@include@@../common/apt.include
+-
+ @@include@@../common/symlinks.include
+ 
+ remove_udev_symlinks
+-
+-# Only remove the defaults file if it is not empty. An empty file was probably
+-# put there by the sysadmin to disable automatic repository configuration, as
+-# per the instructions on the package download page.
+-if [ -s "$DEFAULTS_FILE" ]; then
+-  # Make sure the package defaults are removed before the repository config,
+-  # otherwise it could result in the repository config being removed, but the
+-  # package defaults remain and are set to not recreate the repository config.
+-  # In that case, future installs won't recreate it and won't get auto-updated.
+-  rm "$DEFAULTS_FILE" || exit 1
+-fi
+-# Remove any Google repository added by the package.
 -clean_sources_lists
- uninstall_key
+-uninstall_key
 diff --git a/chrome/installer/linux/debian/prerm b/chrome/installer/linux/debian/prerm
 index 5a0ccc54a2db1..6aa8f4dbb9c1b 100755
 --- a/chrome/installer/linux/debian/prerm
@@ -3865,7 +3411,7 @@ index 5a0ccc54a2db1..6aa8f4dbb9c1b 100755
 -update-alternatives --remove @@package_orig /usr/bin/@@usr_bin_symlink_name
 +# End
 diff --git a/chrome/installer/linux/rpm/build.py b/chrome/installer/linux/rpm/build.py
-index 5cced7e815d64..3383566f3abdf 100755
+index 5cced7e815d64..43eddb4f37a9d 100755
 --- a/chrome/installer/linux/rpm/build.py
 +++ b/chrome/installer/linux/rpm/build.py
 @@ -1,5 +1,5 @@
@@ -3875,17 +3421,13 @@ index 5cced7e815d64..3383566f3abdf 100755
  # Use of this source code is governed by a BSD-style license that can be
  # found in the LICENSE file.
  
-@@ -7,55 +7,55 @@ import argparse
- import logging
- import os
- import pathlib
--import re
+@@ -11,51 +11,62 @@ import re
  import shutil
  import subprocess
  import sys
- import time
- 
+-import time
 -
+ 
  sys.path.append(os.path.join(os.path.dirname(__file__), "../common"))
  import installer
  
@@ -3905,6 +3447,10 @@ index 5cced7e815d64..3383566f3abdf 100755
 +        "-f", "--official", action="store_true", help="official build")
 +    parser.add_argument(
 +        "-n", "--name-suffix", default="", help="package filename suffix")
++    parser.add_argument(
++        "--simd-variant", default="", help="SIMD variant shown by the browser")
++    parser.add_argument(
++        "--clearkey-cdm-path", help="relative path to the stripped ClearKey CDM")
 +    parser.add_argument(
 +        "-o", "--output-dir", required=True, help="output directory")
 +    parser.add_argument("-t", "--target-os", required=True, help="target os")
@@ -3937,33 +3483,32 @@ index 5cced7e815d64..3383566f3abdf 100755
 -    version_match = re.match(r'.*version ([.\d]*)', str(version_output))
 +def verify_package(context, rpm_file):
 +    depends = context["DEPENDS"]
++    version_output = subprocess.check_output(
++        ["rpm", "--version"], text=True)
++    version_match = re.search(r"(?<!\d)(\d+)(?:\.\d+)+", version_output)
      additional_deps = [
          "/bin/sh",
-+        "rpmlib(CompressedFileNames) <= 3.0.4-1",
-+        "rpmlib(FileDigests) <= 4.6.0-1",
-+        "rpmlib(PayloadFilesHavePrefix) <= 4.0-1",
-         "/usr/sbin/update-alternatives",
+-        "/usr/sbin/update-alternatives",
      ]
 -    if version_match and version_match[1] >= '6.0':
 -        additional_deps += ['rpmlib(LargeFiles) <= 4.12.0-1']
--    else:
++    if version_match and int(version_match.group(1)) >= 6:
++        additional_deps.append("rpmlib(LargeFiles) <= 4.12.0-1")
+     else:
 -        additional_deps += [
--            "rpmlib(CompressedFileNames) <= 3.0.4-1",
--            "rpmlib(FileDigests) <= 4.6.0-1",
--            "rpmlib(PayloadFilesHavePrefix) <= 4.0-1",
++        additional_deps.extend([
+             "rpmlib(CompressedFileNames) <= 3.0.4-1",
+             "rpmlib(FileDigests) <= 4.6.0-1",
+             "rpmlib(PayloadFilesHavePrefix) <= 4.0-1",
 -        ]
 -    if config.is_official_build:
++        ])
 +    if context["IS_OFFICIAL_BUILD"] == "1":
          additional_deps.append("rpmlib(PayloadIsXz) <= 5.2-1")
  
      all_deps = depends.split(",") + additional_deps
-@@ -64,12 +64,14 @@ def verify_package(config: installer.InstallerConfig,
-     output = subprocess.check_output(["rpm", "-qpR", str(rpm_file)], text=True)
-     actual_depends = output.splitlines()
- 
--    installer.verify_package_deps(expected_depends, actual_depends)
-+    if set(expected_depends) != set(actual_depends):
-+        print("NOTICE: bad rpm dependencies!", file=sys.stderr)
+@@ -67,9 +78,10 @@ def verify_package(config: installer.InstallerConfig,
+     installer.verify_package_deps(expected_depends, actual_depends)
  
  
 -def main() -> None:
@@ -3974,7 +3519,7 @@ index 5cced7e815d64..3383566f3abdf 100755
  
      log_level = logging.INFO if os.environ.get("VERBOSE") else logging.ERROR
      logging.basicConfig(level=log_level, format="%(message)s")
-@@ -78,93 +80,137 @@ def main() -> None:
+@@ -78,93 +90,122 @@ def main() -> None:
      output_dir = pathlib.Path(args.output_dir).absolute()
      channel = args.channel
  
@@ -4090,6 +3635,7 @@ index 5cced7e815d64..3383566f3abdf 100755
 +        args.arch,
 +        args.target_os,
 +        is_official_build,
++        args.clearkey_cdm_path,
 +    )
 +
 +    inst.set_context({
@@ -4101,36 +3647,20 @@ index 5cced7e815d64..3383566f3abdf 100755
 +        "ARCHITECTURE": args.arch,
 +        "BUILD_TIMESTAMP": args.build_time,
 +        "IS_OFFICIAL_BUILD": "1",
++        "SIMD_VARIANT": args.simd_variant,
 +        "SCRIPTDIR": script_dir,
 +        "SPEC": spec_file,
 +    })
 +
 +    inst.initialize()
-+    channel = inst.channel
-+
 +    os.environ["ARCHITECTURE"] = args.arch
-+
-+    # Thorium does not install a Google Chrome rpm repository.
-+    inst.context["REPOCONFIG"] = ""
-+    inst.context["REPOCONFIGREGEX"] = ""
 +
 +    inst.context["SHLIB_PERMS"] = 0o755
 +
 +    inst.prep_staging_common()
-+    (staging_dir / "etc/cron.daily").mkdir(parents=True, exist_ok=True)
-+    (staging_dir / "etc/cron.daily").chmod(0o755)
-+
 +    inst.stage_install_common()
 +
 +    logging.info(f"Staging RPM install files in '{staging_dir}'...")
-+    cron_file = staging_dir / "etc/cron.daily" / inst.context["PACKAGE"]
-+    installer.process_template(
-+        output_dir / "installer/common/rpmrepo.cron",
-+        cron_file,
-+        inst.context,
-+    )
-+    cron_file.chmod(0o755)
-+
 +    # do_package logic
 +    logging.info(f"Packaging {args.arch}...")
 +
@@ -4156,7 +3686,7 @@ index 5cced7e815d64..3383566f3abdf 100755
 +    (rpmbuild_dir / "RPMS").mkdir(parents=True, exist_ok=True)
 +
 +    if is_official_build:
-+        compression_opt = "_binary_payload w9.xzdio"
++        compression_opt = "_binary_payload w6T0.xzdio"
 +    else:
 +        compression_opt = "_binary_payload w0.gzdio"
 +
@@ -4201,10 +3731,10 @@ index 5cced7e815d64..3383566f3abdf 100755
  if __name__ == "__main__":
 diff --git a/chrome/installer/linux/rpm/thorium.spec.template b/chrome/installer/linux/rpm/thorium.spec.template
 new file mode 100644
-index 0000000000000..a432cb8d28980
+index 0000000000000..46e8d213e86de
 --- /dev/null
 +++ b/chrome/installer/linux/rpm/thorium.spec.template
-@@ -0,0 +1,222 @@
+@@ -0,0 +1,162 @@
 +#------------------------------------------------------------------------------
 +#   Thorium RPM spec
 +#   chrome.spec
@@ -4225,8 +3755,6 @@ index 0000000000000..a432cb8d28980
 +
 +Provides        : @@PROVIDES@@ = %{version}
 +Requires        : @@DEPENDS@@
-+Requires(post)  : %{_sbindir}/update-alternatives
-+Requires(preun) : %{_sbindir}/update-alternatives
 +Autoreqprov     : No
 +
 +BuildRoot       : %{_tmppath}/%{name}-%{version}-root
@@ -4265,11 +3793,12 @@ index 0000000000000..a432cb8d28980
 +fi
 +
 +install -m 755 -d \
-+  "$RPM_BUILD_ROOT/etc" \
 +  "$RPM_BUILD_ROOT/opt" \
 +  "$RPM_BUILD_ROOT/usr"
-+# This is hard coded for now
-+cp -a "@@STAGEDIR@@/etc/" "$RPM_BUILD_ROOT/"
++if [ -d "@@STAGEDIR@@/etc" ]; then
++  install -m 755 -d "$RPM_BUILD_ROOT/etc"
++  cp -a "@@STAGEDIR@@/etc/" "$RPM_BUILD_ROOT/"
++fi
 +cp -a "@@STAGEDIR@@/opt/" "$RPM_BUILD_ROOT/"
 +cp -a "@@STAGEDIR@@/usr/" "$RPM_BUILD_ROOT/"
 +
@@ -4292,8 +3821,6 @@ index 0000000000000..a432cb8d28980
 +
 +# Be explicit about the files we scatter throughout the system we don't
 +# accidentally "own" stuff that's not ours (crbug.com/123990).
-+/etc/cron.daily/@@PACKAGE@@
-+%ghost %attr(755,root,root) /usr/bin/@@PACKAGE_ORIG@@
 +/usr/bin/@@USR_BIN_SYMLINK_NAME@@
 +# Extra Thorium stuff
 +/usr/bin/pak
@@ -4336,44 +3863,6 @@ index 0000000000000..a432cb8d28980
 +
 +remove_udev_symlinks
 +
-+if [ ! -e "$DEFAULTS_FILE" ]; then
-+  echo 'repo_add_once="true"' > "$DEFAULTS_FILE"
-+fi
-+
-+. "$DEFAULTS_FILE"
-+
-+if [ "$repo_add_once" = "true" ]; then
-+  determine_rpm_package_manager
-+
-+  for PACKAGEMANAGER in ${PACKAGEMANAGERS[*]}
-+  do
-+    case $PACKAGEMANAGER in
-+    "yum")
-+      install_yum
-+      ;;
-+    "zypp")
-+      install_zypp
-+      ;;
-+    esac
-+  done
-+fi
-+
-+CHANNEL=@@CHANNEL@@
-+case $CHANNEL in
-+  stable )
-+    PRIORITY=200
-+    ;;
-+  beta )
-+    PRIORITY=150
-+    ;;
-+  unstable )
-+    PRIORITY=120
-+    ;;
-+  * )
-+    PRIORITY=0
-+    ;;
-+esac
-+
 +ln -sf /opt/chromium.org/thorium/thorium-browser /usr/bin/@@USR_BIN_SYMLINK_NAME@@
 +
 +exit 0
@@ -4390,8 +3879,6 @@ index 0000000000000..a432cb8d28980
 +  mode="upgrade"
 +fi
 +
-+@@include@@../common/rpm.include
-+
 +@@include@@../common/symlinks.include
 +
 +# Only remove menu items and symlinks on uninstall. When upgrading,
@@ -4401,23 +3888,6 @@ index 0000000000000..a432cb8d28980
 +  remove_nss_symlinks
 +  remove_udev_symlinks
 +fi
-+
-+# On Debian we only remove when we purge. However, RPM has no equivalent to
-+# dpkg --purge, so this is all disabled.
-+#
-+#determine_rpm_package_manager
-+#
-+#for PACKAGEMANAGER in ${PACKAGEMANAGERS[*]}
-+#do
-+#  case $PACKAGEMANAGER in
-+#  "yum")
-+#    remove_yum
-+#    ;;
-+#  "zypp")
-+#    remove_zypp
-+#    ;;
-+#  esac
-+#done
 +
 +exit 0
 +

@@ -47,5 +47,5 @@ printf "\n" &&
 cat ~/thorium/logos/thorium_logo_ascii_art.txt &&
 printf "\n" &&
 
-printf "${GRE}${bold}Build Completed. ${YEL}${bold}Installer at \'//out/thorium/thorium_mini_installer.exe\'\n" &&
+printf "${GRE}${bold}Build Completed. ${YEL}${bold}Installer written to //out/thorium/; its filename follows thorium_x86_profile.\n" &&
 tput sgr0

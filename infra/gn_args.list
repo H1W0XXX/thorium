@@ -5186,6 +5186,16 @@ thorium_debug
     Ultimately, it should help users collect necessary data for browser issues
     without setting up a dedicated debugger.
 
+thorium_x86_profile
+    Current value = "avx"
+      From //out/default/args.gn:1
+    Overridden from the default = "sse3"
+      From //build/config/compiler_opt.gni:28
+
+    Selects the minimum x86 CPU feature set for Thorium targets. This is the
+    only public SIMD compatibility setting; tuning and package names are
+    derived from it.
+
 tint_build_benchmarks
     Current value (from the default) = true
       From //third_party/dawn/scripts/tint_overrides_with_defaults.gni:155
@@ -5344,47 +5354,6 @@ use_av1_hw_decoder
 
     A platform that is capable of hardware av1 decoding.
 
-use_avx
-    Current value = true
-      From //out/default/args.gn:4
-    Overridden from the default = false
-      From //build/config/compiler_opt.gni:71
-
-    AVX
-    Normal Thorium baseline
-    Present since Sandy Bridge (2011 2nd Gen. Core i series)
-    and AMD Bulldozer (2012 AMD FX).
-    Requires Windows 7 SP1 / Linux 2.6.30 or later to use.
-    Uses new 128 bit registers and CPU blocks; a new era of SIMD.
-    Includes AES and PCLMUL `-maes -mpclmul -mavx`
-
-use_avx2
-    Current value = false
-      From //out/default/args.gn:5
-    Overridden from the default = false
-      From //build/config/compiler_opt.gni:79
-
-    AVX2 (x86-64-v3)
-    Second generation AVX, expanded to 256-bit registers.
-    Present since Haswell (4th Gen. Core i series), and
-    AMD Excavator (4th Gen. refinement of Bulldozer cores) and 
-    Zen (1st Gen. Ryzen).
-    Includes FMA3 `-mfma -mavx2` (`-ffp-contract` see below at FMA section)
-
-use_avx512
-    Current value = false
-      From //out/default/args.gn:6
-    Overridden from the default = false
-      From //build/config/compiler_opt.gni:88
-
-    AVX-512
-    Third generation AVX, expanded to 512-bit registers.
-    Present since Skylake (Specifically Skylake-X "Extreme Edition"
-    processors), and AMD Zen 4 (4th Gen. Ryzen 7000).
-    Only uses AVX-512 instructions common to all processors.
-    `-mavx512f -mavx512cd -mavx512vl -mavx512bw -mavx512dq
-     -mf16c -mlzcnt -mbmi2`
-
 use_base_test_suite
     Current value (from the default) = true
       From //sandbox/linux/BUILD.gn:22
@@ -5418,13 +5387,6 @@ use_blink_extensions_webview
 use_bluez
     Current value (from the default) = true
       From //device/bluetooth/cast_bluetooth.gni:5
-
-use_bolt
-    Current value (from the default) = false
-      From //build/config/compiler_opt.gni:19
-
-    Whether to enable LLVM's BOLT optimizations.
-    See https://github.com/llvm/llvm-project/blob/main/bolt/README.md
 
 use_bundled_fontconfig
     Current value (from the default) = true
@@ -5625,18 +5587,6 @@ use_fake_screen_ai
       From //services/screen_ai/buildflags/features.gni:19
 
     Screen AI library is not available for MSAN and UBSAN.
-
-use_fma
-    Current value = false
-      From //out/default/args.gn:7
-    Overridden from the default = false
-      From //build/config/compiler_opt.gni:97
-
-    FMA
-    "Fused Multiply Add" operations
-    Present since Haswell and AMD Piledriver (2nd Gen. refinement
-    of Bulldozer).
-    `-mfma -ffp-contract=fast` (use -mfma3 -mfma4 for Piledriver)
 
 use_freeslot_bitmap
     Current value (from the default) = false
@@ -5983,13 +5933,6 @@ use_platform_icu_alternatives
     Enables the use of ICU alternatives in lieu of ICU for the target toolchain.
     The flag is used for Cronet to reduce the size of the Cronet binary.
 
-use_polly
-    Current value (from the default) = false
-      From //build/config/compiler_opt.gni:15
-
-    Whether to enable LLVM's Polly optimizations.
-    See https://polly.llvm.org/
-
 use_profi
     Current value (from the default) = false
       From //build/config/compiler/BUILD.gn:180
@@ -6105,58 +6048,6 @@ use_siso
 
     Placeholder to allow having use_siso in args.gn file.
     autoninja switches from Ninja to Siso when use_siso=true.
-
-use_sse2
-    Current value (from the default) = false
-      From //build/config/compiler_opt.gni:36
-
-    SSE2
-    Normal x64 compiler baseline, present since Willamette (Original
-    2001 Pentium 4) and AMD SledgeHammer (1st Gen. Opteron) and
-    the Athlon 64. Big step from MMX, x87, and SSE (i.e. SSE1)
-    Baseline requirement to run Windows since update KB4103718
-    for Windows 7 SP1/Server 2008 R2 SP1/Home Server 2011.
-
-use_sse3
-    Current value = true
-      From //out/default/args.gn:1
-    Overridden from the default = true
-      From //build/config/compiler_opt.gni:44
-
-    SSE3
-    Normal Chromium baseline, present since Prescott (2004 Pentium 4)
-    and AMD SanDiego (2nd Gen. Opteron).
-    Only applicable to 32 Bit Windows and Linux builds, where
-    setting it to false allows making an SSE2 build. (`-mmmx -msse2`)
-    `-msse3`
-
-use_sse41
-    Current value = true
-      From //out/default/args.gn:2
-    Overridden from the default = false
-      From //build/config/compiler_opt.gni:53
-
-    SSE4.1
-    Normal PrimoBrowser baseline
-    Normal ThoriumOS baseline because Core 2 Duo is the lowest
-    hardware that other CrOS subsystems like drivers support.
-    Present since Penryn (2007 45nm Core 2 Duo die shrink), and
-    AMD Jaguar (2013 Athlon CPUs) and Bulldozer (2012 AMD FX).
-    Includes SSSE3 since all SSSE3 `-mssse3 -msse4.1`
-
-use_sse42
-    Current value = true
-      From //out/default/args.gn:3
-    Overridden from the default = false
-      From //build/config/compiler_opt.gni:62
-
-    SSE4.2 (x86-64-v2)
-    Present since Nehalem (2009 1st Generation Core i series), and
-    the same AMD CPUs as above.
-    Normal LaCrOS baseline since Sept 2023.
-    See https://bugs.chromium.org/p/chromium/issues/detail?id=1475858
-    Baseline for Windows since Windows 10 24H2.
-    `-msse4.2`
 
 use_static_angle
     Current value (from the default) = false

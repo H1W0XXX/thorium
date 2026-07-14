@@ -16,9 +16,8 @@ third_party/ffmpeg: other/fix-ffmpeg-android-x86-disable-hevc-nasm.patch
 third_party/ffmpeg: other/ffmpeg-branding.patch
 third_party/widevine: other/widevine-cdm-support.patch
 third_party/search_engines_data/resources: other/thorium-search-engines-data.patch
-third_party/libyuv: other/libyuv-arm-simd-compat.patch
 third_party/abseil-cpp: other/abseil-bmi2-include-immintrin.patch
-v8: other/thorium-v8-simd-opts.patch
+v8: other/v8-remove-local-sse2-override.patch
 [sse2] third_party/angle: other/SSE2/angle-lockfree.patch
 
 # 10 - Media, codecs, and third_party-facing browser glue.
@@ -53,9 +52,9 @@ other/dom-distiller-reader-mode.patch
 other/thorium-root-build-targets.patch
 other/thorium-chrome-build-targets.patch
 other/thorium-build-config-and-simd.patch
-other/arm-third-party-simd-compat.patch
+other/enable-xnnpack-arm-fp16-vector.patch
 other/thorium-build-platform-tools.patch
-other/llvm-optimized-avx2-build.patch
+other/llvm-optimized-toolchain-build.patch
 
 # 40 - Linux/platform integration, UI debug tools, and shared resource branding.
 other/linux-disable-custom-titlebar-default.patch
@@ -111,7 +110,6 @@ other/downloads-page-enhancements.patch
 
 # 60 - Installer, shell integration, and context-menu behavior.
 other/mini_installer.patch
-other/thorium-mini-installer-manifest.patch
 other/open_in_same_tab.patch
 other/windows-thorium-flags-conf.patch
 

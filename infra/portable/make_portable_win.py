@@ -34,9 +34,14 @@ def copy_installer():
     installer_files = [
         "thorium_AVX512_mini_installer.exe",
         "thorium_AVX2_mini_installer.exe",
+        "thorium_AVX2-min_mini_installer.exe",
+        "thorium_AVX-FMA_mini_installer.exe",
         "thorium_AVX_mini_installer.exe",
+        "thorium_SSE4.2_mini_installer.exe",
         "thorium_SSE4_mini_installer.exe",
         "thorium_SSE3_mini_installer.exe",
+        "thorium_WIN32_SSE3_mini_installer.exe",
+        "thorium_WIN32_SSE2_mini_installer.exe",
         "thorium_ARM64_installer.exe",
         "thorium_mini_installer.exe",
     ]
@@ -91,6 +96,8 @@ def zip_files(installer_name):
         zip_filename = f"Thorium_SSE3_{version}.zip"
     elif "SSE4" in installer_name:
         zip_filename = f"Thorium_SSE4_{version}.zip"
+    elif "SSE2" in installer_name:
+        zip_filename = f"Thorium_SSE2_{version}.zip"
     elif "ARM64" in installer_name:
         zip_filename = f"Thorium_ARM64_{version}.zip"
     else:

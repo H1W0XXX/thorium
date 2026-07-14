@@ -1,10 +1,13 @@
 # Android args.gn files
 
-debug_args.gn is for arm64 only, but could be modified according to the other ones to
- support different microarchitectures.
-&nbsp;&nbsp; android_full_debug = true can be used in debug builds
+`debug_args.gn` targets ARM64. Use the other argument files as references when
+creating an x86, x64, or ARM32 debug configuration; do not duplicate Chromium's
+ARM ABI or microarchitecture settings in these files.
 
-chromium_args.gn is for making a vanilla official non-debug Chromium build
+`android_full_debug = true` can be used for a more complete debug build.
 
-API Keys allow location features, but do not allow Google Sync to function like on desktop.
-This is due to Google being an asshole an adding extra restrictions to Android Chromium.
+`chromium_args.gn` is for an official, non-debug vanilla Chromium build.
+
+API keys enable location-related features but do not provide desktop-style
+Google Sync in Android Chromium because access is subject to additional Google
+service restrictions.

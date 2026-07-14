@@ -1,11 +1,20 @@
 ## Thorium for ARM CPUs <img src="https://github.com/Alex313031/thorium/blob/main/logos/STAGING/arm_logo.png" width="128">
-This contains a special [*BUILD.gn*](https://github.com/Alex313031/thorium/blob/main/arm/config/compiler/BUILD.gn) file for making an ARM64 build of Thorium for Raspberry Pi or Windows.
-Run `setup.sh --help` from the root of this repo for more information. You could use the `--raspi` flag for a Raspberry Pi build, or `--woa` for a Windows on ARM build.
 
-__NOTE:__ This dir is only for Raspberry Pi and Windows On ARM. For regular Linux ARM builds, and MacOS ARM builds, you can just use the regular files in the repo.
+This directory contains build argument files for Android ARM, Raspberry Pi
+ARM64, and Windows on ARM64. ARM ABI selection remains owned by Chromium's
+central build configuration; these files only select the target and applicable
+product settings.
 
- -  Windows On ARM (WoA) Builds: Use the [win_ARM_args.gn](https://github.com/Alex313031/thorium/blob/main/arm/win_ARM_args.gn) file for your *args.gn*.
+Run `setup.sh --help` from the root of this repository for more information.
+Use `--raspi` for a Raspberry Pi build or `--woa` for a Windows on ARM build.
+macOS ARM64 argument files are located in [`other/Mac`](../other/Mac).
+
+- Windows on ARM64 builds: use [`win_ARM_args.gn`](win_ARM_args.gn) as the
+  basis for `args.gn`.
 
 ## Raspberry Pi Builds &nbsp;<img src="https://github.com/Alex313031/thorium/blob/main/logos/STAGING/Raspberry_Pi_Logo.svg" width="28">
-Note that ARM32 Raspberry Pi builds of Thorium are not supported.__ They should only be used on Raspi 3B, 3B+, 4, and 400 models with a 64 Bit OS.
-For more info, see > [Here](https://www.raspberrypi.com/news/raspberry-pi-os-64-bit/).
+
+Thorium Raspberry Pi builds support ARM64 only. Use them on a Raspberry Pi 3B,
+3B+, 4, or 400 running a 64-bit operating system. See Raspberry Pi's
+[64-bit OS announcement](https://www.raspberrypi.com/news/raspberry-pi-os-64-bit/)
+for additional background.

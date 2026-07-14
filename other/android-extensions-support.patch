@@ -187,7 +187,7 @@ index d80c9ff95a2b0..cf6762581e4e9 100644
  
  declare_args() {
 diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
-index 2786029dd95b9..446b3a0050c42 100644
+index 796deaad89b33..d7af91301477e 100644
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
 @@ -244,7 +244,7 @@ if (is_android) {
@@ -4299,7 +4299,7 @@ index ebdd20021fe86..34d4e1c769f3c 100644
  #endif  // BUILDFLAG(IS_ANDROID)  && !BUILDFLAG(IS_DESKTOP_ANDROID)
  }
 diff --git a/third_party/libvpx/BUILD.gn b/third_party/libvpx/BUILD.gn
-index 338595aed8ef6..aed20f6af185a 100644
+index 3437424b46ef2..edb4088f13d30 100644
 --- a/third_party/libvpx/BUILD.gn
 +++ b/third_party/libvpx/BUILD.gn
 @@ -30,7 +30,7 @@ if (current_cpu == "x86") {

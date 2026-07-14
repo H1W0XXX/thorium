@@ -34,7 +34,7 @@ The files in `config/` are reviewed inputs, not generated setup output:
   message ownership; used to prevent feature-patch strings from being handled
   by the overlay replacement workflow.
 - `m150_xtb_additions.tsv`: canonical reviewed translation additions; currently
-  3483 translation rows across 243 XTB files. Rows are grouped by the explicit
+  3888 translation rows across 324 XTB files. Rows are grouped by the explicit
   `owner_patch` column, then by bundle, translation ID, and locale;
   `source_path` separately records where each translation was recovered or
   reviewed.
@@ -105,7 +105,7 @@ python3 patch_scripts/grd_rebase/merge_thorium_xtb.py \
 Expected current additions summary:
 
 ```text
-validated 3483 Thorium translations across 243 XTB files: 3402 inserted, 74 refreshed, 7 already present, 243 files changed
+validated 3888 Thorium translations across 324 XTB files: 3807 inserted, 74 refreshed, 7 already present, 324 files changed
 ```
 
 Equivalent PowerShell form:

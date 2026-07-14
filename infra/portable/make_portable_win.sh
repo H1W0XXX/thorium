@@ -16,7 +16,7 @@ die() { yell "$*"; exit 111; }
 displayHelp () {
 	printf "\n" &&
 	printf "${bold}${GRE}Script to make a portable Thorium .zip for Windows.${c0}\n" &&
-	printf "${bold}${YEL}Please place the thorium_mini_installer.exe file in this directory before running.${c0}\n" &&
+	printf "${bold}${YEL}Please place a thorium_*_mini_installer.exe file in this directory before running.${c0}\n" &&
 	printf "\n"
 }
 case $1 in
@@ -31,9 +31,14 @@ ZIP_NAME=""
 INSTALLER_LIST=(
 	"thorium_AVX512_mini_installer.exe"
 	"thorium_AVX2_mini_installer.exe"
+	"thorium_AVX2-min_mini_installer.exe"
+	"thorium_AVX-FMA_mini_installer.exe"
 	"thorium_AVX_mini_installer.exe"
+	"thorium_SSE4.2_mini_installer.exe"
 	"thorium_SSE4_mini_installer.exe"
 	"thorium_SSE3_mini_installer.exe"
+	"thorium_WIN32_SSE3_mini_installer.exe"
+	"thorium_WIN32_SSE2_mini_installer.exe"
 	"thorium_ARM64_installer.exe"
 	"thorium_mini_installer.exe"
 )
@@ -59,6 +64,8 @@ elif [[ "$INSTALLER_NAME" == *"SSE4"* ]]; then
 	ZIP_NAME="Thorium_SSE4_${VERSION}.zip"
 elif [[ "$INSTALLER_NAME" == *"SSE3"* ]]; then
 	ZIP_NAME="Thorium_SSE3_${VERSION}.zip"
+elif [[ "$INSTALLER_NAME" == *"SSE2"* ]]; then
+	ZIP_NAME="Thorium_SSE2_${VERSION}.zip"
 elif [[ "$INSTALLER_NAME" == *"ARM64"* ]]; then
 	ZIP_NAME="Thorium_ARM64_${VERSION}.zip"
 else

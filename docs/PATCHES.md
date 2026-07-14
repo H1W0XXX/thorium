@@ -25,9 +25,9 @@ overlay-derived, or still need separate provenance review.
 | [`widevine-cdm-host-verification.patch`](../other/widevine-cdm-host-verification.patch) | Thorium Widevine host verification behavior; relevant to bundled Widevine support |
 | [`linux-widevine-cdm-locations.patch`](../other/linux-widevine-cdm-locations.patch) | Raspberry Pi / Linux Widevine location compatibility |
 | [`raspi-netflix-chromeos-ua.patch`](../other/raspi-netflix-chromeos-ua.patch) | Raspberry Pi Netflix ChromeOS UA compatibility |
-| [`llvm-optimized-avx2-build.patch`](../other/llvm-optimized-avx2-build.patch) | [RobRich999/Chromium_Clang](https://github.com/RobRich999/Chromium_Clang) LLVM optimized AVX2 build script work |
+| [`llvm-optimized-toolchain-build.patch`](../other/llvm-optimized-toolchain-build.patch) | [RobRich999/Chromium_Clang](https://github.com/RobRich999/Chromium_Clang) LLVM optimized build-script work, adapted to use compatibility-safe tuning instead of an AVX2 ISA requirement |
 | [`disable-vulkan-gpu-log-warnings.patch`](../other/disable-vulkan-gpu-log-warnings.patch) | [RobRich999/Chromium_Clang](https://github.com/RobRich999/Chromium_Clang) Linux patch reference |
-| [`thorium-v8-simd-opts.patch`](../other/thorium-v8-simd-opts.patch) | Thorium SIMD/V8 optimization work, with historical FydeOS/Raspberry Pi V8 workaround references |
+| [`v8-remove-local-sse2-override.patch`](../other/v8-remove-local-sse2-override.patch) | Removes V8's local Win32 `/arch:SSE2` override so target objects inherit Thorium's canonical x86 profile |
 | [`linux-disable-custom-titlebar-default.patch`](../other/linux-disable-custom-titlebar-default.patch) | [saiarcot895/chromium-ubuntu-build](https://github.com/saiarcot895/chromium-ubuntu-build) title-bar default system patch reference |
 | [`content-gpu-vaapi-libva-config.patch`](../other/content-gpu-vaapi-libva-config.patch) | Linux VAAPI/libva behavior adapted from Linux Chromium packaging patch references |
 | [`thorium-sandbox-compat.patch`](../other/thorium-sandbox-compat.patch) | Chromium sandbox compatibility; related to ungoogled/inox sandbox PIE patch family |
@@ -62,7 +62,7 @@ overlay-derived, or still need separate provenance review.
 | [`enable-extension-in-incognito.patch`](../other/enable-extension-in-incognito.patch) | [uazo/Cromite](https://github.com/uazo/cromite) enable extension in incognito patch |
 | [`GPC.patch`](../other/GPC.patch) | Global Privacy Control behavior adapted from privacy-focused Chromium patch references |
 | [`disable-middle-click-paste-with-autoscroll.patch`](../other/disable-middle-click-paste-with-autoscroll.patch) | Thorium-maintained Linux behavior fix for disabling selection clipboard paste paths when Blink MiddleClickAutoscroll is enabled |
-| [`mini_installer.patch`](../other/mini_installer.patch) | Thorium Windows mini_installer GUI patch; related installer-close-instance behavior references from Hibbiki Chromium builds |
+| [`mini_installer.patch`](../other/mini_installer.patch) | Thorium Windows mini_installer GUI, SIMD-aware naming and packaging manifest |
 
 ## Series Patches
 
@@ -76,9 +76,8 @@ overlay-derived, or still need separate provenance review.
 - [`ffmpeg-branding.patch`](../other/ffmpeg-branding.patch) (apply root: `third_party/ffmpeg`)
 - [`widevine-cdm-support.patch`](../other/widevine-cdm-support.patch) (apply root: `third_party/widevine`)
 - [`thorium-search-engines-data.patch`](../other/thorium-search-engines-data.patch) (apply root: `third_party/search_engines_data/resources`)
-- [`libyuv-arm-simd-compat.patch`](../other/libyuv-arm-simd-compat.patch) (apply root: `third_party/libyuv`)
 - [`abseil-bmi2-include-immintrin.patch`](../other/abseil-bmi2-include-immintrin.patch) (apply root: `third_party/abseil-cpp`)
-- [`thorium-v8-simd-opts.patch`](../other/thorium-v8-simd-opts.patch) (apply root: `v8`)
+- [`v8-remove-local-sse2-override.patch`](../other/v8-remove-local-sse2-override.patch) (apply root: `v8`)
 - [`angle-lockfree.patch`](../other/SSE2/angle-lockfree.patch) (apply root: `third_party/angle/src`; condition: `sse2`)
 
 ### 10 - Media, codecs, and third_party-facing browser glue.
@@ -89,7 +88,7 @@ overlay-derived, or still need separate provenance review.
 - [`thorium-media-switches.patch`](../other/thorium-media-switches.patch)
 - [`widevine-cdm-host-verification.patch`](../other/widevine-cdm-host-verification.patch)
 
-### 20 - Identity, API keys, resources, and branding.
+### 20 - Product defaults, identity, resources, branding, and browser preferences.
 
 - [`thorium-default-api-keys.patch`](../other/thorium-default-api-keys.patch)
 - [`disable-fetching-field-trials.patch`](../other/disable-fetching-field-trials.patch)
@@ -106,6 +105,8 @@ overlay-derived, or still need separate provenance review.
 - [`thorium-app-vector-icons.patch`](../other/thorium-app-vector-icons.patch)
 - [`default-apps-ublock-origin.patch`](../other/default-apps-ublock-origin.patch)
 - [`bookmark-default-prefs.patch`](../other/bookmark-default-prefs.patch)
+- [`bookmark-dialog-default-folder.patch`](../other/bookmark-dialog-default-folder.patch)
+- [`increase-bookmark-open-prompt-threshold.patch`](../other/increase-bookmark-open-prompt-threshold.patch)
 - [`thorium-browser-ui-default-prefs.patch`](../other/thorium-browser-ui-default-prefs.patch)
 - [`dom-distiller-reader-mode.patch`](../other/dom-distiller-reader-mode.patch)
 
@@ -114,11 +115,11 @@ overlay-derived, or still need separate provenance review.
 - [`thorium-root-build-targets.patch`](../other/thorium-root-build-targets.patch)
 - [`thorium-chrome-build-targets.patch`](../other/thorium-chrome-build-targets.patch)
 - [`thorium-build-config-and-simd.patch`](../other/thorium-build-config-and-simd.patch)
-- [`arm-third-party-simd-compat.patch`](../other/arm-third-party-simd-compat.patch)
+- [`enable-xnnpack-arm-fp16-vector.patch`](../other/enable-xnnpack-arm-fp16-vector.patch)
 - [`thorium-build-platform-tools.patch`](../other/thorium-build-platform-tools.patch)
-- [`llvm-optimized-avx2-build.patch`](../other/llvm-optimized-avx2-build.patch)
+- [`llvm-optimized-toolchain-build.patch`](../other/llvm-optimized-toolchain-build.patch)
 
-### 40 - Linux and installer/platform integration.
+### 40 - Linux/platform integration, UI debug tools, and shared resource branding.
 
 - [`linux-disable-custom-titlebar-default.patch`](../other/linux-disable-custom-titlebar-default.patch)
 - [`linux-obsolete-system-policy.patch`](../other/linux-obsolete-system-policy.patch)
@@ -148,21 +149,38 @@ overlay-derived, or still need separate provenance review.
 - [`fix-policy-templates.patch`](../other/fix-policy-templates.patch)
 - [`ftp-support-thorium.patch`](../other/ftp-support-thorium.patch)
 - [`GPC.patch`](../other/GPC.patch)
+- [`add-boss-key.patch`](../other/add-boss-key.patch)
+- [`add-flag-for-close-confirmation.patch`](../other/add-flag-for-close-confirmation.patch)
+- [`thorium-debug-mode.patch`](../other/thorium-debug-mode.patch)
+- [`thorium-first-run-welcome.patch`](../other/thorium-first-run-welcome.patch)
 - [`disable-middle-click-paste-with-autoscroll.patch`](../other/disable-middle-click-paste-with-autoscroll.patch) - Disables Linux middle-click selection paste and paste-and-navigate paths when Blink MiddleClickAutoscroll is enabled.
-- [`thorium-2024-ui.patch`](../other/thorium-2024-ui.patch)
+- [`views-menu-delay.patch`](../other/views-menu-delay.patch)
+- [`new-tab-to-left-context-menu.patch`](../other/new-tab-to-left-context-menu.patch)
+- [`status-bubble-instant-expand.patch`](../other/status-bubble-instant-expand.patch)
+- [`thorium-2024-ui-core.patch`](../other/thorium-2024-ui-core.patch)
+- [`custom-tab-width.patch`](../other/custom-tab-width.patch)
+- [`classic-bookmarks.patch`](../other/classic-bookmarks.patch)
+- [`expand-chrome-color-choices.patch`](../other/expand-chrome-color-choices.patch)
+- [`windows-menu-style-overrides.patch`](../other/windows-menu-style-overrides.patch)
+- [`classic-omnibox.patch`](../other/classic-omnibox.patch)
+- [`rectangular-tabs.patch`](../other/rectangular-tabs.patch)
+- [`prominent-active-tab-titles.patch`](../other/prominent-active-tab-titles.patch)
+- [`transparent-tabs.patch`](../other/transparent-tabs.patch)
+- [`toolbar-avatar-button-visibility.patch`](../other/toolbar-avatar-button-visibility.patch)
+- [`restore-tab-button.patch`](../other/restore-tab-button.patch)
+- [`thorium-chrome-labs-experiments.patch`](../other/thorium-chrome-labs-experiments.patch)
 - [`add-flag-for-system-linux-theme.patch`](../other/add-flag-for-system-linux-theme.patch)
 - [`restore_download_shelf.patch`](../other/restore_download_shelf.patch)
+- [`downloads-page-enhancements.patch`](../other/downloads-page-enhancements.patch)
 
-### 60 - Windows installer and shell integration.
+### 60 - Installer, shell integration, and context-menu behavior.
 
 - [`mini_installer.patch`](../other/mini_installer.patch)
-- [`thorium-mini-installer-manifest.patch`](../other/thorium-mini-installer-manifest.patch)
 - [`open_in_same_tab.patch`](../other/open_in_same_tab.patch)
 - [`windows-thorium-flags-conf.patch`](../other/windows-thorium-flags-conf.patch) - reads `thorium-flags.conf` from the install directory and `%AppData%\Thorium`, avoiding the removable `%LocalAppData%\Thorium` profile root during uninstall.
 
-### 70 - Thorium user-facing flags and feature behavior.
+### 70 - User-facing flags, defaults, download/security behavior, and ThoriumOS.
 
-- [`add-flag-for-close-confirmation.patch`](../other/add-flag-for-close-confirmation.patch)
 - [`add-flag-to-close-window-with-last-tab.patch`](../other/add-flag-to-close-window-with-last-tab.patch)
 - [`add-flag-to-scroll-tabs.patch`](../other/add-flag-to-scroll-tabs.patch)
 - [`enable-ctrl-tab-mru.patch`](../other/enable-ctrl-tab-mru.patch)
@@ -201,7 +219,7 @@ overlay-derived, or still need separate provenance review.
 - [`disable-thorium-icons.patch`](../other/disable-thorium-icons.patch)
 - [`always-enable-reload-menu.patch`](../other/always-enable-reload-menu.patch)
 
-### 80 - Extensions and Android extensions.
+### 80 - Extensions, privacy, install branding, and late platform overlays.
 
 - [`allow_manifest_v2_extensions.patch`](../other/allow_manifest_v2_extensions.patch)
 - [`increase-dnr-limits.patch`](../other/increase-dnr-limits.patch)
@@ -231,6 +249,6 @@ overlay-derived, or still need separate provenance review.
 ## Maintenance Notes
 
 - Add, remove, and reorder active patches in `patch_scripts/series/series` first.
-- Keep patch files under `other/`; use an apply root in the series for child repositories such as `third_party/ffmpeg`, `third_party/widevine`, `third_party/libyuv`, `third_party/abseil-cpp`, `third_party/search_engines_data/resources`, and `v8`.
+- Keep patch files under `other/`; use an apply root in the series for child repositories such as `third_party/ffmpeg`, `third_party/widevine`, `third_party/abseil-cpp`, `third_party/search_engines_data/resources`, and `v8`.
 - Use one `--condition` per run for mutually exclusive build variants such as `sse2` or `raspi`.
 - After changing patch inventory, run `py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src` to validate the ordered series without modifying the Chromium checkout.

@@ -5,3 +5,6 @@ This directory contains build config files for compiling Thorium/Chromium with [
 SSE4.2 is used to target 1st Gen core i series systems at a minimum.
 
 I make SSE4.2 builds occasionally, since @midzer has a laptop with a 1st gen "Westmere" CPU.
+
+The argument files select `thorium_x86_profile = "sse4_2"`, which does not
+implicitly add POPCNT or AVX.

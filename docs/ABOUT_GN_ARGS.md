@@ -26,8 +26,6 @@ __v8_target_cpu__ &#35; What CPU architecture we are building V8 with. Should no
 
 ## __Special__
 
-__use_polly__ &#35; Whether to use Polly optimizations during the linking stage. Disabled by default.
-
 __is_raspi__ &#35; Whether to enable Raspberry Pi specific optimizations. Only valid for arm64 targets.
 
 __is_thorium__ &#35; Whether this is a Thorium build or Chromium build. Set to true in Thorium. When set to false, it does not build the custom top bar icons and other icons used throughout the UI. The main logo is unaffected by this arg.

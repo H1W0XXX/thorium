@@ -34,10 +34,10 @@ index 282691e5cfb63..d2b5d9e87fa51 100644
  BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
  
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index 67643e2127999..8aba58081a366 100644
+index 4b69f347fc260..e56f0ea663e4a 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
-@@ -772,9 +772,19 @@ void Tab::OnMouseMoved(const ui::MouseEvent& event) {
+@@ -773,9 +773,19 @@ void Tab::OnMouseMoved(const ui::MouseEvent& event) {
  
  void Tab::OnMouseEntered(const ui::MouseEvent& event) {
    MaybeUpdateHoverStatus(event);
@@ -57,7 +57,7 @@ index 67643e2127999..8aba58081a366 100644
    if (!mouse_hovered_) {
      return;
    }
-@@ -782,6 +792,14 @@ void Tab::OnMouseExited(const ui::MouseEvent& event) {
+@@ -783,6 +793,14 @@ void Tab::OnMouseExited(const ui::MouseEvent& event) {
    controller_->HideHover(this, TabStyle::HideHoverStyle::kGradual);
  }
  

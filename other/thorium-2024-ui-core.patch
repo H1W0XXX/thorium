@@ -1691,9 +1691,25 @@ index d4c4f01c14c21..8e906b84fef0e 100644
        gfx::Insets(extra_height / 2) + *GetProperty(views::kInternalPaddingKey);
  
 diff --git a/chrome/browser/ui/webui/settings/settings_ui.cc b/chrome/browser/ui/webui/settings/settings_ui.cc
-index 5df96f4435834..9c13871e55f7c 100644
+index 5df96f4435834..2422661b9b61d 100644
 --- a/chrome/browser/ui/webui/settings/settings_ui.cc
 +++ b/chrome/browser/ui/webui/settings/settings_ui.cc
+@@ -149,6 +149,7 @@
+ #include "third_party/blink/public/common/features.h"
+ #include "ui/accessibility/accessibility_features.h"
+ #include "ui/base/interaction/element_identifier.h"
++#include "ui/base/ui_base_features.h"
+ #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
+ #include "ui/webui/webui_util.h"
+ 
+@@ -181,7 +182,6 @@
+ #include "chromeos/constants/chromeos_features.h"
+ #include "components/account_manager_core/chromeos/account_manager.h"
+ #include "components/user_manager/user.h"
+-#include "ui/base/ui_base_features.h"
+ #else  // !BUILDFLAG(IS_CHROMEOS)
+ #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+ #include "chrome/browser/signin/account_consistency_mode_manager.h"
 @@ -696,6 +696,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
        "personalContextSettingsDescription",
        IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_DESCRIPTION_DESKTOP);

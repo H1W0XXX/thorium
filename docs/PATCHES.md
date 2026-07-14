@@ -77,6 +77,7 @@ overlay-derived, or still need separate provenance review.
 - [`widevine-cdm-support.patch`](../other/widevine-cdm-support.patch) (apply root: `third_party/widevine`)
 - [`thorium-search-engines-data.patch`](../other/thorium-search-engines-data.patch) (apply root: `third_party/search_engines_data/resources`)
 - [`abseil-bmi2-include-immintrin.patch`](../other/abseil-bmi2-include-immintrin.patch) (apply root: `third_party/abseil-cpp`)
+- [`zstd-clang-cl-bmi2-detection.patch`](../other/zstd-clang-cl-bmi2-detection.patch) (apply root: `third_party/zstd/src`) - Keeps clang-cl AVX2 builds on zstd's runtime BMI2 dispatch unless `-mbmi2` is explicitly enabled.
 - [`v8-remove-local-sse2-override.patch`](../other/v8-remove-local-sse2-override.patch) (apply root: `v8`)
 - [`angle-lockfree.patch`](../other/SSE2/angle-lockfree.patch) (apply root: `third_party/angle/src`; condition: `sse2`)
 

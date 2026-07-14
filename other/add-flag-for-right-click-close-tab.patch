@@ -29,10 +29,10 @@ index 1466c54bc0364..282691e5cfb63 100644
  BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
  
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index 9c38206919d45..67643e2127999 100644
+index cba272c4b497e..4b69f347fc260 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
-@@ -22,6 +22,7 @@
+@@ -23,6 +23,7 @@
  #include "base/numerics/safe_conversions.h"
  #include "base/scoped_observation.h"
  #include "base/strings/utf_string_conversions.h"
@@ -40,7 +40,7 @@ index 9c38206919d45..67643e2127999 100644
  #include "base/time/time.h"
  #include "build/build_config.h"
  #include "cc/paint/paint_flags.h"
-@@ -610,10 +611,21 @@ bool IsSelectionModifierDown(const ui::MouseEvent& event) {
+@@ -611,10 +612,21 @@ bool IsSelectionModifierDown(const ui::MouseEvent& event) {
  
  bool Tab::OnMousePressed(const ui::MouseEvent& event) {
    shift_pressed_on_mouse_down_ = event.IsShiftDown();
@@ -62,7 +62,7 @@ index 9c38206919d45..67643e2127999 100644
    // Allow a right click from touch to drag, which corresponds to a long click.
    if (event.IsOnlyLeftMouseButton() ||
        (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
-@@ -665,10 +677,39 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
+@@ -666,10 +678,39 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
    // so, bail immediately, since our members are already dead and we shouldn't
    // do anything else except drop the tab where it is.
    if (controller_->EndDrag(EndDragReason::kComplete)) {
@@ -102,7 +102,7 @@ index 9c38206919d45..67643e2127999 100644
    // Close tab on middle click, but only if the button is released over the tab
    // (normal windows behavior is to discard presses of a UI element where the
    // releases happen off the element).
-@@ -709,6 +750,9 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
+@@ -710,6 +751,9 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
  
  void Tab::OnMouseCaptureLost() {
    controller_->EndDrag(EndDragReason::kCaptureLost);

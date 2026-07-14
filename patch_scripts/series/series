@@ -17,6 +17,7 @@ third_party/ffmpeg: other/ffmpeg-branding.patch
 third_party/widevine: other/widevine-cdm-support.patch
 third_party/search_engines_data/resources: other/thorium-search-engines-data.patch
 third_party/abseil-cpp: other/abseil-bmi2-include-immintrin.patch
+third_party/zstd/src: other/zstd-clang-cl-bmi2-detection.patch
 v8: other/v8-remove-local-sse2-override.patch
 [sse2] third_party/angle: other/SSE2/angle-lockfree.patch
 

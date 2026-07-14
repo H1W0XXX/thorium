@@ -25,7 +25,7 @@ index 384521cdbea75..477f4af309754 100644
            An operating system error occurred during installation. Please download Chromium again.
          </message>
 diff --git a/chrome/installer/mini_installer/BUILD.gn b/chrome/installer/mini_installer/BUILD.gn
-index 37a9269380b70..eeca33ae64397 100644
+index 37a9269380b70..4e07d55706d67 100644
 --- a/chrome/installer/mini_installer/BUILD.gn
 +++ b/chrome/installer/mini_installer/BUILD.gn
 @@ -1,8 +1,8 @@
@@ -146,9 +146,9 @@ index 37a9269380b70..eeca33ae64397 100644
 +    }
 +    extra_args = [
 +      "-e",
-+      "INTERNAL_NAME=${invoker.internal_name}",
++      "INTERNAL_NAME=\"${invoker.internal_name}\"",
 +      "-e",
-+      "ORIGINAL_FILENAME=${invoker.original_filename}",
++      "ORIGINAL_FILENAME=\"${invoker.original_filename}\"",
 +    ]
 +  }
 +
@@ -442,7 +442,7 @@ index fc23ed716a20e..e18eec1993f04 100644
  
  }  // namespace mini_installer
 diff --git a/chrome/installer/mini_installer/mini_installer.cc b/chrome/installer/mini_installer/mini_installer.cc
-index 6aae112356a1a..7c35af89a4618 100644
+index 6aae112356a1a..d480f91cfd284 100644
 --- a/chrome/installer/mini_installer/mini_installer.cc
 +++ b/chrome/installer/mini_installer/mini_installer.cc
 @@ -1,4 +1,4 @@
@@ -497,17 +497,18 @@ index 6aae112356a1a..7c35af89a4618 100644
  
  #include "build/branding_buildflags.h"
  #include "chrome/installer/mini_installer/appid.h"
-@@ -53,6 +50,9 @@
+@@ -53,6 +50,10 @@
  #include "chrome/installer/mini_installer/memory_range.h"
  #include "chrome/installer/mini_installer/mini_file.h"
  #include "chrome/installer/mini_installer/mini_installer_constants.h"
 +#include "chrome/installer/mini_installer/mini_installer_localization.h"
 +#include "chrome/installer/mini_installer/mini_installer_resource.h"
 +#include "chrome/installer/mini_installer/mini_installer_version.h"
++#include "chrome/installer/util/installer_util_strings.h"
  #include "chrome/installer/mini_installer/regkey.h"
  #include "chrome/installer/mini_installer/write_to_disk.h"
  
-@@ -709,21 +709,247 @@ bool GetWorkDir(HMODULE module,
+@@ -709,21 +710,247 @@ bool GetWorkDir(HMODULE module,
           CreateWorkDir(base_path.get(), work_dir, exit_code);
  }
  
@@ -765,7 +766,7 @@ index 6aae112356a1a..7c35af89a4618 100644
    // First get a path where we can extract payload
    PathString base_path;
    if (!GetWorkDir(module, &base_path, &exit_code)) {
-@@ -771,4 +997,22 @@ ProcessExitResult WMain(HMODULE module) {
+@@ -771,4 +998,22 @@ ProcessExitResult WMain(HMODULE module) {
    return exit_code;
  }
  
@@ -837,10 +838,10 @@ index c2a03ccbb6460..e2e8a628e5eb1 100644
  
  }  // namespace mini_installer
 diff --git a/chrome/installer/mini_installer/mini_installer_exe_main.cc b/chrome/installer/mini_installer/mini_installer_exe_main.cc
-index aff0370044046..f8842fd26f5b9 100644
+index aff0370044046..e0d98de9436fa 100644
 --- a/chrome/installer/mini_installer/mini_installer_exe_main.cc
 +++ b/chrome/installer/mini_installer/mini_installer_exe_main.cc
-@@ -1,75 +1,121 @@
+@@ -1,75 +1,128 @@
 -// Copyright 2017 The Chromium Authors
 +// Copyright 2026 The Chromium Authors and Alex313031
  // Use of this source code is governed by a BSD-style license that can be
@@ -855,6 +856,7 @@ index aff0370044046..f8842fd26f5b9 100644
 +#include <intrin.h>
 +#include <shellapi.h>
  #include <stdint.h>
++#include <span>
  
 -#include "base/clang_profiling_buildflags.h"
  #include "build/build_config.h"
@@ -965,6 +967,10 @@ index aff0370044046..f8842fd26f5b9 100644
 +  if (!arguments) {
 +    return false;
 +  }
++  if (argument_count <= 0) {
++    LocalFree(arguments);
++    return false;
++  }
  
 -// VC Express editions don't come with the memset CRT obj file and linking to
 -// the obj files between versions becomes a bit problematic. Therefore,
@@ -986,8 +992,10 @@ index aff0370044046..f8842fd26f5b9 100644
 -    *scan++ = static_cast<uint8_t>(c);
 -  return dest;
 +  bool is_silent = false;
-+  for (int i = 1; i < argument_count; ++i) {
-+    if (lstrcmpiW(arguments[i], L"--silent") == 0) {
++  const std::span<wchar_t*> argument_span(
++      arguments, static_cast<size_t>(argument_count));
++  for (wchar_t* argument : argument_span.subspan(1)) {
++    if (lstrcmpiW(argument, L"--silent") == 0) {
 +      is_silent = true;
 +      break;
 +    }
@@ -1044,17 +1052,16 @@ index 2862d6b50a550..51fbce7746fc1 100644
      BLOCK "VarFileInfo"
 diff --git a/chrome/installer/mini_installer/mini_installer_localization.cc b/chrome/installer/mini_installer/mini_installer_localization.cc
 new file mode 100644
-index 0000000000000..030899c4dc48f
+index 0000000000000..bc180abc50dc8
 --- /dev/null
 +++ b/chrome/installer/mini_installer/mini_installer_localization.cc
-@@ -0,0 +1,225 @@
+@@ -0,0 +1,229 @@
 +// Copyright 2026 The Chromium Authors and Alex313031
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
 +
 +#include "chrome/installer/mini_installer/mini_installer_localization.h"
 +
-+#include <cwchar>
 +#include <string>
 +#include <string_view>
 +#include <vector>
@@ -1173,9 +1180,14 @@ index 0000000000000..030899c4dc48f
 +    std::vector<wchar_t> buffer(buffer_size);
 +    if (GetThreadPreferredUILanguages(kLanguageFlags, &language_count,
 +                                      buffer.data(), &buffer_size)) {
-+      for (const wchar_t* language = buffer.data(); *language;
-+           language += std::wcslen(language) + 1) {
-+        languages.emplace_back(language);
++      std::wstring_view remaining(buffer.data(), buffer.size());
++      while (!remaining.empty() && remaining.front() != L'\0') {
++        const size_t terminator = remaining.find(L'\0');
++        if (terminator == std::wstring_view::npos) {
++          break;
++        }
++        languages.emplace_back(remaining.substr(0, terminator));
++        remaining.remove_prefix(terminator + 1);
 +      }
 +    }
 +  }

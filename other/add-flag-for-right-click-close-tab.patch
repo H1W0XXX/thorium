@@ -29,7 +29,7 @@ index 1466c54bc0364..282691e5cfb63 100644
  BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
  
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index cdd3caf062aa7..3f66ecf090f91 100644
+index 9c38206919d45..67643e2127999 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -22,6 +22,7 @@

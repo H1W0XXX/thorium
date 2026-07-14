@@ -34,7 +34,7 @@ index 282691e5cfb63..d2b5d9e87fa51 100644
  BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
  
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index 3f66ecf090f91..3cd389c51f9bd 100644
+index 67643e2127999..8aba58081a366 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -772,9 +772,19 @@ void Tab::OnMouseMoved(const ui::MouseEvent& event) {

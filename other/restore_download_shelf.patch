@@ -905,10 +905,10 @@ index 7f51a0b1ba78c..75a4cf0f961b2 100644
    E_CPONLY(kColorDownloadToolbarButtonAnimationBackground) \
    E_CPONLY(kColorDownloadToolbarButtonAnimationForeground) \
 diff --git a/chrome/browser/ui/color/chrome_color_mixer.cc b/chrome/browser/ui/color/chrome_color_mixer.cc
-index bfdb6512f6de5..27eb3e1ca3a6d 100644
+index f6ff582becae7..f8d840f1c9be3 100644
 --- a/chrome/browser/ui/color/chrome_color_mixer.cc
 +++ b/chrome/browser/ui/color/chrome_color_mixer.cc
-@@ -366,10 +366,38 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
+@@ -371,10 +371,38 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
    mixer[kColorCastDialogHelpIcon] = {ui::kColorAccent};
    mixer[kColorDesktopMediaTabListBorder] = {ui::kColorMidground};
    mixer[kColorDesktopMediaTabListPreviewBackground] = {ui::kColorMidground};
@@ -947,7 +947,7 @@ index bfdb6512f6de5..27eb3e1ca3a6d 100644
    mixer[kColorDownloadToolbarButtonActive] =
        ui::PickGoogleColor(ui::kColorThrobber, kColorToolbar,
                            color_utils::kMinimumVisibleContrastRatio);
-@@ -1119,6 +1147,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
+@@ -1129,6 +1157,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
    if (!ShouldApplyHighContrastColors(key)) {
      return;
    }

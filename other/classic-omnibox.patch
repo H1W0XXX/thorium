@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/layout_constants.cc b/chrome/browser/ui/layout_constants.cc
-index 8df5a7e615e90..458feeabad4d1 100644
+index 0af3486d89f3b..cc4b80966419b 100644
 --- a/chrome/browser/ui/layout_constants.cc
 +++ b/chrome/browser/ui/layout_constants.cc
 @@ -4,6 +4,7 @@
@@ -16,7 +16,7 @@ index 8df5a7e615e90..458feeabad4d1 100644
    const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
 +  static const bool classic_omnibox =
 +      base::CommandLine::ForCurrentProcess()->HasSwitch("classic-omnibox");
-   static const bool thorium_2024 = features::IsThorium2024();
+   const bool thorium_2024 = features::IsThorium2024();
    switch (constant) {
      case LayoutConstant::kAppMenuProfileRowAvatarIconSize:
 @@ -54,7 +57,7 @@ int GetLayoutConstant(LayoutConstant constant) {
@@ -29,7 +29,7 @@ index 8df5a7e615e90..458feeabad4d1 100644
        return 16;
      case LayoutConstant::kLocationBarChipPadding:
 diff --git a/chrome/browser/ui/views/location_bar/location_bar_view.cc b/chrome/browser/ui/views/location_bar/location_bar_view.cc
-index c29d13fe0c385..b58d0bb32c5e9 100644
+index 2e383a06ea35f..449daaedecbea 100644
 --- a/chrome/browser/ui/views/location_bar/location_bar_view.cc
 +++ b/chrome/browser/ui/views/location_bar/location_bar_view.cc
 @@ -11,6 +11,7 @@
@@ -40,7 +40,7 @@ index c29d13fe0c385..b58d0bb32c5e9 100644
  #include "base/feature_list.h"
  #include "base/functional/bind.h"
  #include "base/functional/callback_helpers.h"
-@@ -266,7 +267,11 @@ LocationBarView::LocationBarView(Browser* browser,
+@@ -271,7 +272,11 @@ LocationBarView::LocationBarView(Browser* browser,
            }));
        views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
      }
@@ -53,7 +53,7 @@ index c29d13fe0c385..b58d0bb32c5e9 100644
  
  #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
      if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
-@@ -636,6 +641,11 @@ bool LocationBarView::IsInitialized() const {
+@@ -641,6 +646,11 @@ bool LocationBarView::IsInitialized() const {
  }
  
  int LocationBarView::GetBorderRadius() const {
@@ -65,7 +65,7 @@ index c29d13fe0c385..b58d0bb32c5e9 100644
    return ComputeBorderRadius(size());
  }
  
-@@ -1618,6 +1628,12 @@ void LocationBarView::RefreshBackground() {
+@@ -1626,6 +1636,12 @@ void LocationBarView::RefreshBackground() {
    }
  
    SkColor border_color = SK_ColorTRANSPARENT;
@@ -76,8 +76,8 @@ index c29d13fe0c385..b58d0bb32c5e9 100644
 +  }
 +
  
- // The custom focus border is disabled on macOS to avoid conflicting with
- // native omnibox rendering.
+   // The custom focus border is disabled on macOS to avoid conflicting with
+   // native omnibox rendering.
 diff --git a/chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.cc b/chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.cc
 index 29daf84c09d4e..0cad65bccd004 100644
 --- a/chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.cc
@@ -103,7 +103,7 @@ index 29daf84c09d4e..0cad65bccd004 100644
      auto* const ink_drop = views::InkDrop::Get(this);
      SetAnimationDuration(base::TimeDelta());
 diff --git a/ui/views/layout/layout_provider.cc b/ui/views/layout/layout_provider.cc
-index a1e497e855dd1..ec33f5ff2fd38 100644
+index faa41ea3b6709..804a78485c98b 100644
 --- a/ui/views/layout/layout_provider.cc
 +++ b/ui/views/layout/layout_provider.cc
 @@ -6,6 +6,7 @@
@@ -123,12 +123,12 @@ index a1e497e855dd1..ec33f5ff2fd38 100644
    if (features::IsThorium2024()) {
      switch (id) {
        case ShapeContextTokens::kBadgeRadius:
-@@ -242,7 +245,7 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
+@@ -243,7 +246,7 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
        case ShapeContextTokens::kMenuTouchRadius:
-         return GetCornerRadiusMetric(Emphasis::kHigh); // 8
+         return GetCornerRadiusMetric(Emphasis::kHigh);
        case ShapeContextTokens::kOmniboxExpandedRadius:
 -        return 16;
 +        return classic_omnibox ? 8 : 16;
        case ShapeContextTokens::kTextfieldRadius:
-         return 4.0f; // 2.0f normally, should be 4.0f in Th24
+         return 4;
        case ShapeContextTokens::kContentSeparatorRadius:

@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/ui/tabs/tab_style.cc b/chrome/browser/ui/tabs/tab_style.cc
-index c63301d566764..ee50d867c699c 100644
+index 36ea80f78fc91..09a1a8e686005 100644
 --- a/chrome/browser/ui/tabs/tab_style.cc
 +++ b/chrome/browser/ui/tabs/tab_style.cc
-@@ -123,10 +123,20 @@ int TabStyle::GetMinimumInactiveWidth() const {
+@@ -122,10 +122,20 @@ int TabStyle::GetMinimumInactiveWidth() const {
  }
  
  int TabStyle::GetTopCornerRadius() const {

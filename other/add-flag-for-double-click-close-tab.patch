@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index fd6f8a70d4cfd..cdd3caf062aa7 100644
+index 60e87e4183258..9c38206919d45 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -672,7 +672,11 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {

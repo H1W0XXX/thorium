@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index 3cd389c51f9bd..04ae77620f0ec 100644
+index 8aba58081a366..36452fa46b8de 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
-@@ -1218,6 +1218,10 @@ void Tab::UpdateIconVisibility() {
+@@ -1222,6 +1222,10 @@ void Tab::UpdateIconVisibility() {
      // Close button is shown on active tabs regardless of the size.
      showing_close_button_ = true;
  #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -13,7 +13,7 @@ index 3cd389c51f9bd..04ae77620f0ec 100644
  
      if (features::IsTabStripDeclutterEnabled() && showing_close_button_) {
        const bool alert_fits_without_close =
-@@ -1276,6 +1280,8 @@ void Tab::UpdateIconVisibility() {
+@@ -1280,6 +1284,8 @@ void Tab::UpdateIconVisibility() {
          features::IsTabStripDeclutterEnabled() &&
          available_width <= TabStyle::kTabStripDeclutterMaxTabWidthForCloseHide;
      showing_close_button_ =

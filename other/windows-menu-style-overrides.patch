@@ -1,5 +1,5 @@
 diff --git a/ui/views/controls/menu/menu_config_win.cc b/ui/views/controls/menu/menu_config_win.cc
-index 577852135ac46..c0d6a28ec2369 100644
+index 12752fea723b6..c86086f232e67 100644
 --- a/ui/views/controls/menu/menu_config_win.cc
 +++ b/ui/views/controls/menu/menu_config_win.cc
 @@ -8,6 +8,7 @@
@@ -10,25 +10,24 @@ index 577852135ac46..c0d6a28ec2369 100644
  #include "base/win/windows_version.h"
  #include "ui/base/ui_base_features.h"
  #include "ui/gfx/system_fonts_win.h"
-@@ -28,12 +29,16 @@ void MenuConfig::InitPlatform() {
-   }
+@@ -31,11 +32,15 @@ void MenuConfig::InitPlatform() {
  
-   static const bool is_win11 = base::win::GetVersion() >= base::win::Version::WIN11;
+   static const bool is_win11 =
+       base::win::GetVersion() >= base::win::Version::WIN11;
 +  static const bool force_win11_for_testing =
 +      base::CommandLine::ForCurrentProcess()->HasSwitch("force-win11");
 +  static const bool bubble_borders =
 +      base::CommandLine::ForCurrentProcess()->HasSwitch("bubble-borders");
-   use_outer_border = true;
-   nonrounded_menu_vertical_border_size = features::IsThorium2024() ? 3 : 4;
-   always_reserve_check_region = false;
+   use_outer_border = thorium_2024;
+   nonrounded_menu_vertical_border_size = thorium_2024 ? 3 : 4;
  
-   if (features::IsThorium2024()) {
+   if (thorium_2024) {
 -    if (is_win11) {
 +    if (is_win11 || force_win11_for_testing) {
        corner_radius = 8;
        arrow_to_edge_padding = 4;
        menu_horizontal_border_size = 4;
-@@ -62,7 +67,7 @@ void MenuConfig::InitPlatform() {
+@@ -64,7 +69,7 @@ void MenuConfig::InitPlatform() {
      separator_upper_height = 5;
      separator_lower_height = 7;
    }

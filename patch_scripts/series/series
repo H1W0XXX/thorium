@@ -92,7 +92,10 @@ other/disable-middle-click-paste-with-autoscroll.patch
 other/views-menu-delay.patch
 other/new-tab-to-left-context-menu.patch
 other/status-bubble-instant-expand.patch
+other/enable-sharing-hub-page-action.patch
+other/new-tab-button-middle-click.patch
 other/thorium-2024-ui-core.patch
+other/thorium-2024-menu-interactions.patch
 other/custom-tab-width.patch
 other/classic-bookmarks.patch
 other/expand-chrome-color-choices.patch

@@ -734,7 +734,7 @@ index bf572f69720a0..06ae1f8a6a870 100644
 +Name=Open in Dark Mode
 +Exec=/usr/bin/@@USR_BIN_SYMLINK_NAME@@ --force-dark-mode %U
 diff --git a/chrome/installer/linux/common/installer.py b/chrome/installer/linux/common/installer.py
-index a9bbec28188c9..b2b3057c9e278 100644
+index a9bbec28188c9..e8d3dd1f95b37 100644
 --- a/chrome/installer/linux/common/installer.py
 +++ b/chrome/installer/linux/common/installer.py
 @@ -1,97 +1,19 @@
@@ -936,7 +936,7 @@ index a9bbec28188c9..b2b3057c9e278 100644
      input_file = pathlib.Path(input_file)
      if input_file in include_stack:
          print(
-@@ -249,429 +151,434 @@ def _process_template_includes(input_file: pathlib.Path,
+@@ -249,429 +151,420 @@ def _process_template_includes(input_file: pathlib.Path,
      return "".join(output_lines)
  
  
@@ -1742,26 +1742,12 @@ index a9bbec28188c9..b2b3057c9e278 100644
 +                mode=0o644,
 +            )
 +
-+        # default apps
-+        default_apps_src = self.output_dir / "default_apps"
-+        if default_apps_src.is_dir():
-+            default_apps_dest = install_dir / "default_apps"
-+            if default_apps_dest.exists():
-+                shutil.rmtree(default_apps_dest)
-+            shutil.copytree(default_apps_src, default_apps_dest)
-+            for root, dirs, files in os.walk(default_apps_dest):
-+                os.chmod(root, 0o755)
-+                for d in dirs:
-+                    os.chmod(os.path.join(root, d), 0o755)
-+                for f in files:
-+                    os.chmod(os.path.join(root, f), 0o644)
-+
 +    def _stage_theme_icons(self, install_dir):
 +        # app icons
          icon_suffix = ""
          if self.branding == "google_chrome":
              if self.channel == "beta":
-@@ -686,112 +593,97 @@ class InstallerConfig:
+@@ -686,112 +579,97 @@ class InstallerConfig:
          for size in icon_sizes:
              logo = f"product_logo_{size}{icon_suffix}.png"
              logo_resources_png.append(logo)
@@ -1952,7 +1938,7 @@ index a9bbec28188c9..b2b3057c9e278 100644
              "NoDisplay=true prevents\n"
              "# duplicate menu entries. This is required to match "
              "the application ID\n"
-@@ -800,210 +692,58 @@ class InstallerConfig:
+@@ -800,210 +678,58 @@ class InstallerConfig:
              "# The old desktop file is kept to preserve default "
              "browser settings.\n"
              "NoDisplay=true\n")
@@ -2208,7 +2194,7 @@ index a9bbec28188c9..b2b3057c9e278 100644
          dest.parent.mkdir(parents=True, exist_ok=True)
  
          shutil.copy(src, dest)
-@@ -1012,12 +752,12 @@ class Installer:
+@@ -1012,12 +738,12 @@ class Installer:
          if mode is not None:
              dest.chmod(mode)
  
@@ -2223,7 +2209,7 @@ index a9bbec28188c9..b2b3057c9e278 100644
              for f in files:
                  path = pathlib.Path(root) / f
                  if path.is_symlink():
-@@ -1033,13 +773,13 @@ class Installer:
+@@ -1033,13 +759,13 @@ class Installer:
  
                  if "ELF" in output:
                      # Check if outside install dir
@@ -2239,7 +2225,7 @@ index a9bbec28188c9..b2b3057c9e278 100644
                          # Check RPATH
                          try:
                              readelf_out = subprocess.check_output(
-@@ -1058,10 +798,9 @@ class Installer:
+@@ -1058,10 +784,9 @@ class Installer:
  
          if rpath_bins:
              print(
@@ -2251,7 +2237,7 @@ index a9bbec28188c9..b2b3057c9e278 100644
  
          if elf_outside:
              print(
-@@ -1071,10 +810,10 @@ class Installer:
+@@ -1071,10 +796,10 @@ class Installer:
              )
              sys.exit(1)
  
@@ -2264,7 +2250,7 @@ index a9bbec28188c9..b2b3057c9e278 100644
              # On Cog, permission is always 0664 or 0775
              if os.getcwd().startswith("/google/cog/cloud/"):
                  on_cog = True
-@@ -1083,11 +822,7 @@ class Installer:
+@@ -1083,11 +808,7 @@ class Installer:
                      file=sys.stderr,
                  )
  
@@ -2277,7 +2263,7 @@ index a9bbec28188c9..b2b3057c9e278 100644
              # We iterate everything.
              for item in dirs + files:
                  path = pathlib.Path(root) / item
-@@ -1095,15 +830,14 @@ class Installer:
+@@ -1095,15 +816,14 @@ class Installer:
                  actual_perms = stat.S_IMODE(st.st_mode)
  
                  base_name = item
@@ -2296,7 +2282,7 @@ index a9bbec28188c9..b2b3057c9e278 100644
                      else:
                          expect_exists = path.parent / target
  
-@@ -1124,26 +858,26 @@ class Installer:
+@@ -1124,26 +844,26 @@ class Installer:
                      file_type = ""
  
                  if base_name == "chrome-management-service":

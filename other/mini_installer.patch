@@ -266,7 +266,7 @@ index 37a9269380b70..66af5ffafc8d0 100644
        "$target_name.exe",
        "--path_7za",
 diff --git a/chrome/installer/mini_installer/chrome.release b/chrome/installer/mini_installer/chrome.release
-index 0f331c3e0f2a3..b1ecc1fc023fb 100644
+index 0f331c3e0f2a3..608b04fd21f93 100644
 --- a/chrome/installer/mini_installer/chrome.release
 +++ b/chrome/installer/mini_installer/chrome.release
 @@ -1,4 +1,4 @@
@@ -301,7 +301,7 @@ index 0f331c3e0f2a3..b1ecc1fc023fb 100644
  d3dcompiler_47.dll: %(VersionDir)s\
  eventlog_provider.dll: %(VersionDir)s\
  icudtl.dat: %(VersionDir)s\
-@@ -32,15 +37,48 @@ libGLESv2.dll: %(VersionDir)s\
+@@ -32,15 +37,45 @@ libGLESv2.dll: %(VersionDir)s\
  notification_helper.exe: %(VersionDir)s\
  optimization_guide_internal.dll: %(VersionDir)s\
  resources.pak: %(VersionDir)s\
@@ -326,9 +326,6 @@ index 0f331c3e0f2a3..b1ecc1fc023fb 100644
  #
  Extensions\*.*: %(VersionDir)s\Extensions\
  locales\*.pak: %(VersionDir)s\Locales
-+default_apps\*.crx: %(VersionDir)s\default_apps\
-+default_apps\external_extensions.json: %(VersionDir)s\default_apps\
-+
 +#
 +# ClearKey CDM sub-dir
 +#
@@ -350,7 +347,7 @@ index 0f331c3e0f2a3..b1ecc1fc023fb 100644
  
  #
  # VisualElements sub-dir.
-@@ -71,6 +109,8 @@ IwaKeyDistribution\manifest.json: %(VersionDir)s\IwaKeyDistribution\
+@@ -71,6 +106,8 @@ IwaKeyDistribution\manifest.json: %(VersionDir)s\IwaKeyDistribution\
  
  [HIDPI]
  chrome_200_percent.pak: %(VersionDir)s\

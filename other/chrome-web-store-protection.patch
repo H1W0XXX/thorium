@@ -300,7 +300,7 @@ index fc052a6b4b11a..74a6a185f0415 100644
  }
  
 diff --git a/chrome/browser/extensions/updater/extension_updater.cc b/chrome/browser/extensions/updater/extension_updater.cc
-index 05686804f06f0..2845266d66d51 100644
+index 05686804f06f0..bb235a8293677 100644
 --- a/chrome/browser/extensions/updater/extension_updater.cc
 +++ b/chrome/browser/extensions/updater/extension_updater.cc
 @@ -56,6 +56,7 @@
@@ -331,20 +331,19 @@ index 05686804f06f0..2845266d66d51 100644
          return true;
        }
      } else {
-@@ -427,6 +434,12 @@ void ExtensionUpdater::EraseUnupdatableIds(std::set<ExtensionId>& ids) const {
+@@ -427,6 +434,11 @@ void ExtensionUpdater::EraseUnupdatableIds(std::set<ExtensionId>& ids) const {
  }
  
  void ExtensionUpdater::CheckNow(CheckParams params) {
-+  if (!params.user_initiated &&
-+      !base::FeatureList::IsEnabled(
-+            extensions_features::kEnableExtensionAutoupdate)) {
-+    LOG(INFO) << "Extensions autoupdate is disabled.";
-+    return;
-+  }
++  const bool update_installed_extensions =
++      params.user_initiated ||
++      base::FeatureList::IsEnabled(
++          extensions_features::kEnableExtensionAutoupdate);
++
    std::unique_ptr<ScopedProfileKeepAlive> keep_alive =
        ScopedProfileKeepAlive::TryAcquire(
            profile_, ProfileKeepAliveOrigin::kExtensionUpdater);
-@@ -440,7 +453,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
+@@ -440,7 +452,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
    CHECK(pending_extension_manager_);
  
    int request_id = next_request_id_++;
@@ -353,7 +352,36 @@ index 05686804f06f0..2845266d66d51 100644
  
    EnsureDownloaderCreated();
  
-@@ -509,7 +522,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
+@@ -448,7 +460,12 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
+   std::set<ExtensionId> ids_to_update;
+   if (!params.ids.empty()) {
+     // Check just the provided set of extensions.
+-    ids_to_update.insert(params.ids.begin(), params.ids.end());
++    for (const ExtensionId& id : params.ids) {
++      if (update_installed_extensions ||
++          pending_extension_manager_->GetById(id)) {
++        ids_to_update.insert(id);
++      }
++    }
+   } else {
+     // Check pending and installed extensions.
+ 
+@@ -464,9 +481,11 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
+       ids_to_update.insert(id);
+     }
+ 
+-    // Include all installed extensions.
+-    for (const auto& e : registry_->GenerateInstalledExtensionsSet()) {
+-      ids_to_update.insert(e->id());
++    if (update_installed_extensions) {
++      for (const auto& extension :
++           registry_->GenerateInstalledExtensionsSet()) {
++        ids_to_update.insert(extension->id());
++    }
+     }
+   }
+ 
+@@ -509,7 +528,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
  
      // Note: If an extension is both installed and pending, but can't use
      // update_service, pending_info takes priority.
@@ -362,7 +390,7 @@ index 05686804f06f0..2845266d66d51 100644
        update_check_params.update_info[id] = GetExtensionUpdateData(id);
        update_check_params.update_info[id].is_corrupt_reinstall =
            is_corrupt_reinstall;
-@@ -521,6 +534,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
+@@ -521,6 +540,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
        InstallStageTrackerFactory::GetForBrowserContext(profile_)
            ->ReportInstallationStage(id,
                                      InstallStageTracker::Stage::DOWNLOADING);
@@ -371,7 +399,7 @@ index 05686804f06f0..2845266d66d51 100644
      } else if (pending_info) {
        InstallStageTrackerFactory::GetForBrowserContext(profile_)->ReportFailure(
            id, InstallStageTracker::FailureReason::DOWNLOADER_ADD_FAILED);
-@@ -672,7 +687,7 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
+@@ -672,7 +693,7 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
                                  InstallStageTracker::Stage::INSTALLING);
    UpdatePingData(file.extension_id, ping);
  
@@ -380,7 +408,7 @@ index 05686804f06f0..2845266d66d51 100644
  
    FetchedCRXFile fetched(file, file_ownership_passed, request_ids,
                           std::move(callback));
-@@ -683,6 +698,7 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
+@@ -683,6 +704,7 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
  
  bool ExtensionUpdater::GetPingDataForExtension(const ExtensionId& id,
                                                 DownloadPingData* ping_data) {
@@ -388,7 +416,7 @@ index 05686804f06f0..2845266d66d51 100644
    DCHECK(alive_);
    ping_data->rollcall_days =
        CalculatePingDaysForExtension(extension_prefs_->LastPingDay(id));
-@@ -797,7 +813,7 @@ bool ExtensionUpdater::CanUseUpdateService(
+@@ -797,7 +819,7 @@ bool ExtensionUpdater::CanUseUpdateService(
  void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {
    std::set<int> request_ids;
  
@@ -397,7 +425,7 @@ index 05686804f06f0..2845266d66d51 100644
            << crx_file.info.path.value();
  
    // The delegate is now responsible for cleaning up the temp file at
-@@ -1008,7 +1024,7 @@ void ExtensionUpdater::NotifyIfFinished(int request_id) {
+@@ -1008,7 +1030,7 @@ void ExtensionUpdater::NotifyIfFinished(int request_id) {
    if (!request.in_progress_ids.empty() || request.awaiting_update_service) {
      return;  // This request is not done yet.
    }

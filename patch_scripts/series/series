@@ -42,7 +42,7 @@ other/thorium-startup-logging.patch
 other/thorium-app-metadata-branding.patch
 other/thorium-theme-resources.patch
 other/thorium-app-vector-icons.patch
-other/default-apps-ublock-origin.patch
+other/preinstall-ublock-origin.patch
 other/bookmark-default-prefs.patch
 other/bookmark-dialog-default-folder.patch
 other/increase-bookmark-open-prompt-threshold.patch

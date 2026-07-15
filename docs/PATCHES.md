@@ -104,7 +104,7 @@ overlay-derived, or still need separate provenance review.
 - [`thorium-app-metadata-branding.patch`](../other/thorium-app-metadata-branding.patch)
 - [`thorium-theme-resources.patch`](../other/thorium-theme-resources.patch)
 - [`thorium-app-vector-icons.patch`](../other/thorium-app-vector-icons.patch)
-- [`default-apps-ublock-origin.patch`](../other/default-apps-ublock-origin.patch)
+- [`preinstall-ublock-origin.patch`](../other/preinstall-ublock-origin.patch) — Registers classic uBlock Origin in Chromium's first-profile preinstall provider without packaged `default_apps` data; locale restrictions remain limited to Chromium's own preinstalled apps.
 - [`bookmark-default-prefs.patch`](../other/bookmark-default-prefs.patch)
 - [`bookmark-dialog-default-folder.patch`](../other/bookmark-dialog-default-folder.patch)
 - [`increase-bookmark-open-prompt-threshold.patch`](../other/increase-bookmark-open-prompt-threshold.patch)

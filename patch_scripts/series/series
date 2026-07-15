@@ -48,6 +48,7 @@ other/bookmark-dialog-default-folder.patch
 other/increase-bookmark-open-prompt-threshold.patch
 other/thorium-browser-ui-default-prefs.patch
 other/tab-search-button-position.patch
+other/tab-search-button-pinning.patch
 other/dom-distiller-reader-mode.patch
 
 # 30 - Build graph, toolchain, and platform build behavior.

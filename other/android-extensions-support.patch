@@ -3577,7 +3577,7 @@ index 9297869323cde..d0f4dbf24b774 100644
  #endif
  
 diff --git a/components/webui/version/resources/about_version.html b/components/webui/version/resources/about_version.html
-index 9bfd2392452e6..5f87087dd4ea3 100644
+index 80dd4436fb4c9..253fe06e5622b 100644
 --- a/components/webui/version/resources/about_version.html
 +++ b/components/webui/version/resources/about_version.html
 @@ -131,7 +131,7 @@ about:version template page

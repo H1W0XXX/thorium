@@ -110,6 +110,7 @@ overlay-derived, or still need separate provenance review.
 - [`increase-bookmark-open-prompt-threshold.patch`](../other/increase-bookmark-open-prompt-threshold.patch)
 - [`thorium-browser-ui-default-prefs.patch`](../other/thorium-browser-ui-default-prefs.patch)
 - [`tab-search-button-position.patch`](../other/tab-search-button-position.patch) — Keeps standalone Tab Search on the physical right by default and provides a Thorium flag for left alignment without changing the optional combo button.
+- [`tab-search-button-pinning.patch`](../other/tab-search-button-pinning.patch) — Restores Pin/Unpin Tab Search in the tab-strip context menu and applies the pin preference to standalone left- or right-aligned Tab Search buttons as well as the optional combo button.
 - [`dom-distiller-reader-mode.patch`](../other/dom-distiller-reader-mode.patch)
 
 ### 30 - Build graph, toolchain, and platform build behavior.

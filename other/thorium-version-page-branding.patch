@@ -44,7 +44,7 @@ index 474768656bdae..0c107cb134ecb 100644
    font-family: monospace;
  }
 diff --git a/components/webui/version/resources/about_version.html b/components/webui/version/resources/about_version.html
-index 3b689206909bf..9bfd2392452e6 100644
+index 3b689206909bf..80dd4436fb4c9 100644
 --- a/components/webui/version/resources/about_version.html
 +++ b/components/webui/version/resources/about_version.html
 @@ -3,6 +3,7 @@
@@ -80,7 +80,7 @@ index 3b689206909bf..9bfd2392452e6 100644
          <div id="copyright">$i18n{copyright}</div>
 +        <br/>
 +          <div id="thor_version"><a target="_self" rel="noopener" href="chrome://resources/text/thorium_version.txt">THORIUM_VERSION.txt</a></div>
-+          <div id="thor_authors"><a target="_self" rel="noopener" href="chrome://resources/text/AUTHORS.txt">AUTHORS.txt</a></div>
++          <div id="thor_authors"><a target="_self" rel="noopener" href="chrome://authors/">AUTHORS.txt</a></div>
 +        <br/>
 +<if expr="not is_android and not is_ios">
 +        <!-- Thorium Mascot. -->

@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.cc b/chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.cc
-index 63985d1fed4c9..6330f92247dac 100644
+index 021ae254abc9e..3c1d24e875bd2 100644
 --- a/chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.cc
 +++ b/chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.cc
-@@ -333,13 +333,10 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
+@@ -334,13 +334,10 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
      new_tab_button_->GetViewAccessibility().SetName(
          l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
  

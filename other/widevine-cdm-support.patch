@@ -1,72 +1,70 @@
-diff --git a/LICENSE b/LICENSE
-index e711887a61478..9384e1b56d149 100644
---- a/LICENSE
-+++ b/LICENSE
-@@ -1,3 +1,5 @@
-+Copyright (c) 2023 Google LLC
-+
- Google LLC and its affiliates ("Google") own all legal right, title and
- interest in and to the content decryption module software ("Software") and
- related documentation, including any intellectual property rights in the
 diff --git a/README.chromium b/README.chromium
-index c0e22cb9ec196..6483e69973585 100644
+index c0e22cb9ec196..693240aefa530 100644
 --- a/README.chromium
 +++ b/README.chromium
-@@ -1,16 +1,18 @@
+@@ -1,10 +1,11 @@
  Name: Widevine Content Decryption Module
  Short Name: Widevine CDM
 -URL: https://chrome-internal.googlesource.com/chrome/deps/widevine/scripts.git
 -Version: N/A
 -Revision: c96f53fde16f37b1a6cc2b6c468af3c4a364f426
--Update Mechanism: Manual
--License: Commercial
 +URL: https://www.widevine.com
-+Version: 4.10.2830.0
-+Date: 2024-11-13
-+Revision: 6ae793a606aeed0d0f1c6f688117653710137744
++Version: 4.10.3050.0 (desktop; ChromeOS versions are architecture-specific)
++Date: 2026-07-12
++Revision: N/A
+ Update Mechanism: Manual
+-License: Commercial
 +License: By exception only
  License File: LICENSE
  Security Critical: yes
--Shipped: yes
- License Android Compatible: no
+ Shipped: yes
+@@ -12,5 +13,13 @@ License Android Compatible: no
  
  Description:
  This directory contains build files for integrating Widevine CDM into Chrome.
- No third-party files are checked in here. If you are interested in integrating
+-No third-party files are checked in here. If you are interested in integrating
 -Widevine CDM into your product, please visit https://www.widevine.com.
-+Widevine CDM into your product, please visit the URL above.
++Upstream Chromium does not include prebuilt Widevine CDM payloads. Thorium
++supplies platform payloads through its source overlay when
++bundle_widevine_cdm = true. To integrate Widevine CDM into another product,
++please visit the URL above.
 +
 +Local Modifications:
-+Prebuilt binaries for bundle_widevine_cdm = true
-\ No newline at end of file
++Desktop prebuilt payloads for bundle_widevine_cdm = true are synchronized from
++https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding at commit
++a5473a7f65a3aabb419d2b63b51de3c21aedf8d2. ChromeOS payload provenance is
++documented in cdm/chromeos/README.chromium.
 diff --git a/cdm/BUILD.gn b/cdm/BUILD.gn
-index 6d18f9fa16371..4406ee099b6e5 100644
+index 6d18f9fa16371..8ec51a6aed383 100644
 --- a/cdm/BUILD.gn
 +++ b/cdm/BUILD.gn
-@@ -1,4 +1,4 @@
--# Copyright 2014 The Chromium Authors
-+# Copyright 2026 The Chromium Authors and Alex313031
- # Use of this source code is governed by a BSD-style license that can be
- # found in the LICENSE file.
+@@ -26,6 +26,12 @@ buildflag_header("buildflags") {
+ }
  
-@@ -37,9 +37,14 @@ if (bundle_widevine_cdm) {
+ if (bundle_widevine_cdm) {
++  if (target_os == "linux" && target_cpu == "arm64") {
++    assert(widevine_root != ".",
++           "Bundled Linux ARM64 Widevine requires an explicit widevine_root " +
++               "containing a linux/arm64 payload.")
++  }
++
+   widevine_arch = target_cpu
+ 
+   widevine_cdm_root = "${widevine_root}/${target_os}/${widevine_arch}"
+@@ -37,6 +43,11 @@ if (bundle_widevine_cdm) {
    ]
  
    if (enable_widevine_cdm_host_verification) {
--    assert(is_win || is_mac)
-+    assert(target_os == "win" || is_mac)
++    assert(bundle_widevine_cdm_signature,
++           "CDM host verification requires the bundled CDM signature.")
++  }
++
++  if (bundle_widevine_cdm_signature) {
+     assert(is_win || is_mac)
      widevine_cdm_binary_files += [ "${widevine_cdm_root}/${cdm_file_name}.sig" ]
    }
-+
-+  if (target_os == "win") {
-+    assert(target_os == "win")
-+    widevine_cdm_binary_files += [ "${widevine_cdm_root}/${cdm_file_name}.lib" ]
-+  }
- }
- 
- source_set("headers") {
 diff --git a/cdm/widevine.gni b/cdm/widevine.gni
-index 927b2e4809cf7..1fe90a257f7ef 100644
+index 927b2e4809cf7..b3159c0ccf429 100644
 --- a/cdm/widevine.gni
 +++ b/cdm/widevine.gni
 @@ -1,4 +1,4 @@
@@ -84,40 +82,38 @@ index 927b2e4809cf7..1fe90a257f7ef 100644
 +  enable_widevine = !is_fuchsia
  }
  
- # Disable Widevine when running linux-chromeos.
+-# Disable Widevine when running linux-chromeos.
++# Enable Widevine for ThoriumOS/Linux-ChromeOS builds.
  if (is_chromeos && !is_chromeos_device) {
 -  enable_widevine = false
 +  enable_widevine = true
  }
  
  # Widevine CDM is available as a library CDM on the following platforms and
-@@ -26,7 +25,7 @@ if (is_chromeos && !is_chromeos_device) {
+@@ -25,7 +24,7 @@ if (is_chromeos && !is_chromeos_device) {
+ # supported via Android MediaDrm API.
  library_widevine_cdm_available =
      (is_chromeos &&
-      (target_cpu == "x64" || target_cpu == "arm" || target_cpu == "arm64")) ||
--    (target_os == "linux" && (target_cpu == "x64" || target_cpu == "arm64")) ||
-+    (target_os == "linux") ||
+-     (target_cpu == "x64" || target_cpu == "arm" || target_cpu == "arm64")) ||
++     (target_cpu == "x64" || target_cpu == "arm64")) ||
+     (target_os == "linux" && (target_cpu == "x64" || target_cpu == "arm64")) ||
      (target_os == "mac" && (target_cpu == "x64" || target_cpu == "arm64")) ||
      (target_os == "win" &&
-      (target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm64"))
-@@ -62,19 +61,19 @@ declare_args() {
+@@ -62,6 +61,13 @@ declare_args() {
    widevine_root = "."
  }
  
--# Enable Widevine CDM host verification, which will sign additional binaries
--# with Widevine certs and copy signature files as needed.
--enable_widevine_cdm_host_verification =
--    enable_library_widevine_cdm && enable_cdm_host_verification
--
- declare_args() {
-+  # Enable Widevine CDM host verification, which will sign additional binaries
-+  # with Widevine certs and copy signature files as needed.
-+  enable_widevine_cdm_host_verification =
-+      enable_library_widevine_cdm && enable_cdm_host_verification
++declare_args() {
++  # Copy a prebuilt CDM signature alongside a bundled Windows or macOS CDM.
++  # This does not enable or claim Widevine host verification.
++  bundle_widevine_cdm_signature =
++      bundle_widevine_cdm && (is_win || is_mac)
++}
 +
-   # If set, and Widevine CDM host verification signing failed due to no signing
-   # cert, the failure will be ignored. Otherwise the build process will fail.
-   # Set to false by default for official build to catch missing cert error.
+ # Enable Widevine CDM host verification, which will sign additional binaries
+ # with Widevine certs and copy signature files as needed.
+ enable_widevine_cdm_host_verification =
+@@ -74,7 +80,7 @@ declare_args() {
    # For developers building with "is_official_build" locally without Widevine
    # signing certs, please manually set `ignore_missing_widevine_signing_cert`
    # to true to suppress the error.

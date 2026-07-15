@@ -32,7 +32,6 @@ enable_widevine = true
 bundle_widevine_cdm = false
 enable_cdm_storage_id = false
 enable_rlz = false
-enable_widevine_cdm_host_verification = true
 ignore_missing_widevine_signing_cert = true
 enable_media_drm_storage = true
 enable_hangout_services_extension = false

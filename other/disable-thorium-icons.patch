@@ -754,6 +754,32 @@ index dc2df50dd75f8..f5aa0de7661c5 100644
    close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
    close_button->GetViewAccessibility().SetName(
        l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+diff --git a/ui/views/controls/button/md_text_button_with_down_arrow.cc b/ui/views/controls/button/md_text_button_with_down_arrow.cc
+index 4171cd3e9380a..887f198b5e94f 100644
+--- a/ui/views/controls/button/md_text_button_with_down_arrow.cc
++++ b/ui/views/controls/button/md_text_button_with_down_arrow.cc
+@@ -6,6 +6,7 @@
+ 
+ #include <utility>
+ 
++#include "base/command_line.h"
+ #include "ui/base/metadata/metadata_impl_macros.h"
+ #include "ui/base/ui_base_features.h"
+ #include "ui/gfx/color_utils.h"
+@@ -57,8 +58,11 @@ void MdTextButtonWithDownArrow::StateChanged(ButtonState old_state) {
+ void MdTextButtonWithDownArrow::SetDropArrowImage() {
+   SkColor drop_arrow_color = label()->GetEnabledColor();
+   auto drop_arrow_image = ui::ImageModel::FromVectorIcon(
+-      features::IsRoundedIconsEnabled() ? kArrowDropDownIcon
+-                                        : kArrowDropDownOldIcon,
++      base::CommandLine::ForCurrentProcess()->HasSwitch(
++          "disable-thorium-icons")
++          ? (features::IsRoundedIconsEnabled() ? kArrowDropDownIcon
++                                               : kArrowDropDownOldIcon)
++          : kArrowDropDownThoriumIcon,
+       drop_arrow_color, kDropdownArrowSize);
+   SetImageModel(Button::STATE_NORMAL, drop_arrow_image);
+ }
 diff --git a/ui/views/controls/menu/menu_item_view.cc b/ui/views/controls/menu/menu_item_view.cc
 index 559b43a5ee39d..d580c90c6cfa5 100644
 --- a/ui/views/controls/menu/menu_item_view.cc

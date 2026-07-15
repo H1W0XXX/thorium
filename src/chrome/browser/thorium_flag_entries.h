@@ -26,6 +26,15 @@
      "Enable a new \"hybrid\" UI, which restores many parts of the pre-Chrome Refresh 2023 UI. Good for people "
      "who find the new UI ugly or harder to use.",
      kOsDesktop, FEATURE_VALUE_TYPE(features::kThorium2024)},
+#if !BUILDFLAG(IS_ANDROID)
+    {"left-aligned-tab-search-button",
+     "Left-Aligned Tab Search Button",
+     "Places the standalone Tab Search button on the physical left side of "
+     "the tab strip. The button is on the right by default. This does not "
+     "control the Horizontal Tab Strip Combo Button.",
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(tabs::kThoriumLeftAlignedTabSearchButton)},
+#endif  // !BUILDFLAG(IS_ANDROID)
     {"restore-tab-button",
      "Restore Tab Button",
      "Enable a new toolbar button to restore your recently closed tabs.",

@@ -26,7 +26,7 @@ other/enable-hevc-ffmpeg-decoding.patch
 other/enable-webrtc-h265-l1t2-l1t3-by-default.patch
 other/enable-mpeg2-ac3-eac3-decoding.patch
 other/thorium-media-switches.patch
-other/widevine-cdm-host-verification.patch
+other/widevine-cdm-prebuilt-signatures.patch
 
 # 20 - Product defaults, identity, resources, branding, and browser preferences.
 other/thorium-default-api-keys.patch
@@ -47,6 +47,7 @@ other/bookmark-default-prefs.patch
 other/bookmark-dialog-default-folder.patch
 other/increase-bookmark-open-prompt-threshold.patch
 other/thorium-browser-ui-default-prefs.patch
+other/tab-search-button-position.patch
 other/dom-distiller-reader-mode.patch
 
 # 30 - Build graph, toolchain, and platform build behavior.
@@ -77,6 +78,7 @@ other/thorium-flags-registration.patch
 other/thorium-flags-page-branding.patch
 other/thorium-version-page-branding.patch
 other/thorium-vector-icons.patch
+other/thorium-views-vector-icons.patch
 other/thorium-app-menu-icons.patch
 other/prevent-url-elisions-by-default.patch
 other/disable-ai-entrypoints-by-default.patch

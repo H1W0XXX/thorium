@@ -21,8 +21,8 @@ overlay-derived, or still need separate provenance review.
 | [`enable-hevc-ffmpeg-decoding.patch`](../other/enable-hevc-ffmpeg-decoding.patch) | [StaZhu/enable-chromium-hevc-hardware-decoding](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding) Chromium-side HEVC enablement |
 | [`enable-mpeg2-ac3-eac3-decoding.patch`](../other/enable-mpeg2-ac3-eac3-decoding.patch) | MPEG2/AC3/EAC3 codec enablement derived from Chromium/Electron codec patch references, including [Muril-o/electron-chromium-codecs](https://github.com/Muril-o/electron-chromium-codecs); keep license review with FFmpeg changes |
 | [`ffmpeg-branding.patch`](../other/ffmpeg-branding.patch) | Thorium FFmpeg branding/config patch; relevant to bundled codec/license review |
-| [`widevine-cdm-support.patch`](../other/widevine-cdm-support.patch) | Widevine CDM support adapted from Chromium/Linux packaging references, including Ubuntu Chromium packaging |
-| [`widevine-cdm-host-verification.patch`](../other/widevine-cdm-host-verification.patch) | Thorium Widevine host verification behavior; relevant to bundled Widevine support |
+| [`widevine-cdm-support.patch`](../other/widevine-cdm-support.patch) | Widevine CDM integration and bundled-payload metadata; desktop payloads are synchronized from [StaZhu/enable-chromium-hevc-hardware-decoding](https://github.com/StaZhu/enable-chromium-hevc-hardware-decoding), ChromeOS payload provenance is tracked separately in the overlay, and redistribution requires separate Widevine license review |
+| [`widevine-cdm-prebuilt-signatures.patch`](../other/widevine-cdm-prebuilt-signatures.patch) | Packages prebuilt Windows/macOS CDM signature payloads independently of genuine Widevine host verification |
 | [`linux-widevine-cdm-locations.patch`](../other/linux-widevine-cdm-locations.patch) | Raspberry Pi / Linux Widevine location compatibility |
 | [`raspi-netflix-chromeos-ua.patch`](../other/raspi-netflix-chromeos-ua.patch) | Raspberry Pi Netflix ChromeOS UA compatibility |
 | [`llvm-optimized-toolchain-build.patch`](../other/llvm-optimized-toolchain-build.patch) | [RobRich999/Chromium_Clang](https://github.com/RobRich999/Chromium_Clang) LLVM optimized build-script work, adapted to use compatibility-safe tuning instead of an AVX2 ISA requirement |
@@ -87,7 +87,7 @@ overlay-derived, or still need separate provenance review.
 - [`enable-webrtc-h265-l1t2-l1t3-by-default.patch`](../other/enable-webrtc-h265-l1t2-l1t3-by-default.patch)
 - [`enable-mpeg2-ac3-eac3-decoding.patch`](../other/enable-mpeg2-ac3-eac3-decoding.patch)
 - [`thorium-media-switches.patch`](../other/thorium-media-switches.patch)
-- [`widevine-cdm-host-verification.patch`](../other/widevine-cdm-host-verification.patch)
+- [`widevine-cdm-prebuilt-signatures.patch`](../other/widevine-cdm-prebuilt-signatures.patch)
 
 ### 20 - Product defaults, identity, resources, branding, and browser preferences.
 
@@ -109,6 +109,7 @@ overlay-derived, or still need separate provenance review.
 - [`bookmark-dialog-default-folder.patch`](../other/bookmark-dialog-default-folder.patch)
 - [`increase-bookmark-open-prompt-threshold.patch`](../other/increase-bookmark-open-prompt-threshold.patch)
 - [`thorium-browser-ui-default-prefs.patch`](../other/thorium-browser-ui-default-prefs.patch)
+- [`tab-search-button-position.patch`](../other/tab-search-button-position.patch) — Keeps standalone Tab Search on the physical right by default and provides a Thorium flag for left alignment without changing the optional combo button.
 - [`dom-distiller-reader-mode.patch`](../other/dom-distiller-reader-mode.patch)
 
 ### 30 - Build graph, toolchain, and platform build behavior.
@@ -142,6 +143,7 @@ overlay-derived, or still need separate provenance review.
 - [`thorium-flags-page-branding.patch`](../other/thorium-flags-page-branding.patch)
 - [`thorium-version-page-branding.patch`](../other/thorium-version-page-branding.patch)
 - [`thorium-vector-icons.patch`](../other/thorium-vector-icons.patch)
+- [`thorium-views-vector-icons.patch`](../other/thorium-views-vector-icons.patch) — Registers Thorium-specific Views icons; runtime fallback is owned by `disable-thorium-icons.patch`.
 - [`thorium-app-menu-icons.patch`](../other/thorium-app-menu-icons.patch)
 - [`prevent-url-elisions-by-default.patch`](../other/prevent-url-elisions-by-default.patch)
 - [`disable-ai-entrypoints-by-default.patch`](../other/disable-ai-entrypoints-by-default.patch)

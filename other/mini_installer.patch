@@ -25,10 +25,10 @@ index 384521cdbea75..477f4af309754 100644
            An operating system error occurred during installation. Please download Chromium again.
          </message>
 diff --git a/chrome/installer/mini_installer/BUILD.gn b/chrome/installer/mini_installer/BUILD.gn
-index 37a9269380b70..4e07d55706d67 100644
+index 37a9269380b70..66af5ffafc8d0 100644
 --- a/chrome/installer/mini_installer/BUILD.gn
 +++ b/chrome/installer/mini_installer/BUILD.gn
-@@ -1,8 +1,8 @@
+@@ -1,8 +1,9 @@
 -# Copyright 2015 The Chromium Authors
 +# Copyright 2026 The Chromium Authors and Alex313031
  # Use of this source code is governed by a BSD-style license that can be
@@ -36,22 +36,28 @@ index 37a9269380b70..4e07d55706d67 100644
  
 -import("//build/config/compiler/compiler.gni")
 +import("//build/config/compiler_opt.gni")
++import("//build/config/win/manifest.gni")
  import("//build/config/python.gni")
  import("//build/config/ui.gni")
  import("//build/timestamp.gni")
-@@ -33,11 +33,6 @@ declare_args() {
+@@ -33,9 +34,13 @@ declare_args() {
    enable_uncompressed_archive = false
  }
  
 -config("mini_installer_compiler_flags") {
 -  # Disable buffer security checking.
 -  cflags = [ "/GS-" ]
--}
--
++windows_manifest("mini_installer_exe_manifest") {
++  sources = [
++    as_invoker_manifest,
++    common_controls_manifest,
++    default_compatibility_manifest,
++    "mini_installer_dpi.manifest",
++  ]
+ }
+ 
  source_set("lib") {
-   sources = [
-     "appid.h",
-@@ -58,6 +53,8 @@ source_set("lib") {
+@@ -58,6 +63,8 @@ source_set("lib") {
      "mini_installer.rc",
      "mini_installer_constants.cc",
      "mini_installer_constants.h",
@@ -60,7 +66,7 @@ index 37a9269380b70..4e07d55706d67 100644
      "mini_installer_resource.h",
      "mini_string.cc",
      "mini_string.h",
-@@ -68,19 +65,24 @@ source_set("lib") {
+@@ -68,19 +75,24 @@ source_set("lib") {
      "write_to_disk.h",
    ]
  
@@ -70,7 +76,7 @@ index 37a9269380b70..4e07d55706d67 100644
 -  configs -= [ "//build/config/compiler:default_init_stack_vars" ]
 -  configs += [ ":mini_installer_compiler_flags" ]
 +  deps = [
-+    ":mini_installer_version",
++    ":mini_installer_product_version",
 +    "//build:branding_buildflags",
 +    "//chrome/installer/util:strings",
 +  ]
@@ -86,7 +92,7 @@ index 37a9269380b70..4e07d55706d67 100644
 -process_version_rc_template("version") {
 -  template_file = "mini_installer_exe_version.rc.version"
 -  output = "$root_out_dir/mini_installer_exe_version.rc"
-+process_version("mini_installer_version") {
++process_version("mini_installer_product_version") {
 +  process_only = true
 +  visibility = [ ":*" ]
 +  template_file = "mini_installer_version.h.template"
@@ -95,7 +101,7 @@ index 37a9269380b70..4e07d55706d67 100644
  }
  
  source_set("unit_tests") {
-@@ -147,7 +149,7 @@ action("mini_installer_archive") {
+@@ -147,7 +159,7 @@ action("mini_installer_archive") {
    inputs = [
      "$root_out_dir/chrome.dll",
      "$root_out_dir/chrome_elf.dll",
@@ -104,7 +110,7 @@ index 37a9269380b70..4e07d55706d67 100644
      "$root_out_dir/locales/en-US.pak",
      "$root_out_dir/setup.exe",
      "//chrome/tools/build/win/makecab.py",
-@@ -179,9 +181,6 @@ action("mini_installer_archive") {
+@@ -179,9 +191,6 @@ action("mini_installer_archive") {
      rebase_path(setup_runtime_deps, root_build_dir),
      "--build_time",
      build_timestamp,
@@ -114,7 +120,7 @@ index 37a9269380b70..4e07d55706d67 100644
    ]
  
    deps = [
-@@ -250,13 +249,11 @@ source_set("mini_installer_sources") {
+@@ -250,13 +259,11 @@ source_set("mini_installer_sources") {
    sources = [ "mini_installer_exe_main.cc" ]
    deps = [
      ":lib",
@@ -132,7 +138,7 @@ index 37a9269380b70..4e07d55706d67 100644
  }
  
  copy("copy_signing") {
-@@ -267,66 +264,93 @@ copy("copy_signing") {
+@@ -267,66 +274,73 @@ copy("copy_signing") {
  # Generates a mini_installer executable containing the resources provided in the
  # caller's `rc_file`.
  template("generate_mini_installer") {
@@ -194,7 +200,8 @@ index 37a9269380b70..4e07d55706d67 100644
        ":mini_installer_archive",
        ":mini_installer_sources",
 -      ":version",
-       "//build/win:default_exe_manifest",
+-      "//build/win:default_exe_manifest",
++      ":mini_installer_exe_manifest",
      ]
 -
 -    # In general, mini_installer tries to avoid depending on the C++ standard
@@ -218,7 +225,6 @@ index 37a9269380b70..4e07d55706d67 100644
    }
  }
  
--generate_mini_installer("mini_installer") {
 +_thorium_mini_installer_target = "thorium_mini_installer"
 +if (current_cpu == "arm64") {
 +  _thorium_mini_installer_target = "thorium_ARM64_installer"
@@ -227,31 +233,11 @@ index 37a9269380b70..4e07d55706d67 100644
 +      "thorium_${thorium_windows_installer_label}_mini_installer"
 +}
 +
-+generate_mini_installer("mini_installer_bin") {
+ generate_mini_installer("mini_installer") {
    rc_file = packed_files_rc_file
-+  output_name = "mini_installer"
++  output_name = _thorium_mini_installer_target
 +  internal_name = _thorium_mini_installer_target
 +  original_filename = "${_thorium_mini_installer_target}.exe"
-+  version_output = "$root_out_dir/mini_installer_exe_version.rc"
-+}
-+
-+copy("named_mini_installer_exe") {
-+  sources = [ "$root_out_dir/mini_installer.exe" ]
-+  outputs = [ "$root_out_dir/$_thorium_mini_installer_target.exe" ]
-+  deps = [ ":mini_installer_bin" ]
-+}
-+
-+group("mini_installer") {
-+  deps = [
-+    ":named_mini_installer_exe",
-+    ":named_mini_installer_pdb",
-+  ]
-+}
-+
-+copy("named_mini_installer_pdb") {
-+  sources = [ "$root_out_dir/mini_installer.exe.pdb" ]
-+  outputs = [ "$root_out_dir/$_thorium_mini_installer_target.exe.pdb" ]
-+  deps = [ ":mini_installer_bin" ]
  }
  
  if (enable_uncompressed_archive) {
@@ -262,6 +248,23 @@ index 37a9269380b70..4e07d55706d67 100644
    }
  }
  
+@@ -353,14 +367,14 @@ if (!(is_component_build && is_debug && target_cpu == "x86") &&
+             root_out_dir)
+     inputs = [
+       "$root_out_dir/" + alternate_version_generator_rel_path,
+-      "$root_out_dir/mini_installer.exe",
++      "$root_out_dir/${_thorium_mini_installer_target}.exe",
+     ]
+     outputs = [ "$root_out_dir/$target_name.exe" ]
+     args = [
+       "--alternate_version_generator",
+       alternate_version_generator_rel_path,
+       "--mini_installer",
+-      "mini_installer.exe",
++      "${_thorium_mini_installer_target}.exe",
+       "--out",
+       "$target_name.exe",
+       "--path_7za",
 diff --git a/chrome/installer/mini_installer/chrome.release b/chrome/installer/mini_installer/chrome.release
 index 0f331c3e0f2a3..b1ecc1fc023fb 100644
 --- a/chrome/installer/mini_installer/chrome.release
@@ -442,7 +445,7 @@ index fc23ed716a20e..e18eec1993f04 100644
  
  }  // namespace mini_installer
 diff --git a/chrome/installer/mini_installer/mini_installer.cc b/chrome/installer/mini_installer/mini_installer.cc
-index 6aae112356a1a..d480f91cfd284 100644
+index 6aae112356a1a..c27871411dcb6 100644
 --- a/chrome/installer/mini_installer/mini_installer.cc
 +++ b/chrome/installer/mini_installer/mini_installer.cc
 @@ -1,4 +1,4 @@
@@ -508,7 +511,7 @@ index 6aae112356a1a..d480f91cfd284 100644
  #include "chrome/installer/mini_installer/regkey.h"
  #include "chrome/installer/mini_installer/write_to_disk.h"
  
-@@ -709,21 +710,247 @@ bool GetWorkDir(HMODULE module,
+@@ -709,21 +710,246 @@ bool GetWorkDir(HMODULE module,
           CreateWorkDir(base_path.get(), work_dir, exit_code);
  }
  
@@ -620,13 +623,13 @@ index 6aae112356a1a..d480f91cfd284 100644
 +  page.cbSize = sizeof(page);
 +  page.hwndParent = state->dialog;
 +  page.hInstance = state->module;
-+  page.dwFlags =
-+      TDF_USE_HICON_MAIN | TDF_CAN_BE_MINIMIZED | TDF_SIZE_TO_CONTENT;
++  page.dwFlags = TDF_CAN_BE_MINIMIZED | TDF_SIZE_TO_CONTENT;
 +  page.dwCommonButtons = success ? TDCBF_OK_BUTTON : TDCBF_CLOSE_BUTTON;
 +  page.nDefaultButton = success ? IDOK : IDCLOSE;
-+  page.hMainIcon = LoadIcon(
-+      state->module, MAKEINTRESOURCE(success ? IDI_SUCCESS : IDI_FAILED));
-+  page.pszWindowTitle = state->result_title.c_str();
++  page.pszMainIcon =
++      success ? MAKEINTRESOURCE(IDI_MINI_INSTALLER) : TD_ERROR_ICON;
++  page.pszWindowTitle = state->title.c_str();
++  page.pszMainInstruction = state->result_title.c_str();
 +  page.pszContent = state->result_message.c_str();
 +  page.pfCallback = TaskDialogCallbackProc;
 +  page.lpCallbackData = reinterpret_cast<LONG_PTR>(state);
@@ -726,13 +729,12 @@ index 6aae112356a1a..d480f91cfd284 100644
 +  TASKDIALOGCONFIG dialog = {};
 +  dialog.cbSize = sizeof(dialog);
 +  dialog.hInstance = module;
-+  dialog.dwFlags = TDF_SHOW_MARQUEE_PROGRESS_BAR | TDF_USE_HICON_MAIN |
-+                   TDF_CAN_BE_MINIMIZED | TDF_SIZE_TO_CONTENT |
-+                   TDF_CALLBACK_TIMER;
++  dialog.dwFlags = TDF_SHOW_MARQUEE_PROGRESS_BAR | TDF_CAN_BE_MINIMIZED |
++                   TDF_SIZE_TO_CONTENT | TDF_CALLBACK_TIMER;
 +  dialog.cButtons = static_cast<UINT>(std::size(state.buttons));
 +  dialog.pButtons = state.buttons;
 +  dialog.nDefaultButton = IDNO;
-+  dialog.hMainIcon = LoadIcon(module, MAKEINTRESOURCE(IDI_MINI_INSTALLER));
++  dialog.pszMainIcon = MAKEINTRESOURCE(IDI_MINI_INSTALLER);
 +  dialog.pszWindowTitle = state.title.c_str();
 +  dialog.pszContent = state.prompt.c_str();
 +  dialog.pfCallback = TaskDialogCallbackProc;
@@ -766,7 +768,7 @@ index 6aae112356a1a..d480f91cfd284 100644
    // First get a path where we can extract payload
    PathString base_path;
    if (!GetWorkDir(module, &base_path, &exit_code)) {
-@@ -771,4 +998,22 @@ ProcessExitResult WMain(HMODULE module) {
+@@ -771,4 +997,22 @@ ProcessExitResult WMain(HMODULE module) {
    return exit_code;
  }
  
@@ -789,19 +791,6 @@ index 6aae112356a1a..d480f91cfd284 100644
 +}
 +
  }  // namespace mini_installer
-diff --git a/chrome/installer/mini_installer/mini_installer.rc b/chrome/installer/mini_installer/mini_installer.rc
-index fff6a53c69130..0c1530fb3eded 100644
---- a/chrome/installer/mini_installer/mini_installer.rc
-+++ b/chrome/installer/mini_installer/mini_installer.rc
-@@ -30,6 +30,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
- // Icon with lowest ID value placed first to ensure application icon
- // remains consistent on all systems.
- IDI_MINI_INSTALLER      ICON                    "mini_installer.ico"
-+IDI_SUCCESS             ICON                    "success.ico"
-+IDI_FAILED              ICON                    "failed.ico"
- 
- #ifdef APSTUDIO_INVOKED
- /////////////////////////////////////////////////////////////////////////////
 diff --git a/chrome/installer/mini_installer/mini_installer_constants.cc b/chrome/installer/mini_installer/mini_installer_constants.cc
 index c2a03ccbb6460..e2e8a628e5eb1 100644
 --- a/chrome/installer/mini_installer/mini_installer_constants.cc
@@ -837,6 +826,22 @@ index c2a03ccbb6460..e2e8a628e5eb1 100644
  #endif
  
  }  // namespace mini_installer
+diff --git a/chrome/installer/mini_installer/mini_installer_dpi.manifest b/chrome/installer/mini_installer/mini_installer_dpi.manifest
+new file mode 100644
+index 0000000000000..a275d7f9f9c57
+--- /dev/null
++++ b/chrome/installer/mini_installer/mini_installer_dpi.manifest
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
++<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"
++          xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
++  <asmv3:application>
++    <asmv3:windowsSettings>
++      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true/pm</dpiAware>
++      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2, PerMonitor</dpiAwareness>
++    </asmv3:windowsSettings>
++  </asmv3:application>
++</assembly>
 diff --git a/chrome/installer/mini_installer/mini_installer_exe_main.cc b/chrome/installer/mini_installer/mini_installer_exe_main.cc
 index aff0370044046..e0d98de9436fa 100644
 --- a/chrome/installer/mini_installer/mini_installer_exe_main.cc
@@ -1325,20 +1330,6 @@ index 0000000000000..9dbc294ae0ad3
 +}  // namespace mini_installer
 +
 +#endif  // CHROME_INSTALLER_MINI_INSTALLER_MINI_INSTALLER_LOCALIZATION_H_
-diff --git a/chrome/installer/mini_installer/mini_installer_resource.h b/chrome/installer/mini_installer/mini_installer_resource.h
-index 9155eba56943f..c974f43f5ee7c 100644
---- a/chrome/installer/mini_installer/mini_installer_resource.h
-+++ b/chrome/installer/mini_installer/mini_installer_resource.h
-@@ -10,7 +10,8 @@
- // Used by mini_installer.rc
- //
- #define IDI_MINI_INSTALLER 107
--#define IDC_STATIC -1
-+#define IDI_SUCCESS        108
-+#define IDI_FAILED         109
- 
- // The identifier of the RCDATA resource holding the version of Chrome on which
- // a differential update is based. The resource is not present for full
 diff --git a/chrome/installer/mini_installer/mini_installer_version.h.template b/chrome/installer/mini_installer/mini_installer_version.h.template
 new file mode 100644
 index 0000000000000..8c97032d04a87

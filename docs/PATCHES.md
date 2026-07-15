@@ -140,6 +140,8 @@ overlay-derived, or still need separate provenance review.
 - [`disable-default-browser-prompt.patch`](../other/disable-default-browser-prompt.patch)
 - [`thorium-chrome-urls-page.patch`](../other/thorium-chrome-urls-page.patch)
 - [`thorium-flags-registration.patch`](../other/thorium-flags-registration.patch)
+- [`thorium-internal-url-scheme-alias.patch`](../other/thorium-internal-url-scheme-alias.patch) — Accepts `thorium://` as a standard user-facing alias and canonicalizes it through a BrowserURLHandler pre-rewrite before Chromium's normal platform, policy, extension, and WebUI handlers run, without granting the alias WebUI, CORS, service-worker, or secure-scheme privileges.
+- [`thorium-internal-url-scheme-branding.patch`](../other/thorium-internal-url-scheme-branding.patch) — Provides default-enabled, flag-controlled `thorium://` presentation in desktop and Android address, suggestion, copy, and hover-card surfaces, plus desktop status and Tab Search surfaces, while retaining canonical internal URLs.
 - [`thorium-flags-page-branding.patch`](../other/thorium-flags-page-branding.patch)
 - [`thorium-version-page-branding.patch`](../other/thorium-version-page-branding.patch)
 - [`thorium-vector-icons.patch`](../other/thorium-vector-icons.patch)

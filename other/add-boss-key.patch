@@ -31,10 +31,10 @@ index f050f0283ec03..9caf62a8198df 100644
      <if expr="not is_chromeos">
        <message name="IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL" desc="Label for the checkbox that forces Chrome to render via graphics acceleration (GPU) when available.">
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 0944c5f707fa3..5aac5d6482401 100644
+index 086c55c204ae6..99d70b84f6e06 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -1193,6 +1193,11 @@ source_set("core") {
+@@ -1195,6 +1195,11 @@ source_set("core") {
    }
  
    if (is_win || is_mac || is_linux) {

@@ -26,6 +26,13 @@
      "Enable a new \"hybrid\" UI, which restores many parts of the pre-Chrome Refresh 2023 UI. Good for people "
      "who find the new UI ugly or harder to use.",
      kOsDesktop, FEATURE_VALUE_TYPE(features::kThorium2024)},
+    {"thorium-internal-url-scheme",
+     "Use thorium:// for internal URLs",
+     "Displays and copies internal browser URLs using the thorium:// alias. "
+     "The canonical internal scheme remains chrome://, and both schemes are "
+     "accepted.",
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kThoriumInternalUrlSchemeBranding)},
 #if !BUILDFLAG(IS_ANDROID)
     {"left-aligned-tab-search-button",
      "Left-Aligned Tab Search Button",

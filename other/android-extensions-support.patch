@@ -713,10 +713,10 @@ index ddc44638de809..2b275e79d9fe1 100644
            <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON" file="google_chrome/webstore_icon.png" />
            <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON_16" file="google_chrome/webstore_icon_16.png" />
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 69fd4abcc0376..6d9f4f9085b72 100644
+index 53a6fa4fad4ee..3b8cd1ce97df2 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -4999,7 +4999,7 @@ static_library("browser") {
+@@ -5001,7 +5001,7 @@ static_library("browser") {
  
    # TODO(https://crbug.com/356905053): Add more dependencies here and merge this
    # block with the `enable_extensions` block above.
@@ -725,7 +725,7 @@ index 69fd4abcc0376..6d9f4f9085b72 100644
      sources += [
        # TODO(https://crbug.com/356905053): These files are temporary workarounds
        # allow for a lightweight extensions runtime in desktop-android builds.
-@@ -5460,7 +5460,7 @@ group("browser_generated_files") {
+@@ -5462,7 +5462,7 @@ group("browser_generated_files") {
            [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
      }
    }
@@ -1121,10 +1121,10 @@ index b636ad2726268..370bfede7be7c 100644
    registry.AddGlobal<tracked_element::mojom::TrackedElementHandler>(
        base::BindRepeating(&BindTrackedElementHandler));
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index dd270782fc2ac..af9fe0160dc7c 100644
+index 2dbeedb21012b..204c6a2422059 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -4408,7 +4408,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
+@@ -4409,7 +4409,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
      // TODO(wenz): This should instead proceed with the selected certificate
      // when there are matching certificates in the OS.
  #if BUILDFLAG(ENABLE_EXTENSIONS) && \
@@ -1133,7 +1133,7 @@ index dd270782fc2ac..af9fe0160dc7c 100644
      if (matching_certificates.empty() && nonmatching_certificates.empty()) {
        extensions::ProcessMap* process_map =
            extensions::ProcessMap::Get(profile);
-@@ -4701,7 +4701,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
+@@ -4702,7 +4702,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
  // Fill font preferences. These are not registered on Android unless we're built
  // with extensions (the chrome.fontSettings API can change these).
  // - http://crbug.com/40337093, http://crbug.com/41304476.
@@ -1523,7 +1523,7 @@ index 0033475ec1ee3..f4ff471feb4b1 100644
    // profile. This is temporary for until extensions are ready for dogfooding.
    // TODO(crbug.com/422307625): Remove this check once extensions are ready for
 diff --git a/chrome/browser/extensions/extension_tab_util.cc b/chrome/browser/extensions/extension_tab_util.cc
-index 6238051f9a215..9cbc079533775 100644
+index cbc8416dde6c8..6c5219f3e10b9 100644
 --- a/chrome/browser/extensions/extension_tab_util.cc
 +++ b/chrome/browser/extensions/extension_tab_util.cc
 @@ -446,8 +446,10 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
@@ -1538,7 +1538,7 @@ index 6238051f9a215..9cbc079533775 100644
      }
    }
  
-@@ -1132,7 +1134,12 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
+@@ -1133,7 +1135,12 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
  void ExtensionTabUtil::ForEachTab(
      base::RepeatingCallback<void(WebContents*)> callback) {
    tabs::ForEachTabInterface([&callback](tabs::TabInterface* tab) {
@@ -1643,10 +1643,10 @@ index 7b11234d3ea85..a50dd98b9a0ae 100644
      "Enable Extensions Menu Teardown Fix";
  inline constexpr char kEnableExtensionsMenuTeardownFixDescription[] =
 diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-index 94c2191e6dcd0..4662d0f100603 100644
+index 64cf1db262a92..aa822883d9af7 100644
 --- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 +++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-@@ -773,7 +773,10 @@ public abstract class ChromeFeatureList {
+@@ -775,7 +775,10 @@ public abstract class ChromeFeatureList {
      public static final CachedFlag sAndroidNewMediaPicker =
              newCachedFlag(ANDROID_NEW_MEDIA_PICKER, true);
      public static final CachedFlag sAndroidOpenIncognitoAsWindow =
@@ -1658,7 +1658,7 @@ index 94c2191e6dcd0..4662d0f100603 100644
      public static final CachedFlag sAndroidOpenIncognitoAsWindowRestrictions =
              newCachedFlag(ANDROID_OPEN_INCOGNITO_AS_WINDOW_RESTRICTIONS, true);
      public static final CachedFlag sAndroidPageInfoAsAppMenuItem =
-@@ -900,7 +903,7 @@ public abstract class ChromeFeatureList {
+@@ -902,7 +905,7 @@ public abstract class ChromeFeatureList {
      public static final CachedFlag sChromeItemPickerUi =
              newCachedFlag(CHROME_ITEM_PICKER_UI, /* defaultValue= */ false);
      public static final CachedFlag sChromeNativeUrlOverriding =
@@ -1667,7 +1667,7 @@ index 94c2191e6dcd0..4662d0f100603 100644
      public static final CachedFlag sClampAutomotiveScaling =
              newCachedFlag(CLAMP_AUTOMOTIVE_SCALING, true);
      public static final CachedFlag sClankStartupLatencyInjection =
-@@ -1120,7 +1123,7 @@ public abstract class ChromeFeatureList {
+@@ -1122,7 +1125,7 @@ public abstract class ChromeFeatureList {
              newCachedFlag(POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND, true);
      public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
      public static final CachedFlag sProtectRecentlyVisibleTab =
@@ -2988,7 +2988,7 @@ index a2462b2ed1fe5..b122ba270700e 100644
          "$root_gen_dir/chrome/discards_resources.pak",
          "$root_gen_dir/chrome/management_resources.pak",
 diff --git a/chrome/common/chrome_features.cc b/chrome/common/chrome_features.cc
-index f5750e3926b8b..cbffb663e2752 100644
+index 3862b617276ed..57218d635bf2a 100644
 --- a/chrome/common/chrome_features.cc
 +++ b/chrome/common/chrome_features.cc
 @@ -901,7 +901,7 @@ extern const base::FeatureParam<std::string> kGlicCaaGuestRedirectPatterns{

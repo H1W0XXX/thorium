@@ -185,10 +185,10 @@ index 8ed4691490878..9d98640911fee 100644
            safety_hub::SafetyHubModuleType::EXTENSIONS);
    return RespondNow(NoArguments());
 diff --git a/chrome/browser/extensions/extension_tab_util.cc b/chrome/browser/extensions/extension_tab_util.cc
-index 9cbc079533775..54f35d334eea5 100644
+index 6c5219f3e10b9..16b9eebb2464e 100644
 --- a/chrome/browser/extensions/extension_tab_util.cc
 +++ b/chrome/browser/extensions/extension_tab_util.cc
-@@ -1152,7 +1152,7 @@ bool ExtensionTabUtil::OpenOptionsPageFromWebContents(
+@@ -1153,7 +1153,7 @@ bool ExtensionTabUtil::OpenOptionsPageFromWebContents(
    if (!url) {
      return false;
    }

@@ -773,10 +773,10 @@ index b669d4f3ee5f3..5b8bb04a2fa99 100644
        "views/safe_browsing/tailored_security_desktop_dialog_manager.h",
        "views/safe_browsing/tailored_security_unconsented_modal.cc",
 diff --git a/chrome/browser/ui/browser.cc b/chrome/browser/ui/browser.cc
-index efb171b64f784..8d8fb6e6088de 100644
+index cf6ccbc1d44f7..677fc6547be6c 100644
 --- a/chrome/browser/ui/browser.cc
 +++ b/chrome/browser/ui/browser.cc
-@@ -1003,6 +1003,13 @@ std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {
+@@ -1004,6 +1004,13 @@ std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {
    return GetStatusBubbles();
  }
  

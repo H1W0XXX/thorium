@@ -127,10 +127,10 @@ index 1c4952ef447da..a20b39920c956 100644
  namespace content {
  class WebUI;
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 5aac5d6482401..69fd4abcc0376 100644
+index 99d70b84f6e06..53a6fa4fad4ee 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -4295,12 +4295,10 @@ static_library("browser") {
+@@ -4297,12 +4297,10 @@ static_library("browser") {
        deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]
      }
  

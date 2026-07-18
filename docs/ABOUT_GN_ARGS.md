@@ -26,8 +26,6 @@ __v8_target_cpu__ &#35; What CPU architecture we are building V8 with. Should no
 
 ## __Special__
 
-__use_polly__ &#35; Whether to use Polly optimizations during the linking stage. Disabled by default.
-
 __is_raspi__ &#35; Whether to enable Raspberry Pi specific optimizations. Only valid for arm64 targets.
 
 __is_thorium__ &#35; Whether this is a Thorium build or Chromium build. Set to true in Thorium. When set to false, it does not build the custom top bar icons and other icons used throughout the UI. The main logo is unaffected by this arg.
@@ -48,7 +46,7 @@ __dcheck_always_on__ &#35; Set whether to enable DCHECK, regardless of is_debug 
 
 exclude_unwind_tables &#35; Set whether to enable unwinding tables, regardless of is_debug or is_official_build. Enabled in Thorium for performance/size except for Debug builds.
 
-__enable_iterator_debugging__ &#35; Set whether C++ iterator debugging is enabled. Only applicable if is_debug is true.
+__enable_iterator_debugging__ &#35; Set whether C++ iterator debugging is enabled.
 
 __disable_fieldtrial_testing_config__ &#35; Set whether to disable fieldtrials. Disabled for stability, privacy, and reproducibility in Thorium. Decreases the number of variations at chrome://version See > https://chromium.googlesource.com/chromium/src/+/master/testing/variations/README.md
 
@@ -64,7 +62,7 @@ __enable_nacl__ &#35; Set whether Native Client (NaCl) is built. Disabled in Tho
 
 __optimize_webui__ &#35; Set whether WebUI components are optimized. Uses polymer-bundler to combine/compress HTML5 resources. See > https://chromium.googlesource.com/chromium/src/+/HEAD/docs/optimizing_web_uis.md Enabled in Thorium for performance.
 
-__enable_webui_tab_strip__ &#35; Set whether the Tab Strip, and some parts of the top bar (Top Chrome) are built using WebUI technologies. Should always be enabled, except on certain old linux distros.
+<!-- __enable_webui_tab_strip__ &#35; Set whether the Tab Strip, and some parts of the top bar (Top Chrome) are built using WebUI technologies. Should always be enabled, except on certain old linux distros. -->
 
 __use_lld__ &#35; Use LLVM lld instead of GNU ld for linking. Should always be enabled unless you are using another linker like MOLD or building with GCC.
 
@@ -100,7 +98,7 @@ __enable_hls_demuxer__ &#35; Enables HLS media demuxing. &#35; INCOMPLETE upstre
 
 __enable_ink__ &#35; Enable experimental Ink (PDF Annotation) on CrOS. Breaks non-ChromiumOS builds. &#35; NOTE: Bug filed by me upstream.
 
-__enable_discovery__ &#35; Enable the Discovery SWA (System Web App) on CrOS. Has no effect on non-ChromiumOS builds. Only fully works on internal ChromeOS builds.
+<!-- __enable_discovery__ &#35; Enable the Discovery SWA (System Web App) on CrOS. Has no effect on non-ChromiumOS builds. Only fully works on internal ChromeOS builds. -->
 
 __enable_cros_media_app__ &#35; Enable the CrOS Media App, a native app for viewing media on ChromiumOS, to replace the native Files App views component. Breaks non-ChromiumOS builds. Should be enabled in ThoriumOS. &#35; NOTE: Bug filed by me upstream.
 
@@ -112,9 +110,9 @@ __clang_use_chrome_plugins__ &#35; Whether to use Chromium specific plugins in t
 
 __enable_ffmpeg_video_decoders__ &#35; Set whether software ffmpeg video decoders are enabled. Should be set to true. Used in Thorium as a fallback for all platforms when a hardware decoder, I.E. VAAPI or VDPAU cannot be used.
 
-__is_component_ffmpeg__ &#35; Builds ffmpeg as a shared library even when is_component_build is false or is_official build is true. Enabled on Linux, so users can swap out libffmpeg.so for a FOSS one or different one, I.E a different version or from something like Opera or Vivaldi for extra Codec support. &#35; NOTE: Should be disabled on Mac, because building the installer will fail.
+__is_component_ffmpeg__ &#35; Builds ffmpeg as a shared library even when is_component_build is false or is_official_build is true. Disabled in Thorium to keep ffmpeg linked into the browser/framework and avoid platform-specific packaging problems with standalone libffmpeg/ffmpeg.dll files. Codec support is controlled by ffmpeg branding and media codec patches instead.
 
-__use_webaudio_pffft__ &#35; Use the pffft library for computing FFT's in audio streams. Enabled in Thorium for performance EXCEPT on MacOS, because the native FFT library there is much faster. See > https://bitbucket.org/jpommier/pffft/src
+<!-- __use_webaudio_pffft__ &#35; Use the pffft library for computing FFT's in audio streams. Enabled in Thorium for performance EXCEPT on MacOS, because the native FFT library there is much faster. See > https://bitbucket.org/jpommier/pffft/src -->
 
 __use_vaapi__ &#35; Set the availability of VAAPI in Chromium. Should always be enabled in Thorium, except on Windows.
 
@@ -128,7 +126,7 @@ __enable_media_drm_storage__ &#35; Enable whether Widevine can use LocalStorage 
 
 __enable_media_overlay__ &#35; Set whether certain media overlays, I.E. volume bar, etc. are enabled. Enabled in Thorium for useability.
 
-__enable_hangout_services_extension__ &#35; Enables building the Hangouts component extension for Chromium/ChromiumOS. Enabled in Thorium for feature parity with Chrome. Should be enabled on ThoriumOS.
+__enable_hangout_services_extension__ &#35; Enables building the legacy Hangouts component extension for Chromium/ChromiumOS. Disabled in Thorium because Google Hangouts has been retired and the extension is no longer needed.
 
 __rtc_use_h264__ &#35; Enable WebRTC (Real-Time Communication) to use H.264 for transmission/demuxing. Must be used with proprietary_codecs = true and ffmpeg_branding set to "Chrome" or "Chromeos". Enabled in Thorium for useability.
 
@@ -170,4 +168,4 @@ __init_stack_vars_zero__ &#35; Not entirely sure what this does, but enabled at 
 
 __chrome_pgo_phase__ &#35; Set the implementation of PGO in Chromium. Options are: 0 (none), 1 (Instrumentation Phase Only), and 2 (Full PGO). 1 and 2 requires setting a *.profdata file for the platform below. Thorium uses 2, except for Debug builds. 1 should only be used when profiling. Cannot be enabled on ChromiumOS/ThoriumOS. Can be disabled for faster compilation. Disabled for Debug builds. See > https://en.wikipedia.org/wiki/Profile-guided_optimization
 
-__pgo_data_path__ &#35; Set the full path to the *.profdata file for PGO. Downloaded when running trunk.sh in Thorium. Disabled in Debug builds and ThoriumOS.
+__pgo_data_path__ &#35; Set the full path to the *.profdata file for PGO. Downloaded when running trunk.py in Thorium. Disabled in Debug builds and ThoriumOS.

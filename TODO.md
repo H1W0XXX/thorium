@@ -9,6 +9,15 @@
  - For ChromeOS only: If you plan on adding a new accelerator and want it
  displayed in the Shortcuts app, please follow the instructions at: `ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h`.
 
+&#45; Review the macOS 26 app icon pipeline.
+
+
+&#45; Clean up the main Thorium repository.
+
+&#45; Update Flatpak directory.
+
+&#45; Resolve issues raised on GitHub.
+
 ### Notes to self
 
 ## .grd text replacements (search with grep), because there are a few places we want to tweak some strings.

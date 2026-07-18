@@ -10,10 +10,6 @@ for path in chrome chrome_crashpad_handler icudtl.dat *.so libvulkan.so.1 *.pak 
 done
 popd
 
-# Place the proprietary libffmpeg in the extension path, then overwrite it with the free one.
-install -Dm 755 out/ReleaseFree/libffmpeg.so /app/chromium/libffmpeg.so
-install -Dm 755 out/Release/libffmpeg.so /app/chromium/nonfree-codecs/lib/libffmpeg.so
-
 for size in 24 48 64 128 256; do
     install -Dvm 644 chrome/app/theme/chromium/linux/product_logo_$size.png /app/share/icons/hicolor/${size}x${size}/apps/org.chromium.Chromium.png;
 done

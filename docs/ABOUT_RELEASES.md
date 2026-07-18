@@ -51,8 +51,4 @@ however, I try to make tailored/optimized releases, including:
 
 If you want to find out for sure what your CPU supports, you can use:
 
-Windows > [CPU-Z](https://www.cpuid.com/softwares/cpu-z.html)
-
-Linux > Use [my script](https://github.com/Alex313031/thorium/blob/main/check_simd.sh) from the repo.
-
-MacOS > Not necessary, all current x64 Macs support AVX2, and all current ARM Macs (M series), support the `armv8.1+crypto optimizations I use. Unless you're running a hackintosh, in which case your CPU needs to be Haswell or later.
+Windows/Linux/macOS > Use [check_simd.py](https://github.com/Alex313031/thorium/blob/main/check_simd.py) from the repo. For example, run `python3 check_simd.py --profile avx2_fma`, or pass `--args-file out/thorium/args.gn` to check a configured build directly. On Apple Silicon, use the normal ARM64 build rather than an x86 SIMD profile.

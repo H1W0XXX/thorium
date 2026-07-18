@@ -11,20 +11,28 @@ Run the thorium_ui_debug_shell.exe, and you can select from the dropdown menu. S
 
 ## Use in Thorium
 I built this to view and test native Chromium UI icons in the *.icon* format.
-These files are in:
+These paths are relative to the Chromium `src` directory:
 
-//chromium/src/ui/views/vector_icons ## For many subcomponents like native UI views. \
-//chromium/src/ui/views/window/vector_icons ## For icons related to the top bar. \
-//chromium/src/components/vector_icons ## For components that affect many build targets. \
-//chromium/src/chrome/app/vector_icons ## For icons only used in the browser. \
-//chromium/src/ash/resources/vector_icons ## For icons used in Chromium on ChromiumOS. \
-//chromium/src/chromeos/ui/vector_icons ## For icons specific to ChromiumOS. \
-//chromium/src/chromecast/ui/vector_icons ## For icons specific to ChromeCast.
+- `ui/views/vector_icons/` — native Views UI icons.
+- `ui/views/window/vector_icons/` — window and top-bar icons.
+- `components/vector_icons/` — icons shared by multiple components.
+- `chrome/app/vector_icons/` — browser-specific icons.
+- `ash/resources/vector_icons/` — Ash and ChromiumOS icons.
+- `chromeos/ui/vector_icons/` — ChromiumOS-specific UI icons.
+- `chromecast/ui/vector_icons/` — Chromecast-specific icons.
 
 *More info can be found at > https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/components/vector_icons/README.md*
 
 ## Building <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_light.svg#gh-dark-mode-only"> <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_dark.svg#gh-light-mode-only">
 
-To build, use: autoninja -C out/thorium chrome chromedriver thorium_shell setup mini_installer thorium_ui_debug_shell or just
-autoninja -C out/thorium thorium_ui_debug_shell to exclude building the rest of Thorium.
+From the Thorium repository root, build the complete debug product set and UI
+Debug Shell with:
 
+```shell
+python3 infra/DEBUG/build_debug.py --target-os linux --mode full
+```
+
+Use `--target-os win` for Windows. To build and archive only the standalone UI
+Debug Shell, replace `--mode full` with `--mode shell`. Pass `-j N` to limit
+parallel jobs. macOS currently supports build-only operation because its Debug
+Shell package layout has not yet been defined and verified.

@@ -1,15 +1,77 @@
-Description: Disable Privacy Sandbox, previously known as FLOC, completely
-
-Based on https://github.com/ungoogled-software/ungoogled-chromium/blob/dad7e19df0b240eef513aba7afa1bf8a2e99f456/patches/core/ungoogled-chromium/disable-privacy-sandbox.patch
-
+diff --git a/chrome/browser/resources/BUILD.gn b/chrome/browser/resources/BUILD.gn
+index 66dcefc524411..368d6b766dcf5 100644
+--- a/chrome/browser/resources/BUILD.gn
++++ b/chrome/browser/resources/BUILD.gn
+@@ -128,7 +128,6 @@ group("resources") {
+     public_deps += [
+       "unexportable_keys_internals:resources",
+       "//chrome/browser/resources/media/mei_preload:component",
+-      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
+     ]
+   }
+ 
 diff --git a/components/browsing_data/content/browsing_data_model.cc b/components/browsing_data/content/browsing_data_model.cc
-index 50ace0c2a29a3..5e6f2123e1e64 100644
+index 8b130bc3a328f..c2c52b67c938a 100644
 --- a/components/browsing_data/content/browsing_data_model.cc
 +++ b/components/browsing_data/content/browsing_data_model.cc
-@@ -992,12 +992,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
+@@ -54,8 +54,6 @@ namespace {
+ // imperceptible, but non-0 amount of space, such as Trust Tokens.
+ constexpr int kSmallAmountOfDataInBytes = 100;
+ 
+-// An estimate of storage size of an Interest Group object.
+-constexpr int kModerateAmountOfDataInBytes = 1024;
+ 
+ // Visitor which returns the appropriate data owner for a given `data_key`
+ // and `storage_type`.
+@@ -471,44 +469,6 @@ void OnSharedStorageLoaded(
+   std::move(loaded_callback).Run();
+ }
+ 
+-void OnInterestGroupsLoaded(
+-    BrowsingDataModel* model,
+-    base::OnceClosure loaded_callback,
+-    std::vector<content::InterestGroupManager::InterestGroupDataKey>
+-        interest_groups) {
+-  for (const auto& data_key : interest_groups) {
+-    model->AddBrowsingData(data_key,
+-                           BrowsingDataModel::StorageType::kInterestGroup,
+-                           kModerateAmountOfDataInBytes);
+-  }
+-  std::move(loaded_callback).Run();
+-}
+-
+-void OnAttributionReportingLoaded(
+-    BrowsingDataModel* model,
+-    base::OnceClosure loaded_callback,
+-    std::set<content::AttributionDataModel::DataKey> attribution_reporting) {
+-  for (const auto& data_key : attribution_reporting) {
+-    model->AddBrowsingData(
+-        data_key, BrowsingDataModel::StorageType::kAttributionReporting,
+-        kSmallAmountOfDataInBytes);
+-  }
+-  std::move(loaded_callback).Run();
+-}
+-
+-void OnPrivateAggregationLoaded(
+-    BrowsingDataModel* model,
+-    base::OnceClosure loaded_callback,
+-    std::set<content::PrivateAggregationDataModel::DataKey>
+-        private_aggregation) {
+-  for (const auto& data_key : private_aggregation) {
+-    model->AddBrowsingData(data_key,
+-                           BrowsingDataModel::StorageType::kPrivateAggregation,
+-                           kSmallAmountOfDataInBytes);
+-  }
+-  std::move(loaded_callback).Run();
+-}
+-
+ void OnQuotaStorageLoaded(
+     BrowsingDataModel* model,
+     base::OnceClosure loaded_callback,
+@@ -995,12 +955,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
        base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
    bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
-       network::features::kCompressionDictionaryTransportBackend);
+       network::features::kCompressionDictionaryTransport);
 -  bool is_interest_group_enabled =
 -      base::FeatureList::IsEnabled(network::features::kInterestGroupStorage);
 -  bool is_attribution_reporting_enabled = base::FeatureList::IsEnabled(
@@ -19,7 +81,7 @@ index 50ace0c2a29a3..5e6f2123e1e64 100644
  
    base::RepeatingClosure completion =
        base::BindRepeating([](const base::OnceClosure&) {},
-@@ -1034,27 +1028,7 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
+@@ -1037,27 +991,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
          base::BindOnce(&OnSharedDictionaryUsageLoaded, this, completion));
    }
  
@@ -32,7 +94,7 @@ index 50ace0c2a29a3..5e6f2123e1e64 100644
 -          base::BindOnce(&OnInterestGroupsLoaded, this, completion));
 -    }
 -  }
- 
+-
 -  // Attribution Reporting
 -  if (is_attribution_reporting_enabled) {
 -    storage_partition_->GetAttributionDataModel()->GetAllDataKeys(
@@ -48,7 +110,7 @@ index 50ace0c2a29a3..5e6f2123e1e64 100644
  #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
    storage_partition_->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(
 diff --git a/components/privacy_sandbox/privacy_sandbox_features.cc b/components/privacy_sandbox/privacy_sandbox_features.cc
-index e4ddfd7c65030..6daebadcbdee3 100644
+index c2a7047d75598..133f6ae227585 100644
 --- a/components/privacy_sandbox/privacy_sandbox_features.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_features.cc
 @@ -1,4 +1,4 @@
@@ -57,31 +119,26 @@ index e4ddfd7c65030..6daebadcbdee3 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
-@@ -21,7 +21,7 @@ const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId{
+@@ -8,7 +8,7 @@
  
- BASE_FEATURE(kPrivacySandboxSettings4,
-              "PrivacySandboxSettings4",
--             base::FEATURE_ENABLED_BY_DEFAULT);
-+             base::FEATURE_DISABLED_BY_DEFAULT);
+ namespace privacy_sandbox {
+ 
+-BASE_FEATURE(kPrivacySandboxSettings4, base::FEATURE_ENABLED_BY_DEFAULT);
++BASE_FEATURE(kPrivacySandboxSettings4, base::FEATURE_DISABLED_BY_DEFAULT);
  
  const char kPrivacySandboxSettings4ConsentRequiredName[] = "consent-required";
  const char kPrivacySandboxSettings4NoticeRequiredName[] = "notice-required";
-@@ -82,11 +82,11 @@ BASE_FEATURE(kDisablePrivacySandboxPrompts,
+@@ -58,7 +58,7 @@ const base::FeatureParam<bool> kPrivacySandboxSettings4ShowSampleDataForTesting{
+ BASE_FEATURE(kDisablePrivacySandboxPrompts, base::FEATURE_ENABLED_BY_DEFAULT);
  
  BASE_FEATURE(kEnforcePrivacySandboxAttestations,
-              "EnforcePrivacySandboxAttestations",
 -             base::FEATURE_ENABLED_BY_DEFAULT);
 +             base::FEATURE_DISABLED_BY_DEFAULT);
  
  BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
-              "DefaultAllowPrivacySandboxAttestations",
--             base::FEATURE_ENABLED_BY_DEFAULT);
-+             base::FEATURE_DISABLED_BY_DEFAULT);
- 
- const char kPrivacySandboxEnrollmentOverrides[] =
-     "privacy-sandbox-enrollment-overrides";
+              base::FEATURE_DISABLED_BY_DEFAULT);
 diff --git a/components/privacy_sandbox/privacy_sandbox_prefs.cc b/components/privacy_sandbox/privacy_sandbox_prefs.cc
-index d7a79452255b5..4ef5b1f90cebd 100644
+index 51c4d9b781ec5..08e546664ef4e 100644
 --- a/components/privacy_sandbox/privacy_sandbox_prefs.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_prefs.cc
 @@ -1,4 +1,4 @@
@@ -90,17 +147,17 @@ index d7a79452255b5..4ef5b1f90cebd 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
-@@ -49,7 +49,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+@@ -51,7 +51,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
        prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized,
        false);
    registry->RegisterBooleanPref(
 -      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true,
 +      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false,
        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-   registry->RegisterTimePref(
-       prefs::kPrivacySandboxFakeNoticePromptShownTimeSync, base::Time(),
+ 
+   registry->RegisterBooleanPref(prefs::kPrivacySandboxTopicsConsentGiven,
 diff --git a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
-index 9106c221afbae..d6def8b0f4d5b 100644
+index 90e887eef88c6..688fd654b5449 100644
 --- a/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 +++ b/components/privacy_sandbox/privacy_sandbox_settings_impl.cc
 @@ -1,4 +1,4 @@
@@ -109,7 +166,7 @@ index 9106c221afbae..d6def8b0f4d5b 100644
  // Use of this source code is governed by a BSD-style license that can be
  // found in the LICENSE file.
  
-@@ -134,7 +134,7 @@ std::set<browsing_topics::Topic> GetTopicsSetFromString(
+@@ -129,7 +129,7 @@ std::set<browsing_topics::Topic> GetTopicsSetFromString(
  
  // static
  bool PrivacySandboxSettingsImpl::IsAllowed(Status status) {
@@ -118,7 +175,7 @@ index 9106c221afbae..d6def8b0f4d5b 100644
  }
  
  // static
-@@ -888,7 +888,7 @@ void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
+@@ -808,7 +808,7 @@ void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
  }
  
  bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {
@@ -127,10 +184,14 @@ index 9106c221afbae..d6def8b0f4d5b 100644
  }
  
  bool PrivacySandboxSettingsImpl::IsPrivacySandboxCurrentlyUnrestricted() const {
-@@ -961,7 +961,8 @@ PrivacySandboxSettingsImpl::GetPrivacySandboxAllowedStatus(
-     return Status::kRestricted;
+@@ -877,11 +877,8 @@ PrivacySandboxSettingsImpl::GetPrivacySandboxAllowedStatus(
+     return Status::kIncognitoProfile;
    }
  
+-  if (IsPrivacySandboxRestricted() && !should_ignore_restriction) {
+-    return Status::kRestricted;
+-  }
+-
 -  return Status::kAllowed;
 +  // Always return restricted in Thorium
 +  return Status::kRestricted;
@@ -138,10 +199,44 @@ index 9106c221afbae..d6def8b0f4d5b 100644
  
  PrivacySandboxSettingsImpl::Status
 diff --git a/content/browser/attribution_reporting/attribution_suitable_context.cc b/content/browser/attribution_reporting/attribution_suitable_context.cc
-index 84450b52936e7..15fc6dc662063 100644
+index 12f09023269e2..3226fce7668d4 100644
 --- a/content/browser/attribution_reporting/attribution_suitable_context.cc
 +++ b/content/browser/attribution_reporting/attribution_suitable_context.cc
-@@ -45,85 +45,13 @@ bool UkmSourceIdAllowed(RenderFrameHostImpl* rfh) {
+@@ -10,116 +10,25 @@
+ #include <tuple>
+ #include <utility>
+ 
+-#include "base/check.h"
+-#include "base/feature_list.h"
+ #include "base/memory/weak_ptr.h"
+-#include "components/attribution_reporting/features.h"
+ #include "components/attribution_reporting/suitable_origin.h"
+ #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
+-#include "content/browser/attribution_reporting/attribution_host.h"
+ #include "content/browser/attribution_reporting/attribution_input_event.h"
+-#include "content/browser/attribution_reporting/attribution_manager.h"
+-#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+-#include "content/browser/renderer_host/policy_container_host.h"
+-#include "content/browser/renderer_host/render_frame_host_impl.h"
+-#include "content/browser/web_contents/web_contents_impl.h"
+ #include "content/public/browser/navigation_handle.h"
+-#include "content/public/browser/render_frame_host.h"
+ #include "services/metrics/public/cpp/ukm_source_id.h"
+-#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+ 
+ namespace content {
+ 
+-namespace {
+-
+-using attribution_reporting::SuitableOrigin;
+-
+-bool UkmSourceIdAllowed(RenderFrameHostImpl* rfh) {
+-  return rfh->GetLifecycleState() !=
+-         RenderFrameHost::LifecycleState::kPrerendering;
+-}
+-
+-}  // namespace
+-
  // static
  std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
      NavigationHandle* navigation_handle) {
@@ -162,7 +257,7 @@ index 84450b52936e7..15fc6dc662063 100644
  std::optional<AttributionSuitableContext> AttributionSuitableContext::Create(
      RenderFrameHostImpl* initiator_frame) {
 -  if (!initiator_frame) {
-     return std::nullopt;
+-    return std::nullopt;
 -  }
 -
 -  if (!base::FeatureList::IsEnabled(
@@ -218,21 +313,19 @@ index 84450b52936e7..15fc6dc662063 100644
 -      attribution_host->GetMostRecentNavigationInputEvent(),
 -      AttributionOsLevelManager::GetAttributionReportingOsRegistrars(
 -          web_contents),
--      !url_matcher::util::GetGoogleAmpViewerEmbeddedURL(
--           initiator_root_frame->GetLastCommittedURL())
--           .is_empty(),
 -      UkmSourceIdAllowed(initiator_root_frame)
 -          ? attribution_host->GetPageUkmSourceId()
 -          : ukm::kInvalidSourceId,
 -      data_host_manager->AsWeakPtr());
++  return std::nullopt;
  }
  
  // static
 diff --git a/content/browser/interest_group/ad_auction_service_impl.cc b/content/browser/interest_group/ad_auction_service_impl.cc
-index 7a506af83bdec..8538af34c2fcf 100644
+index 0f75f7628248f..330b99614c737 100644
 --- a/content/browser/interest_group/ad_auction_service_impl.cc
 +++ b/content/browser/interest_group/ad_auction_service_impl.cc
-@@ -192,11 +192,6 @@ AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
+@@ -190,11 +190,6 @@ AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
  void AdAuctionServiceImpl::CreateMojoService(
      RenderFrameHost* render_frame_host,
      mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver) {
@@ -245,10 +338,10 @@ index 7a506af83bdec..8538af34c2fcf 100644
  
  void AdAuctionServiceImpl::JoinInterestGroup(
 diff --git a/content/browser/storage_partition_impl.cc b/content/browser/storage_partition_impl.cc
-index 89d3396a4b71a..1fe794042bdc6 100644
+index 2a49d3a2e90b9..0dfaa6c29d817 100644
 --- a/content/browser/storage_partition_impl.cc
 +++ b/content/browser/storage_partition_impl.cc
-@@ -1469,38 +1469,7 @@ void StoragePartitionImpl::Initialize(
+@@ -1468,38 +1468,6 @@ void StoragePartitionImpl::Initialize(
  
    bucket_manager_ = std::make_unique<BucketManager>(this);
  
@@ -277,7 +370,7 @@ index 89d3396a4b71a..1fe794042bdc6 100644
 -                            // context owns this storage partition.
 -                            base::Unretained(browser_context_)));
 -  }
- 
+-
 -  // The Topics API is not available in Incognito mode.
 -  if (!is_in_memory() &&
 -      base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
@@ -287,7 +380,7 @@ index 89d3396a4b71a..1fe794042bdc6 100644
  
    GeneratedCodeCacheSettings settings =
        GetContentClient()->browser()->GetGeneratedCodeCacheSettings(
-@@ -1529,8 +1498,6 @@ void StoragePartitionImpl::Initialize(
+@@ -1528,8 +1496,6 @@ void StoragePartitionImpl::Initialize(
  
    font_access_manager_ = FontAccessManager::Create();
  
@@ -296,7 +389,7 @@ index 89d3396a4b71a..1fe794042bdc6 100644
  
  #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
    if (is_in_memory()) {
-@@ -1554,11 +1521,6 @@ void StoragePartitionImpl::Initialize(
+@@ -1553,11 +1519,6 @@ void StoragePartitionImpl::Initialize(
          std::make_unique<SharedStorageHeaderObserver>(this);
    }
  
@@ -307,12 +400,12 @@ index 89d3396a4b71a..1fe794042bdc6 100644
 -  }
  }
  
- void StoragePartitionImpl::OnStorageServiceDisconnected() {
+ void StoragePartitionImpl::ResetSessionStorageConnections() {
 diff --git a/content/browser/web_contents/web_contents_impl.cc b/content/browser/web_contents/web_contents_impl.cc
-index f3204a3925365..d36db632df459 100644
+index 646327bee417d..586ff95749e41 100644
 --- a/content/browser/web_contents/web_contents_impl.cc
 +++ b/content/browser/web_contents/web_contents_impl.cc
-@@ -4107,12 +4107,6 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
+@@ -4356,12 +4356,6 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
    DateTimeChooser::CreateDateTimeChooser(this);
  #endif
  
@@ -323,13 +416,13 @@ index f3204a3925365..d36db632df459 100644
 -    AttributionHost::CreateForWebContents(this);
 -  }
  
+   SchedulerLoopQuarantineWebContentsObserver::MaybeCreateForWebContents(this);
    RedirectChainDetector::CreateForWebContents(this);
-   BtmWebContentsObserver::MaybeCreateForWebContents(this);
 diff --git a/content/services/auction_worklet/private_aggregation_bindings.cc b/content/services/auction_worklet/private_aggregation_bindings.cc
-index a82c6a6edd910..c7a2daf215a68 100644
+index 38ff1f3f2e6f9..019e78cdaef06 100644
 --- a/content/services/auction_worklet/private_aggregation_bindings.cc
 +++ b/content/services/auction_worklet/private_aggregation_bindings.cc
-@@ -406,53 +406,6 @@ PrivateAggregationBindings::~PrivateAggregationBindings() = default;
+@@ -407,53 +407,6 @@ PrivateAggregationBindings::~PrivateAggregationBindings() = default;
  
  void PrivateAggregationBindings::AttachToContext(
      v8::Local<v8::Context> context) {
@@ -339,8 +432,8 @@ index a82c6a6edd910..c7a2daf215a68 100644
 -    return;
 -  }
 -
--  v8::Local<v8::External> v8_this =
--      v8::External::New(v8_helper_->isolate(), this);
+-  v8::Local<v8::External> v8_this = v8::External::New(
+-      v8_helper_->isolate(), this, gin::kPrivateAggregationBindingsTag);
 -
 -  v8::Local<v8::Object> private_aggregation =
 -      v8::Object::New(v8_helper_->isolate());

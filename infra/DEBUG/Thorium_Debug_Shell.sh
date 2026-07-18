@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
-# Copyright (c) 2026 Alex313031.
+# Copyright (c) 2026 Alex313031 and gz83.
 
-# Export libs
-LD_LIBRARY_PATH="$(pwd)/lib"
-export LD_LIBRARY_PATH
+set -eu
 
-./thorium_ui_debug_shell --debug $@
+HERE="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+export LD_LIBRARY_PATH="${HERE}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+exec "${HERE}/thorium_ui_debug_shell" --debug "$@"

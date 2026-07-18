@@ -4,8 +4,8 @@
 patches. Patch files currently remain under `other/*.patch`.
 
 Patch files intentionally remain in `other/` for now. The series layer records
-ordering, apply roots, and platform conditions. Both `setup.sh` and
-`win_scripts/setup.py` apply patches through this runner.
+ordering, apply roots, and platform conditions. The root-level `setup.py`
+applies patches through this runner on every supported host platform.
 
 ## Platform Notes
 

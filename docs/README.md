@@ -2,6 +2,14 @@
 
 Documentation about building Thorium, and related stuff like gn args and releases.
 
+Current bugs and feature requests are tracked in the [Thorium GitHub issue
+tracker](https://github.com/Alex313031/thorium/issues). Search existing issues
+before opening a new report and include the Thorium version, operating system,
+CPU architecture, and steps needed to reproduce the problem.
+
+The [command-line switch reference](CMDLINE_FLAGS_LIST.md) links to the current
+upstream-derived switch list instead of keeping an outdated repository snapshot.
+
 __I've also made some pages on the thorium.rocks website relating to Thorium development.__
 
  - There is a developer page [Here](https://thorium.rocks/dev), with links to different tools developers would find useful.

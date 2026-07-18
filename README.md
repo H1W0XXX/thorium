@@ -58,7 +58,7 @@
 
 &nbsp;&plus;&nbsp;Other patches and useful chrome://flags flags too long to list here.
 - For more info, read the [PATCHES.md](https://github.com/Alex313031/thorium/blob/main/docs/PATCHES.md) file. The active patch order is maintained in [`patch_scripts/series/series`](./patch_scripts/series/series).
-- Known bugs are in the [BUGS.md](https://github.com/Alex313031/thorium/blob/main/infra/BUGS.md) file.
+- Report and track current bugs in the [Thorium issue tracker](https://github.com/Alex313031/thorium/issues).
 - A list of Chromium command line flags can be found at > https://peter.sh/experiments/chromium-command-line-switches
 
 ## Building <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_light.svg#gh-dark-mode-only"> <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_dark.svg#gh-light-mode-only">

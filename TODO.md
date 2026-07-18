@@ -11,19 +11,12 @@
 
 &#45; Review the macOS 26 app icon pipeline.
 
- - Check Chromium's new `AppIcon.icon` / `Assets.car` flow from 46f3b93b5c074e0535d2dc13cadaa8c38e96f1de / https://chromium-review.googlesource.com/c/chromium/src/+/6792589 before replacing the existing `app.icns`.
-
-&#45; Update API and KEY (possibly?).
 
 &#45; Clean up the main Thorium repository.
 
 &#45; Update Flatpak directory.
 
-&#45; Convert *.sh scripts to *.py.
-
 &#45; Resolve issues raised on GitHub.
-
-&#45; Inspect i18n workflow.
 
 ### Notes to self
 

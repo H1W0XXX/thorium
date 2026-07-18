@@ -102,17 +102,17 @@ First, we need to make sure we have all the tags/branches and are on Tip of Tree
 For this, run (from within the Thorium repo):
 
 ```shell
-./trunk.sh
+python3 ./trunk.py
 ```
 
 Secondly, we need to check out the revision that Thorium is currently using. 
 For this, run:
 
 ```shell
-./version.sh
+python3 ./version.py
 ```
 
-At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for Chromium for all platforms. 
+At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for macOS x64 and ARM64.
 The file for MacOS will be downloaded to */Users/$USERNAME/chromium/src/build/pgo_profiles/&#42;.profdata* with the actual file name looking something like 
 'chrome-mac-6167-1706032279-25144dc1c87be275c5981becbafed7785e2f39f2.profdata', which should be added to the end of args.gn as per below.
 Take note of this, as we will be using it in the `args.gn` below.
@@ -121,10 +121,10 @@ Lastly, we need to copy the Thorium source files over the Chromium tree.
 For this, run:
 
 ```shell
-./setup.sh --mac
+python3 ./setup.py --mac
 ```
 This will copy all the files and patches to the needed locations.  
-- NOTE: To build for arm64, use `./setup.sh --mac` as well. Use `./setup.sh --help` to see all options/platforms.
+- NOTE: To build for arm64, use `python3 ./setup.py --mac` as well. Use `python3 ./setup.py --help` to see all options/platforms.
 
 Chromium uses [Ninja](https://ninja-build.org) as its main build tool along with
 a tool called [GN](https://gn.googlesource.com/gn/+/main/docs/quick_start.md)
@@ -145,6 +145,22 @@ Use the '[mac_ARM_args.gn](https://github.com/Alex313031/thorium/blob/other/Mac/
 * For more info on GN, run `gn help` on the command line or read the
   [quick start guide](https://gn.googlesource.com/gn/+/main/docs/quick_start.md).
 * Building Thorium for arm64 Macs requires [additional setup](mac_arm64.md).
+
+### Common checkout and GN commands
+
+Run the useful commands from the former alias file directly:
+
+```shell
+git fetch --tags
+git rebase-update
+gclient runhooks
+gn ls out/thorium
+git show-ref
+```
+
+Use `python3 version.py` from the Thorium checkout to update the macOS x64 and
+ARM64 PGO profiles. Destructive synchronization commands are documented in the
+[common maintenance section](BUILDING.md#common-checkout-and-gn-commands).
 
 
 ## Build Thorium <a name="build"></a>
@@ -174,7 +190,13 @@ $ out/thorium/Thorium.app/Contents/MacOS/Thorium
 To generate a *.dmg* installation package, run (from within the Thorium repo):
 
 ```shell
-$ ./create_dmg.sh
+$ python3 ./create_dmg.py
+```
+
+To package an existing `out/thorium/Chromium.app` instead, use:
+
+```shell
+$ python3 ./create_dmg.py --product chromium
 ```
 
 ### Avoiding repetitive system permissions dialogs after each build
@@ -231,7 +253,7 @@ You can find out more about GoogleTest at its
 To update an existing checkout, you can run (from within the Thorium repo):
 
 ```shell
-$ ./trunk.sh
+$ python3 ./trunk.py
 ```
 
 ## Tips, tricks, and troubleshooting

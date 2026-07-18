@@ -16,6 +16,29 @@ For Windows and Windows [AVX2](https://en.wikipedia.org/wiki/Advanced_Vector_Ext
     Depot_tools bundles an appropriate version of Python in `$depot_tools/python-bin`, 
     if you don't have an appropriate version already on your system.
 
+### Open-file limit
+
+Large Chromium builds may need more simultaneously open files than the shell's
+default limit permits. On Linux, inspect the current soft and hard limits with:
+
+```shell
+ulimit -Sn
+ulimit -Hn
+```
+
+When the system hard limit permits it, raise both limits for the current shell
+before building:
+
+```shell
+ulimit -Hn 1048576
+ulimit -Sn 1048576
+ulimit -n
+```
+
+These settings affect only the current shell and its child processes. If the
+hard-limit command fails, configure the distribution's PAM/systemd resource
+limits first instead of running the build as root.
+
 Most development is done on Ubuntu 22.04, Jammy Jellyfish (This is what Chromium's build infrastructure currently runs). 
 Ubuntu 16.04/18.04 no longer works. 20.04 and Debian 10/11/12 will work.
 There are some instructions for other distros below, but they are mostly unsupported.
@@ -121,23 +144,25 @@ to enable Sync.
 
 ## Setting up the build <a name="setup"></a>
 
-First, we need to run `./trunk.sh` (in the root of the Thorium repo.) This will Rebase/Sync the Chromium repo, and revert it to stock Chromium.  
-It will also fetch all the tags/branches, which is needed for the version.sh script.
+First, we need to run `python3 ./trunk.py` (in the root of the Thorium repo.) This will Rebase/Sync the Chromium repo, and revert it to stock Chromium.
+It will also fetch all the tags/branches, which is needed for the version.py script.
 It should be used before every separate build. See the [Updating](#updating) section.
 
 __IMPORTANT__
 This will update and sync the sources to the latest revision (tip of tree) and ensure you have all the version tags.
 
-- Then, to check out the current Chromium revision that Thorium is using, run `./version.sh`. At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for Chromium for all platforms. The file will be downloaded to *//chromium/src/chrome/build/pgo_profiles/&#42;.profdata* with the actual file name looking something like 'chrome-linux-6167-1706004111-41f78c57fb3a1fe49a5c549b16f0221465339af9.profdata', which should be added to the end of args.gn as per below.
+- Then, to check out the current Chromium revision that Thorium is using, run `python3 ./version.py`. At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) used by the platform workflow. The file will be downloaded to *//chromium/src/chrome/build/pgo_profiles/&#42;.profdata* with the actual file name looking something like 'chrome-linux-6167-1706004111-41f78c57fb3a1fe49a5c549b16f0221465339af9.profdata', which should be added to the end of args.gn as per below.
 Take note of this, as we will be using it in the `args.gn` below.
-- Then, (from where you cloned this repo) run `./setup.sh`. This will copy all the files and patches to the needed locations.
-- NOTE: To build for MacOS, use `./setup.sh --mac`. To build for Raspberry Pi, use `./setup.sh --raspi`. Use `./setup.sh --help` to see all options/platforms.
+- Then, (from where you cloned this repo) run `python3 ./setup.py`. This will copy all the files and patches to the needed locations.
+- NOTE: To build for MacOS, use `python3 ./setup.py --mac`. To build for Raspberry Pi, use `python3 ./setup.py --raspi`. Use `python3 ./setup.py --help` to see all options/platforms.
 
 Chromium and Thorium use [Ninja](https://ninja-build.org) as their main build tool, along with
 a tool called [GN](https://gn.googlesource.com/gn/+/refs/heads/main/README.md)
 to generate `.ninja` files in the build output directory. You can create any number of *build directories*
-with different configurations. Create the build output directory by running:
-- Run `gn args out/thorium` and the contents of '[args.gn](https://github.com/Alex313031/thorium/blob/main/args.gn)' in the root of this repo should be copy/pasted into the editor. Note that for Windows, Mac, ChromiumOS, or Android there are separate &#42;_args.gn files for those platforms. *--Include your api keys here at the top or leave blank, and edit the last line to point to the actual path and file name of '&#42;.profdata'* 
+with different configurations. From the Chromium `src` directory, run
+`gn args out/thorium` directly for Linux, Windows, macOS, Android, ChromeOS,
+and supported cross-builds. Copy the contents
+of '[args.gn](https://github.com/Alex313031/thorium/blob/main/args.gn)' in the root of this repo into the editor. Note that for Windows, Mac, ChromiumOS, or Android there are separate &#42;_args.gn files for those platforms. *--Include your api keys here at the top or leave blank, and edit the last line to point to the actual path and file name of '&#42;.profdata'*
 - For more info about args.gn, read the [ABOUT_GN_ARGS.md](https://github.com/Alex313031/thorium/blob/main/infra/DEBUG/ABOUT_GN_ARGS.md) file.
 - '[infra/args.list](https://github.com/Alex313031/thorium/blob/main/infra/args.list)' contains an alphabetical list with descriptions of all possible build arguments; [gn_args.list](https://github.com/Alex313031/thorium/blob/main/infra/gn_args.list) gives a similar list but with the flags in args.gn added.
 
@@ -149,8 +174,8 @@ $ gn args out/thorium --list >> /path/to/ARGS.list
 
 * You only have to run this once for each new build directory, Ninja will
   update the build files as needed.
-* You can replace *thorium* with another name, but
-  it should be a subdirectory of *out*. Note that if you choose another name, the `trunk.sh` and `build.sh` scripts will not work.
+* You can replace *thorium* with another output directory name and pass it to
+  `build.py` with `--out-dir`.
 * For information on the args.gn that Thorium uses, see [ABOUT_GN_ARGS.md](https://github.com/Alex313031/thorium/blob/main/docs/ABOUT_GN_ARGS.md).  
 * For other build arguments, including release settings, see [GN build
   configuration](https://www.chromium.org/developers/gn-build-configuration).
@@ -191,10 +216,15 @@ working directories going at once.
 
 ## Build Thorium <a name="build"></a>
 
-Build Thorium (the "chrome" target), as well as [chrome_sandbox](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/sandboxing.md), [chromedriver](https://chromedriver.chromium.org/home), and [thorium_shell](https://github.com/Alex313031/thorium/tree/main/thorium_shell#readme) (based on [content_shell](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_tests_in_content_shell.md#as-a-simple-browser) ), using the `build.sh` script in the root of the Thorium repo (where the # is the number of jobs). Assuming you have an 8 Core system:
+Build Thorium and its platform installer or packages with `build.py`. The
+script reads the actual `target_os` and `target_cpu` from the generated GN
+output directory, so native and cross-builds use the same entry point. Release
+products are built in sequential phases: the main product must complete before
+each installer or package target starts. Pass `--single-pass` to combine all
+selected targets into one `autoninja` invocation.
 
 ```shell
-$ ./build.sh 8
+$ python3 build.py -j 8
 ```
 
 You could also manually issue the command (where -j is the number of jobs):
@@ -218,14 +248,17 @@ Once it is built, you can simply run the browser:
 ```shell
 $ out/thorium/thorium
 ```
-*Note - Copy and run [clean.sh](https://github.com/Alex313031/thorium/blob/main/clean.sh) within this dir to clean up build artifacts.*
+To completely discard `out/thorium` and its downloaded Chromium PGO profiles,
+run `python3 clean.py` from the Thorium repository. This is a full reset and
+does not preserve the built browser or installer files.
 
 ## Installing Thorium
 
-Of course, you will probably want to make installation packages. To make .deb and .rpm packages run `package.sh` (where the # is the number of jobs) in the root of the repo:
+The default Linux build also creates the DEB and RPM packages. To build without
+the installer or packages, use:
 
 ```shell
-$ ./package.sh 8
+$ python3 build.py --no-installer -j 8
 ```
 To make an appimage, copy the .deb to `//thorium/infra/APPIMAGE/`
 and follow the [Instructions](https://github.com/Alex313031/thorium/blob/main/infra/APPIMAGE/README.md#instructions) therein.
@@ -240,11 +273,50 @@ Learn about [how to use Chromedriver](https://chromedriver.chromium.org/getting-
 
 ## Update your checkout and revert to latest vanilla tip-o-tree Chromium. <a name="updating"></a>
 
-Simply run `trunk.sh` in the root of the Thorium repo or execute the commands inside.
+Simply run `trunk.py` in the root of the Thorium repo or execute the commands inside.
 
 ```shell
-$ ./trunk.sh
+$ python3 ./trunk.py
 ```
+
+### Common checkout and GN commands
+
+The former `aliases.txt` file only defined optional shell aliases and was never
+loaded automatically. Use the underlying commands directly so that the same
+workflow remains clear across shells and platforms:
+
+```shell
+# Fetch Chromium tags.
+git fetch --tags
+
+# Update the current Chromium branch using depot_tools.
+git rebase-update
+
+# Run Chromium hooks.
+gclient runhooks
+
+# List targets generated in the default Thorium output directory.
+gn ls out/thorium
+
+# Display local and remote Git references.
+git show-ref
+```
+
+Use `python3 version.py` from the Thorium checkout to download the appropriate
+PGO profiles instead of invoking `tools/update_pgo_profiles.py` through
+platform-specific aliases.
+
+For a routine forced synchronization and cleanup, prefer `python3 trunk.py`.
+The equivalent low-level command is destructive: it resets managed checkouts
+and deletes unversioned trees.
+
+```shell
+gclient sync --with_branch_heads --with_tags --force --reset --nohooks --delete_unversioned_trees
+```
+
+The former `origin` alias ran `git checkout -f origin/main`. Run that command
+only when intentionally discarding tracked working-tree changes; it is not a
+normal update command.
 
 ## Running test targets
 
@@ -284,15 +356,33 @@ If you have problems building, join us in the Thorium IRC Channel at
 
 ### Arch Linux
 
-Instead of running `install-build-deps.sh` to install build dependencies, run:
+Instead of running Debian's `install-build-deps.sh`, update the system and
+install the Arch package set used by Thorium:
 
 ```shell
-$ sudo pacman -S --needed automake autoconf base-devel curl xz squashfs-tools p7zip \
-git tk python python-pkgconfig python-virtualenv python-oauth2client python-oauthlib \
-perl gcc gcc-libs bison flex gperf pkgconfig dbus icoutils \
-nss alsa-lib glib2 gtk3 nspr freetype2 cairo \
-xorg-server-xvfb xorg-xdpyinfo
+$ sudo pacman -Syu --needed \
+    autoconf autoconf-archive automake base-devel beep bluez-libs cabextract \
+    cmake curl dkms dosfstools exfatprogs exo ffmpeg gcc git go gperf gtk2 \
+    gtk3 hwdata i2c-tools java-runtime-common java-runtime-headless kdialog \
+    libcbor libdrm libnet libpulse libsecret libudev0-shim libva libva-utils \
+    libva-vdpau-driver libwebp libxss lm_sensors lsb-release make man-db \
+    mesa-utils minizip mtools nano nasm ncurses nodejs nss ntfs-3g numlockx \
+    openjpeg2 opus org.freedesktop.secrets p7zip pciutils pipewire polkit \
+    python python-docutils python-oauth2client python-oauthlib \
+    python-pkgconfig python-pkginfo python-protobuf python-setuptools \
+    python-virtualenv qt5-base re2 read-edid tar libtar tk tree ttf-font \
+    ttf-liberation unrar unzip vulkan-extra-layers vulkan-headers \
+    vulkan-tools wget xdg-utils xsensors xz yasm zenity
 ```
+
+This is a broad historical Thorium package set covering Chromium compilation,
+runtime libraries, media support, ChromiumOS image tools, debugging utilities,
+and optional desktop integration. It is not a minimal Chromium dependency
+list. Package names and repository availability can change on Arch and its
+derivatives; remove unavailable optional packages or install their current
+replacement as appropriate. `-Syu` is intentional because Arch does not
+support partial upgrades. Do not replace it with `-Syyuu`: forced database
+refreshes and package downgrades are unnecessary here.
 
 For the optional packages on Arch Linux:
 
@@ -342,6 +432,32 @@ For the optional packages:
 ### Gentoo
 
 You can install the deps by doing a dry run of `emerge www-client/chromium`.
+
+### Optimized LLVM toolchain
+
+After applying `other/llvm-optimized-toolchain-build.patch`, Linux users can
+build Thorium's LLVM/Clang, LLD and Polly toolchain with:
+
+```shell
+python3 infra/build_llvm.py
+```
+
+The wrapper validates the Chromium checkout and then runs the equivalent of:
+
+```shell
+python3 tools/clang/scripts/build.py --bootstrap --without-android \
+  --without-fuchsia --disable-asserts --thinlto --pgo --bolt \
+  --llvm-force-head-revision
+```
+
+Set `CR_DIR` or `CR_SRC_DIR` to the Chromium `src` directory, or pass
+`--chromium-src`. Without an override it uses `~/chromium/src`. Use
+`--dry-run` to validate and print the command without starting the build.
+
+This is an expensive Linux-only toolchain build. The
+`--llvm-force-head-revision` option intentionally builds LLVM HEAD instead of
+Chromium's pinned revision, so reproducibility and compatibility should be
+revalidated when the toolchain is updated.
 
 ---------------------------------
 *Happy Thorium Building!*

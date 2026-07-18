@@ -25,3 +25,4 @@ thorium_mini_installer_ARM64.exe
 Thorium_squashfs-root
 __pycache__/
 *.py[cod]
+/src/chrome/app/theme/chromium/mac/.thorium-mac-icon.lock

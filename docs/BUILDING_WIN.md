@@ -176,17 +176,17 @@ First, we need to make sure we have all the tags/branches and are on Tip of Tree
 For this, run (from within the Thorium repo):
 
 ```shell
-./trunk.sh
+py -3.11 trunk.py
 ```
 
 Secondly, we need to check out the revision that Chromium is currently using. 
 For this, run:
 
 ```shell
-./version.sh
+py -3.11 version.py
 ```
 
-At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for Chromium for all platforms. 
+At the end it will download the [PGO profile](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for the native Windows architecture.
 The file for Windows will be downloaded to *C:\src\chromium\src\chrome\build\pgo_profiles\&#42;.profdata* with the actual file name looking something like 
 'chrome-win64-6167-1706032279-97e63d82a0938b7701d8cdf028299c39d523a3c6.profdata', which should be added to the end of args.gn as per below.
 Take note of this, as we will be using it in the `args.gn` below.
@@ -195,10 +195,10 @@ Lastly, we need to copy the Thorium source files over the Chromium tree.
 For this, run:
 
 ```shell
-./setup.sh
+py -3.11 setup.py
 ```
 This will copy all the files and patches to the needed locations.  
-- NOTE: To build for AVX2, use `./setup.sh --avx2`. To build SSE3, use `./setup.sh --sse3`. Use `./setup.sh --help` to see all options/platforms.
+- NOTE: To build for AVX2, use `py -3.11 setup.py --avx2`. To build SSE3, use `py -3.11 setup.py --sse3`. Use `py -3.11 setup.py --help` to see all options/platforms.
 
 ### Creating the build directory
 Chromium & Thorium use [Ninja](https://ninja-build.org) as its main build tool along with
@@ -209,7 +209,7 @@ NOTE: Instructions from here on out assume you are back in __cmd.exe__ (not Bash
 Create the build output directory by running:
 
 ```shell
-gn args out\thorium
+gn args out/thorium
 ```
 
 This will open up notepad.exe, and this is where we will specify build arguments ("args") which direct Ninja on how to lay out the build directory tree.
@@ -223,6 +223,22 @@ That line should look something like:
 
 * For other build arguments, and what the ones that Thorium uses do, see [ABOUT_GN_ARGS.md](https://github.com/Alex313031/thorium/blob/main/docs/ABOUT_GN_ARGS.md) & [win_args.list](https://github.com/Alex313031/thorium/blob/main/infra/win_args.list)
 * For more info on GN, run `gn help` on the command line or read the [quick start guide](https://gn.googlesource.com/gn/+/main/docs/quick_start.md).
+
+### Common checkout and GN commands
+
+Run the useful commands from the former alias file directly:
+
+```shell
+git fetch --tags
+git rebase-update
+gclient runhooks
+gn ls out/thorium
+git show-ref
+```
+
+Use `py -3.11 version.py` from the Thorium checkout to update the Windows PGO
+profile. Destructive synchronization commands are documented in the
+[common maintenance section](BUILDING.md#common-checkout-and-gn-commands).
 
 ## Build Thorium <a name="build"></a>
 
@@ -257,10 +273,10 @@ out\thorium\mini_installer.exe
 
 ## Update your checkout
 
-To update an existing Chromium checkout, you should run the `trunk.sh` script again:
+To update an existing Chromium checkout, you should run the `trunk.py` script again:
 
 ```shell
-./trunk.sh
+py -3.11 trunk.py
 ```
 
 This syncs the subrepositories to the appropriate versions,

@@ -1,1 +1,0 @@
-START "" "%cd%\BIN\150.0.7871.101\thorium_shell.exe" --user-data-dir="%~dp0%\USER_DATA\thorium_shell" --allow-outdated-plugins --disable-logging --disable-breakpad --enable-experimental-web-platform-features --disable-encryption --disable-machine-id

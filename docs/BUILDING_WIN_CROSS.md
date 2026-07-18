@@ -26,7 +26,7 @@ builds ([.asm bug](https://crbug.com/762167)).
 First make sure you've followed the instructions for getting the Chromium and Thorium code from [HERE](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#get-the-code).
 
 __IMPORTANT__
-Also make sure you have run `./trunk.sh` , `./VERSION.sh` ,and `./setup.sh` to setup and copy the Thorium code over the Chromium tree as per [HERE](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#setting-up-the-build).
+Also make sure you have run `python3 ./trunk.py`, `python3 ./version.py --pgo-target win64`, and `python3 ./setup.py` to setup and copy the Thorium code over the Chromium tree as per [HERE](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#setting-up-the-build).
 
 ## *.gclient* setup
 
@@ -41,7 +41,7 @@ Also make sure you have run `./trunk.sh` , `./VERSION.sh` ,and `./setup.sh` to s
        ]
        target_os = ['linux', 'win']
 
-2. Run `./trunk.sh`, and follow instructions on screen.
+2. Run `python3 ./trunk.py`, and follow the instructions on screen.
 
 ### Installing the MSVS Artifacts Archive
 
@@ -77,10 +77,33 @@ real depot_tools checkout when generating MSVS artifacts. Thorium no longer
 ships a local depot_tools overlay for this helper.
 
 ## Building
-Follow [Setting up the build](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#setting-up-the-build), except instead of using the `args.gn` from the
-root of the Thorium repo, use the [`win_args.gn`](https://github.com/Alex313031/thorium/blob/main/infra/win_args.gn), from *~/Thorium/infra/*
+Follow [Setting up the build](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#setting-up-the-build), except instead of using the Linux `args.gn`, use [`win_args.gn`](https://github.com/Alex313031/thorium/blob/main/win_args.gn) from the root of the Thorium checkout.
 
-Then, to build, run `./build_win.sh`, instead of `./build.sh`. See > [Here](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#build-thorium-).
+From the Chromium `src` directory, create or edit the cross-build output
+configuration with:
+
+```shell
+gn args out/thorium
+```
+
+Paste the cross-build `win_args.gn` contents into the editor before starting
+the build.
+
+Run the useful commands from the former alias file directly:
+
+```shell
+git fetch --tags
+git rebase-update
+gclient runhooks
+gn ls out/thorium
+git show-ref
+```
+
+Use `python3 version.py --pgo-target win64` from the Thorium checkout to update
+the Windows PGO profile. Destructive synchronization commands are documented
+in the [common maintenance section](BUILDING.md#common-checkout-and-gn-commands).
+
+Then run `python3 build.py --expect-os win`. The script reads the generated GN target configuration, so it also works for a Windows cross-build from Linux. See > [Here](https://github.com/Alex313031/thorium/blob/main/docs/BUILDING.md#build-thorium-).
 
 *Happy Thorium Building!*
 

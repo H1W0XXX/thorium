@@ -5,17 +5,9 @@ appId: "org.chromium.Thorium"
 
 compression: minimum
 
-ingredients:
-  script:
-    - echo $VERSION
-
 script:
-  - # Echo Version
-  - echo $VERSION
-  - # Move/Copy Files 
-  - cp -v -r ../../temp/* usr/bin/
-  - mkdir -v -p usr/share/icons/hicolor/16x16/apps/
-  - # Copy Logo/Icon 
+  - cp -v -r "$THORIUM_APPIMAGE_PAYLOAD"/. usr/bin/
+  - # Install application icons.
   - cp -v usr/bin/product_logo_256.png thorium-browser.png
   - cp -v usr/bin/product_logo_16.png usr/share/icons/hicolor/16x16/apps/thorium-browser.png
   - cp -v usr/bin/product_logo_22.png usr/share/icons/hicolor/22x22/apps/thorium-browser.png
@@ -26,9 +18,9 @@ script:
   - cp -v usr/bin/product_logo_128.png usr/share/icons/hicolor/128x128/apps/thorium-browser.png
   - cp -v usr/bin/product_logo_256.png usr/share/icons/hicolor/256x256/apps/thorium-browser.png
   - cp -v usr/bin/product_logo_512.png usr/share/icons/hicolor/512x512/apps/thorium-browser.png
-  - # Set Version
-  - ./usr/bin/thorium --version | cut -d ' ' -f2 > ../VERSION
-  - # Add Desktop file 
+  - # Record the package version for pkg2appimage.
+  - printf '%s\n' "$THORIUM_APPIMAGE_VERSION" > ../VERSION
+  - # Create the desktop entry.
   - cat > thorium-browser.desktop <<EOF
   - [Desktop Entry]
   - Version=1.0
@@ -62,12 +54,11 @@ script:
   - Name=New Incognito Window
   - Exec=thorium --incognito --no-default-browser-check %U
   - EOF
-  - chmod a+x ./thorium-browser.desktop
-  - # ADD AppRun 
+  - # Create the AppImage entry point.
   - cat > ./AppRun <<\EOF
   - #!/bin/sh
-  - HERE=$(dirname $(readlink -f "${0}"))
-  - export LD_LIBRARY_PATH="${HERE}"/usr/lib:$PATH
-  - "${HERE}"/usr/bin/thorium --no-default-browser-check $@
+  - HERE="$(dirname "$(readlink -f "$0")")"
+  - export LD_LIBRARY_PATH="${HERE}"/usr/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+  - exec "${HERE}"/usr/bin/thorium --no-default-browser-check "$@"
   - EOF
   - chmod a+x ./AppRun

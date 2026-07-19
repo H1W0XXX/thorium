@@ -691,10 +691,10 @@ index 4c74dc4ca8988..75421913a1494 100644
      No description provided
    </message>
 diff --git a/chrome/app/theme/theme_resources.grd b/chrome/app/theme/theme_resources.grd
-index ddc44638de809..2b275e79d9fe1 100644
+index baf154ba17dfe..5a292f20ed101 100644
 --- a/chrome/app/theme/theme_resources.grd
 +++ b/chrome/app/theme/theme_resources.grd
-@@ -396,7 +396,7 @@
+@@ -395,7 +395,7 @@
          <structure type="chrome_scaled_image" name="IDR_UPLOAD_VIOLATION_DARK" file="common/upload_violation_dark.png" />
        </if>
        <if expr="not _google_chrome">
@@ -703,7 +703,7 @@ index ddc44638de809..2b275e79d9fe1 100644
            <!-- Desktop Android supports extensions and the web store. -->
            <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON" file="chromium/webstore_icon.png" />
            <structure type="chrome_scaled_image" name="IDR_WEBSTORE_ICON_16" file="chromium/webstore_icon_16.png" />
-@@ -405,7 +405,7 @@
+@@ -404,7 +404,7 @@
          </if>
        </if>
        <if expr="_google_chrome">

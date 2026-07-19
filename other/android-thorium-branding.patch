@@ -98,50 +98,6 @@ index 6f1aa2dcd2822..0750b64fd75ef 100644
      deps = [
        ":chrome_test_apk_template_resources",
        ":chrome_test_java",
-diff --git a/chrome/android/chrome_java_resources.gni b/chrome/android/chrome_java_resources.gni
-index a13c34ab9fdbc..d8348d20b8335 100644
---- a/chrome/android/chrome_java_resources.gni
-+++ b/chrome/android/chrome_java_resources.gni
-@@ -53,6 +53,7 @@ chrome_java_resources = [
-   "java/res/drawable-hdpi/ic_exit_to_app_white_24dp.png",
-   "java/res/drawable-hdpi/ic_file_download_white_24dp.png",
-   "java/res/drawable-hdpi/ic_link_grey600_36dp.png",
-+  "java/res/drawable-hdpi/ic_most_visited_placeholder.png",
-   "java/res/drawable-hdpi/ic_phone_googblue_36dp.png",
-   "java/res/drawable-hdpi/ic_photo_camera.png",
-   "java/res/drawable-hdpi/ic_place_googblue_36dp.png",
-@@ -95,6 +96,7 @@ chrome_java_resources = [
-   "java/res/drawable-mdpi/ic_exit_to_app_white_24dp.png",
-   "java/res/drawable-mdpi/ic_file_download_white_24dp.png",
-   "java/res/drawable-mdpi/ic_link_grey600_36dp.png",
-+  "java/res/drawable-mdpi/ic_most_visited_placeholder.png",
-   "java/res/drawable-mdpi/ic_phone_googblue_36dp.png",
-   "java/res/drawable-mdpi/ic_photo_camera.png",
-   "java/res/drawable-mdpi/ic_place_googblue_36dp.png",
-@@ -139,6 +141,7 @@ chrome_java_resources = [
-   "java/res/drawable-xhdpi/ic_exit_to_app_white_24dp.png",
-   "java/res/drawable-xhdpi/ic_file_download_white_24dp.png",
-   "java/res/drawable-xhdpi/ic_link_grey600_36dp.png",
-+  "java/res/drawable-xhdpi/ic_most_visited_placeholder.png",
-   "java/res/drawable-xhdpi/ic_phone_googblue_36dp.png",
-   "java/res/drawable-xhdpi/ic_photo_camera.png",
-   "java/res/drawable-xhdpi/ic_place_googblue_36dp.png",
-@@ -180,6 +183,7 @@ chrome_java_resources = [
-   "java/res/drawable-xxhdpi/ic_exit_to_app_white_24dp.png",
-   "java/res/drawable-xxhdpi/ic_file_download_white_24dp.png",
-   "java/res/drawable-xxhdpi/ic_link_grey600_36dp.png",
-+  "java/res/drawable-xxhdpi/ic_most_visited_placeholder.png",
-   "java/res/drawable-xxhdpi/ic_phone_googblue_36dp.png",
-   "java/res/drawable-xxhdpi/ic_photo_camera.png",
-   "java/res/drawable-xxhdpi/ic_place_googblue_36dp.png",
-@@ -219,6 +223,7 @@ chrome_java_resources = [
-   "java/res/drawable-xxxhdpi/ic_exit_to_app_white_24dp.png",
-   "java/res/drawable-xxxhdpi/ic_file_download_white_24dp.png",
-   "java/res/drawable-xxxhdpi/ic_link_grey600_36dp.png",
-+  "java/res/drawable-xxxhdpi/ic_most_visited_placeholder.png",
-   "java/res/drawable-xxxhdpi/ic_phone_googblue_36dp.png",
-   "java/res/drawable-xxxhdpi/ic_photo_camera.png",
-   "java/res/drawable-xxxhdpi/ic_place_googblue_36dp.png",
 diff --git a/chrome/android/chrome_public_apk_tmpl.gni b/chrome/android/chrome_public_apk_tmpl.gni
 index 9bf07d2470457..26c1c75715df1 100644
 --- a/chrome/android/chrome_public_apk_tmpl.gni

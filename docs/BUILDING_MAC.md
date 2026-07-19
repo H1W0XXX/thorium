@@ -112,10 +112,7 @@ For this, run:
 python3 ./version.py
 ```
 
-At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for macOS x64 and ARM64.
-The file for MacOS will be downloaded to */Users/$USERNAME/chromium/src/build/pgo_profiles/&#42;.profdata* with the actual file name looking something like 
-'chrome-mac-6167-1706032279-25144dc1c87be275c5981becbafed7785e2f39f2.profdata', which should be added to the end of args.gn as per below.
-Take note of this, as we will be using it in the `args.gn` below.
+At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for macOS x64 and ARM64. Chromium automatically selects the profiles associated with the current checkout.
 
 Lastly, we need to copy the Thorium source files over the Chromium tree.
 For this, run:
@@ -135,7 +132,6 @@ with different configurations. Create the build output directory by running:
 $ gn args out/thorium
 ```
 The contents of '[mac_args.gn](https://github.com/Alex313031/thorium/blob/other/Mac/mac_args.gn)' in the root of this repo should be copy/pasted into the editor.
-*and edit the last line to point to the actual path and file name of the '&#42;.profdata' it*  
 Use the '[mac_ARM_args.gn](https://github.com/Alex313031/thorium/blob/other/Mac/mac_ARM_args.gn)' for arm64 builds.
 
 * For other build arguments, including release settings, see [GN build

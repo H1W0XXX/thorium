@@ -44,10 +44,9 @@ hashes, file-type diagnostics, and the exact tool versions used. Copy
 `Assets.car` and `app.icns` to `src/chrome/app/theme/chromium/mac/`, then review
 and commit them together with their sources.
 
-The workflow pins the M150 deployment target to macOS 12.0 because it does not
-check out Chromium. When updating the Chromium branch, synchronize the
-workflow's `MACOSX_DEPLOYMENT_TARGET` value with
-`build/config/mac/mac_sdk.gni`.
+The workflow explicitly sets the deployment target because it does not check
+out Chromium. When updating the Chromium branch, synchronize the workflow's
+`MACOSX_DEPLOYMENT_TARGET` value with `build/config/mac/mac_sdk.gni`.
 
 Review `Thorium.iconset` for the compatibility application icon and
 `DocumentBadge.iconset` for the document badge. The latter should contain only

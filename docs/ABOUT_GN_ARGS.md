@@ -166,6 +166,4 @@ __thin_lto_enable_optimizations__ &#35; Enable more aggressive thinLTO optimizat
 
 __init_stack_vars_zero__ &#35; Not entirely sure what this does, but enabled at the suggestion of RobRich999.
 
-__chrome_pgo_phase__ &#35; Set the implementation of PGO in Chromium. Options are: 0 (none), 1 (Instrumentation Phase Only), and 2 (Full PGO). 1 and 2 requires setting a *.profdata file for the platform below. Thorium uses 2, except for Debug builds. 1 should only be used when profiling. Cannot be enabled on ChromiumOS/ThoriumOS. Can be disabled for faster compilation. Disabled for Debug builds. See > https://en.wikipedia.org/wiki/Profile-guided_optimization
-
-__pgo_data_path__ &#35; Set the full path to the *.profdata file for PGO. Downloaded when running trunk.py in Thorium. Disabled in Debug builds and ThoriumOS.
+__chrome_pgo_phase__ &#35; Set the implementation of PGO in Chromium. Options are: 0 (none), 1 (Instrumentation Phase Only), and 2 (Full PGO). Thorium uses 2, except for Debug builds, and Chromium automatically selects the downloaded profile associated with the current checkout. Phase 1 should only be used when profiling. Cannot be enabled on ChromiumOS/ThoriumOS. Can be disabled for faster compilation. Disabled for Debug builds. See > https://en.wikipedia.org/wiki/Profile-guided_optimization

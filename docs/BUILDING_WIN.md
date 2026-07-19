@@ -186,10 +186,7 @@ For this, run:
 py -3.11 version.py
 ```
 
-At the end it will download the [PGO profile](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for the native Windows architecture.
-The file for Windows will be downloaded to *C:\src\chromium\src\chrome\build\pgo_profiles\&#42;.profdata* with the actual file name looking something like 
-'chrome-win64-6167-1706032279-97e63d82a0938b7701d8cdf028299c39d523a3c6.profdata', which should be added to the end of args.gn as per below.
-Take note of this, as we will be using it in the `args.gn` below.
+At the end it will download the [PGO profile](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) for the native Windows architecture. Chromium automatically selects the profile associated with the current checkout.
 
 Lastly, we need to copy the Thorium source files over the Chromium tree.
 For this, run:
@@ -214,12 +211,7 @@ gn args out/thorium
 
 This will open up notepad.exe, and this is where we will specify build arguments ("args") which direct Ninja on how to lay out the build directory tree.
 We will be copy/pasting the contents of the [win_args.gn](https://github.com/Alex313031/thorium/blob/main/win_args.gn) file (from *C:\src\Thorium\win_args.gn*) into notepad.
-Notice the three lines at the top, related to API Keys. It is fine to leave them blank, or add the ones you have made.  
-__At the bottom__, though, notice the line that says *pgo_data_path = ""*. This is where we will put the full path to the PGO profile data file we downloaded earlier.
-
-That line should look something like:
-
-`pgo_data_path = "C:\src\chromium\src\chrome\build\pgo_profiles\chrome-win64-6167-1706032279-97e63d82a0938b7701d8cdf028299c39d523a3c6.profdata"`
+Notice the three lines at the top, related to API Keys. It is fine to leave them blank, or add the ones you have made.
 
 * For other build arguments, and what the ones that Thorium uses do, see [ABOUT_GN_ARGS.md](https://github.com/Alex313031/thorium/blob/main/docs/ABOUT_GN_ARGS.md) & [win_args.list](https://github.com/Alex313031/thorium/blob/main/infra/win_args.list)
 * For more info on GN, run `gn help` on the command line or read the [quick start guide](https://gn.googlesource.com/gn/+/main/docs/quick_start.md).

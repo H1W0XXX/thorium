@@ -328,7 +328,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--inventory",
         type=readable_file,
-        help="Normalized TSV inventory; defaults to the reviewed M150 inventory.",
+        help="Normalized TSV inventory; defaults to the reviewed inventory.",
     )
     parser.add_argument(
         "--dry-run",
@@ -341,7 +341,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_arg_parser().parse_args()
     inventory = args.inventory or (
-        Path(__file__).resolve().parent / "config/m150_xtb_additions.tsv"
+        Path(__file__).resolve().parent / "config/xtb_additions.tsv"
     )
     inventory_groups = group_inventory(load_inventory(inventory))
     additions_by_target = [

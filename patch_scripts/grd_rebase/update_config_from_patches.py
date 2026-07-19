@@ -11,8 +11,6 @@ patch structure:
 Reviewed message exceptions and external XTB additions remain manually owned.
 """
 
-from __future__ import annotations
-
 import argparse
 import csv
 from dataclasses import dataclass

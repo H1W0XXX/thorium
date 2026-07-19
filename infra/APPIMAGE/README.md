@@ -17,11 +17,11 @@ python3 appimage.py build
 You can also pass a package path directly:
 
 ```shell
-python3 appimage.py build thorium-browser_150.0.7871.101_SSE3.deb
+python3 appimage.py build thorium-browser_VERSION_SSE3.deb
 ```
 
 The resulting AppImage is written to `out/` and named after the DEB, for
-example `out/Thorium_Browser_150.0.7871.101_SSE3.AppImage`.
+example `out/Thorium_Browser_VERSION_SSE3.AppImage`.
 
 You can use it standalone after making it executable with
 `chmod +x out/Thorium_Browser_*.AppImage`, or (*recommended*) integrate it with

@@ -4,8 +4,6 @@
 
 """Build, test, and publish Thorium's chrome-pak-customizer binaries."""
 
-from __future__ import annotations
-
 import argparse
 from contextlib import contextmanager
 from datetime import datetime, timezone

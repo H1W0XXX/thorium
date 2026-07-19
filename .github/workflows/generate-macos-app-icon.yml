@@ -14,7 +14,7 @@ jobs:
   generate:
     runs-on: macos-26
     # Keep this synchronized with build/config/mac/mac_sdk.gni when updating
-    # the Chromium branch. M150 uses macOS 12.0.
+    # the Chromium branch.
     env:
       MACOSX_DEPLOYMENT_TARGET: "12.0"
     steps:

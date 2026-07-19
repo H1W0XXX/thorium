@@ -3899,12 +3899,6 @@ perfetto_verbose_logs_enabled
     Current value (from the default) = false
       From //third_party/perfetto/gn/perfetto.gni:275
 
-pgo_data_path
-    Current value (from the default) = ""
-      From //build/config/compiler/pgo/pgo.gni:35
-
-    When using chrome_pgo_phase = 2, read profile data from this path.
-
 pkg_config
     Current value (from the default) = ""
       From //build/config/linux/pkg_config.gni:33
@@ -6736,4 +6730,3 @@ zlib_symbols_visible
 
     Expose zlib's symbols, used by Node.js to provide zlib APIs for its native
     modules.
-

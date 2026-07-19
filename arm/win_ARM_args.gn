@@ -60,4 +60,3 @@ use_thin_lto = true
 thin_lto_enable_optimizations = true
 enable_rust = true
 chrome_pgo_phase = 2
-pgo_data_path = "C:\src\chromium\src\chrome\build\pgo_profiles\chrome-win-arm64-main-1780336787-195b54a8e2b5affc4308937ade3f5c3ca3397612-ebe81572e57797c4e51db7cf7740d51140e35622.profdata"

@@ -151,8 +151,7 @@ It should be used before every separate build. See the [Updating](#updating) sec
 __IMPORTANT__
 This will update and sync the sources to the latest revision (tip of tree) and ensure you have all the version tags.
 
-- Then, to check out the current Chromium revision that Thorium is using, run `python3 ./version.py`. At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) used by the platform workflow. The file will be downloaded to *//chromium/src/chrome/build/pgo_profiles/&#42;.profdata* with the actual file name looking something like 'chrome-linux-6167-1706004111-41f78c57fb3a1fe49a5c549b16f0221465339af9.profdata', which should be added to the end of args.gn as per below.
-Take note of this, as we will be using it in the `args.gn` below.
+- Then, to check out the current Chromium revision that Thorium is using, run `python3 ./version.py`. At the end it will download the [PGO profiles](https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/docs/pgo.md) used by the platform workflow. Chromium automatically resolves the profile selected by the current checkout.
 - Then, (from where you cloned this repo) run `python3 ./setup.py`. This will copy all the files and patches to the needed locations.
 - NOTE: To build for MacOS, use `python3 ./setup.py --mac`. To build for Raspberry Pi, use `python3 ./setup.py --raspi`. Use `python3 ./setup.py --help` to see all options/platforms.
 
@@ -162,7 +161,7 @@ to generate `.ninja` files in the build output directory. You can create any num
 with different configurations. From the Chromium `src` directory, run
 `gn args out/thorium` directly for Linux, Windows, macOS, Android, ChromeOS,
 and supported cross-builds. Copy the contents
-of '[args.gn](https://github.com/Alex313031/thorium/blob/main/args.gn)' in the root of this repo into the editor. Note that for Windows, Mac, ChromiumOS, or Android there are separate &#42;_args.gn files for those platforms. *--Include your api keys here at the top or leave blank, and edit the last line to point to the actual path and file name of '&#42;.profdata'*
+of '[args.gn](https://github.com/Alex313031/thorium/blob/main/args.gn)' in the root of this repo into the editor. Note that for Windows, Mac, ChromiumOS, or Android there are separate &#42;_args.gn files for those platforms. Include your API keys at the top or leave them blank.
 - For more info about args.gn, read the [ABOUT_GN_ARGS.md](https://github.com/Alex313031/thorium/blob/main/infra/DEBUG/ABOUT_GN_ARGS.md) file.
 - '[infra/args.list](https://github.com/Alex313031/thorium/blob/main/infra/args.list)' contains an alphabetical list with descriptions of all possible build arguments; [gn_args.list](https://github.com/Alex313031/thorium/blob/main/infra/gn_args.list) gives a similar list but with the flags in args.gn added.
 

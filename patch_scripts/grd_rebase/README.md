@@ -10,7 +10,7 @@ The runtime surface is intentionally small:
   old and new GRIT translation IDs, and copies compatible upstream XTB
   translations to the new Thorium IDs.
 - `merge_thorium_xtb.py` merges reviewed Thorium-owned translation additions
-  from `config/m150_xtb_additions.tsv` into Chromium XTB bundles.
+  from `config/xtb_additions.tsv` into Chromium XTB bundles.
 - `update_config_from_patches.py` refreshes low-risk config rows that can be
   derived from the current patch series.
 
@@ -33,16 +33,17 @@ The files in `config/` are reviewed inputs, not generated setup output:
 - `feature_patch_message_ownership.csv`: feature-patch and overlay-added
   message ownership; used to prevent feature-patch strings from being handled
   by the overlay replacement workflow.
-- `m150_xtb_additions.tsv`: canonical reviewed translation additions; currently
+- `xtb_additions.tsv`: canonical reviewed translation additions; currently
   3888 translation rows across 324 XTB files. Rows are grouped by the explicit
   `owner_patch` column, then by bundle, translation ID, and locale;
   `source_path` separately records where each translation was recovered or
-  reviewed.
+  reviewed. A milestone in `source_path` is audit provenance only; it does not
+  restrict which Chromium checkout receives the reviewed translation.
 
 `update_config_from_patches.py` may rewrite
 `config/feature_patch_message_ownership.csv` and
 `config/file_allowlist.csv` by default. It does not rewrite
-`message_allowlist.csv` or `m150_xtb_additions.tsv`; those remain reviewed
+`message_allowlist.csv` or `xtb_additions.tsv`; those remain reviewed
 inputs because they contain special text behavior or translation-data
 decisions.
 
@@ -89,9 +90,9 @@ python3 patch_scripts/grd_rebase/sync_grd_strings.py \
   --file-allowlist patch_scripts/grd_rebase/config/file_allowlist.csv \
   --message-allowlist patch_scripts/grd_rebase/config/message_allowlist.csv \
   --dry-run \
-  --xtb-conflict-report out/grd_rebase/m150_xtb_conflicts_summary.tsv \
-  --xtb-missing-report out/grd_rebase/m150_xtb_missing_summary.tsv \
-  > out/grd_rebase/m150_grd_sync_dry_run.tsv
+  --xtb-conflict-report out/grd_rebase/xtb_conflicts_summary.tsv \
+  --xtb-missing-report out/grd_rebase/xtb_missing_summary.tsv \
+  > out/grd_rebase/grd_sync_dry_run.tsv
 ```
 
 Dry-run the reviewed additions merge:
@@ -116,9 +117,9 @@ py -3.11 patch_scripts/grd_rebase/sync_grd_strings.py `
   --file-allowlist patch_scripts/grd_rebase/config/file_allowlist.csv `
   --message-allowlist patch_scripts/grd_rebase/config/message_allowlist.csv `
   --dry-run `
-  --xtb-conflict-report out/grd_rebase/m150_xtb_conflicts_summary.tsv `
-  --xtb-missing-report out/grd_rebase/m150_xtb_missing_summary.tsv `
-  > out/grd_rebase/m150_grd_sync_dry_run.tsv
+  --xtb-conflict-report out/grd_rebase/xtb_conflicts_summary.tsv `
+  --xtb-missing-report out/grd_rebase/xtb_missing_summary.tsv `
+  > out/grd_rebase/grd_sync_dry_run.tsv
 
 py -3.11 patch_scripts/grd_rebase/merge_thorium_xtb.py `
   C:\src\chromium\src `

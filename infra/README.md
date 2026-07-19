@@ -74,8 +74,6 @@ gn args out/thorium --list=ARGUMENT_NAME
   debugging switches. Some deliberately weaken browser security and must not
   be used for normal browsing. See
   [`docs/CMDLINE_FLAGS_LIST.md`](../docs/CMDLINE_FLAGS_LIST.md).
-- [`THORIUM_DEV_BOOKMARKS.html`](THORIUM_DEV_BOOKMARKS.html) is an optional
-  development and rebasing bookmark collection; it is not a build input.
 - [`cgpt`](cgpt) is a prebuilt x86-64 Linux ChromeOS GPT utility. Treat it as a
   platform-specific binary and verify its provenance and suitability before
   placing it in `PATH`.

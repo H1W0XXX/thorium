@@ -23,8 +23,6 @@ authoritative command-line reference.
 
 - [`Arch_Linux`](Arch_Linux/) contains the Arch Linux `PKGBUILD` and associated
   package metadata.
-- [`Flatpak`](Flatpak/) contains a standalone Flatpak source tree, recipes, and
-  Chromium patches.
 - [`APPIMAGE`](APPIMAGE/README.md) and
   [`portable`](portable/README.md) provide separate post-build packaging
   workflows.

@@ -33,6 +33,18 @@
      "accepted.",
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kThoriumInternalUrlSchemeBranding)},
+    {"disable-qr-code-generator",
+     "Disable QR Code Generator",
+     "Disables the QR code generator menu entries used to share page links. "
+     "The QRCodeGeneratorEnabled enterprise policy remains authoritative.",
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kThoriumDisableQRCodeGenerator)},
+    {"hide-cast-context-menu",
+     "Hide Cast Context Menu Item",
+     "Hides the Cast menu item from page and media context menus without "
+     "disabling Media Router or other Cast entry points.",
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kThoriumHideCastContextMenu)},
 #if !BUILDFLAG(IS_ANDROID)
     {"left-aligned-tab-search-button",
      "Left-Aligned Tab Search Button",

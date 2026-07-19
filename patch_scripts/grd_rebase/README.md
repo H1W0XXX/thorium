@@ -37,11 +37,15 @@ The files in `config/` are reviewed inputs, not generated setup output:
 - `xtb_additions.tsv`: canonical reviewed translation additions; currently
   3888 translation rows across 324 XTB files. They form 48 owner/bundle/message
   groups, each covering all 81 supported locales. Rows are grouped by the
-  explicit `owner_patch` column, then by bundle, translation ID, and locale;
+  explicit `owner` column, then by bundle, translation ID, and locale. An owner
+  may be a feature patch path or a stable GRD rebase workflow identifier, such
+  as `grd_rebase:branding:IDS_VERSION_UI_LICENSE`; translations produced by
+  branding synchronization do not need a synthetic or historical patch owner.
   `source_path` separately records where each translation was recovered or
-  reviewed. A milestone in `source_path` is audit provenance only; it does not
-  restrict which Chromium checkout receives the reviewed translation. Pass an
-  alternate reviewed inventory to `merge_thorium_xtb.py` with `--inventory`.
+  reviewed. It is audit provenance only and may use a stable reviewed source
+  identifier instead of a historical Git commit; it does not restrict which
+  Chromium checkout receives the translation. Pass an alternate reviewed
+  inventory to `merge_thorium_xtb.py` with `--inventory`.
 
 `update_config_from_patches.py` may rewrite
 `config/feature_patch_message_ownership.csv` and

@@ -103,7 +103,6 @@ other/new-tab-button-middle-click.patch
 other/thorium-2024-ui-core.patch
 other/thorium-2024-menu-interactions.patch
 other/custom-tab-width.patch
-other/classic-bookmarks.patch
 other/expand-chrome-color-choices.patch
 other/windows-menu-style-overrides.patch
 other/classic-omnibox.patch

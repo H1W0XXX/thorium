@@ -11,10 +11,10 @@ index 9694b7eefa644..17a2547c61383 100644
    <meta charset="utf-8">
    <meta name="color-scheme" content="light dark">
 diff --git a/chrome/browser/ui/bookmarks/bookmark_utils.cc b/chrome/browser/ui/bookmarks/bookmark_utils.cc
-index ed11adf55026f..31a8cb627f99c 100644
+index ed11adf55026f..67b2a7084c50d 100644
 --- a/chrome/browser/ui/bookmarks/bookmark_utils.cc
 +++ b/chrome/browser/ui/bookmarks/bookmark_utils.cc
-@@ -383,15 +383,31 @@ bool CanAllBeEditedByUser(
+@@ -383,15 +383,37 @@ bool CanAllBeEditedByUser(
  
  ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
                                       ui::ColorVariant color) {
@@ -27,6 +27,12 @@ index ed11adf55026f..31a8cb627f99c 100644
 +                               : IDR_BOOKMARK_BAR_FOLDER_MANAGED;
 +    return ui::ImageModel::FromImageSkia(
 +        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(default_id));
++  }
++#elif BUILDFLAG(IS_LINUX)
++  if (thorium_2024 && icon_type == BookmarkFolderIconType::kNormal) {
++    return ui::ImageModel::FromImageSkia(
++        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
++            IDR_FOLDER_CLOSED));
 +  }
 +#endif
 +
@@ -414,7 +420,7 @@ index 4357fc482b7f4..ef2ff5bce8c7e 100644
               ? omnibox::kSendIcon
               : omnibox::kShareLinuxChromeRefreshOldIcon;
 diff --git a/chrome/browser/ui/tabs/tab_style.cc b/chrome/browser/ui/tabs/tab_style.cc
-index fbfe095b4c1a3..2e896f7d4cbbe 100644
+index fbfe095b4c1a3..845c89f703b9f 100644
 --- a/chrome/browser/ui/tabs/tab_style.cc
 +++ b/chrome/browser/ui/tabs/tab_style.cc
 @@ -20,12 +20,16 @@ namespace {
@@ -475,17 +481,16 @@ index fbfe095b4c1a3..2e896f7d4cbbe 100644
    return gfx::Insets::TLBR(GetLayoutConstant(LayoutConstant::kTabStripPadding),
                             kSeparatorHorizontalMargin,
                             GetLayoutConstant(LayoutConstant::kTabStripPadding),
-@@ -130,6 +144,9 @@ gfx::Insets TabStyle::GetSeparatorMargins() const {
+@@ -130,7 +144,7 @@ gfx::Insets TabStyle::GetSeparatorMargins() const {
  }
  
  int TabStyle::GetSeparatorCornerRadius() const {
-+  if (features::IsThorium2024()) {
-+    return 0;
-+  }
-   return GetSeparatorSize().width() / 2;
+-  return GetSeparatorSize().width() / 2;
++  return 0;
  }
  
-@@ -268,6 +285,15 @@ SkColor TabStyle::GetCurrentTabBackgroundColor(
+ std::tuple<float, float, float, SkColor> TabStyle::GetContrastRatioValues(
+@@ -268,6 +282,15 @@ SkColor TabStyle::GetCurrentTabBackgroundColor(
  }
  
  gfx::Insets TabStyle::GetContentsInsets() const {

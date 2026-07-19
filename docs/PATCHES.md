@@ -175,7 +175,6 @@ overlay-derived, or still need separate provenance review.
 - [`thorium-2024-ui-core.patch`](../other/thorium-2024-ui-core.patch) - Defines the optional Thorium 2024 feature and its native UI dimensions, colors, shapes, and flag-gated Settings WebUI styling. Sharing Hub enablement, menu interactions, New Tab Button input behavior, and standalone command-line styles remain in dedicated patches.
 - [`thorium-2024-menu-interactions.patch`](../other/thorium-2024-menu-interactions.patch) - Preserves the Th24-gated macOS menu navigation/accelerator behavior and Windows mnemonic visibility outside the core styling patch.
 - [`custom-tab-width.patch`](../other/custom-tab-width.patch)
-- [`classic-bookmarks.patch`](../other/classic-bookmarks.patch)
 - [`expand-chrome-color-choices.patch`](../other/expand-chrome-color-choices.patch)
 - [`windows-menu-style-overrides.patch`](../other/windows-menu-style-overrides.patch)
 - [`classic-omnibox.patch`](../other/classic-omnibox.patch)

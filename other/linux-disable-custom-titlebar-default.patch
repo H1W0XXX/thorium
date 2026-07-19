@@ -26,3 +26,23 @@ index cf5b14d73376b..a345171bd9c05 100644
  }
  
  bool IsWmTiling(WindowManagerName window_manager) {
+diff --git a/ui/ozone/platform/wayland/ozone_platform_wayland.cc b/ui/ozone/platform/wayland/ozone_platform_wayland.cc
+index 39b1aa814c252..23df506f45c47 100644
+--- a/ui/ozone/platform/wayland/ozone_platform_wayland.cc
++++ b/ui/ozone/platform/wayland/ozone_platform_wayland.cc
+@@ -342,11 +342,10 @@ class OzonePlatformWayland : public OzonePlatform,
+     static bool initialised = false;
+     if (!initialised) {
+       // Server-side decorations on Wayland require support of xdg-decoration or
+-      // some other protocol extensions specific for the particular environment.
+-      // Whether the environment has any support only gets known at run time, so
+-      // we use the custom frame by default.  If there is support, the user will
+-      // be able to enable the system frame.
+-      properties->custom_frame_pref_default = true;
++      // another environment-specific protocol. Prefer system decorations when
++      // they are available; BrowserNativeWidgetAuraLinux still forces a custom
++      // frame at runtime when the compositor does not support them.
++      properties->custom_frame_pref_default = false;
+ 
+       // Wayland uses sub-surfaces to show tooltips, and sub-surfaces must be
+       // bound to their root surfaces always, but finding the correct root

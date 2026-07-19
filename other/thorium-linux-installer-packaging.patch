@@ -634,7 +634,7 @@ index 4b6ea67c64bbc..3f7e6f7dca019 100644
    </web-browsers>
  </default-apps>
 diff --git a/chrome/installer/linux/common/desktop.template b/chrome/installer/linux/common/desktop.template
-index bf572f69720a0..06ae1f8a6a870 100644
+index bf572f69720a0..b9e904b781c70 100644
 --- a/chrome/installer/linux/common/desktop.template
 +++ b/chrome/installer/linux/common/desktop.template
 @@ -1,6 +1,6 @@

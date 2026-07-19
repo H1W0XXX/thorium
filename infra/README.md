@@ -1,18 +1,98 @@
-## Thorium Infrastructure (Infra) <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_light.svg#gh-dark-mode-only"> <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_dark.svg#gh-light-mode-only">
+# Thorium infrastructure <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_light.svg#gh-dark-mode-only" alt="Build Thorium" width="48"> <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_dark.svg#gh-light-mode-only" alt="Build Thorium" width="48">
 
-&nbsp;&nbsp;This directory contains build tools, generated GN argument lists, and platform packaging resources. \
-&nbsp;&nbsp;The [args.list](https://github.com/Alex313031/thorium/blob/main/infra/args.list) file shows all possible build arguments, and the [gn_args.list](https://github.com/Alex313031/thorium/blob/main/infra/gn_args.list) shows all possible build args after the Thorium args have been added, and the [win_args.list](https://github.com/Alex313031/thorium/blob/main/infra/win_args.list) shows all possible build arguments for Windows builds. \
-&nbsp;&nbsp;The &#42;.gn files contain what you should use in the args.gn for platforms other than the normal Linux release (which is [here](https://github.com/Alex313031/thorium/blob/main/args.gn) in the root of this repo.)
+This directory contains Thorium development tools, diagnostic configurations,
+standalone packaging resources, and supporting metadata. Platform build
+instructions are maintained in the
+[`docs`](../docs/README.md) directory rather than duplicated here.
 
- - The GN files [Here](https://github.com/Alex313031/thorium/blob/main/arm/android) are for Android (x86, x64, arm32, arm64). > https://chromium.googlesource.com/chromium/src/+/main/docs/android_build_instructions.md
- - The [cros_args.gn](https://github.com/Alex313031/thorium/blob/main/other/CrOS/cros_args.gn) is for ChromiumOS on Linux. > https://chromium.googlesource.com/chromium/src/+/main/docs/chromeos_build_instructions.md#Chromium-OS-on-Linux-linux_chromeos
- - The [mac_args.gn](https://github.com/Alex313031/thorium/blob/main/other/Mac/mac_args.gn) is for x64 MacOS. [mac_ARM_args.gn](https://github.com/Alex313031/thorium/blob/main/other/Mac/mac_ARM_args.gn) is for ARM64 M1/M2 MacOS.)
- - The [win_args.gn](https://github.com/Alex313031/thorium/blob/main/win_args.gn) is for Windows x64 \
- - The [cgpt](https://github.com/Alex313031/thorium/blob/main/infra/cgpt) file is a compiler optimized build of cgpt for Linux/ChromiumOS, you can put anywhere in your $PATH. See > https://chromium.googlesource.com/chromiumos/platform/vboot_reference/+/refs/heads/main/README
- - The DEBUG dir is for DEBUGGING, see the [README.md](https://github.com/Alex313031/thorium/tree/main/infra/DEBUG#readme) inside it.
+## Primary tools
 
-&nbsp;&ndash; See the [Docs](https://github.com/Alex313031/thorium/tree/main/docs#readme) dir for more instructions on building for a particular platform. \
-&nbsp;&ndash; The [DEV_CMDLINE_FLAGS.txt](https://github.com/Alex313031/thorium/blob/main/infra/DEV_CMDLINE_FLAGS.txt) file contains useful command-line flags for debugging, web development, and Thorium development. For a broader, continuously updated Chromium switch list, see [Chromium Command Line Switches](https://peter.sh/experiments/chromium-command-line-switches/). \
-&nbsp;&ndash; The [THORIUM_DEV_BOOKMARKS.html](https://github.com/Alex313031/thorium/blob/main/infra/THORIUM_DEV_BOOKMARKS.html) file contain the bookmarks I use for Thorium development and rebasing the files it uses.
+- [`APPIMAGE`](APPIMAGE/README.md) builds and extracts Linux AppImages from a
+  Thorium DEB.
+- [`DEBUG`](DEBUG/README.md) contains true Debug and Release diagnostic GN
+  configurations, `build_debug.py`, and the Thorium UI Debug Shell resources.
+- [`portable`](portable/README.md) creates Linux and Windows portable ZIP
+  archives from existing release packages.
+- [`build_llvm.py`](build_llvm.py) builds the optimized LLVM/Clang, LLD, and
+  Polly toolchain required by Thorium's LLVM optimization patch.
 
-<img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/thorium_infra_256.png" width="200">
+The Python tools require Python 3.11 or newer. Their `--help` output is the
+authoritative command-line reference.
+
+## Packaging resources
+
+- [`Arch_Linux`](Arch_Linux/) contains the Arch Linux `PKGBUILD` and associated
+  package metadata.
+- [`Flatpak`](Flatpak/) contains a standalone Flatpak source tree, recipes, and
+  Chromium patches.
+- [`APPIMAGE`](APPIMAGE/README.md) and
+  [`portable`](portable/README.md) provide separate post-build packaging
+  workflows.
+
+These resources are not all invoked by the repository's main `build.py`
+workflow. Review the documentation and current state of the selected packaging
+target before using it for a release.
+
+## Build configurations
+
+Maintained release GN configurations are organized by target:
+
+- [`args.gn`](../args.gn): Linux x64;
+- [`win_args.gn`](../win_args.gn): Windows x64;
+- [`other/Mac`](../other/Mac/): macOS x64 and ARM64;
+- [`other/CrOS/cros_args.gn`](../other/CrOS/cros_args.gn):
+  ThoriumOS/ChromiumOS;
+- [`arm/android`](../arm/android/): Android x86, x64, ARM32, and ARM64;
+- [`arm/raspi/raspi_args.gn`](../arm/raspi/raspi_args.gn): Raspberry Pi Linux
+  ARM64;
+- [`arm/win_ARM_args.gn`](../arm/win_ARM_args.gn): Windows on ARM64;
+- [`DEBUG`](DEBUG/README.md): Debug, Release-with-DCHECK, and
+  Release-with-symbols configurations.
+
+See [`docs/ABOUT_GN_ARGS.md`](../docs/ABOUT_GN_ARGS.md) for current usage and
+policy. Do not combine unrelated platform or SIMD profiles.
+
+The available GN arguments, defaults, and source locations change with
+Chromium. Query the configured output directory for the revision being built:
+
+```shell
+gn args out/thorium --list
+```
+
+Inspect one argument with:
+
+```shell
+gn args out/thorium --list=ARGUMENT_NAME
+```
+
+## Supporting files
+
+- [`thor_ver`](thor_ver) is the default Windows/profile metadata template.
+  [`setup.py`](../setup.py) selects the appropriate variant and copies it into
+  the Chromium output directory.
+- [`CHROMIUM_LICENSE`](CHROMIUM_LICENSE) records the Chromium BSD-style license
+  used by Chromium-derived branding resources.
+- [`DEV_CMDLINE_FLAGS.txt`](DEV_CMDLINE_FLAGS.txt) contains development and
+  debugging switches. Some deliberately weaken browser security and must not
+  be used for normal browsing. See
+  [`docs/CMDLINE_FLAGS_LIST.md`](../docs/CMDLINE_FLAGS_LIST.md).
+- [`THORIUM_DEV_BOOKMARKS.html`](THORIUM_DEV_BOOKMARKS.html) is an optional
+  development and rebasing bookmark collection; it is not a build input.
+- [`cgpt`](cgpt) is a prebuilt x86-64 Linux ChromeOS GPT utility. Treat it as a
+  platform-specific binary and verify its provenance and suitability before
+  placing it in `PATH`.
+
+## Standalone component
+
+[`upgrader`](upgrader/) is a nested, standalone Windows upgrader source tree.
+It is not currently connected to Thorium's main build or browser updater code
+and should not be treated as an enabled product component.
+
+## Related documentation
+
+- [Documentation index](../docs/README.md)
+- [Linux build guide](../docs/BUILDING.md)
+- [GN argument guide](../docs/ABOUT_GN_ARGS.md)
+- [Debugging infrastructure](DEBUG/README.md)
+
+<img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/thorium_infra_256.png" alt="Thorium infrastructure" width="200">

@@ -16,15 +16,14 @@ from typing import Sequence
 
 
 EXIT_FAILURE = 111
-PGO_GS_URL = "chromium-optimization-profiles/pgo_profiles"
 OVERLAY_COMPONENTS = ("chrome", "components", "content", "third_party", "ui")
 PAK_METADATA_FILES = ("README.chromium", "LICENSE", "OWNERS")
 SIMD_PROFILES = {
-    "avx512": ("AVX512", "wrapper-avx512", None),
-    "avx2": ("AVX2", "wrapper-avx2", None),
-    "sse4": ("SSE4.1", "wrapper-sse4", None),
-    "sse3": ("SSE3", "wrapper-sse3", "win32"),
-    "sse2": ("SSE2", "wrapper-sse2", "win32"),
+    "avx512": ("AVX512", "wrapper-avx512"),
+    "avx2": ("AVX2", "wrapper-avx2"),
+    "sse4": ("SSE4.1", "wrapper-sse4"),
+    "sse3": ("SSE3", "wrapper-sse3"),
+    "sse2": ("SSE2", "wrapper-sse2"),
 }
 
 
@@ -56,7 +55,7 @@ def thor_ver_source(thorium_root: Path, profile: str) -> Path:
     if profile == "woa":
         return thorium_root / "arm" / "thor_ver"
     if profile in SIMD_PROFILES:
-        source_name, _, _ = SIMD_PROFILES[profile]
+        source_name, _ = SIMD_PROFILES[profile]
         return thorium_root / "other" / source_name / "thor_ver"
     return thorium_root / "infra" / "thor_ver"
 
@@ -64,14 +63,6 @@ def thor_ver_source(thorium_root: Path, profile: str) -> Path:
 def pak_source(thorium_root: Path, profile: str) -> Path:
     filename = "pak_arm64" if profile == "raspi" else "pak"
     return thorium_root / "pak_src" / "binaries" / filename
-
-
-def profile_downloads_pgo(profile: str) -> bool:
-    if profile in ("woa", "android"):
-        return True
-    if profile in SIMD_PROFILES:
-        return SIMD_PROFILES[profile][2] is not None
-    return False
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
@@ -283,21 +274,6 @@ def apply_grd_rebase(thorium_root: Path, chromium_src: Path) -> None:
     run([sys.executable, str(merge_script), str(chromium_src)], thorium_root)
 
 
-def download_pgo(chromium_src: Path, target: str) -> None:
-    updater = chromium_src / "tools" / "update_pgo_profiles.py"
-    print(f"\nDownloading Chromium PGO profile: {target}")
-    run(
-        [
-            sys.executable,
-            str(updater),
-            f"--target={target}",
-            "update",
-            f"--gs-url-base={PGO_GS_URL}",
-        ],
-        chromium_src,
-    )
-
-
 def copy_version_metadata(
     thorium_root: Path,
     chromium_src: Path,
@@ -346,11 +322,10 @@ def prepare_profile(profile: str, thorium_root: Path, chromium_src: Path) -> Non
     if profile == "woa":
         print("\nCopying Windows on ARM64 files")
         copy_version_metadata(thorium_root, chromium_src, thorium_root / "arm")
-        download_pgo(chromium_src, "win-arm64")
         return
 
     if profile in SIMD_PROFILES:
-        source_name, wrapper_name, pgo_target = SIMD_PROFILES[profile]
+        source_name, wrapper_name = SIMD_PROFILES[profile]
         print(f"\nCopying {source_name} build files")
         copy_version_metadata(
             thorium_root,
@@ -358,8 +333,6 @@ def prepare_profile(profile: str, thorium_root: Path, chromium_src: Path) -> Non
             thorium_root / "other" / source_name,
             wrapper_name,
         )
-        if pgo_target:
-            download_pgo(chromium_src, pgo_target)
         return
 
     if profile == "android":
@@ -382,7 +355,6 @@ def prepare_profile(profile: str, thorium_root: Path, chromium_src: Path) -> Non
         )
         for relative_path in android_resources:
             remove_file(chromium_src / relative_path)
-        download_pgo(chromium_src, "android-arm32")
         return
     if profile == "cros":
         print("\nCopying ChromiumOS build files")
@@ -447,7 +419,7 @@ def validate_inputs(profile: str, thorium_root: Path, chromium_src: Path) -> Non
             thorium_root / "arm" / "thorium_version.txt",
         )
     elif profile in SIMD_PROFILES:
-        source_name, wrapper_name, _ = SIMD_PROFILES[profile]
+        source_name, wrapper_name = SIMD_PROFILES[profile]
         profile_files = (
             thorium_root / "other" / source_name / "thorium_version.txt",
         )
@@ -461,15 +433,6 @@ def validate_inputs(profile: str, thorium_root: Path, chromium_src: Path) -> Non
         )
     elif profile not in ("default", "android"):
         raise SetupError(f"unsupported setup profile: {profile}")
-
-    if profile_downloads_pgo(profile):
-        profile_files += (
-            chromium_src / "tools" / "update_pgo_profiles.py",
-            chromium_src
-            / "third_party"
-            / "depot_tools"
-            / "download_from_google_storage.py",
-        )
 
     for directory in profile_directories:
         require_directory(directory, "profile source")

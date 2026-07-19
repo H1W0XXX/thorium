@@ -32,13 +32,16 @@ The files in `config/` are reviewed inputs, not generated setup output:
   `file_allowlist.csv` text-sync files; this CSV only keeps special rows.
 - `feature_patch_message_ownership.csv`: feature-patch and overlay-added
   message ownership; used to prevent feature-patch strings from being handled
-  by the overlay replacement workflow.
+  by the overlay replacement workflow. Pass a non-default ownership file to
+  `sync_grd_strings.py` with `--feature-message-ownership`.
 - `xtb_additions.tsv`: canonical reviewed translation additions; currently
-  3888 translation rows across 324 XTB files. Rows are grouped by the explicit
-  `owner_patch` column, then by bundle, translation ID, and locale;
+  3888 translation rows across 324 XTB files. They form 48 owner/bundle/message
+  groups, each covering all 81 supported locales. Rows are grouped by the
+  explicit `owner_patch` column, then by bundle, translation ID, and locale;
   `source_path` separately records where each translation was recovered or
   reviewed. A milestone in `source_path` is audit provenance only; it does not
-  restrict which Chromium checkout receives the reviewed translation.
+  restrict which Chromium checkout receives the reviewed translation. Pass an
+  alternate reviewed inventory to `merge_thorium_xtb.py` with `--inventory`.
 
 `update_config_from_patches.py` may rewrite
 `config/feature_patch_message_ownership.csv` and
@@ -61,7 +64,7 @@ Thorium-owned additions.
 
 Use any Python 3.11+ interpreter available on the host:
 
-```bash
+```shell
 python3 patch_scripts/grd_rebase/sync_grd_strings.py --help
 python3 patch_scripts/grd_rebase/merge_thorium_xtb.py --help
 ```
@@ -78,13 +81,13 @@ normalize them internally where needed.
 
 Dry-run low-risk config refresh:
 
-```bash
+```shell
 python3 patch_scripts/grd_rebase/update_config_from_patches.py --dry-run
 ```
 
 Dry-run the overlay string sync and write compact audit summaries:
 
-```bash
+```shell
 python3 patch_scripts/grd_rebase/sync_grd_strings.py \
   /path/to/chromium/src \
   --file-allowlist patch_scripts/grd_rebase/config/file_allowlist.csv \
@@ -97,17 +100,22 @@ python3 patch_scripts/grd_rebase/sync_grd_strings.py \
 
 Dry-run the reviewed additions merge:
 
-```bash
+```shell
 python3 patch_scripts/grd_rebase/merge_thorium_xtb.py \
   /path/to/chromium/src \
   --dry-run
 ```
 
-Expected current additions summary:
+The summary always reports the validated inventory size and then classifies
+each row according to the supplied Chromium worktree, for example:
 
 ```text
-validated 3888 Thorium translations across 324 XTB files: 3807 inserted, 74 refreshed, 7 already present, 324 files changed
+validated 3888 Thorium translations across 324 XTB files: <inserted> inserted, <refreshed> refreshed, <already-present> already present, <changed-files> files changed
 ```
+
+Only the first two counts are inventory invariants. The inserted, refreshed,
+already-present, and changed-file counts vary with the Chromium revision and
+the current state of its worktree.
 
 Equivalent PowerShell form:
 
@@ -130,13 +138,13 @@ py -3.11 patch_scripts/grd_rebase/merge_thorium_xtb.py `
 
 Refresh low-risk config from the current patch series:
 
-```bash
+```shell
 python3 patch_scripts/grd_rebase/update_config_from_patches.py
 ```
 
 Apply overlay GRD/GRDP replacements and copied XTB translations:
 
-```bash
+```shell
 python3 patch_scripts/grd_rebase/sync_grd_strings.py \
   /path/to/chromium/src \
   --file-allowlist patch_scripts/grd_rebase/config/file_allowlist.csv \
@@ -145,7 +153,7 @@ python3 patch_scripts/grd_rebase/sync_grd_strings.py \
 
 Apply reviewed XTB additions:
 
-```bash
+```shell
 python3 patch_scripts/grd_rebase/merge_thorium_xtb.py \
   /path/to/chromium/src
 ```
@@ -189,7 +197,7 @@ IDs. Those warnings are expected when their TSV reports are reviewed.
 
 Basic syntax checks:
 
-```bash
+```shell
 python3 -m py_compile \
   patch_scripts/grd_rebase/update_config_from_patches.py \
   patch_scripts/grd_rebase/sync_grd_strings.py \

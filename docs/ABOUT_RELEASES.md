@@ -1,54 +1,76 @@
-# Explainer for Thorium releases
+# Thorium releases and CPU variants
 
-This document was created to explain __SSE__ and __AVX__, and to guide users on which 
-version of Thorium is appropriate to download for their machine.
+Thorium provides platform and CPU-specific builds. An x86 binary compiled for
+an unsupported instruction profile can fail before the browser starts, so the
+variant name must be treated as a minimum requirement rather than a marketing
+label.
 
-Many users have been confused and posted issues across my repos on what option they should choose when downloading a release. 
-AVX what? SSE huh? What's the difference? Why does one work on my machine but the other doesn't?
+## x86 SIMD profiles
 
-### About SIMD
+The current build system understands these profiles:
 
-[Since 1997](https://en.wikipedia.org/wiki/MMX_(instruction_set)), x86 CPUs have been updated with new instructions that they can execute. 
-Many of these increase performance because they are Single Instruction, Multiple Data ([SIMD](https://en.wikipedia.org/wiki/Single_instruction,_multiple_data)) instructions. 
-The first was called MMX (Multi-Media EXtensions). Then came SSE, SSE2, SSE3, SSE4.1, SSE4.2, AVX, AVX2, and AVX-512, in that order.
+| Profile | Minimum capabilities checked by Thorium | Typical platform examples |
+| --- | --- | --- |
+| `sse2` | SSE2 | Intel Pentium 4 and AMD Athlon 64 families or newer |
+| `sse3` | SSE3 | Later Pentium 4, Intel Core, and SSE3-capable AMD K8/K10 families or newer |
+| `sse4_1` | SSE3, SSSE3, SSE4.1 | Intel Penryn and AMD Bulldozer families or newer |
+| `sse4_2` | SSE3, SSSE3, SSE4.1, SSE4.2 | Intel Nehalem and AMD Bulldozer families or newer |
+| `avx` | SSE3, AVX and operating-system AVX state support | Intel Sandy Bridge and AMD Bulldozer families or newer |
+| `avx_fma` | SSE3, AVX, FMA and operating-system AVX state support | Intel Haswell and AMD Piledriver families or newer |
+| `avx2` | SSE3, AVX, AVX2 and operating-system AVX state support | Intel Haswell and AMD Excavator/Zen families or newer |
+| `avx2_fma` | SSE3, AVX, AVX2, FMA, F16C and operating-system AVX state support | Intel Haswell and AMD Excavator/Zen families or newer |
+| `avx512_skx` | AVX2/FMA/F16C, AVX-512F/CD/VL/BW/DQ and operating-system state support | Selected Intel Skylake-SP and Skylake-X processors with the complete required AVX-512 subset |
 
-More info on SIMD and how the optimizations work in Thorium can be found on the site > https://thorium.rocks/optimizations
+These examples identify common starting platforms, not a compatibility list.
+Capabilities can differ among SKUs in the same family, and firmware,
+operating-system, or hypervisor configuration can hide otherwise supported
+features. Newer does not automatically mean compatible, particularly for
+AVX-512. Use `check_simd.py` for the specific machine.
 
-However, they have to be built in (compiled in) to a program, and they are backwards, but not forwards compatible. Furthermore, your CPU *must* support a given SIMD 
-level or else the browser will crash.
+Support is not reliably determined by CPU age or product family. Low-power,
+embedded, virtualized, and vendor-specific models frequently differ from
+nearby products. AVX and AVX-512 also require the operating system or
+hypervisor to enable the corresponding extended register state.
 
-For example, a CPU that is capable of AVX is capable of all the SSE instructions, and so could run either an SSE3 or AVX release, but would get better 
-performance from the AVX release. However, this same CPU would *not* be able to run an AVX2 release.
+Use the repository checker on the machine that will run the browser:
 
-Chromium/Chrome, and projects based on it, have required SSE3 as a minimum [since 2020](https://docs.google.com/document/d/1QUzL4MGNqX4wiLvukUwBf6FdCL35kCDoEJTm2wMkahw/edit#heading=h.7nki9mck5t64), 
-however, I try to make tailored/optimized releases, including:
+```shell
+python3 check_simd.py --list-profiles
+python3 check_simd.py --profile avx2_fma
+```
 
-32 bit SSE2 (restored!)  
-32 bit SSE3
+To validate a configured build directly:
 
-64 bit SSE3  
-64 bit SSE4.1
-64 bit AVX  
-64 bit AVX2
+```shell
+python3 check_simd.py --args-file /path/to/chromium/src/out/thorium/args.gn
+```
 
-(I stopped making SSE4.2 and AVX-512 builds all the time, I still occasionally make them)
+The product profile selected by `setup.py --avx2` currently uses the stricter
+`avx2_fma` profile. A CPU with AVX2 but without FMA or F16C is therefore not
+compatible with that build.
 
- - CPUs since 2001 including Pentium 4/Athlon and up can run the SSE2 releases.
+## Availability
 
- - CPUs since 2005-2006 including Pentium D/Core 2 Duo "Conroe"/Opteron/Phenom and up can run the SSE3 releases.
+The build system supports more profiles than are necessarily published for
+every release. Consult the assets and release notes for the specific version:
 
- - Certain CPUs since 2007-2010 including Core 2 Duo "Wolfdale"/1st Gen Core "Nahalem" & "Westmere"/AMD FX "Bulldozer" and up can use the SSE4 releases.
+- [Main Thorium releases](https://github.com/Alex313031/thorium/releases)
+- [Thorium for Windows on ARM](https://github.com/Alex313031/Thorium-WOA/releases)
+- [Thorium for Raspberry Pi](https://github.com/Alex313031/Thorium-Raspi/releases)
+- [ThoriumOS](https://github.com/Alex313031/ThoriumOS/releases)
 
- - CPUs since 2011 - 2013 including 2nd Gen Core "Sandy Bridge"/3rd Gen core "Ivy Bridge"/ AMD FX "Piledriver"/ and up can run the AVX releases.
+ARM64 builds do not use x86 SSE/AVX profiles. Select the package matching the
+operating system and architecture instead.
 
- - CPUs since 2016 - 2023 including 4th/5th Gen Core (High end models)/6th Gen "Skylake"/Ryzen 1000 - 5000 and up can run the AVX2 releases.
+## Choosing a build
 
- - CPUs since 2023 including 11th Gen Core "Tigerlake"/Ryzen 7000 - 9000 and up can run an AVX-512 release.
+1. Match the operating system and architecture first.
+2. Run `check_simd.py` for x86 or x64.
+3. Choose the highest profile explicitly reported as supported and actually
+   provided by that release.
+4. If the browser exits immediately with an illegal-instruction failure, use a
+   lower profile; changing the user agent or command line cannot add CPU
+   instructions.
 
- - Important Caveat: some lower end CPU's like Intel Atom/Celeron/Pentium/i3 or AMD Geode/Low end APU might not have AVX/AVX2.
-
-### So which do I download ?
-
-If you want to find out for sure what your CPU supports, you can use:
-
-Windows/Linux/macOS > Use [check_simd.py](https://github.com/Alex313031/thorium/blob/main/check_simd.py) from the repo. For example, run `python3 check_simd.py --profile avx2_fma`, or pass `--args-file out/thorium/args.gn` to check a configured build directly. On Apple Silicon, use the normal ARM64 build rather than an x86 SIMD profile.
+Higher profiles permit the compiler to use more instructions but do not
+guarantee a fixed performance gain on every workload or processor.

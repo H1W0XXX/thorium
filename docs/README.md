@@ -1,17 +1,35 @@
-## Thorium Docs &nbsp;<img src="https://raw.githubusercontent.com/Alex313031/Thorium/main/logos/NEW/patches.png" width="32">
+# Thorium documentation &nbsp;<img src="https://raw.githubusercontent.com/Alex313031/Thorium/main/logos/NEW/patches.png" alt="Thorium patches" width="32">
 
-Documentation about building Thorium, and related stuff like gn args and releases.
+The repository documentation describes Thorium's current Python build tools,
+release variants, patches, and user-visible behavior. Chromium prerequisites
+and toolchain versions change frequently; platform guides therefore link to
+the corresponding upstream documentation instead of freezing tool versions.
 
-Current bugs and feature requests are tracked in the [Thorium GitHub issue
-tracker](https://github.com/Alex313031/thorium/issues). Search existing issues
-before opening a new report and include the Thorium version, operating system,
-CPU architecture, and steps needed to reproduce the problem.
+## Building
 
-The [command-line switch reference](CMDLINE_FLAGS_LIST.md) links to the current
-upstream-derived switch list instead of keeping an outdated repository snapshot.
+- [Linux build guide](BUILDING.md)
+- [Windows build guide](BUILDING_WIN.md)
+- [macOS build guide](BUILDING_MAC.md)
+- [Cross-compile Windows on Linux](BUILDING_WIN_CROSS.md)
+- [ARM and Android builds](../arm/README.md)
+- [GN arguments used by Thorium](ABOUT_GN_ARGS.md)
 
-__I've also made some pages on the thorium.rocks website relating to Thorium development.__
+All repository Python entry points require Python 3.11 or newer. Run each
+script with `--help` for its authoritative options.
 
- - There is a developer page [Here](https://thorium.rocks/dev), with links to different tools developers would find useful.
- - There is also the [documentation page](https://thorium.rocks/docs/), which has html copies of things in here as well as some things not in here. Recommended to use these instead.
- - *NOTE:* The .txt instructions are old, and only included for posterity, please use the .md instructions.
+## Users and releases
+
+- [Release and SIMD variant guide](ABOUT_RELEASES.md)
+- [Frequently asked questions](FAQ.md)
+- [Thorium 2024 UI](TH24.md)
+- [Command-line switch references](CMDLINE_FLAGS_LIST.md)
+- [GitHub releases](https://github.com/Alex313031/thorium/releases)
+
+## Maintenance
+
+- [Patch inventory](PATCHES.md)
+- [Rebasing workflow](REBASING.md)
+- [Chromium source code search](https://source.chromium.org/chromium/chromium/src)
+
+Report current bugs and feature requests through the [Thorium issue
+tracker](https://github.com/Alex313031/thorium/issues).

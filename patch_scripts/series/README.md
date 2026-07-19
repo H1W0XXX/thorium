@@ -13,7 +13,7 @@ Run the scripts from the Thorium repository root. On Windows, the examples use
 the Python launcher:
 
 ```powershell
-py -3 patch_scripts\series\apply_series.py --help
+py -3.11 patch_scripts\series\apply_series.py --help
 ```
 
 On Linux/macOS, use `python3`:
@@ -50,7 +50,7 @@ third_party/ffmpeg: other/ffmpeg-branding.patch
 Windows:
 
 ```powershell
-py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src
+py -3.11 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src
 ```
 
 Linux/macOS:
@@ -84,7 +84,7 @@ Conditional entries are skipped unless explicitly enabled:
 Windows:
 
 ```powershell
-py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src --condition sse2
+py -3.11 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src --condition sse2
 ```
 
 Linux/macOS:
@@ -101,7 +101,7 @@ exclusive build variants such as `sse2` or `raspi`.
 Windows:
 
 ```powershell
-py -3 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src --apply
+py -3.11 patch_scripts\series\apply_series.py --source-tree C:\src\chromium\src --apply
 ```
 
 Linux/macOS:
@@ -125,7 +125,7 @@ Default dry-run checks only unconditional entries.
 Windows:
 
 ```powershell
-py -3 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src
+py -3.11 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src
 ```
 
 Linux/macOS:
@@ -144,10 +144,15 @@ entries are processed, while conditional entries are skipped. Pass
 `--condition sse2` or `--condition raspi` to refresh that variant together with
 the unconditional entries that precede it. In condition mode, unconditional
 entries are applied as context only; only entries with the requested condition
-are eligible for refresh/write. Use `--all-conditions` only for a full dry-run
-audit across every conditional entry. The runner rejects
-`--all-conditions --write` and also verifies that every `other/**/*.patch` file
-is listed in the series.
+are eligible for refresh/write.
+
+`--all-conditions` selects every conditional entry in one combined temporary
+index flow. It is useful for checking series coverage and whether the current
+set of conditional patches can be applied together, but it does not create an
+isolated audit for each build variant. It therefore cannot replace separate
+`--condition sse2` and `--condition raspi` runs when validating those variants.
+The runner rejects `--all-conditions --write` and also verifies that every
+`other/**/*.patch` file is listed in the series.
 
 The temporary indexes are initialized from each apply root's `HEAD`. The
 Chromium worktree may have local changes, but the checked-out `HEAD` must be
@@ -156,7 +161,7 @@ the intended base revision for the series.
 To overwrite changed unconditional patch files on Windows:
 
 ```powershell
-py -3 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --write
+py -3.11 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --write
 ```
 
 To overwrite changed unconditional patch files on Linux/macOS:
@@ -168,7 +173,7 @@ python3 patch_scripts/series/refresh_series.py --source-tree /path/to/chromium/s
 Variant dry-run on Windows:
 
 ```powershell
-py -3 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --condition raspi
+py -3.11 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --condition raspi
 ```
 
 Variant dry-run on Linux/macOS:
@@ -183,7 +188,7 @@ unconditional entries are applied as context and reported as `context-only`:
 Windows:
 
 ```powershell
-py -3 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --condition raspi --write
+py -3.11 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --condition raspi --write
 ```
 
 Linux/macOS:
@@ -195,7 +200,7 @@ python3 patch_scripts/series/refresh_series.py --source-tree /path/to/chromium/s
 Full conditional audit on Windows:
 
 ```powershell
-py -3 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --all-conditions
+py -3.11 patch_scripts\series\refresh_series.py --source-tree C:\src\chromium\src --all-conditions
 ```
 
 Full conditional audit on Linux/macOS:
@@ -204,7 +209,15 @@ Full conditional audit on Linux/macOS:
 python3 patch_scripts/series/refresh_series.py --source-tree /path/to/chromium/src --all-conditions
 ```
 
-`--all-conditions --write` is intentionally rejected.
+`--all-conditions --write` is intentionally rejected. Write conditional
+patches one variant at a time:
+
+```shell
+python3 patch_scripts/series/refresh_series.py \
+  --source-tree /path/to/chromium/src --condition sse2 --write
+python3 patch_scripts/series/refresh_series.py \
+  --source-tree /path/to/chromium/src --condition raspi --write
+```
 
 If a patch fails to apply, refresh stops and leaves the patch for manual
 repair. Mail-style patches with headers are reported but not rewritten.

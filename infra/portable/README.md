@@ -13,25 +13,45 @@ python3 infra/portable/portable.py \
   --input /path/to/thorium-browser.deb
 ```
 
-The generated archive contains transparent Bash launchers whose executable bits
-are stored in the ZIP. Linux packaging must run on a system with `dpkg-deb`.
-Extract the result with a tool that preserves Unix symbolic links, such as:
+The input must be a `thorium-browser` Debian package containing the expected
+`opt/chromium.org/thorium` payload and executable `thorium` and
+`thorium_shell` files. The packager rejects broken links, links that escape the
+payload, and unsupported special files.
+
+The generated archive contains portable Bash wrapper launchers whose executable
+bits and package-relative symbolic links are stored in the ZIP. Linux packaging
+requires `dpkg-deb`. Extract the result with a tool that preserves Unix symbolic
+links, such as:
 
 ```shell
 unzip Thorium_Linux_ARCH_VERSION_portable.zip
 ```
 
+`THORIUM-PORTABLE` supports `--temp-profile` and `--safe-mode`, and reads
+additional browser flags from `.config/thorium-flags.conf`. It also removes
+pending crash files older than 30 days when the normal portable profile starts.
+`THORIUM-SHELL` launches the bundled content shell with a separate profile and
+cache. The generated archive includes these details in `README.txt`.
+
 ## Windows
 
-Install [7-Zip](https://www.7-zip.org/) and add `7z.exe` to `PATH`, or pass its
-location explicitly:
+Install [7-Zip](https://www.7-zip.org/). The packager searches `PATH` and the
+standard 64-bit and 32-bit Windows installation directories. If it cannot find
+7-Zip automatically, pass its location explicitly:
 
 ```powershell
-python infra/portable/portable.py `
+py -3.11 infra/portable/portable.py `
   --platform windows `
   --input C:\path\to\thorium_AVX2_mini_installer.exe `
   --seven-zip "C:\Program Files\7-Zip\7z.exe"
 ```
+
+The input must be a Thorium mini installer containing one `chrome.7z`, one
+version directory, `thorium.exe`, and one `thorium_shell.exe`. The packager
+validates this layout before publishing the archive. The resulting ZIP includes
+`THORIUM.cmd`, `THORIUM_SHELL.cmd`, and a platform-specific `README.txt`.
+
+## Output and validation
 
 The platform can normally be inferred from `.deb` or `.exe`, so `--platform`
 is optional. Use `--output PATH` to choose the archive name and `--force` to
@@ -40,6 +60,14 @@ its SIMD profile in the filename, pass `--profile NAME` to retain that profile
 in the output archive name. Use `--expected-version VERSION` in release
 automation to reject an unexpected package version.
 
+Default output names are:
+
+```text
+Thorium_Linux_ARCH_VERSION_portable.zip
+Thorium_PROFILE_VERSION.zip             # Windows with a known profile
+Thorium_VERSION_portable.zip             # Windows without a known profile
+```
+
 Packaging takes place in an isolated temporary directory. The input package is
 never modified, and the final ZIP replaces its destination only after it has
 been written successfully. A same-directory lock prevents concurrent packaging
@@ -47,6 +75,11 @@ processes from writing the same output. Locks left by a process that no longer
 exists are recovered automatically.
 
 ## Security and portability
+
+Portable packaging makes the profile and package directory movable; it does
+not change binary compatibility. The archive must still run on its target
+operating system, CPU architecture, and Thorium SIMD profile, and may retain
+platform runtime requirements.
 
 The browser launchers pass `--disable-encryption` and `--disable-machine-id` so
 the profile can move between machines. This weakens protection for cookies,

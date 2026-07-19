@@ -1,30 +1,38 @@
 # Thorium for ThoriumOS
 
-This directory contains build config files for compiling Thorium for [ThoriumOS](https://github.com/Alex313031/ThoriumOS) (a fork of [ChromiumOS](https://www.chromium.org/chromium-os/)).
+This directory contains the Linux-ChromeOS configuration used to build Thorium
+for [ThoriumOS](https://github.com/Alex313031/ThoriumOS), a ChromiumOS-derived
+system. It is not a ChromeOS device-toolchain configuration.
 
-Run `python3 setup.py --cros` from the Thorium checkout. Then change to the
-Chromium `src` directory and create or edit the output configuration:
+The maintained [`cros_args.gn`](cros_args.gn) configuration currently selects:
 
-```shell
-gn args out/thorium
+```gn
+target_os = "chromeos"
+is_chromeos_device = false
+target_cpu = "x64"
+thorium_x86_profile = "sse4_1"
 ```
 
-Use [`cros_args.gn`](cros_args.gn) as the basis for the generated `args.gn`.
-
-### Common checkout and GN commands
+Prepare the Chromium tree and ThoriumOS version metadata from the Thorium
+repository root:
 
 ```shell
-git fetch --tags
-git rebase-update
-gclient runhooks
-gn ls out/thorium
-git show-ref
+python3 setup.py --cros
 ```
 
-Use `python3 version.py` from the Thorium checkout for revision and profile
-preparation. Destructive synchronization commands are documented in the main
-[building guide](../../docs/BUILDING.md#common-checkout-and-gn-commands).
+`setup.py` does not install the GN configuration. Use `cros_args.gn` as the
+basis for Chromium's `out/thorium/args.gn`, then generate and build from
+Chromium `src`:
 
-### CrOS
+```shell
+gn gen out/thorium
+python3 /path/to/thorium/build.py \
+  --chromium-src /path/to/chromium/src --expect-os chromeos
+```
 
-<img src="https://github.com/Alex313031/ThoriumOS/blob/main/images/ChromiumBook_Black.png" width="192">
+The checkout must include the dependencies required by Chromium's
+Linux-ChromeOS build. Destructive source synchronization and branch maintenance
+are documented in the main
+[building guide](../../docs/BUILDING.md#maintenance-and-cleanup).
+
+<img src="https://github.com/Alex313031/ThoriumOS/blob/main/images/ChromiumBook_Black.png" alt="ThoriumOS" width="192">

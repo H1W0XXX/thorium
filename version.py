@@ -16,19 +16,10 @@ from typing import Sequence
 
 EXIT_FAILURE = 111
 THORIUM_VERSION = "150.0.7871.101"
-PGO_GS_URL = "chromium-optimization-profiles/pgo_profiles"
-PGO_TARGETS = (
-    "win-arm64",
-    "win32",
-    "win64",
-    "mac",
-    "mac-arm",
-    "linux",
-)
 
 
 class VersionError(RuntimeError):
-    """An expected checkout or profile preparation failure."""
+    """An expected Chromium checkout or synchronization failure."""
 
 
 def environment_path(value: str) -> Path:
@@ -60,24 +51,6 @@ def sysroot_architectures() -> tuple[str, ...]:
     return ("amd64", "arm64") if sys.platform.startswith("linux") else ()
 
 
-def host_pgo_targets() -> tuple[str, ...]:
-    system = platform.system()
-    if system == "Linux":
-        return ("linux",)
-    if system == "Darwin":
-        return ("mac", "mac-arm")
-    if system == "Windows":
-        machine = platform.machine().lower()
-        if machine in ("arm64", "aarch64"):
-            return ("win-arm64",)
-        if machine in ("x86", "i386", "i686"):
-            return ("win32",)
-        if machine in ("amd64", "x86_64", "x64"):
-            return ("win64",)
-        raise VersionError(f"unsupported Windows architecture for PGO: {machine}")
-    raise VersionError(f"unsupported host platform for Chromium PGO: {system}")
-
-
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Check out the Chromium tag used by the current Thorium version."
@@ -97,16 +70,6 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         help=(
             "depot_tools directory (default: DEPOT_TOOLS_DIR, the gclient "
             "location, or the platform default)"
-        ),
-    )
-    parser.add_argument(
-        "--pgo-target",
-        action="append",
-        choices=PGO_TARGETS,
-        dest="pgo_targets",
-        help=(
-            "Chromium PGO target to download; may be repeated. Defaults to "
-            "the current host platform (both architectures on macOS)."
         ),
     )
     return parser.parse_args(argv)
@@ -162,7 +125,6 @@ def require_file(path: Path, description: str) -> None:
 def prepare_checkout(
     chromium_src: Path,
     depot_tools: Path,
-    pgo_targets: Sequence[str],
 ) -> None:
     chromium_src = chromium_src.expanduser().resolve()
     depot_tools = depot_tools.expanduser().resolve()
@@ -171,11 +133,6 @@ def prepare_checkout(
     os.environ["PATH"] = str(depot_tools) + os.pathsep + os.environ.get("PATH", "")
 
     require_checkout(chromium_src, "Chromium")
-    require_file(
-        depot_tools / "download_from_google_storage.py",
-        "depot_tools download_from_google_storage.py",
-    )
-
     git = find_command("git")
     gclient = depot_command(depot_tools, "gclient")
 
@@ -219,37 +176,6 @@ def prepare_checkout(
     else:
         print("\nSkipping Linux sysroots on non-Linux host")
 
-    pgo_updater = chromium_src / "tools" / "update_pgo_profiles.py"
-    require_file(pgo_updater, "Chromium PGO profile updater")
-    print(f"\nDownloading Chromium PGO profiles: {', '.join(pgo_targets)}")
-    for target in pgo_targets:
-        run(
-            [
-                sys.executable,
-                str(pgo_updater),
-                f"--target={target}",
-                "update",
-                f"--gs-url-base={PGO_GS_URL}",
-            ],
-            chromium_src,
-        )
-
-    v8_pgo_downloader = (
-        chromium_src / "v8" / "tools" / "builtins-pgo" / "download_profiles.py"
-    )
-    require_file(v8_pgo_downloader, "V8 builtins PGO profile downloader")
-    print("\nDownloading V8 builtins PGO profiles")
-    run(
-        [
-            sys.executable,
-            str(v8_pgo_downloader),
-            f"--depot-tools={depot_tools}",
-            "--force",
-            "download",
-        ],
-        chromium_src,
-    )
-
     print(f"\nChromium tree is checked out at tag: {THORIUM_VERSION}")
     print("\nDone! You can now run 'setup.py'.")
 
@@ -264,11 +190,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     args = parse_args(sys.argv[1:] if argv is None else argv)
     try:
-        pgo_targets = list(dict.fromkeys(args.pgo_targets or host_pgo_targets()))
         prepare_checkout(
             args.chromium_src,
             args.depot_tools,
-            pgo_targets,
         )
     except VersionError as error:
         print(f"{Path(sys.argv[0]).name}: {error}", file=sys.stderr)

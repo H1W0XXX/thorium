@@ -1,24 +1,51 @@
-## Thorium x86 build profiles
+# Thorium patches and platform profiles
 
-This directory contains build argument files for Thorium's x86 CPU profiles.
+The `other/` directory contains Thorium's Chromium patch files, x86 release
+profiles, platform GN configurations, product metadata, and Linux package
+wrappers.
 
-Build argument files select exactly one `thorium_x86_profile`. Supported
-profiles are `sse2`, `sse3`, `sse4_1`, `sse4_2`, `avx`, `avx_fma`, `avx2`,
-`avx2_fma`, and `avx512_skx`. The profile is the single source of truth for
-C/C++, Rust, installer labels, and Linux package suffixes.
+## Patch series
 
-The release AVX2 configuration uses `avx2_fma`; the minimal `avx2` profile is
-available for compatibility validation without implicitly requiring FMA or
-F16C. Profiles use explicit feature flags and never use `-march` aliases that
-would silently add AES, PCLMUL, BMI, LZCNT, POPCNT, or other CPU capabilities.
+The authoritative patch order and conditional entries are recorded in
+[`patch_scripts/series/series`](../patch_scripts/series/series). Do not apply
+the `*.patch` files alphabetically or infer ordering from their filenames.
 
-It also contains configuration files for macOS and ChromiumOS/ThoriumOS.
+[`docs/PATCHES.md`](../docs/PATCHES.md) documents patch ownership and origin.
+The [rebasing guide](../docs/REBASING.md) describes dry-run application,
+conditional entries, and safe patch refreshing.
 
-The GN default for ordinary x86 targets is SSE3. Thorium's standard desktop
-release argument files explicitly select
-[AVX](https://en.wikipedia.org/wiki/Advanced_Vector_Extensions); compatibility
-and higher-performance releases select the profile identified in their names.
+## x86 release profiles
 
-### Other info
+- [`SSE2`](SSE2/): 32-bit Linux and Windows SSE2 compatibility configurations;
+- [`SSE3`](SSE3/): Linux x64 and Windows x86/x64 SSE3 configurations;
+- [`SSE4.1`](SSE4.1/): Linux x64 and Windows x86/x64 SSE4.1 configurations;
+- [`SSE4.2`](SSE4.2/): Linux x64 and Windows x86/x64 SSE4.2 configurations;
+- [`AVX2`](AVX2/): Linux and Windows x64 `avx2_fma` configurations;
+- [`AVX512`](AVX512/): Linux and Windows x64 `avx512_skx`
+  configurations.
 
-For Android or Raspberry Pi builds, see the [//arm](../arm) directory.
+The ordinary root Linux and Windows args files select the AVX product profile.
+The complete set of compiler profiles also includes `avx_fma` and the lower
+`avx2` baseline for manual configurations.
+
+`thorium_x86_profile` is the single source of truth for the process-wide C/C++
+and Rust ISA requirement. Product labels, `thor_ver`, version-page text, and
+Linux package wrappers are selected separately by the product mapping in
+[`setup.py`](../setup.py).
+
+Profiles use explicit feature flags rather than `-march` aliases that could
+silently add AES, PCLMUL, BMI, LZCNT, POPCNT, or unrelated CPU capabilities.
+Use [`check_simd.py`](../check_simd.py) and the
+[release profile guide](../docs/ABOUT_RELEASES.md) instead of relying only on a
+CPU family name.
+
+## Platform configurations and metadata
+
+- [`Mac`](Mac/) contains Intel x64 and Apple Silicon ARM64 macOS args;
+- [`CrOS`](CrOS/) contains the x64 Linux-ChromeOS/ThoriumOS args;
+- [`thor_ver_linux`](thor_ver_linux/) contains profile-specific Linux wrapper
+  metadata used by `setup.py`.
+
+Android, Raspberry Pi, and Windows on ARM64 configurations are maintained under
+[`arm`](../arm/). General GN policy and configuration locations are documented
+in [`docs/ABOUT_GN_ARGS.md`](../docs/ABOUT_GN_ARGS.md).

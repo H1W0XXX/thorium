@@ -72,4 +72,4 @@ thin_lto_enable_optimizations = true
 enable_rust = true
 chrome_pgo_phase = 2
 use_order_profiling = false
-chrome_orderfile_path = "/home/alex/chromium/src/chrome/android/orderfiles/arm64/orderfile.arm64.out"
+chrome_orderfile_path = "//chrome/android/orderfiles/arm64/orderfile.arm64.out"

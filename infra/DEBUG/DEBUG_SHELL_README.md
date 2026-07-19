@@ -1,38 +1,72 @@
-# Thorium UI Debug Shell <img src="https://raw.githubusercontent.com/Alex313031/Thorium/main/logos/NEW/thorium_debug_shell/icon_256.png" width="36">
+# Thorium UI Debug Shell <img src="https://raw.githubusercontent.com/Alex313031/Thorium/main/logos/NEW/thorium_debug_shell/icon_256.png" alt="Thorium UI Debug Shell" width="36">
 
-## Summary:
-This is a special program, built on top of views_examples & content_shell and incorporating a multitude of options for testing, viewing, and debugging UI resources in Thorium. It builds views_examples_with_content, and renames it to thorium_ui_debug_shell. Building views_examples builds the program, but without content_shell linked in (which can be accessed via the *"WebView"* option in the dropdown menu).
+The Thorium UI Debug Shell is a standalone inspection tool built from
+Chromium's Views examples with content-shell support. It can display and test
+native UI controls, resources, and Chromium `.icon` vector files without
+running the full browser UI.
 
-## Linux Use
-Run the Thorium_Debug_Shell.sh, and you can select from the dropdown menu. Some things are interactive, some load internal resources, and some require loading external resources like viewing .icon files. In that case, you can load a file using its full path in the box towards the bottom.
+Some examples are interactive, some use compiled resources, and others accept
+an external file. When an example requests a file, enter its full path in the
+file field near the bottom of the window.
 
-## Windows Use
-Run the thorium_ui_debug_shell.exe, and you can select from the dropdown menu. Some things are interactive, some load internal resources, and some require loading external resources like viewing .icon files. In that case, you can load a file using its full path in the box towards the bottom.
+## Run a packaged shell
 
-## Use in Thorium
-I built this to view and test native Chromium UI icons in the *.icon* format.
-These paths are relative to the Chromium `src` directory:
+On Linux, run the wrapper from the extracted package:
 
-- `ui/views/vector_icons/` — native Views UI icons.
-- `ui/views/window/vector_icons/` — window and top-bar icons.
-- `components/vector_icons/` — icons shared by multiple components.
-- `chrome/app/vector_icons/` — browser-specific icons.
-- `ash/resources/vector_icons/` — Ash and ChromiumOS icons.
-- `chromeos/ui/vector_icons/` — ChromiumOS-specific UI icons.
-- `chromecast/ui/vector_icons/` — Chromecast-specific icons.
+```shell
+./Thorium_Debug_Shell.sh
+```
 
-*More info can be found at > https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/components/vector_icons/README.md*
+The wrapper configures the package-local library path and starts
+`thorium_ui_debug_shell --debug` while preserving additional command-line
+arguments.
 
-## Building <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_light.svg#gh-dark-mode-only"> <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_dark.svg#gh-light-mode-only">
+On Windows, run:
 
-From the Thorium repository root, build the complete debug product set and UI
-Debug Shell with:
+```text
+thorium_ui_debug_shell.exe
+```
+
+macOS Debug Shell targets can currently be built, but Thorium does not yet
+publish a verified portable package layout for them.
+
+## Inspect Thorium vector icons
+
+The following paths are relative to Chromium `src`:
+
+- `ui/views/vector_icons/`: native Views UI icons;
+- `ui/views/window/vector_icons/`: window and top-bar icons;
+- `components/vector_icons/`: icons shared by multiple components;
+- `chrome/app/vector_icons/`: browser-specific icons;
+- `ash/resources/vector_icons/`: Ash and ChromiumOS icons;
+- `chromeos/ui/vector_icons/`: ChromiumOS-specific UI icons;
+- `chromecast/ui/vector_icons/`: Chromecast-specific icons.
+
+See Chromium's [vector icon documentation](https://chromium.googlesource.com/chromium/src/+/HEAD/components/vector_icons/README.md)
+for the source format and generation rules.
+
+## Build <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_light.svg#gh-dark-mode-only" alt="Build" width="36"> <img src="https://github.com/Alex313031/thorium/blob/main/logos/NEW/build_dark.svg#gh-light-mode-only" alt="Build" width="36">
+
+From the Thorium repository root, build the full Linux Debug product set and
+assemble the Debug Shell directory:
 
 ```shell
 python3 infra/DEBUG/build_debug.py --target-os linux --mode full
 ```
 
-Use `--target-os win` for Windows. To build and archive only the standalone UI
-Debug Shell, replace `--mode full` with `--mode shell`. Pass `-j N` to limit
-parallel jobs. macOS currently supports build-only operation because its Debug
-Shell package layout has not yet been defined and verified.
+Use `--target-os win` on Windows. Full mode creates the package directory but
+does not create a ZIP archive.
+
+To build only the Debug Shell support targets and create both the package
+directory and ZIP archive, use:
+
+```shell
+python3 infra/DEBUG/build_debug.py --target-os linux --mode shell
+```
+
+Linux shell-only mode also includes `minidump_stackwalk`, `dump_syms`, and the
+ClearKey CDM payload. Pass `-j N` to limit parallel jobs. On macOS, append
+`--build-only` because packaging is not currently supported.
+
+For configuration, output locations, and other modes, see
+[`DEBUGGING.md`](DEBUGGING.md).

@@ -5,6 +5,7 @@
 """Download the repositories and prerequisites needed to build Thorium."""
 
 import argparse
+import ast
 import os
 from pathlib import Path
 import platform
@@ -301,6 +302,149 @@ def read_fetch_marker(fetch_marker: Path) -> str | None:
         raise BootstrapError(f"failed to read {fetch_marker}: {error}") from error
 
 
+def ensure_checkout_pgo_profiles(gclient_file: Path) -> None:
+    """Enable Chromium-managed optimization profile downloads in .gclient."""
+    if gclient_file.is_symlink() or not gclient_file.is_file():
+        raise BootstrapError(
+            f"Chromium .gclient must be a regular file: {gclient_file}"
+        )
+    try:
+        contents = gclient_file.read_text(encoding="utf-8")
+        tree = ast.parse(contents, filename=str(gclient_file))
+    except (OSError, UnicodeError, SyntaxError) as error:
+        raise BootstrapError(f"could not parse {gclient_file}: {error}") from error
+
+    solutions: ast.List | None = None
+    for statement in tree.body:
+        if not isinstance(statement, ast.Assign):
+            continue
+        if any(
+            isinstance(target, ast.Name) and target.id == "solutions"
+            for target in statement.targets
+        ):
+            if not isinstance(statement.value, ast.List):
+                raise BootstrapError(
+                    f"{gclient_file} has a non-list solutions assignment"
+                )
+            solutions = statement.value
+            break
+    if solutions is None:
+        raise BootstrapError(f"{gclient_file} has no solutions assignment")
+
+    custom_vars: ast.Dict | None = None
+    for solution in solutions.elts:
+        if not isinstance(solution, ast.Dict):
+            continue
+        fields = {
+            key.value: value
+            for key, value in zip(solution.keys, solution.values, strict=True)
+            if isinstance(key, ast.Constant) and isinstance(key.value, str)
+        }
+        name = fields.get("name")
+        if not (
+            isinstance(name, ast.Constant)
+            and name.value == "src"
+            and "custom_vars" in fields
+        ):
+            continue
+        candidate = fields["custom_vars"]
+        if not isinstance(candidate, ast.Dict):
+            raise BootstrapError(
+                f"the src solution in {gclient_file} has non-dict custom_vars"
+            )
+        custom_vars = candidate
+        break
+    if custom_vars is None:
+        raise BootstrapError(
+            f"the src solution in {gclient_file} has no custom_vars dictionary"
+        )
+
+    profile_values: list[ast.expr] = []
+    for key, value in zip(custom_vars.keys, custom_vars.values, strict=True):
+        if (
+            isinstance(key, ast.Constant)
+            and key.value == "checkout_pgo_profiles"
+        ):
+            profile_values.append(value)
+    if len(profile_values) > 1:
+        raise BootstrapError(
+            f"checkout_pgo_profiles is defined more than once in {gclient_file}"
+        )
+    profile_value = profile_values[0] if profile_values else None
+
+    newline = "\r\n" if "\r\n" in contents else "\n"
+    lines = contents.splitlines(keepends=True)
+    if profile_value is not None:
+        if not (
+            isinstance(profile_value, ast.Constant)
+            and isinstance(profile_value.value, bool)
+        ):
+            raise BootstrapError(
+                f"checkout_pgo_profiles in {gclient_file} must be a Boolean"
+            )
+        if profile_value.value:
+            print(
+                "\nChromium optimization profile hooks are enabled in "
+                f"{gclient_file}"
+            )
+            return
+        line_index = profile_value.lineno - 1
+        line = lines[line_index]
+        lines[line_index] = (
+            line[: profile_value.col_offset]
+            + "True"
+            + line[profile_value.end_col_offset :]
+        )
+    elif custom_vars.lineno == custom_vars.end_lineno:
+        line_index = custom_vars.lineno - 1
+        line = lines[line_index]
+        insertion = '"checkout_pgo_profiles": True'
+        if custom_vars.keys:
+            insertion += ", "
+        lines[line_index] = (
+            line[: custom_vars.col_offset + 1]
+            + insertion
+            + line[custom_vars.col_offset + 1 :]
+        )
+    else:
+        if custom_vars.values:
+            last_value = custom_vars.values[-1]
+            value_line_index = last_value.end_lineno - 1
+            value_line = lines[value_line_index]
+            suffix = value_line[last_value.end_col_offset :]
+            if not suffix.lstrip().startswith(","):
+                lines[value_line_index] = (
+                    value_line[: last_value.end_col_offset]
+                    + ","
+                    + value_line[last_value.end_col_offset :]
+                )
+        closing_index = custom_vars.end_lineno - 1
+        closing_line = lines[closing_index]
+        closing_column = custom_vars.end_col_offset - 1
+        indentation = closing_line[:closing_column]
+        lines.insert(
+            closing_index,
+            f'{indentation}  "checkout_pgo_profiles": True,{newline}',
+        )
+
+    replacement = gclient_file.with_name(f"{gclient_file.name}.thorium-new")
+    if os.path.lexists(replacement):
+        raise BootstrapError(
+            f"refusing to overwrite stale temporary file: {replacement}"
+        )
+    try:
+        replacement.write_text("".join(lines), encoding="utf-8")
+        replacement.chmod(stat.S_IMODE(gclient_file.stat().st_mode))
+        replacement.replace(gclient_file)
+    except OSError as error:
+        try:
+            replacement.unlink(missing_ok=True)
+        except OSError:
+            pass
+        raise BootstrapError(f"failed to update {gclient_file}: {error}") from error
+    print(f"\nEnabled checkout_pgo_profiles in {gclient_file}")
+
+
 def prepare_chromium(
     chromium_src: Path,
     depot_tools: Path,
@@ -511,6 +655,7 @@ def bootstrap(args: argparse.Namespace) -> None:
         depot_tools,
         no_history=args.no_history,
     )
+    ensure_checkout_pgo_profiles(chromium_src.parent / ".gclient")
     install_linux_dependencies(chromium_src, skip=args.skip_build_deps)
 
     if chromium_state in ("new", "recovered"):

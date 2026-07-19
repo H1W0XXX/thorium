@@ -4,9 +4,16 @@
 
 # Thorium Patch Inventory
 
-This document tracks the current patch files under `other/`. The authoritative application order is `patch_scripts/series/series`; this page mirrors that series so reviewers can quickly audit which patches are active.
+This document tracks the current patch files under `other/`. The authoritative
+application order is `patch_scripts/series/series`; this page mirrors that
+series so reviewers can audit which patches are active and which subsystem
+owns a change.
 
-All `other/**/*.patch` files are currently represented in the series. Conditional entries are applied only when the matching setup variant is selected.
+All active `other/**/*.patch` files must be represented in the series.
+Conditional entries are applied only when the matching setup variant is
+selected. Update this inventory whenever a patch is added, removed, renamed,
+reordered, split, or assigned a new condition; do not infer application order
+from this page.
 
 ## Known Origins
 

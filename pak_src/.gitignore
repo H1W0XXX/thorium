@@ -59,6 +59,7 @@ tests/*
 
 # builds
 build_*/*
+/target/
 
 # codeblocks
 bin/*
@@ -70,3 +71,6 @@ obj/*
 # Ignore Prebuilts
 !binaries/*
 !binaries/pak-win/*
+
+# Interrupted packaging lock; inspect owner.txt before removing it manually.
+binaries/.pak-build.lock/

@@ -1,28 +1,34 @@
+# Local configuration and operating-system metadata.
 .DS_Store
 API_KEYS.txt
+
+# Release packages. These cover the Linux, Windows, macOS, and Android
+# artifacts published on Thorium release pages.
 *.deb
 *.rpm
 *.snap
 *.AppImage
+*.dmg
 *.zip
 *.apk
+
+# Windows build and packaging outputs. Keep this scoped to generated Thorium
+# installers rather than ignoring every .exe; the repository intentionally
+# tracks a small number of executable build tools.
+mini_installer.exe
+thorium*installer*.exe
+
+# Repository-local packaging output directories.
 /release/
 /test/
-mini_installer.exe
-thorium_mini_installer.exe
-thorium_SSE2_mini_installer.exe
-thorium_WIN32_mini_installer.exe
-thorium_SSE3_mini_installer.exe
-thorium_AVX_mini_installer.exe
-thorium_AVX2_mini_installer.exe
-thorium_ARM64_mini_installer.exe
-thorium_mini_installer_SSE2.exe
-thorium_mini_installer_WIN32.exe
-thorium_mini_installer_SSE3.exe
-thorium_mini_installer_AVX.exe
-thorium_mini_installer_AVX2.exe
-thorium_mini_installer_ARM64.exe
-Thorium_squashfs-root
+/infra/APPIMAGE/out/*
+!/infra/APPIMAGE/out/.gitkeep
+Thorium_squashfs-root/
+
+# Interrupted portable-package transactions.
+.*.zip.lock
+.*.zip.*.new
+
+# Python bytecode and cache directories.
 __pycache__/
 *.py[cod]
-/src/chrome/app/theme/chromium/mac/.thorium-mac-icon.lock

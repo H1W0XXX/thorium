@@ -78,7 +78,7 @@ See > https://github.com/Alex313031/thorium/tree/main/infra/DEBUG#readme
 &nbsp;&minus; Thanks to https://github.com/gz83/ for support and helping with builds. \
 &nbsp;&minus; Thanks to https://github.com/robrich999/ for some info and fixes that went into this project.\
 &nbsp;&minus; Also thanks to https://github.com/bromite/bromite, https://github.com/uazo/cromite, https://github.com/saiarcot895/chromium-ubuntu-build, https://github.com/Eloston/ungoogled-chromium, https://github.com/GrapheneOS/Vanadium, and https://github.com/iridium-browser/iridium-browser for patch code. \
-&nbsp;&minus; The pak_src dir, and the binaries in *pack_src/bin* are credited to @freeer https://github.com/myfreeer/chrome-pak-customizer/
+&nbsp;&minus; The Rust PAK utility source and the prebuilt binaries in `pak_src/binaries` are credited to @myfreeer: https://github.com/myfreeer/chrome-pak-customizer/
 
 
 *Thanks for using Thorium!*

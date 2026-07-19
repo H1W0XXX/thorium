@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/ui/ui_features.cc b/chrome/browser/ui/ui_features.cc
-index 683eae9059294..c4b39b3526571 100644
+index 90cda8a5b0cc3..32ea0aec1aefe 100644
 --- a/chrome/browser/ui/ui_features.cc
 +++ b/chrome/browser/ui/ui_features.cc
-@@ -146,6 +146,11 @@ BASE_FEATURE(kPreloadTopChromeWebUILessNavigations,
+@@ -164,6 +164,11 @@ BASE_FEATURE(kPreloadTopChromeWebUILessNavigations,
  BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
               base::FEATURE_ENABLED_BY_DEFAULT);
  
@@ -15,10 +15,10 @@ index 683eae9059294..c4b39b3526571 100644
  // Enables the UI for Process Isolation in chrome://settings/system.
  BASE_FEATURE(kProcessIsolationSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 diff --git a/chrome/browser/ui/ui_features.h b/chrome/browser/ui/ui_features.h
-index 1466c54bc0364..282691e5cfb63 100644
+index 8b86f44038f1c..fc4fbc0105ddd 100644
 --- a/chrome/browser/ui/ui_features.h
 +++ b/chrome/browser/ui/ui_features.h
-@@ -376,6 +376,9 @@ BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusingPinnedTabs);
+@@ -380,6 +380,9 @@ BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusingPinnedTabs);
  BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusingAutoClose);
  BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusingDefaultToFocused);
  
@@ -29,7 +29,7 @@ index 1466c54bc0364..282691e5cfb63 100644
  BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
  
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index cba272c4b497e..4b69f347fc260 100644
+index 0260a73e81e39..8e7257fcd4442 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -23,6 +23,7 @@

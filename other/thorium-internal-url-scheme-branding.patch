@@ -57,7 +57,7 @@ index fc66d4edf47d7..b278d25a4356d 100644
  }
  
 diff --git a/chrome/browser/flags/android/chrome_feature_list.cc b/chrome/browser/flags/android/chrome_feature_list.cc
-index 4ee4479db3b54..021acd8484a24 100644
+index 447315e3f39d3..55459488edab2 100644
 --- a/chrome/browser/flags/android/chrome_feature_list.cc
 +++ b/chrome/browser/flags/android/chrome_feature_list.cc
 @@ -199,6 +199,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
@@ -69,10 +69,10 @@ index 4ee4479db3b54..021acd8484a24 100644
      &feed::kFeedAudioOverviews,
      &feed::kFeedContainment,
 diff --git a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-index 94c2191e6dcd0..64cf1db262a92 100644
+index 231228c145d2a..f7a88aa0fc810 100644
 --- a/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
 +++ b/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java
-@@ -689,6 +689,8 @@ public abstract class ChromeFeatureList {
+@@ -691,6 +691,8 @@ public abstract class ChromeFeatureList {
      public static final String TASK_MANAGER_CLANK = "TaskManagerClank";
      public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
      public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";

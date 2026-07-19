@@ -1,5 +1,5 @@
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 402d1d45bef22..498c452d177f4 100644
+index 559e0b79e1479..bd985bfd9e0f8 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
 @@ -2288,6 +2288,10 @@ are declared in tools/grit/grit_args.gni.
@@ -55,7 +55,7 @@ index 402d1d45bef22..498c452d177f4 100644
        <message name="IDS_DOWNLOAD_LINK_RESUME"
                 desc="In the download view, 'Resume' link text">
          Resume
-@@ -18364,6 +18389,37 @@ Please help our engineers fix this problem. Tell us what happened right before y
+@@ -18370,6 +18395,37 @@ Please help our engineers fix this problem. Tell us what happened right before y
        Data Sharing
      </message>
  
@@ -4362,7 +4362,7 @@ index b1bf0bcb52d5b..8231e4b7b5bb9 100644
    void ConfirmBrowserCloseWithPendingDownloads(
        int download_count,
 diff --git a/ui/base/ui_base_features.cc b/ui/base/ui_base_features.cc
-index bfaa6b1eb1861..a79aef2c7d28b 100644
+index 83e06d9f9170f..8c84caea6a5b4 100644
 --- a/ui/base/ui_base_features.cc
 +++ b/ui/base/ui_base_features.cc
 @@ -431,6 +431,14 @@ bool EnableRestoreTabButton() {

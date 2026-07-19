@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index e56f0ea663e4a..31ff6a4864bc6 100644
+index fe30e85a3815d..c8b98d66b6200 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -1223,6 +1223,10 @@ void Tab::UpdateIconVisibility() {

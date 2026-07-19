@@ -366,7 +366,7 @@ index 50c2903b4ff3a..9e6218c19c13c 100644
    typedef std::pair<URLHandler, URLHandler> HandlerPair;
    std::vector<HandlerPair> url_handlers_;
 diff --git a/content/browser/renderer_host/navigation_controller_impl.cc b/content/browser/renderer_host/navigation_controller_impl.cc
-index d3b70f82c2132..b23362a084aa2 100644
+index 21d7764fa1d87..a48097769f8e3 100644
 --- a/content/browser/renderer_host/navigation_controller_impl.cc
 +++ b/content/browser/renderer_host/navigation_controller_impl.cc
 @@ -454,9 +454,9 @@ void RewriteUrlForNavigation(const GURL& original_url,

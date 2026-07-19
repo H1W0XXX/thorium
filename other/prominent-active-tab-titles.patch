@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index f3e5410e042f2..60e87e4183258 100644
+index 466a47b4ae49a..fda49d1c5d2e8 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -261,6 +261,7 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)

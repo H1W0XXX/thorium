@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index 31ff6a4864bc6..99612b3b9876b 100644
+index c8b98d66b6200..f5fe26246cee4 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -1090,6 +1090,16 @@ void Tab::HideHover(TabStyle::HideHoverStyle style) {

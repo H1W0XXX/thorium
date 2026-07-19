@@ -1,5 +1,5 @@
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index b759f76b3e848..502facf68e3a9 100644
+index c5c8c8228d3a1..b4429d57c5fa8 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
 @@ -6486,6 +6486,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
@@ -55,10 +55,10 @@ index 0d90f794f4680..0c6694bd6ccae 100644
    void OnShowRequestsTogglePressed(const extensions::ExtensionId& extension_id,
                                     bool is_on) override;
 diff --git a/chrome/browser/ui/ui_features.cc b/chrome/browser/ui/ui_features.cc
-index 7d3fbcafc8222..3cecdeced9f8a 100644
+index e3a4f4143dfb7..8c197a77f4e8d 100644
 --- a/chrome/browser/ui/ui_features.cc
 +++ b/chrome/browser/ui/ui_features.cc
-@@ -93,6 +93,9 @@ BASE_FEATURE(kFewerUpdateConfirmations, base::FEATURE_ENABLED_BY_DEFAULT);
+@@ -111,6 +111,9 @@ BASE_FEATURE(kFewerUpdateConfirmations, base::FEATURE_ENABLED_BY_DEFAULT);
  
  BASE_FEATURE(kExtensionsCollapseMainMenu, base::FEATURE_DISABLED_BY_DEFAULT);
  
@@ -69,10 +69,10 @@ index 7d3fbcafc8222..3cecdeced9f8a 100644
  
  #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 diff --git a/chrome/browser/ui/ui_features.h b/chrome/browser/ui/ui_features.h
-index d62ebcf6cf26d..76b5fae542a8a 100644
+index bf7407be1b15d..3b84b350c54c8 100644
 --- a/chrome/browser/ui/ui_features.h
 +++ b/chrome/browser/ui/ui_features.h
-@@ -60,6 +60,8 @@ bool IsWebuiRefresh2026Enabled();
+@@ -64,6 +64,8 @@ bool IsWebuiRefresh2026Enabled();
  // the "Discover Chrome Extensions" item will be present.
  BASE_DECLARE_FEATURE(kExtensionsCollapseMainMenu);
  

@@ -159,10 +159,10 @@ index 60765c2c98d5b..71f27dab75d13 100644
      public void didBecomeEmpty() {
          for (IncognitoTabModelObserver observer : mIncognitoObservers) {
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java b/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java
-index 3ffe25a2d8ed2..2a4be23c05524 100644
+index 490a8f6481c72..da3e9627ac44d 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManager.java
-@@ -2589,6 +2589,7 @@ public class ToolbarManager
+@@ -2603,6 +2603,7 @@ public class ToolbarManager
                                  mToolbarLayout,
                                  contextMenuPopulatorFactory,
                                  selectionDropdownMenuDelegate,

@@ -32,10 +32,10 @@ index 6fada0a2b1a1f..6b2ec4b67e015 100644
  			<key>CFBundleURLName</key>
  			<string>Local file URL</string>
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 779262fae00af..95dbe0e3915e5 100644
+index 86731fd1704bc..fc8fda672f99b 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -14901,6 +14901,9 @@ This can include information about installed software, files, your browser, the
+@@ -14907,6 +14907,9 @@ This can include information about installed software, files, your browser, the
        <message name="IDS_DIRECTORY_LISTING_DATE_MODIFIED" desc="When viewing a local directory, this is the text for the column above the last modified dates.">
          Date Modified
        </message>
@@ -46,10 +46,10 @@ index 779262fae00af..95dbe0e3915e5 100644
        <!-- Saving Page-->
        <message name="IDS_SAVE_PAGE_DESC_HTML_ONLY" desc="In the Save Page dialog, the description of saving only the HTML of a webpage.">
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index f888b7904d20b..c90acf5dc7efd 100644
+index a3c6b469ca0ef..3db603f5c2095 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -8289,6 +8289,12 @@ const FeatureEntry kFeatureEntries[] = {
+@@ -8303,6 +8303,12 @@ const FeatureEntry kFeatureEntries[] = {
       FEATURE_VALUE_TYPE(
           heavy_ad_intervention::features::kHeavyAdPrivacyMitigations)},
  
@@ -63,7 +63,7 @@ index f888b7904d20b..c90acf5dc7efd 100644
      {"crostini-container-install",
       flag_descriptions::kCrostiniContainerInstallName,
 diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
-index c8f53c118f523..7b11234d3ea85 100644
+index 278c1b849a52d..8d201b9dc345a 100644
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
 @@ -766,6 +766,13 @@ inline constexpr char kEnableDrDcDescription[] =
@@ -5106,7 +5106,7 @@ index 45c0a1a8977ca..2ff11ad1d61c6 100644
    bool reporting_enabled = base::FeatureList::IsEnabled(features::kReporting);
    if (reporting_enabled) {
 diff --git a/services/network/public/cpp/features.cc b/services/network/public/cpp/features.cc
-index f35a387444a9e..68119966280e3 100644
+index ddae47d2d6aca..a4ba276672d5e 100644
 --- a/services/network/public/cpp/features.cc
 +++ b/services/network/public/cpp/features.cc
 @@ -188,6 +188,12 @@ BASE_FEATURE_PARAM(bool,
@@ -5123,7 +5123,7 @@ index f35a387444a9e..68119966280e3 100644
  BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
               base::FEATURE_DISABLED_BY_DEFAULT);
 diff --git a/services/network/public/cpp/features.h b/services/network/public/cpp/features.h
-index caaa7109c64b4..1d851d155d71b 100644
+index 4603a591f7ce5..6db9764cc6a08 100644
 --- a/services/network/public/cpp/features.h
 +++ b/services/network/public/cpp/features.h
 @@ -187,6 +187,9 @@ BASE_DECLARE_FEATURE(kFrameTopHeader);
@@ -5137,10 +5137,10 @@ index caaa7109c64b4..1d851d155d71b 100644
  // redirects, following 4.4. HTTP-redirect fetch:
  // https://fetch.spec.whatwg.org/#http-redirect-fetch
 diff --git a/services/network/public/cpp/simple_url_loader.cc b/services/network/public/cpp/simple_url_loader.cc
-index 1ac2f96364b60..3fdcb3a6b88a6 100644
+index d6924246efd56..a2fa0ca20003f 100644
 --- a/services/network/public/cpp/simple_url_loader.cc
 +++ b/services/network/public/cpp/simple_url_loader.cc
-@@ -1849,7 +1849,7 @@ void SimpleURLLoaderImpl::OnReceiveResponse(
+@@ -1878,7 +1878,7 @@ void SimpleURLLoaderImpl::OnReceiveResponse(
  
    // Assume a 200 response unless headers were received indicating otherwise.
    // No headers indicates this was not a real HTTP response (Could be a file

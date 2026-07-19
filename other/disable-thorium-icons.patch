@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/browser_actions.cc b/chrome/browser/ui/browser_actions.cc
-index 5be3c74fb1d35..3122bb37ca9bd 100644
+index aa3427c786f00..1a19a3986e090 100644
 --- a/chrome/browser/ui/browser_actions.cc
 +++ b/chrome/browser/ui/browser_actions.cc
 @@ -11,6 +11,7 @@
@@ -10,7 +10,7 @@ index 5be3c74fb1d35..3122bb37ca9bd 100644
  #include "base/functional/bind.h"
  #include "base/functional/callback_helpers.h"
  #include "base/metrics/user_metrics.h"
-@@ -829,6 +830,9 @@ void BrowserActions::InitializeChromeMenuActions() {
+@@ -833,6 +834,9 @@ void BrowserActions::InitializeChromeMenuActions() {
    TabStripModel* const tab_strip_model = bwi_->GetTabStripModel();
    BrowserWindowInterface* const bwi = base::to_address(bwi_);
    const bool is_guest_session = profile->IsGuestSession();
@@ -20,7 +20,7 @@ index 5be3c74fb1d35..3122bb37ca9bd 100644
  
    root_action_item_->AddChild(
        ChromeMenuAction(
-@@ -841,8 +845,12 @@ void BrowserActions::InitializeChromeMenuActions() {
+@@ -845,8 +849,12 @@ void BrowserActions::InitializeChromeMenuActions() {
                profile),
            kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW,
            IDS_NEW_INCOGNITO_WINDOW,
@@ -35,7 +35,7 @@ index 5be3c74fb1d35..3122bb37ca9bd 100644
            .SetEnabled(IncognitoModePrefs::IsIncognitoAllowed(profile))
            .Build());
  
-@@ -997,9 +1005,11 @@ void BrowserActions::InitializeChromeMenuActions() {
+@@ -1001,9 +1009,11 @@ void BrowserActions::InitializeChromeMenuActions() {
                             bwi, is_incognito),
                         kActionClearBrowsingData, IDS_CLEAR_BROWSING_DATA,
                         IDS_CLEAR_BROWSING_DATA,
@@ -50,7 +50,7 @@ index 5be3c74fb1d35..3122bb37ca9bd 100644
            .SetEnabled(is_incognito ||
                        (!is_guest_session && !profile->IsSystemProfile()))
            .Build());
-@@ -1213,9 +1223,7 @@ void BrowserActions::InitializeChromeMenuActions() {
+@@ -1217,9 +1227,7 @@ void BrowserActions::InitializeChromeMenuActions() {
                  },
                  bwi),
              kActionShowChromeLabs, IDS_CHROMELABS, IDS_CHROMELABS,
@@ -555,7 +555,7 @@ index 990eab66ec0c1..0fd9167999671 100644
  
  void ProfileMenuView::MaybeBuildSignoutButton() {
 diff --git a/chrome/browser/ui/views/toolbar/back_forward_button.cc b/chrome/browser/ui/views/toolbar/back_forward_button.cc
-index e298f3e4ed80f..793169a7e4e9a 100644
+index bbbdc846ef822..b1862af8ef913 100644
 --- a/chrome/browser/ui/views/toolbar/back_forward_button.cc
 +++ b/chrome/browser/ui/views/toolbar/back_forward_button.cc
 @@ -4,6 +4,7 @@
@@ -670,7 +670,7 @@ index d23ce42d48414..f3994c578a924 100644
                                                     : kNavigateHomeTouchOldIcon);
    SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_HOME));
 diff --git a/chrome/browser/ui/views/toolbar/reload_button.cc b/chrome/browser/ui/views/toolbar/reload_button.cc
-index a2ed2085675b2..7e7270382e950 100644
+index 7979627da8eec..547261be5d5a1 100644
 --- a/chrome/browser/ui/views/toolbar/reload_button.cc
 +++ b/chrome/browser/ui/views/toolbar/reload_button.cc
 @@ -1,4 +1,4 @@

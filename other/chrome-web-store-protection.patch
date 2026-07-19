@@ -16,10 +16,10 @@ index 75421913a1494..a485d8a5ccf46 100644
      This extension is outdated and disabled by enterprise policy. It might become enabled automatically when a newer version is available.
    </message>
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index 812ef2225a35a..76ac8515368ce 100644
+index 49622b54ea29f..199782e6329bb 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -4799,6 +4799,16 @@ const FeatureEntry kFeatureEntries[] = {
+@@ -4809,6 +4809,16 @@ const FeatureEntry kFeatureEntries[] = {
       flag_descriptions::kWebRequestSecurityInfoName,
       flag_descriptions::kWebRequestSecurityInfoDescription, kOsDesktop,
       FEATURE_VALUE_TYPE(extensions_features::kWebRequestSecurityInfo)},
@@ -300,7 +300,7 @@ index fc052a6b4b11a..74a6a185f0415 100644
  }
  
 diff --git a/chrome/browser/extensions/updater/extension_updater.cc b/chrome/browser/extensions/updater/extension_updater.cc
-index 05686804f06f0..bb235a8293677 100644
+index 2761ff5cf65ad..05d37c81df06d 100644
 --- a/chrome/browser/extensions/updater/extension_updater.cc
 +++ b/chrome/browser/extensions/updater/extension_updater.cc
 @@ -56,6 +56,7 @@
@@ -381,7 +381,7 @@ index 05686804f06f0..bb235a8293677 100644
      }
    }
  
-@@ -509,7 +528,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
+@@ -513,7 +532,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
  
      // Note: If an extension is both installed and pending, but can't use
      // update_service, pending_info takes priority.
@@ -390,7 +390,7 @@ index 05686804f06f0..bb235a8293677 100644
        update_check_params.update_info[id] = GetExtensionUpdateData(id);
        update_check_params.update_info[id].is_corrupt_reinstall =
            is_corrupt_reinstall;
-@@ -521,6 +540,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
+@@ -525,6 +544,8 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
        InstallStageTrackerFactory::GetForBrowserContext(profile_)
            ->ReportInstallationStage(id,
                                      InstallStageTracker::Stage::DOWNLOADING);
@@ -399,7 +399,7 @@ index 05686804f06f0..bb235a8293677 100644
      } else if (pending_info) {
        InstallStageTrackerFactory::GetForBrowserContext(profile_)->ReportFailure(
            id, InstallStageTracker::FailureReason::DOWNLOADER_ADD_FAILED);
-@@ -672,7 +693,7 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
+@@ -676,7 +697,7 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
                                  InstallStageTracker::Stage::INSTALLING);
    UpdatePingData(file.extension_id, ping);
  
@@ -408,7 +408,7 @@ index 05686804f06f0..bb235a8293677 100644
  
    FetchedCRXFile fetched(file, file_ownership_passed, request_ids,
                           std::move(callback));
-@@ -683,6 +704,7 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
+@@ -687,6 +708,7 @@ void ExtensionUpdater::OnExtensionDownloadFinished(
  
  bool ExtensionUpdater::GetPingDataForExtension(const ExtensionId& id,
                                                 DownloadPingData* ping_data) {
@@ -416,7 +416,7 @@ index 05686804f06f0..bb235a8293677 100644
    DCHECK(alive_);
    ping_data->rollcall_days =
        CalculatePingDaysForExtension(extension_prefs_->LastPingDay(id));
-@@ -797,7 +819,7 @@ bool ExtensionUpdater::CanUseUpdateService(
+@@ -798,7 +820,7 @@ bool ExtensionUpdater::CanUseUpdateService(
  void ExtensionUpdater::InstallCRXFile(FetchedCRXFile crx_file) {
    std::set<int> request_ids;
  
@@ -425,7 +425,7 @@ index 05686804f06f0..bb235a8293677 100644
            << crx_file.info.path.value();
  
    // The delegate is now responsible for cleaning up the temp file at
-@@ -1008,7 +1030,7 @@ void ExtensionUpdater::NotifyIfFinished(int request_id) {
+@@ -1009,7 +1031,7 @@ void ExtensionUpdater::NotifyIfFinished(int request_id) {
    if (!request.in_progress_ids.empty() || request.awaiting_update_service) {
      return;  // This request is not done yet.
    }
@@ -457,7 +457,7 @@ index d88bf029fadaa..b6395c415200c 100644
    raw_ptr<PrefService> prefs_ = nullptr;
    raw_ptr<Profile> profile_ = nullptr;
 diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
-index a50dd98b9a0ae..6d22a8a38987a 100644
+index 610cf0a1f2523..194b785446702 100644
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
 @@ -2088,6 +2088,17 @@ inline constexpr char kEnablePerfettoSystemTracingDescription[] =

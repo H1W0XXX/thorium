@@ -1,8 +1,8 @@
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 95dbe0e3915e5..4bcab8492ae4e 100644
+index fc8fda672f99b..9cca7586b2bb2 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -15025,6 +15025,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
+@@ -15031,6 +15031,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
          </message>
        </if>
  

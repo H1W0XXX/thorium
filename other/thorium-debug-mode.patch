@@ -186,10 +186,10 @@ index 2d72f112e9b9f..567503f15f329 100644
  BASE_EXPORT bool ShouldCreateLogMessage(int severity);
  
 diff --git a/content/browser/renderer_host/render_process_host_impl.cc b/content/browser/renderer_host/render_process_host_impl.cc
-index 773173cd93819..3e8c4db4f1edb 100644
+index abe9030414bcc..a47ae0a7e17a6 100644
 --- a/content/browser/renderer_host/render_process_host_impl.cc
 +++ b/content/browser/renderer_host/render_process_host_impl.cc
-@@ -4019,7 +4019,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
+@@ -4018,7 +4018,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
      }
    }
  

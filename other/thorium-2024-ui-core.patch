@@ -1482,7 +1482,7 @@ index b7663b7b03f9b..c82d7aaf806bf 100644
        GetColorProvider()->GetColor(kColorSidePanelHoverResizeAreaHandle);
    SetBackground(CreateRoundedRectBackground(resize_handle_color, 2));
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index d9287b9ed5296..f3e5410e042f2 100644
+index f80c98d3bd162..466a47b4ae49a 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -1,4 +1,4 @@
@@ -1745,7 +1745,7 @@ index bc7c354550ad4..1c59bd5517619 100644
        return "--tab-separator-height";
      case kTabPreTitlePadding:
 diff --git a/ui/base/ui_base_features.cc b/ui/base/ui_base_features.cc
-index f9d1b0539a91e..91771b5b4d2b7 100644
+index 434225ce92bff..7b3997fe2f7c9 100644
 --- a/ui/base/ui_base_features.cc
 +++ b/ui/base/ui_base_features.cc
 @@ -411,6 +411,16 @@ bool IsVariableRefreshRateAlwaysOn() {

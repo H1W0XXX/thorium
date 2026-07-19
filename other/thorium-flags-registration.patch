@@ -18,7 +18,7 @@ index 311a3dfebc076..0944c5f707fa3 100644
      "unexpire_flags.h",
      "universal_web_contents_observers.cc",
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index 65692f66ab989..f888b7904d20b 100644
+index b329463946b5e..a3c6b469ca0ef 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
 @@ -1,4 +1,4 @@
@@ -35,7 +35,7 @@ index 65692f66ab989..f888b7904d20b 100644
  #include "components/password_manager/core/common/password_manager_features.h"
  #include "components/payments/core/features.h"
  #include "components/performance_manager/public/features.h"
-@@ -4694,11 +4695,16 @@ const FeatureEntry::FeatureVariation kCanvasAccessibilityChoices[] = {
+@@ -4704,11 +4705,16 @@ const FeatureEntry::FeatureVariation kToolbarGlowUpVariations[] = {
  // calculate and verify checksum.
  //
  // When adding a new choice, add it to the end of the list.

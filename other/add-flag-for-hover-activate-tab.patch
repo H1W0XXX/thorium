@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/ui/ui_features.cc b/chrome/browser/ui/ui_features.cc
-index c4b39b3526571..ae57160ecd79e 100644
+index 32ea0aec1aefe..dc14ea3d8481a 100644
 --- a/chrome/browser/ui/ui_features.cc
 +++ b/chrome/browser/ui/ui_features.cc
-@@ -151,6 +151,16 @@ BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
+@@ -169,6 +169,16 @@ BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
  BASE_FEATURE(kRightClickToCloseTab,
               base::FEATURE_DISABLED_BY_DEFAULT);
  
@@ -20,10 +20,10 @@ index c4b39b3526571..ae57160ecd79e 100644
  // Enables the UI for Process Isolation in chrome://settings/system.
  BASE_FEATURE(kProcessIsolationSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 diff --git a/chrome/browser/ui/ui_features.h b/chrome/browser/ui/ui_features.h
-index 282691e5cfb63..d2b5d9e87fa51 100644
+index fc4fbc0105ddd..ec7a8ea8d70a2 100644
 --- a/chrome/browser/ui/ui_features.h
 +++ b/chrome/browser/ui/ui_features.h
-@@ -379,6 +379,9 @@ BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusingDefaultToFocused);
+@@ -383,6 +383,9 @@ BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusingDefaultToFocused);
  // Enables closing tabs with a right click. Shift+right-click opens the menu.
  BASE_DECLARE_FEATURE(kRightClickToCloseTab);
  
@@ -34,7 +34,7 @@ index 282691e5cfb63..d2b5d9e87fa51 100644
  BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
  
 diff --git a/chrome/browser/ui/views/tabs/tab.cc b/chrome/browser/ui/views/tabs/tab.cc
-index 4b69f347fc260..e56f0ea663e4a 100644
+index 8e7257fcd4442..fe30e85a3815d 100644
 --- a/chrome/browser/ui/views/tabs/tab.cc
 +++ b/chrome/browser/ui/views/tabs/tab.cc
 @@ -773,9 +773,19 @@ void Tab::OnMouseMoved(const ui::MouseEvent& event) {

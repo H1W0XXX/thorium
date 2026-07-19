@@ -402,7 +402,7 @@ index 2a49d3a2e90b9..0dfaa6c29d817 100644
  
  void StoragePartitionImpl::ResetSessionStorageConnections() {
 diff --git a/content/browser/web_contents/web_contents_impl.cc b/content/browser/web_contents/web_contents_impl.cc
-index 646327bee417d..586ff95749e41 100644
+index fe05eb81d5a62..6637c3ec37788 100644
 --- a/content/browser/web_contents/web_contents_impl.cc
 +++ b/content/browser/web_contents/web_contents_impl.cc
 @@ -4356,12 +4356,6 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,

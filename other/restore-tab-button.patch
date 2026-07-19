@@ -1,8 +1,8 @@
 diff --git a/chrome/app/generated_resources.grd b/chrome/app/generated_resources.grd
-index 4bcab8492ae4e..2aea9cd26fb29 100644
+index 9cca7586b2bb2..7f49191c2190b 100644
 --- a/chrome/app/generated_resources.grd
 +++ b/chrome/app/generated_resources.grd
-@@ -10068,6 +10068,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
+@@ -10074,6 +10074,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
        <message name="IDS_TOOLTIP_STOP" desc="The tooltip for the stop button">
          Stop loading this page
        </message>
@@ -12,7 +12,7 @@ index 4bcab8492ae4e..2aea9cd26fb29 100644
        <message name="IDS_TOOLTIP_EXTENSIONS_BUTTON" desc="The tooltip for the extensions button">
          Extensions
        </message>
-@@ -10775,6 +10778,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
+@@ -10781,6 +10784,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
        <message name="IDS_ACCNAME_RELOAD" desc="The accessible name for the reload/stop button.">
          Reload
        </message>
@@ -248,7 +248,7 @@ index ec0ca1d40c608..bfcbee40c683f 100644
    raw_ptr<PerformanceInterventionButton> performance_intervention_button_ =
        nullptr;
 diff --git a/ui/base/ui_base_features.cc b/ui/base/ui_base_features.cc
-index 91771b5b4d2b7..bfaa6b1eb1861 100644
+index 7b3997fe2f7c9..83e06d9f9170f 100644
 --- a/ui/base/ui_base_features.cc
 +++ b/ui/base/ui_base_features.cc
 @@ -421,6 +421,14 @@ bool IsThorium2024() {

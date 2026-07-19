@@ -1,6 +1,6 @@
 "chromium_path","from_overlay","from_patch","role","notes"
 "chrome/app/app_management_strings.grdp","True","False","overlay_text_sync","Reviewed overlay-owned replacements; auto-discover plain branding replacements, with special cases in message_allowlist.csv."
-"chrome/app/chromium_strings.grd","True","False","overlay_text_sync","Reviewed overlay-owned replacements; auto-discover plain branding replacements, with special cases in message_allowlist.csv."
+"chrome/app/chromium_strings.grd","True","True","overlay_text_sync","Reviewed overlay-owned replacements; auto-discover plain branding replacements, with special cases in message_allowlist.csv."
 "chrome/app/extensions_strings.grdp","False","True","feature_patch_messages","Patch-owned extensions messages; not broad overlay branding."
 "chrome/app/generated_resources.grd","True","True","mixed_text_and_structural","Process reviewed overlay messages and exclude feature-patch messages."
 "chrome/app/settings_chromium_strings.grdp","True","False","overlay_text_sync","Reviewed overlay-owned replacements; auto-discover plain branding replacements, with special cases in message_allowlist.csv."

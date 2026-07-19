@@ -1,5 +1,5 @@
 diff --git a/components/download/public/common/download_features.cc b/components/download/public/common/download_features.cc
-index 8dd8fd7e0f167..dbc8d14b4ae43 100644
+index caafb221bae5c..fc69dce541711 100644
 --- a/components/download/public/common/download_features.cc
 +++ b/components/download/public/common/download_features.cc
 @@ -1,4 +1,4 @@

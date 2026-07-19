@@ -32,7 +32,7 @@ script:
   - Keywords=browser
   - StartupNotify=true
   - Terminal=false
-  - X-MultipleArgs=True
+  - X-MultipleArgs=true
   - Icon=thorium-browser
   - Type=Application
   - Categories=Network;WebBrowser;

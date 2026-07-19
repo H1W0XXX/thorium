@@ -656,7 +656,7 @@ index bf572f69720a0..06ae1f8a6a870 100644
  StartupNotify=true
  Terminal=false
 -Icon=@@PACKAGE
-+X-MultipleArgs=True
++X-MultipleArgs=true
 +Icon=@@PACKAGE@@
  Type=Application
  Categories=Network;WebBrowser;

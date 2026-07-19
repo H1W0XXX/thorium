@@ -18,6 +18,7 @@ from typing import Sequence
 EXIT_FAILURE = 111
 PGO_GS_URL = "chromium-optimization-profiles/pgo_profiles"
 OVERLAY_COMPONENTS = ("chrome", "components", "content", "third_party", "ui")
+PAK_METADATA_FILES = ("README.chromium", "LICENSE", "OWNERS")
 SIMD_PROFILES = {
     "avx512": ("AVX512", "wrapper-avx512", None),
     "avx2": ("AVX2", "wrapper-avx2", None),
@@ -427,6 +428,8 @@ def validate_inputs(profile: str, thorium_root: Path, chromium_src: Path) -> Non
         / "feature_patch_message_ownership.csv",
     ):
         require_file(path, "Thorium setup input")
+    for filename in PAK_METADATA_FILES:
+        require_file(thorium_root / "pak_src" / filename, "PAK metadata")
 
     profile_files: tuple[Path, ...] = ()
     profile_directories: tuple[Path, ...] = ()
@@ -490,6 +493,9 @@ def setup(thorium_root: Path, chromium_src: Path, profile: str) -> None:
     print("\nCopying Thorium source overlays over the Chromium tree")
     for component in OVERLAY_COMPONENTS:
         copy_tree(thorium_root / "src" / component, chromium_src / component)
+    pak_metadata = chromium_src / "third_party" / "pak"
+    for filename in PAK_METADATA_FILES:
+        copy_file(thorium_root / "pak_src" / filename, pak_metadata / filename)
     copy_tree(thorium_root / "thorium_shell", output)
     copy_file(pak_source(thorium_root, profile), output / "pak")
     copy_tree(thorium_root / "pak_src" / "binaries" / "pak-win", output)

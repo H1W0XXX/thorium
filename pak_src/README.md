@@ -1,5 +1,7 @@
 # Thorium PAK Customizer
 
+<img src="https://github.com/Alex313031/thorium/blob/main/logos/STAGING/pak.png">
+
 This directory vendors the Rust 3.x implementation of
 [chrome-pak-customizer](https://github.com/myfreeer/chrome-pak-customizer) and
 contains the prebuilt command-line tools bundled with Thorium desktop builds.
@@ -8,6 +10,10 @@ recorded in [`README.chromium`](README.chromium).
 
 The tool unpacks and repacks Chromium PAK v4 and v5 files. It also supports
 Brotli-compressed resources and the Microsoft Edge v5 resource-ID variant.
+Compatibility is determined by the PAK format rather than the Chromium release
+number, so the tool also applies to newer Chromium and Thorium releases that
+continue to use these supported formats. A future incompatible PAK format
+would require a corresponding tool update.
 
 ## Requirements
 
@@ -91,8 +97,8 @@ unclean process termination can leave this lock behind. Inspect its
 recorded host, and only then remove the lock directory manually. The script
 never deletes an unknown stale lock automatically.
 
-Published filenames intentionally remain compatible with the existing
-`setup.py` and Windows installer integration during the migration:
+Published filenames match the names consumed by Thorium's `setup.py` and
+Windows installer integration:
 
 ```text
 binaries/pak
@@ -101,8 +107,14 @@ binaries/pak-win/pak_mingw32.exe
 binaries/pak-win/pak_mingw64.exe
 ```
 
-The Windows names are historical. They remain unchanged until newly generated
-3.x binaries have passed real PAK round-trip and browser-loading validation.
+The Windows directory also contains `pack.bat` and `unpack.bat`. They select
+the appropriate x86 or x64 executable and provide drag-and-drop wrappers for
+packing `pak_index.ini` or unpacking a PAK file. Their exit codes are suitable
+for command-line automation as well as interactive use.
+
+The Windows executable names are retained for compatibility with Thorium's
+setup and installer integration. All checked-in 3.x binaries have passed real
+Chromium PAK round-trip validation across the supported formats.
 
 ### GitHub Actions
 
@@ -133,7 +145,9 @@ This command removes only `pak_src/target/`.
 Chromium's `out/thorium` directory. The Windows mini installer then includes
 the two Windows executables. Android builds do not bundle the PAK utility.
 
-The legacy 2.0.2 C source and existing prebuilts remain temporarily available
-as the migration safety baseline and remain covered by `LICENSE.legacy` and,
-where applicable, `LICENSE.LGPL`. They must be removed only after all four new
-release binaries have been built and validated against real M150 PAK files.
+The same setup step copies this directory's canonical `README.chromium`,
+`LICENSE`, and `OWNERS` files to Chromium's `third_party/pak` directory for
+third-party metadata and license processing.
+
+The vendored Rust 3.x source and its prebuilt binaries are covered by the MIT
+license in `LICENSE`.

@@ -4,21 +4,28 @@ URL: https://github.com/myfreeer/chrome-pak-customizer
 Version: 3.0.0
 Revision: f8cd97465392291290132bf195d700aa7adb30f0
 Branch: 3.x
+Update Mechanism: Manual
 License: MIT
 License File: LICENSE
+Security Critical: no
+Shipped: yes
 
 Description:
 A Rust command-line tool for unpacking and repacking Chromium PAK v4 and v5
 resource files, including Brotli-compressed resources and the Microsoft Edge
-v5 resource-ID variant.
+v5 resource-ID variant. Compatibility follows the PAK format and is not tied
+to a specific Chromium milestone.
 
 Local modifications:
 - Thorium-specific README and source metadata.
 - Cross-platform Python build, test, clean, and atomic publishing entry point.
 - Retains Thorium's version command, Chromium ASCII art, colored status output,
-  and pack statistics while correcting legacy command-status defects.
-- Existing Thorium prebuilt filenames are retained while 3.x binaries undergo
-  release validation.
+  and pack statistics, with strict command exit-status handling.
+- Existing Thorium prebuilt filenames are retained for setup and installer
+  compatibility.
+- Windows drag-and-drop wrappers provide transactional pack and unpack output.
+- Thorium prebuilt binaries, their SHA-256 manifest, and the multi-platform
+  GitHub Actions build workflow are maintained outside the upstream source.
 - Thorium setup and installer integration remains outside the upstream source.
 
 Upstream files intentionally not vendored:

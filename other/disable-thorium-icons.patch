@@ -554,8 +554,48 @@ index 990eab66ec0c1..0fd9167999671 100644
  }
  
  void ProfileMenuView::MaybeBuildSignoutButton() {
+diff --git a/chrome/browser/ui/views/toolbar/back_forward_button.cc b/chrome/browser/ui/views/toolbar/back_forward_button.cc
+index e298f3e4ed80f..793169a7e4e9a 100644
+--- a/chrome/browser/ui/views/toolbar/back_forward_button.cc
++++ b/chrome/browser/ui/views/toolbar/back_forward_button.cc
+@@ -4,6 +4,7 @@
+ 
+ #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
+ 
++#include "base/command_line.h"
+ #include "base/metrics/user_metrics.h"
+ #include "base/time/time.h"
+ #include "chrome/app/vector_icons/vector_icons.h"
+@@ -43,10 +44,15 @@ BackForwardButton::BackForwardButton(Direction direction,
+   SetHideInkDropWhenShowingContextMenu(false);
+   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                            ui::EF_MIDDLE_MOUSE_BUTTON);
++  const bool disable_thorium_icons =
++      base::CommandLine::ForCurrentProcess()->HasSwitch(
++          "disable-thorium-icons");
+   if (direction == Direction::kBack) {
+     SetVectorIcons(features::IsRoundedIconsEnabled()
+                        ? vector_icons::kArrowBackIcon
+-                       : vector_icons::kBackArrowChromeRefreshOldIcon,
++                       : disable_thorium_icons
++                             ? vector_icons::kBackArrowChromeRefreshOldIcon
++                             : vector_icons::kBackArrowChromeRefreshThoriumIcon,
+                    features::IsRoundedIconsEnabled() ? kArrowBackIcon
+                                                      : kBackArrowTouchOldIcon);
+     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
+@@ -59,7 +65,9 @@ BackForwardButton::BackForwardButton(Direction direction,
+   } else {
+     SetVectorIcons(features::IsRoundedIconsEnabled()
+                        ? vector_icons::kArrowForwardIcon
+-                       : vector_icons::kForwardArrowChromeRefreshOldIcon,
++                       : disable_thorium_icons
++                             ? vector_icons::kForwardArrowChromeRefreshOldIcon
++                             : vector_icons::kForwardArrowChromeRefreshThoriumIcon,
+                    features::IsRoundedIconsEnabled()
+                        ? kArrowForwardIcon
+                        : kForwardArrowTouchOldIcon);
 diff --git a/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc b/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc
-index 77612f77f3acb..c4bea2e6332bd 100644
+index 77612f77f3acb..272cde24b8a06 100644
 --- a/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc
 +++ b/chrome/browser/ui/views/toolbar/browser_app_menu_button.cc
 @@ -1,4 +1,4 @@
@@ -590,7 +630,7 @@ index 77612f77f3acb..c4bea2e6332bd 100644
 +          ? kMoreVertIcon
 +          : disable_thorium_icons ? kBrowserToolsChromeRefreshOldIcon
 +                                  : kBrowserToolsChromeRefreshThoriumIcon;
-+  // Fix Thorium hamburger menu size.
++  // Keep the Thorium hamburger menu size independent of icon selection.
 +  constexpr int icon_size = 22;
  
    for (auto state : kButtonStates) {

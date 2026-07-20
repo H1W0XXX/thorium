@@ -172,16 +172,13 @@ overlay-derived, or still need separate provenance review.
 - [`new-tab-to-left-context-menu.patch`](../other/new-tab-to-left-context-menu.patch)
 - [`status-bubble-instant-expand.patch`](../other/status-bubble-instant-expand.patch)
 - [`enable-sharing-hub-page-action.patch`](../other/enable-sharing-hub-page-action.patch) - Registers the existing Sharing Hub page action in the location bar independently of Thorium 2024 UI styling.
-- [`new-tab-button-middle-click.patch`](../other/new-tab-button-middle-click.patch) - Allows the New Tab Button to accept middle-clicks on all desktop platforms instead of Linux only.
-- [`thorium-2024-ui-core.patch`](../other/thorium-2024-ui-core.patch) - Defines the optional Thorium 2024 feature and its native UI dimensions, colors, shapes, and flag-gated Settings WebUI styling. Sharing Hub enablement, menu interactions, New Tab Button input behavior, and standalone command-line styles remain in dedicated patches.
+- [`thorium-2024-ui-core.patch`](../other/thorium-2024-ui-core.patch) - Defines the optional Thorium 2024 feature and its native UI dimensions, colors, shapes, and flag-gated Settings WebUI styling. Sharing Hub enablement, menu interactions, and standalone command-line styles remain in dedicated patches.
 - [`thorium-2024-menu-interactions.patch`](../other/thorium-2024-menu-interactions.patch) - Preserves the Th24-gated macOS menu navigation/accelerator behavior and Windows mnemonic visibility outside the core styling patch.
 - [`custom-tab-width.patch`](../other/custom-tab-width.patch)
 - [`expand-chrome-color-choices.patch`](../other/expand-chrome-color-choices.patch)
-- [`windows-menu-style-overrides.patch`](../other/windows-menu-style-overrides.patch)
 - [`classic-omnibox.patch`](../other/classic-omnibox.patch)
 - [`rectangular-tabs.patch`](../other/rectangular-tabs.patch)
 - [`prominent-active-tab-titles.patch`](../other/prominent-active-tab-titles.patch)
-- [`transparent-tabs.patch`](../other/transparent-tabs.patch)
 - [`toolbar-avatar-button-visibility.patch`](../other/toolbar-avatar-button-visibility.patch)
 - [`restore-tab-button.patch`](../other/restore-tab-button.patch)
 - [`thorium-chrome-labs-experiments.patch`](../other/thorium-chrome-labs-experiments.patch)

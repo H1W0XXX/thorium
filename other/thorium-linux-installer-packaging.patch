@@ -1,5 +1,18 @@
+diff --git a/chrome/installer/BUILD.gn b/chrome/installer/BUILD.gn
+index a4ad87db54e3c..65a42ceb6409c 100644
+--- a/chrome/installer/BUILD.gn
++++ b/chrome/installer/BUILD.gn
+@@ -6,6 +6,8 @@ import("//chrome/installer/installers.gni")
+ 
+ # Meta-target that forwards to the installer of the correct type (if any).
+ group("installer") {
++  testonly = enable_linux_installer
++
+   if (enable_linux_installer) {
+     deps = [ "//chrome/installer/linux" ]
+   }
 diff --git a/chrome/installer/linux/BUILD.gn b/chrome/installer/linux/BUILD.gn
-index e1aca5fd6ecd1..5054b0570b6dd 100644
+index e1aca5fd6ecd1..0ed614e5ca40d 100644
 --- a/chrome/installer/linux/BUILD.gn
 +++ b/chrome/installer/linux/BUILD.gn
 @@ -1,17 +1,16 @@
@@ -38,7 +51,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
  }
  
  assert(is_linux)
-@@ -59,11 +62,34 @@ if (current_cpu == "x86") {
+@@ -59,11 +62,28 @@ if (current_cpu == "x86") {
    assert(false, "Linux installer not configured for this architecture.")
  }
  
@@ -47,18 +60,13 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
 +_simd_suffix = thorium_linux_package_suffix
 +_simd_variant = string_replace(_simd_suffix, "_", "")
 +
-+thorium_package_extra_files = [
-+  "$root_out_dir/chromedriver",
++thorium_package_generated_inputs = [
 +  "$root_out_dir/content_shell.pak",
-+  "$root_out_dir/pak",
 +  "$root_out_dir/shell_resources.pak",
-+  "$root_out_dir/thorium-shell",
-+  "$root_out_dir/thorium-shell.desktop",
-+  "$root_out_dir/thorium_shell.png",
 +  "$root_out_dir/thorium_shell.stripped",
 +]
 +if (enable_library_cdms) {
-+  thorium_package_extra_files +=
++  thorium_package_generated_inputs +=
 +      [ "$root_out_dir/$clearkey_cdm_path/libclearkeycdm.so.stripped" ]
 +}
 +
@@ -69,12 +77,11 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
    "$root_out_dir/chrome_management_service",
    "$root_out_dir/chrome_sandbox",
 +  "$root_out_dir/chromedriver",
-+  "$root_out_dir/pak",
 +  "$root_out_dir/thorium_shell",
  ]
  
  packaging_files_shlibs = []
-@@ -93,12 +119,21 @@ if (build_with_internal_optimization_guide) {
+@@ -93,12 +113,21 @@ if (build_with_internal_optimization_guide) {
        [ "$root_out_dir/liboptimization_guide_internal.so" ]
  }
  
@@ -96,7 +103,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
                      "$root_out_dir/locales/en-US.pak",
                      "$root_out_dir/MEIPreload/manifest.json",
                      "$root_out_dir/MEIPreload/preloaded_data.pb",
-@@ -120,7 +155,11 @@ if (use_qt6) {
+@@ -120,7 +149,11 @@ if (use_qt6) {
  }
  
  action_foreach("calculate_deb_dependencies") {
@@ -109,7 +116,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
    script = "debian/calculate_package_deps.py"
    sources = packaging_files_binaries
    inputs = [
-@@ -143,6 +182,7 @@ action_foreach("calculate_deb_dependencies") {
+@@ -143,6 +176,7 @@ action_foreach("calculate_deb_dependencies") {
  }
  
  action("merge_deb_dependencies") {
@@ -117,7 +124,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
    deps = [ ":calculate_deb_dependencies" ]
    script = "debian/merge_package_versions.py"
    additional_deps = "debian/additional_deps"
-@@ -162,7 +202,11 @@ action("merge_deb_dependencies") {
+@@ -162,7 +196,11 @@ action("merge_deb_dependencies") {
  }
  
  action_foreach("calculate_rpm_dependencies") {
@@ -130,7 +137,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
    script = "rpm/calculate_package_deps.py"
    sources = packaging_files_binaries
    inputs = [
-@@ -181,6 +225,7 @@ action_foreach("calculate_rpm_dependencies") {
+@@ -181,6 +219,7 @@ action_foreach("calculate_rpm_dependencies") {
  }
  
  action("merge_rpm_dependencies") {
@@ -138,7 +145,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
    deps = [ ":calculate_rpm_dependencies" ]
    script = "rpm/merge_package_deps.py"
    additional_deps = "rpm/additional_deps"
-@@ -198,7 +243,7 @@ action("merge_rpm_dependencies") {
+@@ -198,7 +237,7 @@ action("merge_rpm_dependencies") {
  }
  
  strip_binary("strip_chrome_binary") {
@@ -147,7 +154,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
    deps = [ "//chrome" ]
  }
  
-@@ -217,6 +262,35 @@ strip_binary("strip_chrome_sandbox") {
+@@ -217,6 +256,39 @@ strip_binary("strip_chrome_sandbox") {
    deps = [ "//sandbox/linux:chrome_sandbox" ]
  }
  
@@ -169,22 +176,30 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
 +
 +group("thorium_package_extras") {
 +  testonly = true
-+  deps = [
++  public_deps = [
 +    ":strip_thorium_shell",
 +    "//chrome/test/chromedriver:chromedriver_server",
 +    "//content/shell:copy_shell_resources",
 +    "//content/shell:pak",
++    "//content/shell:thorium_shell",
 +  ]
 +  if (enable_library_cdms) {
-+    deps += [ ":strip_clearkey_cdm" ]
++    public_deps += [
++      ":strip_clearkey_cdm",
++      "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm_bin",
++    ]
 +  }
 +}
 +
  strip_binary("strip_libEGL_shlib") {
    binary_input = "$root_out_dir/libEGL.so"
    deps = [ "//third_party/angle:libEGL" ]
-@@ -264,57 +338,8 @@ if (use_qt6) {
- # This target builds all "normal" Linux installers.  You must set
+@@ -261,60 +333,11 @@ if (use_qt6) {
+   }
+ }
+ 
+-# This target builds all "normal" Linux installers.  You must set
++# This target builds Thorium's stable Linux DEB and RPM packages. You must set
  # is_component_build=false before building this target.
  group("linux") {
 -  deps = [
@@ -243,7 +258,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
  }
  
  branding_dir = "//chrome/app/theme/$branding_path_component"
-@@ -327,17 +352,12 @@ copy("common_packaging_files") {
+@@ -327,17 +350,12 @@ copy("common_packaging_files") {
      "//chrome/app/resources/manpage.1.in",
      "common/apparmor.template",
      "common/appdata.xml.template",
@@ -261,7 +276,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
      "common/symlinks.include",
      "common/variables.include",
      "common/wrapper",
-@@ -357,16 +377,20 @@ copy("deb_packaging_files") {
+@@ -357,16 +375,20 @@ copy("deb_packaging_files") {
    sources = [
      "debian/changelog.template",
      "debian/control.template",
@@ -285,7 +300,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
  copy("theme_files") {
    visibility = [ ":*" ]
    sources = [
-@@ -410,7 +434,7 @@ copy("theme_files") {
+@@ -410,7 +432,7 @@ copy("theme_files") {
  if (!is_chromeos) {
    copy("rpm_packaging_files") {
      visibility = [ ":*" ]
@@ -294,7 +309,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
      outputs = [ "$root_out_dir/installer/rpm/{{source_file_part}}" ]
    }
  }
-@@ -442,6 +466,7 @@ group("installer_deps") {
+@@ -442,6 +464,7 @@ group("installer_deps") {
      ":strip_chrome_management_service",
      ":strip_chrome_sandbox",
      ":theme_files",
@@ -302,7 +317,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
      "//chrome",
      "//chrome:packed_resources",
      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service:chrome_management_service",
-@@ -449,6 +474,8 @@ group("installer_deps") {
+@@ -449,6 +472,8 @@ group("installer_deps") {
      "//components/crash/core/app:chrome_crashpad_handler",
      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
      "//sandbox/linux:chrome_sandbox",
@@ -311,7 +326,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
    ]
    if (bundle_widevine_cdm) {
      public_deps += [ "//third_party/widevine/cdm" ]
-@@ -502,22 +529,33 @@ group("installer_deps") {
+@@ -502,22 +527,33 @@ group("installer_deps") {
  # channel:
  #   Name of the channel.
  template("linux_package") {
@@ -344,14 +359,14 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
 +      _deb_name_suffix = "_${deb_arch}${_simd_suffix}"
 +    }
 +
-+    inputs = packaging_files + thorium_package_extra_files
++    inputs = packaging_files + thorium_package_generated_inputs
 +    outputs = [
 +      "$root_out_dir/${package}_${chrome_version_full}${_deb_name_suffix}.deb",
 +    ]
  
      args = [
        "-a",
-@@ -528,32 +566,51 @@ template("linux_package") {
+@@ -528,32 +564,51 @@ template("linux_package") {
        invoker.channel,
        "-d",
        branding_path_component,
@@ -404,12 +419,12 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
 +        _rpm_name_suffix = "_${rpm_arch}${_simd_suffix}"
 +      }
 +
-+      inputs = packaging_files + thorium_package_extra_files
++      inputs = packaging_files + thorium_package_generated_inputs
 +      outputs = [ "$root_out_dir/${package}_${chrome_version_full}${_rpm_name_suffix}.rpm" ]
  
        args = [
          "-a",
-@@ -564,6 +621,10 @@ template("linux_package") {
+@@ -564,6 +619,10 @@ template("linux_package") {
          invoker.channel,
          "-d",
          branding_path_component,
@@ -420,7 +435,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
          "-o",
          rebase_path(root_out_dir, root_build_dir),
          "-t",
-@@ -572,14 +633,22 @@ template("linux_package") {
+@@ -572,14 +631,22 @@ template("linux_package") {
        if (is_official_build) {
          args += [ "-f" ]
        }
@@ -443,7 +458,7 @@ index e1aca5fd6ecd1..5054b0570b6dd 100644
      deps = [ ":$deb_target_name" ]
      if (!is_chromeos) {
        deps += [ ":$rpm_target_name" ]
-@@ -591,12 +660,3 @@ template("linux_package") {
+@@ -591,12 +658,3 @@ template("linux_package") {
  linux_package("stable") {
    channel = "stable"
  }
@@ -734,7 +749,7 @@ index bf572f69720a0..b9e904b781c70 100644
 +Name=Open in Dark Mode
 +Exec=/usr/bin/@@USR_BIN_SYMLINK_NAME@@ --force-dark-mode %U
 diff --git a/chrome/installer/linux/common/installer.py b/chrome/installer/linux/common/installer.py
-index a9bbec28188c9..e8d3dd1f95b37 100644
+index a9bbec28188c9..873404a6db1d6 100644
 --- a/chrome/installer/linux/common/installer.py
 +++ b/chrome/installer/linux/common/installer.py
 @@ -1,97 +1,19 @@
@@ -936,7 +951,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
      input_file = pathlib.Path(input_file)
      if input_file in include_stack:
          print(
-@@ -249,429 +151,420 @@ def _process_template_includes(input_file: pathlib.Path,
+@@ -249,429 +151,421 @@ def _process_template_includes(input_file: pathlib.Path,
      return "".join(output_lines)
  
  
@@ -1314,6 +1329,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
 +            self.staging_dir / "usr/share/appdata",
 +            self.staging_dir / "usr/share/gnome-control-center/default-apps",
 +            self.staging_dir / "usr/share/man/man1",
++            install_dir / "apparmor.d",
          ]
 +        for d in dirs:
 +            d.mkdir(parents=True, exist_ok=True)
@@ -1500,7 +1516,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
 +            missing_list = ", ".join(missing_files)
 +            raise FileNotFoundError(
 +                "Missing declared Thorium package inputs: "
-+                f"{missing_list}. Run setup.sh and rebuild the package target."
++                f"{missing_list}. Run setup.py and rebuild the package target."
 +            )
 +
 +        for filename in [
@@ -1747,7 +1763,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
          icon_suffix = ""
          if self.branding == "google_chrome":
              if self.channel == "beta":
-@@ -686,112 +579,97 @@ class InstallerConfig:
+@@ -686,112 +580,97 @@ class InstallerConfig:
          for size in icon_sizes:
              logo = f"product_logo_{size}{icon_suffix}.png"
              logo_resources_png.append(logo)
@@ -1938,7 +1954,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
              "NoDisplay=true prevents\n"
              "# duplicate menu entries. This is required to match "
              "the application ID\n"
-@@ -800,210 +678,58 @@ class InstallerConfig:
+@@ -800,210 +679,58 @@ class InstallerConfig:
              "# The old desktop file is kept to preserve default "
              "browser settings.\n"
              "NoDisplay=true\n")
@@ -2194,7 +2210,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
          dest.parent.mkdir(parents=True, exist_ok=True)
  
          shutil.copy(src, dest)
-@@ -1012,12 +738,12 @@ class Installer:
+@@ -1012,12 +739,12 @@ class Installer:
          if mode is not None:
              dest.chmod(mode)
  
@@ -2209,7 +2225,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
              for f in files:
                  path = pathlib.Path(root) / f
                  if path.is_symlink():
-@@ -1033,13 +759,13 @@ class Installer:
+@@ -1033,13 +760,13 @@ class Installer:
  
                  if "ELF" in output:
                      # Check if outside install dir
@@ -2225,7 +2241,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
                          # Check RPATH
                          try:
                              readelf_out = subprocess.check_output(
-@@ -1058,10 +784,9 @@ class Installer:
+@@ -1058,10 +785,9 @@ class Installer:
  
          if rpath_bins:
              print(
@@ -2237,7 +2253,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
  
          if elf_outside:
              print(
-@@ -1071,10 +796,10 @@ class Installer:
+@@ -1071,10 +797,10 @@ class Installer:
              )
              sys.exit(1)
  
@@ -2250,7 +2266,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
              # On Cog, permission is always 0664 or 0775
              if os.getcwd().startswith("/google/cog/cloud/"):
                  on_cog = True
-@@ -1083,11 +808,7 @@ class Installer:
+@@ -1083,11 +809,7 @@ class Installer:
                      file=sys.stderr,
                  )
  
@@ -2263,7 +2279,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
              # We iterate everything.
              for item in dirs + files:
                  path = pathlib.Path(root) / item
-@@ -1095,15 +816,14 @@ class Installer:
+@@ -1095,15 +817,14 @@ class Installer:
                  actual_perms = stat.S_IMODE(st.st_mode)
  
                  base_name = item
@@ -2282,7 +2298,7 @@ index a9bbec28188c9..e8d3dd1f95b37 100644
                      else:
                          expect_exists = path.parent / target
  
-@@ -1124,26 +844,26 @@ class Installer:
+@@ -1124,26 +845,26 @@ class Installer:
                      file_type = ""
  
                  if base_name == "chrome-management-service":

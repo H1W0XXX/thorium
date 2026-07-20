@@ -94,6 +94,5 @@ text_overriding_permission_chip_indent
 UpdateThumb
 
 // Other notes
-investigate transparent tabs flags.setAlphaf(0.7f)
 search tab_strip_region_views for layout_constants added
 investigate new metrics in layout_provider and layout_constants

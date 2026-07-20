@@ -19,7 +19,7 @@ index 466a47b4ae49a..fda49d1c5d2e8 100644
  }
  
 diff --git a/chrome/browser/ui/views/tabs/tab_style_views.cc b/chrome/browser/ui/views/tabs/tab_style_views.cc
-index 33db8044c9c51..08482d85a7a20 100644
+index 095f0009ae8c5..80b0a53707181 100644
 --- a/chrome/browser/ui/views/tabs/tab_style_views.cc
 +++ b/chrome/browser/ui/views/tabs/tab_style_views.cc
 @@ -9,6 +9,7 @@

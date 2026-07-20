@@ -457,10 +457,10 @@ index d88bf029fadaa..b6395c415200c 100644
    raw_ptr<PrefService> prefs_ = nullptr;
    raw_ptr<Profile> profile_ = nullptr;
 diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
-index 610cf0a1f2523..194b785446702 100644
+index 810c949b43cbf..201a4b61692dd 100644
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
-@@ -2088,6 +2088,17 @@ inline constexpr char kEnablePerfettoSystemTracingDescription[] =
+@@ -2090,6 +2090,17 @@ inline constexpr char kEnablePerfettoSystemTracingDescription[] =
      "When enabled, Chrome will attempt to connect to the system tracing "
      "service";
  

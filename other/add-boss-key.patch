@@ -48,10 +48,10 @@ index 086c55c204ae6..99d70b84f6e06 100644
        "//chrome/browser/ui/startup/default_browser_prompt",
 diff --git a/chrome/browser/boss_key/boss_key_service.cc b/chrome/browser/boss_key/boss_key_service.cc
 new file mode 100644
-index 0000000000000..b67102b7f340a
+index 0000000000000..0df5b27f5207e
 --- /dev/null
 +++ b/chrome/browser/boss_key/boss_key_service.cc
-@@ -0,0 +1,378 @@
+@@ -0,0 +1,402 @@
 +// Copyright 2026 The Thorium Authors
 +// Use of this source code is governed by a BSD-style license that can be
 +// found in the LICENSE file.
@@ -60,6 +60,10 @@ index 0000000000000..b67102b7f340a
 +
 +#include <utility>
 +
++#if defined(USE_AURA)
++#include "ui/aura/window.h"
++#include "ui/aura/window_tree_host.h"
++#endif
 +#include "base/functional/bind.h"
 +#include "build/build_config.h"
 +#include "chrome/browser/browser_process.h"
@@ -89,10 +93,30 @@ index 0000000000000..b67102b7f340a
 +
 +constexpr char kAcceleratorGroupId[] = "thorium-boss-key";
 +constexpr char kAcceleratorProfileId[] = "local-state";
-+constexpr char kCommandId[] = "toggle-boss-key";
++// Keep this ID versioned so installations that received the original invalid
++// CapsLock portal trigger are offered a fresh authorization request.
++constexpr char kCommandId[] = "toggle-boss-key-v2";
 +
 +constexpr int kAllowedModifiers = ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
 +                                  ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN;
++
++gfx::AcceleratedWidget GetPortalParentWidget() {
++#if defined(USE_AURA)
++  BrowserWindowInterface* browser =
++      GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
++  if (!browser || !browser->GetWindow()) {
++    return gfx::kNullAcceleratedWidget;
++  }
++
++  aura::Window* native_window = browser->GetWindow()->GetNativeWindow();
++  if (!native_window || !native_window->GetHost()) {
++    return gfx::kNullAcceleratedWidget;
++  }
++  return native_window->GetHost()->GetAcceleratedWidget();
++#else
++  return gfx::kNullAcceleratedWidget;
++#endif
++}
 +
 +std::string ShortcutText(const std::string& code, int modifiers) {
 +  std::string text;
@@ -289,7 +313,7 @@ index 0000000000000..b67102b7f340a
 +    commands.emplace(kCommandId, std::move(command));
 +    listener->OnCommandsChanged(
 +        kAcceleratorGroupId, kAcceleratorProfileId, commands,
-+        gfx::kNullAcceleratedWidget,
++        GetPortalParentWidget(),
 +        base::BindRepeating(&BossKeyService::ExecuteCommand,
 +                            weak_ptr_factory_.GetWeakPtr()));
 +    external_registration_active_ = true;
@@ -1065,3 +1089,16 @@ index 7a7cc8844e8f5..cfbd10e5e5a08 100644
  };
  
  }  // namespace settings
+diff --git a/ui/base/linux/xdg_shortcut.cc b/ui/base/linux/xdg_shortcut.cc
+index 1080374bbe5f0..e75b984695450 100644
+--- a/ui/base/linux/xdg_shortcut.cc
++++ b/ui/base/linux/xdg_shortcut.cc
+@@ -44,6 +44,8 @@ std::string KeyboardCodeToString(KeyboardCode key_code) {
+       return "space";
+     case VKEY_INSERT:
+       return "Insert";
++    case VKEY_CAPITAL:
++      return "Caps_Lock";
+     case VKEY_DELETE:
+       return "Delete";
+ 

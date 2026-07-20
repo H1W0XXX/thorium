@@ -99,16 +99,13 @@ other/views-menu-delay.patch
 other/new-tab-to-left-context-menu.patch
 other/status-bubble-instant-expand.patch
 other/enable-sharing-hub-page-action.patch
-other/new-tab-button-middle-click.patch
 other/thorium-2024-ui-core.patch
 other/thorium-2024-menu-interactions.patch
 other/custom-tab-width.patch
 other/expand-chrome-color-choices.patch
-other/windows-menu-style-overrides.patch
 other/classic-omnibox.patch
 other/rectangular-tabs.patch
 other/prominent-active-tab-titles.patch
-other/transparent-tabs.patch
 other/toolbar-avatar-button-visibility.patch
 other/restore-tab-button.patch
 other/thorium-chrome-labs-experiments.patch

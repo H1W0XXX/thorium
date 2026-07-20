@@ -36,7 +36,7 @@ Choose a build that matches your CPU. A binary compiled for an unsupported SIMD 
 #### Browser UI and Tabs
 
 - Uses `thorium://` as the user-facing alias for internal pages while retaining canonical `chrome://` compatibility. This includes desktop and Android address-bar surfaces.
-- Provides the optional Thorium 2024 UI, classic Omnibox and bookmark styling, rectangular or transparent tabs, custom tab widths, expanded theme colors, and platform menu controls. See the [Thorium 2024 UI explainer](./docs/TH24.md).
+- Provides the optional Thorium 2024 UI with translucent inactive tabs, plus classic Omnibox and bookmark styling, rectangular tabs, custom tab widths, expanded theme colors, and platform menu controls. See the [Thorium 2024 UI explainer](./docs/TH24.md).
 - Adds extensive tab controls: left- or right-aligned Tab Search, Pin/Unpin Tab Search, Restore Tab, Ctrl+Tab MRU, scrollable tabs, hover activation, custom close-button behavior, double-click/right-click tab closing, and "New tab to the left".
 - Adds a configurable cross-platform boss key that hides or restores browser windows and can optionally mute all browser instances.
 - Restores the classic Download Shelf behind `thorium://flags/#download-shelf`, enhances the downloads page, enables parallel downloading by default, and provides additional download notifications and controls.

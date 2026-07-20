@@ -1627,10 +1627,10 @@ index efbd97de81493..bf0eea5256021 100644
        base::android::device_info::is_automotive() ||
        base::android::device_info::is_xr()) {
 diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
-index 8d201b9dc345a..610cf0a1f2523 100644
+index dec4ef61ba959..810c949b43cbf 100644
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
-@@ -2037,6 +2037,11 @@ inline constexpr char kEnableControlledFrameDescription[] =
+@@ -2039,6 +2039,11 @@ inline constexpr char kEnableControlledFrameDescription[] =
      "https://github.com/WICG/controlled-frame/blob/main/EXPLAINER.md "
      "for more information.";
  
@@ -4506,7 +4506,7 @@ index e0bdd667233d5..02931a0e96d03 100644
    # Should Dawn test binaries (unittests, end2end_tests, perf_tests) be built?
    # Independent of use_dawn, which controls whether Dawn is used in Chromium.
 diff --git a/ui/resources/ui_resources.grd b/ui/resources/ui_resources.grd
-index 120ebdc3b601e..e2cbb33993dbf 100644
+index a7f01025526ec..96ceff21d4fbf 100644
 --- a/ui/resources/ui_resources.grd
 +++ b/ui/resources/ui_resources.grd
 @@ -28,13 +28,13 @@

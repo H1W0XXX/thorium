@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2026 Alex313031, midzer, and gz83
+# Copyright (c) 2026 Alex313031, midzer, and gz83.
 
 """Safely replace a depot_tools checkout on Linux or Windows.
 
@@ -13,6 +13,7 @@ import argparse
 from contextlib import contextmanager
 import os
 from pathlib import Path
+import shlex
 import shutil
 import signal
 import subprocess
@@ -49,9 +50,7 @@ def default_depot_tools() -> Path:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description=(
-            "Replace depot_tools and clear gsutil and vpython state."
-        ),
+        description="Replace depot_tools and clear gsutil and vpython state.",
         epilog=(
             "Warning: this removes the user's gsutil state, including saved "
             "configuration and authentication state."
@@ -83,23 +82,35 @@ def is_filesystem_root(path: Path) -> bool:
     return bool(path.anchor) and path == Path(path.anchor)
 
 
-def validate_target(target: Path, thorium_root: Path) -> None:
-    home = Path.home().resolve()
+def is_depot_tools_checkout(path: Path) -> bool:
+    return (
+        path.is_dir()
+        and not path.is_symlink()
+        and (path / ".git").is_dir()
+        and (path / "gclient.py").is_file()
+    )
+
+
+def validate_target(
+    target: Path,
+    *,
+    home: Path,
+    thorium_root: Path,
+) -> Path:
     resolved_target = target.resolve()
-    resolved_thorium_root = thorium_root.resolve()
     target_present = os.path.lexists(target)
-    forbidden = {home, resolved_thorium_root}
+    forbidden = {home, thorium_root}
     if is_filesystem_root(resolved_target) or resolved_target in forbidden:
         raise ResetError(f"refusing to use dangerous depot_tools path: {target}")
     if home.is_relative_to(resolved_target):
         raise ResetError(
             f"refusing to replace {target}: it contains the user home directory"
         )
-    if resolved_thorium_root.is_relative_to(resolved_target):
+    if thorium_root.is_relative_to(resolved_target):
         raise ResetError(
             f"refusing to replace {target}: it contains the Thorium checkout"
         )
-    if resolved_target.is_relative_to(resolved_thorium_root):
+    if resolved_target.is_relative_to(thorium_root):
         raise ResetError(
             f"refusing to place depot_tools inside the Thorium checkout: {target}"
         )
@@ -108,9 +119,7 @@ def validate_target(target: Path, thorium_root: Path) -> None:
             raise ResetError(f"refusing to replace symlink: {target}")
         if not target.is_dir():
             raise ResetError(f"depot_tools path is not a directory: {target}")
-        if not (target / ".git").is_dir() or not (
-            target / "gclient.py"
-        ).is_file():
+        if not is_depot_tools_checkout(target):
             raise ResetError(
                 f"refusing to replace a directory that is not depot_tools: {target}"
             )
@@ -121,6 +130,7 @@ def validate_target(target: Path, thorium_root: Path) -> None:
             "the current Python interpreter is inside depot_tools; rerun with "
             "an independent system Python 3.11 interpreter"
         )
+    return resolved_target
 
 
 def sibling_path_for(
@@ -164,22 +174,24 @@ def remove_readonly(function, path: str, error_info) -> None:
 
 
 def clone_depot_tools(target: Path, *, dry_run: bool) -> None:
+    command = ["git", "clone", DEPOT_TOOLS_URL, str(target)]
+    printable = (
+        subprocess.list2cmdline(command)
+        if os.name == "nt"
+        else shlex.join(command)
+    )
     print(f"Cloning depot_tools into: {target}")
+    print(f"Command: {printable}", flush=True)
     if dry_run:
         return
     target.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        ["git", "clone", DEPOT_TOOLS_URL, str(target)],
-        check=True,
-    )
-    if not (target / ".git").is_dir() or not (target / "gclient.py").is_file():
+    subprocess.run(command, check=True)
+    if not is_depot_tools_checkout(target):
         raise ResetError("the new depot_tools checkout failed validation")
 
 
 def remove_failed_clone(path: Path) -> str | None:
     """Best-effort cleanup that does not hide the original clone failure."""
-    if not os.path.lexists(path):
-        return None
     try:
         remove_tree(path, dry_run=False, label="incomplete depot_tools checkout")
     except OSError as error:
@@ -228,9 +240,7 @@ def validate_stale_rollbacks(target: Path, rollbacks: list[Path]) -> None:
             f"directories exist: {', '.join(map(str, rollbacks))}"
         )
     for rollback in rollbacks:
-        if rollback.is_symlink() or not (rollback / ".git").is_dir() or not (
-            rollback / "gclient.py"
-        ).is_file():
+        if not is_depot_tools_checkout(rollback):
             raise ResetError(
                 f"interrupted rollback is not a depot_tools checkout: {rollback}"
             )
@@ -247,17 +257,11 @@ def validate_preserved_checkouts(
             f"{', '.join(map(str, preserved))}"
         )
     for checkout in preserved:
-        if checkout.is_symlink() or not (checkout / ".git").is_dir() or not (
-            checkout / "gclient.py"
-        ).is_file():
+        if not is_depot_tools_checkout(checkout):
             raise ResetError(
                 f"preserved path is not a depot_tools checkout: {checkout}"
             )
-    if (
-        not os.path.lexists(target)
-        and preserved
-        and rollbacks
-    ):
+    if not os.path.lexists(target) and preserved and rollbacks:
         raise ResetError(
             "depot_tools is missing and both rollback and preserved checkouts "
             "exist; manual recovery is required"
@@ -385,38 +389,58 @@ def cleanup_targets() -> tuple[tuple[Path, str], ...]:
     )
 
 
+def deduplicate_cleanup_targets(
+    targets: tuple[tuple[Path, str], ...],
+) -> tuple[tuple[Path, str], ...]:
+    unique: dict[str, tuple[Path, str]] = {}
+    for path, label in targets:
+        key = os.path.normcase(os.path.abspath(path.expanduser()))
+        unique.setdefault(key, (path, label))
+    return tuple(unique.values())
+
+
 def validate_cleanup_target(
     path: Path,
     *,
+    home: Path,
     depot_tools: Path,
     thorium_root: Path,
 ) -> None:
     resolved = path.expanduser().resolve()
-    home = Path.home().resolve()
-    resolved_depot_tools = depot_tools.resolve()
-    resolved_thorium_root = thorium_root.resolve()
-    forbidden = {home, resolved_depot_tools, resolved_thorium_root}
+    forbidden = {home, depot_tools, thorium_root}
     if is_filesystem_root(resolved) or resolved in forbidden:
         raise ResetError(f"refusing to remove dangerous cleanup path: {path}")
     if home.is_relative_to(resolved):
         raise ResetError(f"cleanup path contains the user home directory: {path}")
-    if resolved_depot_tools.is_relative_to(resolved):
+    if depot_tools.is_relative_to(resolved):
         raise ResetError(f"cleanup path contains depot_tools: {path}")
-    if resolved_thorium_root.is_relative_to(resolved):
+    if resolved.is_relative_to(depot_tools):
+        raise ResetError(f"cleanup path is inside depot_tools: {path}")
+    if thorium_root.is_relative_to(resolved):
         raise ResetError(f"cleanup path contains the Thorium checkout: {path}")
-    if resolved.is_relative_to(resolved_thorium_root):
+    if resolved.is_relative_to(thorium_root):
         raise ResetError(f"cleanup path is inside the Thorium checkout: {path}")
 
 
-def reset_depot_tools(target: Path, thorium_root: Path, args: argparse.Namespace) -> None:
+def reset_depot_tools(
+    target: Path,
+    thorium_root: Path,
+    args: argparse.Namespace,
+) -> None:
     target = Path(os.path.abspath(target.expanduser()))
     thorium_root = thorium_root.expanduser().resolve()
-    validate_target(target, thorium_root)
-    targets_to_clean = cleanup_targets()
+    home = Path.home().resolve()
+    resolved_target = validate_target(
+        target,
+        home=home,
+        thorium_root=thorium_root,
+    )
+    targets_to_clean = deduplicate_cleanup_targets(cleanup_targets())
     for path, _ in targets_to_clean:
         validate_cleanup_target(
             path,
-            depot_tools=target,
+            home=home,
+            depot_tools=resolved_target,
             thorium_root=thorium_root,
         )
 
@@ -427,7 +451,7 @@ def reset_depot_tools(target: Path, thorium_root: Path, args: argparse.Namespace
     validate_preserved_checkouts(target, preserved, rollbacks)
     validate_stale_staging(stale_staging)
 
-    reserved_paths: set[Path] = set()
+    reserved_backup_paths: set[Path] = set()
     virtually_removed = (
         set(rollbacks + preserved + stale_staging) if args.dry_run else set()
     )
@@ -436,10 +460,10 @@ def reset_depot_tools(target: Path, thorium_root: Path, args: argparse.Namespace
         preserved_backup = sibling_path_for(
             target,
             "backup",
-            reserved=reserved_paths,
+            reserved=reserved_backup_paths,
             ignored=virtually_removed,
         )
-        reserved_paths.add(preserved_backup)
+        reserved_backup_paths.add(preserved_backup)
 
     recovered_rollback = recover_interrupted_swap(
         target,
@@ -455,29 +479,33 @@ def reset_depot_tools(target: Path, thorium_root: Path, args: argparse.Namespace
     recovered_checkout = recovered_rollback or recovered_preserved
     remove_stale_staging(stale_staging, dry_run=args.dry_run)
     if not args.dry_run and recovered_checkout:
-        validate_target(target, thorium_root)
+        validate_target(
+            target,
+            home=home,
+            thorium_root=thorium_root,
+        )
 
-    old_checkout = sibling_path_for(
-        target,
-        "preserve" if args.keep_backup else "rollback",
-        reserved=reserved_paths,
-        ignored=virtually_removed,
-    )
-    reserved_paths.add(old_checkout)
-    retained_backup = sibling_path_for(
-        target,
-        "backup",
-        reserved=reserved_paths,
-        ignored=virtually_removed,
-    )
-    reserved_paths.add(retained_backup)
+    had_checkout = recovered_checkout or os.path.lexists(target)
+    old_checkout = None
+    retained_backup = None
+    if had_checkout:
+        old_checkout = sibling_path_for(
+            target,
+            "preserve" if args.keep_backup else "rollback",
+            ignored=virtually_removed,
+        )
+        if args.keep_backup:
+            retained_backup = sibling_path_for(
+                target,
+                "backup",
+                reserved=reserved_backup_paths,
+                ignored=virtually_removed,
+            )
     staging = sibling_path_for(
         target,
         "new",
-        reserved=reserved_paths,
         ignored=virtually_removed,
     )
-    had_checkout = recovered_checkout or os.path.lexists(target)
     try:
         clone_depot_tools(staging, dry_run=args.dry_run)
     except (
@@ -497,6 +525,7 @@ def reset_depot_tools(target: Path, thorium_root: Path, args: argparse.Namespace
         raise ResetError(message + (cleanup_error or "")) from error
 
     if had_checkout:
+        assert old_checkout is not None
         print(f"Moving existing depot_tools to: {old_checkout}")
     print(f"Installing the new depot_tools checkout at: {target}")
     if not args.dry_run:
@@ -528,6 +557,7 @@ def reset_depot_tools(target: Path, thorium_root: Path, args: argparse.Namespace
                 message += cleanup_error or ""
                 raise ResetError(message) from error
             if had_checkout and args.keep_backup:
+                assert retained_backup is not None
                 try:
                     old_checkout.rename(retained_backup)
                 except OSError as error:
@@ -545,6 +575,7 @@ def reset_depot_tools(target: Path, thorium_root: Path, args: argparse.Namespace
             cleanup_errors.append(f"failed to remove {path}: {error}")
 
     if had_checkout and args.keep_backup:
+        assert retained_backup is not None
         print(f"Keeping old depot_tools checkout at: {retained_backup}")
     elif had_checkout:
         if args.dry_run:

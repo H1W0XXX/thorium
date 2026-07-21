@@ -276,7 +276,7 @@ def validate_deployment_target(value: str) -> str:
     return value
 
 
-def validate_document_badges(repo_root: Path, source_dir: Path) -> tuple[Path, ...]:
+def validate_document_badges(repo_root: Path, source_dir: Path) -> None:
     pairs = (
         (
             repo_root / "logos/NEW/product_logo_256.png",
@@ -300,7 +300,6 @@ def validate_document_badges(repo_root: Path, source_dir: Path) -> tuple[Path, .
             "document badge catalog inputs are not synchronized with "
             f"Thorium product logos: {', '.join(mismatched)}"
         )
-    return tuple(catalog for _, catalog in pairs)
 
 
 def write_transaction(path: Path, transaction: dict[str, object]) -> None:
@@ -333,7 +332,7 @@ def transaction_entries(
         if (
             any(
                 not isinstance(name, str)
-                or name in (".", "..")
+                or name == ".."
                 or Path(name).parts != (name,)
                 for name in names
             )
@@ -497,11 +496,9 @@ def build(
         output_icns = source_dir / "app.icns"
         icon_document = source_dir / "AppIcon.icon/icon.json"
         layer_sources = read_icon_layers(icon_document)
-        document_badges = validate_document_badges(repo_root, source_dir)
+        validate_document_badges(repo_root, source_dir)
         required = (
-            icon_document,
             source_dir / "Assets.xcassets/Contents.json",
-            *document_badges,
             *layer_sources,
         )
         missing = [str(path) for path in required if not path.is_file()]

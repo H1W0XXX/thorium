@@ -195,7 +195,6 @@ def read_gn_argument(
             command,
             check=True,
             capture_output=True,
-            text=True,
             encoding="utf-8",
             errors="replace",
             cwd=chromium_src,
@@ -268,11 +267,11 @@ def build_phases(
     requested_targets: list[str] | None,
     single_pass: bool,
 ) -> list[list[str]]:
-    phases = (
-        [[target] for target in requested_targets]
-        if requested_targets
-        else default_phases(target_os, no_installer=no_installer)
-    )
+    if requested_targets:
+        unique_targets = dict.fromkeys(requested_targets)
+        phases = [[target] for target in unique_targets]
+    else:
+        phases = default_phases(target_os, no_installer=no_installer)
     if single_pass and len(phases) > 1:
         return [[target for phase in phases for target in phase]]
     return phases
@@ -282,7 +281,7 @@ def print_logo(thorium_root: Path) -> None:
     logo = thorium_root / "logos" / "thorium_logo_ascii_art.txt"
     try:
         contents = logo.read_text(encoding="utf-8")
-    except OSError as error:
+    except (OSError, UnicodeError) as error:
         print(f"warning: could not read {logo}: {error}", file=sys.stderr)
         return
     print()
@@ -292,16 +291,17 @@ def print_logo(thorium_root: Path) -> None:
 def completion_message(
     target_os: str, out_dir: Path, *, built_default_installer: bool
 ) -> str:
-    if not built_default_installer:
-        return f"Build completed. Products are under {out_dir}."
-    if target_os == "android":
-        return f"Build completed. APK files are under {out_dir / 'apks'}."
-    if target_os == "mac":
-        return "Build completed. Run 'python3 create_dmg.py' to create the DMG."
-    if target_os == "win":
-        return f"Build completed. The profile-named installer is under {out_dir}."
-    if target_os == "linux":
-        return f"Build completed. DEB and RPM packages are under {out_dir}."
+    if built_default_installer:
+        if target_os == "android":
+            return f"Build completed. APK files are under {out_dir / 'apks'}."
+        if target_os == "mac":
+            return "Build completed. Run 'python3 create_dmg.py' to create the DMG."
+        if target_os == "win":
+            return (
+                f"Build completed. The profile-named installer is under {out_dir}."
+            )
+        if target_os == "linux":
+            return f"Build completed. DEB and RPM packages are under {out_dir}."
     return f"Build completed. Products are under {out_dir}."
 
 
@@ -311,11 +311,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
 
     arguments = parse_arguments(sys.argv[1:] if argv is None else argv)
-    chromium_src = arguments.chromium_src.resolve()
-    thorium_root = arguments.thorium_root.resolve()
-    out_dir = resolve_out_dir(chromium_src, arguments.out_dir)
-
     try:
+        chromium_src = arguments.chromium_src.resolve()
+        thorium_root = arguments.thorium_root.resolve()
+        out_dir = resolve_out_dir(chromium_src, arguments.out_dir)
         validate_checkout(chromium_src, thorium_root, out_dir)
         gn = find_tool("gn")
         autoninja = find_tool("autoninja")
@@ -333,35 +332,34 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"{target_cpu!r}"
             )
 
-        phases = build_phases(
+        build_steps: list[tuple[list[str], list[str]]] = []
+        for phase in build_phases(
             target_os,
             no_installer=arguments.no_installer,
             requested_targets=arguments.target,
             single_pass=arguments.single_pass,
-        )
-        commands = []
-        for phase in phases:
+        ):
             ninja_arguments = ["-C", str(out_dir), *phase]
             if arguments.jobs is not None:
                 ninja_arguments.extend(["-j", str(arguments.jobs)])
-            commands.append(platform_command(autoninja, ninja_arguments))
+            command = platform_command(autoninja, ninja_arguments)
+            build_steps.append((phase, command))
 
         print(f"Host: {platform.system()} {platform.machine()}")
         print(f"GN target: {target_os} {target_cpu}")
         print(f"Output directory: {out_dir}")
-        for index, (phase, command) in enumerate(
-            zip(phases, commands, strict=True), start=1
-        ):
-            print(f"Phase {index}/{len(phases)} targets: {', '.join(phase)}")
-            print(f"Phase {index}/{len(phases)} command: {display_command(command)}")
+        phase_count = len(build_steps)
+        for index, (phase, command) in enumerate(build_steps, start=1):
+            print(f"Phase {index}/{phase_count} targets: {', '.join(phase)}")
+            print(f"Phase {index}/{phase_count} command: {display_command(command)}")
         if arguments.dry_run:
             return 0
 
         environment = os.environ.copy()
         environment["NINJA_SUMMARIZE_BUILD"] = "1"
         environment["NINJA_STATUS"] = NINJA_STATUS
-        for index, command in enumerate(commands, start=1):
-            print(f"Starting build phase {index}/{len(commands)}...")
+        for index, (_, command) in enumerate(build_steps, start=1):
+            print(f"Starting build phase {index}/{phase_count}...")
             try:
                 subprocess.run(
                     command,
@@ -370,9 +368,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     env=environment,
                 )
             except subprocess.CalledProcessError as error:
-                raise BuildFailure(
-                    index, len(commands), error.returncode
-                ) from error
+                raise BuildFailure(index, phase_count, error.returncode) from error
         print_logo(thorium_root)
         print(
             completion_message(
@@ -386,10 +382,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     except BuildFailure as error:
         print(f"error: {error}", file=sys.stderr)
         return normalize_exit_status(error.returncode)
-    except BuildError as error:
-        print(f"error: {error}", file=sys.stderr)
-        return 2
-    except OSError as error:
+    except (BuildError, OSError) as error:
         print(f"error: {error}", file=sys.stderr)
         return 2
     except KeyboardInterrupt:

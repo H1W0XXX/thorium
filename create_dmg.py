@@ -8,6 +8,7 @@ import argparse
 import os
 from pathlib import Path
 import platform
+import shlex
 import shutil
 import subprocess
 import sys
@@ -94,7 +95,7 @@ def require_directory(path: Path, description: str) -> None:
 
 
 def run(command: Sequence[str], cwd: Path) -> None:
-    printable = subprocess.list2cmdline(command)
+    printable = shlex.join(command)
     print(f"\n[{cwd}] {printable}", flush=True)
     try:
         subprocess.run(command, cwd=cwd, check=True)
@@ -108,17 +109,19 @@ def run(command: Sequence[str], cwd: Path) -> None:
 
 def create_dmg(chromium_src: Path, thorium_root: Path, product: str) -> None:
     chromium_src = chromium_src.expanduser().resolve()
-    thorium_root = thorium_root.expanduser().resolve()
     app_name, output_name, volume_name = PRODUCTS[product]
     app = chromium_src / "out" / "thorium" / app_name
     output = chromium_src / "out" / "thorium" / output_name
     pkg_dmg = chromium_src / "chrome" / "installer" / "mac" / "pkg-dmg"
-    logo = thorium_root / "logos" / "apple_ascii_art.txt"
 
     require_directory(chromium_src, "Chromium source directory")
     require_directory(app, f"{volume_name} application bundle")
     require_executable_file(pkg_dmg, "Chromium pkg-dmg tool")
-    require_file(logo, "Thorium Apple ASCII art")
+    logo = None
+    if product == "thorium":
+        thorium_root = thorium_root.expanduser().resolve()
+        logo = thorium_root / "logos" / "apple_ascii_art.txt"
+        require_file(logo, "Thorium Apple ASCII art")
     if output.is_symlink():
         raise DmgError(f"refusing to overwrite symbolic-link DMG output: {output}")
     if os.path.lexists(output) and not output.is_file():
@@ -151,10 +154,11 @@ def create_dmg(chromium_src: Path, thorium_root: Path, product: str) -> None:
     if output.is_symlink() or not output.is_file():
         raise DmgError(f"pkg-dmg did not create a regular output file: {output}")
 
-    try:
-        print(f"\n{logo.read_text(encoding='utf-8')}")
-    except (OSError, UnicodeError) as error:
-        raise DmgError(f"failed to read {logo}: {error}") from error
+    if logo is not None:
+        try:
+            print(f"\n{logo.read_text(encoding='utf-8')}")
+        except (OSError, UnicodeError) as error:
+            raise DmgError(f"failed to read {logo}: {error}") from error
     print(f"DMG build completed: {output}")
 
 

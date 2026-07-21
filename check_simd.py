@@ -277,7 +277,7 @@ def detect_x86_features() -> set[str]:
 def profile_from_args_file(path: Path) -> str:
     try:
         contents = path.read_text(encoding="utf-8")
-    except OSError as error:
+    except (OSError, UnicodeError) as error:
         raise CpuDetectionError(f"cannot read {path}: {error}") from error
     assignments = re.findall(
         r'^\s*thorium_x86_profile\s*=\s*"([^"]+)"',
@@ -348,12 +348,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
 
         available = detect_x86_features()
-        supported = all(item in available for item in requirements)
-        for feature in requirements:
-            status = "PASS" if feature in available else "FAIL"
+        feature_results = [
+            (feature, feature in available) for feature in requirements
+        ]
+        for feature, is_available in feature_results:
+            status = "PASS" if is_available else "FAIL"
             print(f"[{status}] {FEATURE_NAMES[feature]}")
 
-        if not supported:
+        if not all(is_available for _, is_available in feature_results):
             print(
                 f"UNSUPPORTED: this machine cannot safely run the {profile} build.",
                 file=sys.stderr,

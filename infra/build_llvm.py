@@ -33,7 +33,9 @@ class BuildLlvmError(RuntimeError):
 
 def default_chromium_src() -> Path:
     configured = os.environ.get("CR_DIR") or os.environ.get("CR_SRC_DIR")
-    return Path(configured).expanduser() if configured else Path.home() / "chromium/src"
+    if configured:
+        return Path(configured).expanduser()
+    return Path.home() / "chromium/src"
 
 
 def parse_args() -> argparse.Namespace:
@@ -67,50 +69,70 @@ def required_patch_features(source: str) -> dict[str, bool]:
     try:
         tree = ast.parse(source)
     except SyntaxError as error:
-        raise BuildLlvmError(f"cannot parse Chromium's LLVM build script: {error}") from error
+        raise BuildLlvmError(
+            f"cannot parse Chromium's LLVM build script: {error}"
+        ) from error
 
-    main = next(
-        (
-            node
-            for node in tree.body
-            if isinstance(node, ast.FunctionDef) and node.name == "main"
-        ),
-        None,
-    )
-    if main is None:
-        return {
-            "Polly LLVM project": False,
-            "mimalloc integration": False,
-            "Linux-only policy": False,
-            "mandatory bootstrap policy": False,
-            "checkout policy": False,
-        }
+    main = None
+    defines_mimalloc_builder = False
+    for node in tree.body:
+        if not isinstance(node, ast.FunctionDef):
+            continue
+        if node.name == "main":
+            main = node
+        elif node.name == "BuildLibMimalloc":
+            defines_mimalloc_builder = True
+
+    main_nodes = tuple(ast.walk(main)) if main is not None else ()
+    project_assignments: list[ast.expr] = []
+    bootstrap_assignments: list[ast.expr] = []
+    for node in main_nodes:
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if not isinstance(target, ast.Name):
+                continue
+            if target.id == "projects":
+                project_assignments.append(node.value)
+            elif target.id == "bootstrap_args":
+                bootstrap_assignments.append(node.value)
 
     projects_include_polly = any(
-        isinstance(node, ast.Assign)
-        and any(isinstance(target, ast.Name) and target.id == "projects" for target in node.targets)
-        and isinstance(node.value, ast.Constant)
-        and isinstance(node.value.value, str)
-        and "polly" in node.value.value.split(";")
-        for node in ast.walk(main)
+        isinstance(value, ast.Constant)
+        and isinstance(value.value, str)
+        and "polly" in value.value.split(";")
+        for value in project_assignments
     )
-    defines_mimalloc_builder = any(
-        isinstance(node, ast.FunctionDef) and node.name == "BuildLibMimalloc"
-        for node in tree.body
+    bootstrap_includes_polly = any(
+        any(
+            isinstance(value, ast.Constant)
+            and value.value == "-DLLVM_ENABLE_PROJECTS=clang;lld;polly"
+            for value in ast.walk(assignment)
+        )
+        for assignment in bootstrap_assignments
     )
     calls_mimalloc_builder = any(
         isinstance(node, ast.Call)
         and isinstance(node.func, ast.Name)
         and node.func.id == "BuildLibMimalloc"
-        for node in ast.walk(main)
+        for node in main_nodes
     )
-    direct_conditions = {
-        ast.unparse(node.test) for node in main.body if isinstance(node, ast.If)
-    }
+    direct_conditions = (
+        {
+            ast.unparse(node.test)
+            for node in main.body
+            if isinstance(node, ast.If)
+        }
+        if main is not None
+        else set()
+    )
     return {
         "Polly LLVM project": projects_include_polly,
+        "bootstrap Polly LLVM project": bootstrap_includes_polly,
         "mimalloc integration": defines_mimalloc_builder and calls_mimalloc_builder,
-        "Linux-only policy": "not sys.platform.startswith('linux')" in direct_conditions,
+        "Linux-only policy": (
+            "not sys.platform.startswith('linux')" in direct_conditions
+        ),
         "mandatory bootstrap policy": "not args.bootstrap" in direct_conditions,
         "checkout policy": "args.skip_checkout" in direct_conditions,
     }
@@ -118,7 +140,9 @@ def required_patch_features(source: str) -> dict[str, bool]:
 
 def validate_checkout(chromium_src: Path, *, require_patch: bool) -> Path:
     if platform.system() != "Linux":
-        raise BuildLlvmError("the optimized LLVM toolchain build is supported only on Linux")
+        raise BuildLlvmError(
+            "the optimized LLVM toolchain build is supported only on Linux"
+        )
 
     chromium_src = chromium_src.resolve()
     script = chromium_src / UPSTREAM_SCRIPT
@@ -131,8 +155,8 @@ def validate_checkout(chromium_src: Path, *, require_patch: bool) -> Path:
         missing = [name for name, present in patch_features.items() if not present]
         if missing:
             raise BuildLlvmError(
-                "the Chromium checkout lacks a required optimized-toolchain "
-                f"integration: {missing[0]}"
+                "the Chromium checkout lacks required optimized-toolchain "
+                f"integrations: {', '.join(missing)}"
             )
     return chromium_src
 

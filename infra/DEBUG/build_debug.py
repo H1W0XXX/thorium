@@ -19,7 +19,6 @@ from typing import Sequence
 MINIMUM_PYTHON = (3, 11)
 NINJA_STATUS = "[%r processes, %f/%t @ %o/s | %e sec. ] "
 PACKAGE_NAME = "Thorium_UI_Debug_Shell"
-SUPPORTED_TARGET_OSES = ("linux", "mac", "win")
 
 FULL_TARGETS = {
     "linux": (
@@ -146,7 +145,7 @@ def parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument(
         "--target-os",
         required=True,
-        choices=SUPPORTED_TARGET_OSES,
+        choices=tuple(FULL_TARGETS),
         help="GN target operating system",
     )
     parser.add_argument(
@@ -253,7 +252,6 @@ def read_gn_argument(
             cwd=chromium_src,
             check=True,
             capture_output=True,
-            text=True,
             encoding="utf-8",
             errors="replace",
         )
@@ -283,7 +281,7 @@ def validate_configuration(
     target_os: str,
     *,
     build_only: bool,
-) -> tuple[Path, Path]:
+) -> tuple[Path, Path, Path]:
     chromium_src = chromium_src.resolve()
     thorium_root = thorium_root.resolve()
     out_dir = resolve_out_dir(chromium_src, out_dir)
@@ -313,19 +311,20 @@ def validate_configuration(
         )
     if read_gn_argument(gn, chromium_src, out_dir, "is_debug") != "true":
         raise DebugBuildError(f"GN output directory is not a debug build: {out_dir}")
-    target_cpu = read_gn_argument(gn, chromium_src, out_dir, "target_cpu")
-    if not build_only and target_os in ("linux", "win") and target_cpu != "x64":
-        raise DebugBuildError(
-            f"Debug Shell packaging is defined only for x64 {target_os}; "
-            f"GN reports target_cpu={target_cpu!r}"
-        )
-    return chromium_src, out_dir
+    if not build_only:
+        target_cpu = read_gn_argument(gn, chromium_src, out_dir, "target_cpu")
+        if target_cpu != "x64":
+            raise DebugBuildError(
+                f"Debug Shell packaging is defined only for x64 {target_os}; "
+                f"GN reports target_cpu={target_cpu!r}"
+            )
+    return chromium_src, thorium_root, out_dir
 
 
 def normalize_exit_status(returncode: int) -> int:
     if returncode < 0:
         return 128 + abs(returncode)
-    return returncode or 1
+    return returncode
 
 
 def selected_targets(target_os: str, mode: str) -> tuple[str, ...]:
@@ -343,9 +342,11 @@ def build_targets(
     dry_run: bool,
 ) -> None:
     phases = [list(targets)] if single_pass else [[target] for target in targets]
-    environment = os.environ.copy()
-    environment["NINJA_SUMMARIZE_BUILD"] = "1"
-    environment.setdefault("NINJA_STATUS", NINJA_STATUS)
+    environment = None
+    if not dry_run:
+        environment = os.environ.copy()
+        environment["NINJA_SUMMARIZE_BUILD"] = "1"
+        environment.setdefault("NINJA_STATUS", NINJA_STATUS)
     relative_out = os.path.relpath(out_dir, chromium_src)
 
     for phase, phase_targets in enumerate(phases, start=1):
@@ -453,24 +454,14 @@ def remove_path(path: Path) -> None:
 
 
 def create_zip(staging: Path, output: Path) -> Path:
-    temporary_base = output.with_name(f".{output.stem}.new")
-    temporary_archive = Path(f"{temporary_base}.zip")
-    if temporary_archive.exists() or temporary_archive.is_symlink():
-        remove_path(temporary_archive)
-    try:
-        archive = Path(
-            shutil.make_archive(
-                str(temporary_base),
-                "zip",
-                root_dir=staging,
-                base_dir=".",
-            )
+    return Path(
+        shutil.make_archive(
+            str(output.with_suffix("")),
+            "zip",
+            root_dir=staging,
+            base_dir=".",
         )
-        archive.replace(output)
-    finally:
-        if temporary_archive.exists() or temporary_archive.is_symlink():
-            remove_path(temporary_archive)
-    return output
+    )
 
 
 def replace_package_outputs(
@@ -554,7 +545,7 @@ def package_debug_shell(
         copy_payload(staging, directories, files)
         temporary_archive = None
         if mode == "shell":
-            temporary_archive = create_zip(staging, Path(temporary) / archive.name)
+            temporary_archive = create_zip(staging, temporary / archive.name)
         replace_package_outputs(
             staging,
             temporary_archive,
@@ -603,19 +594,19 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         if args.package_only and args.dry_run:
             raise DebugBuildError("--dry-run cannot be used with --package-only")
-        chromium_src, out_dir = validate_configuration(
+        chromium_src, thorium_root, out_dir = validate_configuration(
             args.chromium_src,
             args.thorium_root,
             args.out_dir,
             args.target_os,
             build_only=args.build_only or args.dry_run,
         )
-        targets = selected_targets(args.target_os, args.mode)
         print(f"Chromium source: {chromium_src}")
         print(f"Output directory: {out_dir}")
         print(f"Target: {args.target_os} {args.mode}")
 
         if not args.package_only:
+            targets = selected_targets(args.target_os, args.mode)
             build_targets(
                 find_tool("autoninja"),
                 chromium_src,
@@ -627,7 +618,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         if not args.build_only and not args.dry_run:
             package_debug_shell(
-                args.thorium_root.resolve(),
+                thorium_root,
                 out_dir,
                 args.target_os,
                 args.mode,

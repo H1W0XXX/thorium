@@ -8,6 +8,7 @@ import argparse
 import os
 from pathlib import Path
 import platform
+import shlex
 import shutil
 import subprocess
 import sys
@@ -108,7 +109,9 @@ def depot_command(depot_tools: Path, name: str) -> str:
 
 
 def run(command: Sequence[str], cwd: Path) -> None:
-    printable = subprocess.list2cmdline(command)
+    printable = (
+        subprocess.list2cmdline(command) if os.name == "nt" else shlex.join(command)
+    )
     print(f"\n[{cwd}] {printable}", flush=True)
     try:
         subprocess.run(command, cwd=cwd, check=True)

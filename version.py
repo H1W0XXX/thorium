@@ -8,6 +8,7 @@ import argparse
 import os
 import platform
 from pathlib import Path
+import shlex
 import shutil
 import subprocess
 import sys
@@ -94,7 +95,9 @@ def depot_command(depot_tools: Path, name: str) -> str:
 
 
 def run(command: Sequence[str], cwd: Path) -> None:
-    printable = subprocess.list2cmdline(command)
+    printable = (
+        subprocess.list2cmdline(command) if os.name == "nt" else shlex.join(command)
+    )
     print(f"\n[{cwd}] {printable}", flush=True)
     try:
         subprocess.run(command, cwd=cwd, check=True)
@@ -190,10 +193,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     args = parse_args(sys.argv[1:] if argv is None else argv)
     try:
-        prepare_checkout(
-            args.chromium_src,
-            args.depot_tools,
-        )
+        prepare_checkout(args.chromium_src, args.depot_tools)
     except VersionError as error:
         print(f"{Path(sys.argv[0]).name}: {error}", file=sys.stderr)
         return EXIT_FAILURE

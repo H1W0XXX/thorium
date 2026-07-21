@@ -91,16 +91,15 @@ def find_package(base_dir: Path, requested: Path | None) -> Path:
 
 
 def package_output_name(package: Path) -> str:
-    stem = package.stem
-    if stem.startswith("thorium-browser_"):
-        stem = stem.removeprefix("thorium-browser_")
+    stem = package.stem.removeprefix("thorium-browser_")
     return f"Thorium_Browser_{stem}.AppImage"
 
 
 def copy_payload(extracted: Path, payload: Path, resources: Path) -> None:
     product_dir = extracted / "opt/chromium.org/thorium"
     if not product_dir.is_dir():
-        raise AppImageError(f"DEB does not contain {product_dir.relative_to(extracted)}")
+        relative_product_dir = product_dir.relative_to(extracted)
+        raise AppImageError(f"DEB does not contain {relative_product_dir}")
 
     shutil.copytree(product_dir, payload, dirs_exist_ok=True, symlinks=True)
     for obsolete in (payload / "cron", payload / "thorium-browser"):
@@ -124,7 +123,6 @@ def read_package_version(dpkg_deb: Path, package: Path) -> str:
         [str(dpkg_deb), "--field", str(package), "Version"],
         check=True,
         capture_output=True,
-        text=True,
         encoding="utf-8",
         errors="replace",
     )
@@ -150,10 +148,15 @@ def build_appimage(base_dir: Path, requested_package: Path | None) -> Path:
     builder = base_dir / "pkg2appimage"
     resources = base_dir / "files"
     output_dir = base_dir / "out"
-    if not recipe.is_file() or not builder.is_file():
-        raise AppImageError("Thorium.yml or pkg2appimage is missing")
+    if not recipe.is_file():
+        raise AppImageError(f"AppImage recipe is missing: {recipe}")
+    if not builder.is_file():
+        raise AppImageError(f"pkg2appimage is missing: {builder}")
+    if not os.access(builder, os.X_OK):
+        raise AppImageError(f"pkg2appimage is not executable: {builder}")
 
     output_dir.mkdir(parents=True, exist_ok=True)
+    destination = output_dir / package_output_name(package)
     before = appimage_snapshot(output_dir)
     version = read_package_version(dpkg_deb, package)
     build_tree = base_dir / "Thorium"
@@ -165,7 +168,7 @@ def build_appimage(base_dir: Path, requested_package: Path | None) -> Path:
         ) from error
 
     print(f"Package: {package}")
-    print(f"Output: {output_dir / package_output_name(package)}")
+    print(f"Output: {destination}")
     build_failed = False
     try:
         with tempfile.TemporaryDirectory(prefix="thorium-appimage-") as temporary:
@@ -208,10 +211,7 @@ def build_appimage(base_dir: Path, requested_package: Path | None) -> Path:
     after = appimage_snapshot(output_dir)
     generated = [path for path, state in after.items() if before.get(path) != state]
     source = select_single(generated, "newly generated AppImage")
-    destination = (output_dir / package_output_name(package)).resolve()
     if source != destination:
-        if destination.exists():
-            destination.unlink()
         source.replace(destination)
     print(f"Created: {destination}")
     return destination
@@ -240,22 +240,59 @@ def extract_appimage(base_dir: Path, requested: Path | None, *, force: bool) -> 
 
     output_dir = base_dir / "out"
     destination = output_dir / "Thorium_squashfs-root"
-    if destination.exists():
-        if not force:
-            raise AppImageError(f"extraction destination already exists: {destination}")
-        if destination.is_dir() and not destination.is_symlink():
-            shutil.rmtree(destination)
-        else:
-            destination.unlink()
-
+    destination_exists = os.path.lexists(destination)
+    if destination_exists and not force:
+        raise AppImageError(f"extraction destination already exists: {destination}")
+    if destination_exists and os.path.ismount(destination):
+        raise AppImageError(f"refusing to replace mounted destination: {destination}")
     output_dir.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="thorium-appimage-extract-") as temporary:
+    with tempfile.TemporaryDirectory(
+        prefix="thorium-appimage-extract-", dir=output_dir
+    ) as temporary:
         temporary_dir = Path(temporary)
-        subprocess.run([str(appimage), "--appimage-extract"], cwd=temporary_dir, check=True)
+        subprocess.run(
+            [str(appimage), "--appimage-extract"],
+            cwd=temporary_dir,
+            check=True,
+        )
         extracted = temporary_dir / "squashfs-root"
-        if not extracted.is_dir():
+        if extracted.is_symlink() or not extracted.is_dir():
             raise AppImageError("AppImage did not create squashfs-root")
-        shutil.move(str(extracted), destination)
+        backup = output_dir / (
+            f".{destination.name}.previous-{temporary_dir.name}"
+        )
+        if os.path.lexists(backup):
+            raise AppImageError(f"extraction backup already exists: {backup}")
+        try:
+            if destination_exists:
+                destination.rename(backup)
+            extracted.rename(destination)
+        except BaseException as error:
+            if (
+                destination_exists
+                and os.path.lexists(backup)
+                and not os.path.lexists(destination)
+            ):
+                try:
+                    backup.rename(destination)
+                except OSError as restore_error:
+                    raise AppImageError(
+                        f"failed to install extracted AppImage and restore "
+                        f"{destination}: {restore_error}"
+                    ) from error
+            raise
+        if destination_exists:
+            try:
+                if backup.is_dir() and not backup.is_symlink():
+                    shutil.rmtree(backup)
+                else:
+                    backup.unlink()
+            except OSError as error:
+                print(
+                    f"warning: extracted AppImage was installed, but the old "
+                    f"destination could not be removed: {backup}: {error}",
+                    file=sys.stderr,
+                )
 
     print(f"Extracted: {destination}")
     return destination

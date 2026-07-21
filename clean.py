@@ -71,6 +71,8 @@ def remove_readonly(function, path: str, error_info) -> None:
 
 
 def is_windows_reparse_point(path: Path) -> bool:
+    if os.name != "nt":
+        return False
     try:
         attributes = path.stat(follow_symlinks=False).st_file_attributes
     except AttributeError:
@@ -103,10 +105,11 @@ def inspect_pgo_profiles(profile_directory: Path) -> tuple[Path, ...]:
 
     files = []
     for path in sorted(profile_directory.iterdir()):
-        if (path.is_symlink() or path.is_file()) and path.suffix == ".profdata":
-            files.append(path)
-        elif path.is_symlink() or path.is_file():
-            print(f"Preserving non-profile file: {path}")
+        if path.is_symlink() or path.is_file():
+            if path.suffix == ".profdata":
+                files.append(path)
+            else:
+                print(f"Preserving non-profile file: {path}")
         elif path.is_dir():
             print(f"Preserving unexpected PGO subdirectory: {path}")
         else:
@@ -127,6 +130,8 @@ def remove_pgo_profiles(profile_files: tuple[Path, ...], *, dry_run: bool) -> No
             try:
                 path.unlink()
             except PermissionError:
+                if path.is_symlink():
+                    raise
                 path.chmod(0o600)
                 path.unlink()
 

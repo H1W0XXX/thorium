@@ -7,6 +7,7 @@
 import argparse
 from contextlib import contextmanager
 from datetime import datetime, timezone
+from functools import cache
 import hashlib
 import os
 from pathlib import Path
@@ -21,22 +22,19 @@ from typing import Iterator
 
 MINIMUM_PYTHON = (3, 11)
 PACKAGE_NAME = "chrome-pak-customizer"
-SUPPORTED_TARGETS = (
-    "x86_64-unknown-linux-gnu",
-    "aarch64-unknown-linux-gnu",
-    "x86_64-unknown-linux-musl",
-    "aarch64-unknown-linux-musl",
-    "x86_64-pc-windows-msvc",
-    "i686-pc-windows-msvc",
-    "x86_64-apple-darwin",
-    "aarch64-apple-darwin",
-)
 PACKAGE_OUTPUTS = {
     "x86_64-unknown-linux-musl": Path("pak"),
     "aarch64-unknown-linux-musl": Path("pak_arm64"),
     "x86_64-pc-windows-msvc": Path("pak-win/pak_mingw64.exe"),
     "i686-pc-windows-msvc": Path("pak-win/pak_mingw32.exe"),
 }
+SUPPORTED_TARGETS = (
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    *PACKAGE_OUTPUTS,
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+)
 
 
 class PakBuildError(RuntimeError):
@@ -116,6 +114,7 @@ def add_target_argument(
     )
 
 
+@cache
 def find_tool(name: str) -> str:
     executable = shutil.which(name)
     if executable is None:
@@ -224,9 +223,7 @@ def round_trip(binary: Path, fixture: Path) -> None:
 
 
 def test_command(root: Path, fixtures: list[Path], keep_going: bool) -> None:
-    target = rust_host_target(root)
-    if target not in SUPPORTED_TARGETS:
-        raise PakBuildError(f"tests are not configured for host target: {target}")
+    target = resolve_target(root, None)
 
     run(cargo_command(root, "test", target), cwd=root)
     binary = build_release(root, target)
@@ -387,20 +384,20 @@ def packaging_lock(binaries: Path) -> Iterator[None]:
             )
 
 
-def verify_checksum_manifest(binaries: Path, manifest: Path) -> dict[str, str]:
+def verify_checksum_manifest(binaries: Path, manifest: Path) -> set[str]:
     if manifest.is_symlink() or not manifest.is_file():
         raise PakBuildError(f"checksum manifest is not a regular file: {manifest}")
     allowed = {path.as_posix() for path in PACKAGE_OUTPUTS.values()}
     actual: set[str] = set()
     for name in allowed:
-        output = binaries / Path(name)
+        output = binaries / name
         if output.is_symlink():
             raise PakBuildError(f"manifest output is a symbolic link: {output}")
         if output.is_file():
             actual.add(name)
         elif output.exists():
             raise PakBuildError(f"manifest output is not a regular file: {output}")
-    entries: dict[str, str] = {}
+    entries: set[str] = set()
     try:
         lines = manifest.read_text(encoding="ascii").splitlines()
     except (OSError, UnicodeError) as error:
@@ -417,17 +414,17 @@ def verify_checksum_manifest(binaries: Path, manifest: Path) -> dict[str, str]:
             or name in entries
         ):
             raise PakBuildError(f"invalid checksum manifest entry: {line!r}")
-        output = binaries / Path(name)
+        output = binaries / name
         if output.is_symlink() or not output.is_file():
             raise PakBuildError(f"manifest output is not a regular file: {output}")
         if sha256(output) != digest:
             raise PakBuildError(f"checksum mismatch for manifest output: {output}")
-        entries[name] = digest
+        entries.add(name)
     if not entries:
         raise PakBuildError(f"checksum manifest is empty: {manifest}")
-    if entries.keys() != actual:
-        missing = sorted(actual - entries.keys())
-        extra = sorted(entries.keys() - actual)
+    if entries != actual:
+        missing = sorted(actual - entries)
+        extra = sorted(entries - actual)
         detail = []
         if missing:
             detail.append(f"missing: {', '.join(missing)}")

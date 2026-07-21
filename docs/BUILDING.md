@@ -88,6 +88,13 @@ python3 setup.py --cros
 Run `python3 setup.py --help` for the full profile list. SIMD compatibility is
 documented in [the release guide](ABOUT_RELEASES.md).
 
+Repeating `setup.py` with the same profile is supported. Before switching to a
+different profile, run `version.py` to restore the pinned clean Chromium tree;
+this is required in particular for profiles that select conditional patches,
+such as `--raspi`, `--woa`, and `--sse2`. The setup ownership manifest can
+clean files copied by an earlier run, but it intentionally does not attempt to
+reverse an already applied conditional patch series.
+
 ## Configure GN
 
 Change to Chromium and create the output directory:

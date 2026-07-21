@@ -9,6 +9,7 @@ import ast
 import os
 from pathlib import Path
 import platform
+import shlex
 import shutil
 import stat
 import subprocess
@@ -140,7 +141,11 @@ def find_command(name: str) -> str:
 
 
 def run(command: Sequence[str], cwd: Path) -> None:
-    printable = subprocess.list2cmdline(command)
+    printable = (
+        subprocess.list2cmdline(command)
+        if os.name == "nt"
+        else shlex.join(command)
+    )
     print(f"\n[{cwd}] {printable}", flush=True)
     try:
         subprocess.run(command, cwd=cwd, check=True)
@@ -453,7 +458,6 @@ def prepare_chromium(
 ) -> str:
     state = chromium_checkout_state(chromium_src)
     fetch_marker = chromium_src.parent / FETCH_INCOMPLETE_MARKER
-    gclient = str(depot_command(depot_tools, "gclient"))
     if state == "existing":
         print(f"\nUsing existing Chromium checkout: {chromium_src}")
         return state
@@ -467,6 +471,7 @@ def prepare_chromium(
             if cleanup_error:
                 raise BootstrapError(cleanup_error)
         else:
+            gclient = str(depot_command(depot_tools, "gclient"))
             write_fetch_marker(fetch_marker, SYNC_PHASE)
             run(
                 [
@@ -503,7 +508,6 @@ def prepare_chromium(
         raise BootstrapError(
             f"failed to create Chromium checkout root {checkout_root}: {error}"
         ) from error
-    fetch_marker = checkout_root / FETCH_INCOMPLETE_MARKER
     write_fetch_marker(fetch_marker, FETCH_PHASE)
     command = [str(depot_command(depot_tools, "fetch")), "--nohooks"]
     if no_history:
@@ -542,7 +546,10 @@ def confirm(args: argparse.Namespace) -> None:
         return
     if not sys.stdin.isatty():
         raise BootstrapError("interactive confirmation is unavailable; pass --yes")
-    print("\nThis operation may clone several large repositories and use sudo on Linux.")
+    print(
+        "\nThis operation may clone several large repositories and use sudo "
+        "on Linux."
+    )
     print(f"  depot_tools: {args.depot_tools}")
     print(f"  Thorium:     {args.thorium_root}")
     print(f"  Chromium:    {args.chromium_src}")

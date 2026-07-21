@@ -6,12 +6,14 @@
 
 set -euo pipefail
 
-HERE="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+WRAPPER="$(readlink -f -- "${BASH_SOURCE[0]}")"
+HERE="$(dirname -- "$WRAPPER")"
 PROFILE="$HERE/.config/thorium"
 CACHE="$HERE/.config/cache"
 FLAGS_FILE="$HERE/.config/thorium-flags.conf"
 
-export CHROME_WRAPPER="$HERE/THORIUM-PORTABLE"
+export CHROME_WRAPPER="$WRAPPER"
+export CHROME_DESKTOP="thorium-portable.desktop"
 export CHROME_VERSION_EXTRA="stable, (Portable)"
 export GNOME_DISABLE_CRASH_DIALOG=SET_BY_THORIUM
 export LD_LIBRARY_PATH="$HERE/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
@@ -30,6 +32,16 @@ EOF
 
 temporary_profile=""
 safe_mode=false
+
+cleanup_temporary_profile() {
+  local exit_code=$?
+  if [[ -n "$temporary_profile" ]] &&
+    ! rm -rf -- "$temporary_profile"; then
+    echo "warning: could not remove temporary profile: $temporary_profile" >&2
+  fi
+  return "$exit_code"
+}
+
 while (($#)); do
   case "$1" in
     -h | -help | --help)
@@ -37,7 +49,12 @@ while (($#)); do
       exit 0
       ;;
     --temp-profile)
+      if [[ -n "$temporary_profile" ]]; then
+        echo "error: --temp-profile may only be specified once" >&2
+        exit 2
+      fi
       temporary_profile="$(mktemp -d -t thorium-portable.XXXXXXXX)"
+      trap cleanup_temporary_profile EXIT
       PROFILE="$temporary_profile"
       CACHE="$temporary_profile/cache"
       shift
@@ -76,6 +93,7 @@ fi
 
 command=(
   "$HERE/thorium"
+  "--class=thorium-portable"
   "--disable-machine-id"
   "--disable-encryption"
   "--user-data-dir=$PROFILE"
@@ -84,8 +102,14 @@ command=(
   "$@"
 )
 
+# Prevent untrusted child processes from directly inheriting the invoking
+# terminal's standard file descriptors. Keep this aligned with Chromium's
+# Linux wrapper.
+exec < /dev/null
+exec > >(exec cat)
+exec 2> >(exec cat >&2)
+
 if [[ -n "$temporary_profile" ]]; then
-  trap 'rm -rf -- "$temporary_profile"' EXIT
   echo "Using temporary profile: $temporary_profile"
   "${command[@]}"
 else

@@ -24,14 +24,15 @@ requires `dpkg-deb`. Extract the result with a tool that preserves Unix symbolic
 links, such as:
 
 ```shell
-unzip Thorium_Linux_ARCH_VERSION_portable.zip
+unzip thorium-browser_VERSION_VARIANT.zip
 ```
 
 `THORIUM-PORTABLE` supports `--temp-profile` and `--safe-mode`, and reads
 additional browser flags from `.config/thorium-flags.conf`. It also removes
 pending crash files older than 30 days when the normal portable profile starts.
-`THORIUM-SHELL` launches the bundled content shell with a separate profile and
-cache. The generated archive includes these details in `README.txt`.
+`THORIUM-SHELL` launches the bundled Thorium Content Shell for web-platform
+testing and diagnostics, using a separate profile and cache. The generated
+archive includes these details in `README.txt`.
 
 ## Windows
 
@@ -49,24 +50,30 @@ py -3.11 infra/portable/portable.py `
 The input must be a Thorium mini installer containing one `chrome.7z`, one
 version directory, `thorium.exe`, and one `thorium_shell.exe`. The packager
 validates this layout before publishing the archive. The resulting ZIP includes
-`THORIUM.cmd`, `THORIUM_SHELL.cmd`, and a platform-specific `README.txt`.
+`THORIUM.BAT`, `THORIUM_SHELL.BAT`, and a platform-specific `README.txt`.
 
 ## Output and validation
 
 The platform can normally be inferred from `.deb` or `.exe`, so `--platform`
 is optional. Use `--output PATH` to choose the archive name and `--force` to
-replace an existing archive. If a renamed Windows installer no longer contains
-its SIMD profile in the filename, pass `--profile NAME` to retain that profile
-in the output archive name. Use `--expected-version VERSION` in release
-automation to reject an unexpected package version.
+replace an existing archive. If a renamed x64 package no longer contains its
+SIMD profile in the filename, pass `--profile NAME` to retain that profile in
+the output archive name. Use `--expected-version VERSION` in release automation
+to reject an unexpected package version.
 
 Default output names are:
 
 ```text
-Thorium_Linux_ARCH_VERSION_portable.zip
-Thorium_PROFILE_VERSION.zip             # Windows with a known profile
-Thorium_VERSION_portable.zip             # Windows without a known profile
+thorium-browser_VERSION_VARIANT.zip  # Linux
+Thorium_PROFILE_VERSION.zip          # Windows
 ```
+
+These names follow the release asset convention. Linux x64 variants use their
+SIMD profile (`AVX`, `AVX2`, `AVX512`, `SSE3`, or `SSE4`), while Linux ARM64
+and 32-bit x86 archives use `arm64` and `i386`. Windows uses the profile spelling
+in the installer filename. If an x64 profile cannot be inferred and no
+`--profile` is supplied, the packager fails instead of publishing a
+non-standard fallback name.
 
 Packaging takes place in an isolated temporary directory. The input package is
 never modified, and the final ZIP replaces its destination only after it has
@@ -88,7 +95,8 @@ and do not use this mode when OS-bound credential protection is preferred.
 
 Linux `.desktop` files are included as `.desktop.example` templates. Replace
 every `@PORTABLE_ROOT@` placeholder with the absolute extracted directory
-before installing them into `~/.local/share/applications`. Executable paths are
-quoted so ordinary spaces are supported; paths containing desktop-entry escape
-characters such as `"`, `` ` ``, `$`, or `\\` require specification-compliant
-escaping.
+before installing them into `~/.local/share/applications`. Install the browser
+template as `thorium-portable.desktop` so its desktop identity matches the
+launcher. Executable paths are quoted so ordinary spaces are supported; paths
+containing desktop-entry escape characters such as `"`, `` ` ``, `$`, or `\\`
+require specification-compliant escaping.

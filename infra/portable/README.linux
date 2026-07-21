@@ -20,14 +20,15 @@ Additional arguments and URLs are passed to Thorium. Optional flags can be
 placed one per line in `.config/thorium-flags.conf`; blank lines and lines that
 start with `#` are ignored.
 
-`THORIUM-SHELL` launches the bundled Thorium content shell with a separate
-profile and cache.
+`THORIUM-SHELL` launches the bundled Thorium Content Shell for web-platform
+testing and diagnostics, using a separate profile and cache.
 
 The `.desktop.example` files are templates. Before installing one under
 `~/.local/share/applications`, replace every `@PORTABLE_ROOT@` placeholder with
-the absolute path to the extracted portable directory. Quoted executable paths
-support ordinary spaces; other Desktop Entry special characters must be
-escaped according to that specification.
+the absolute path to the extracted portable directory. Install the browser
+template as `thorium-portable.desktop` so its desktop identity matches the
+launcher. Quoted executable paths support ordinary spaces; other Desktop Entry
+special characters must be escaped according to that specification.
 
 The launcher disables profile encryption and machine binding to make the
 profile movable. This reduces local protection for sensitive profile data.

@@ -6,30 +6,31 @@
 
 import argparse
 from contextlib import contextmanager
+from dataclasses import dataclass
 import json
 import os
 from pathlib import Path
 import re
+import shlex
 import shutil
 import stat
 import subprocess
 import sys
 import tempfile
+import time
 from typing import Sequence
 import zipfile
 
 
 MINIMUM_PYTHON = (3, 11)
 VERSION_PATTERN = re.compile(r"(?<!\d)(\d+\.\d+\.\d+\.\d+)(?!\d)")
-WINDOWS_PROFILES = (
-    ("AVX512", "AVX512"),
-    ("AVX2", "AVX2"),
-    ("SSE4.2", "SSE4.2"),
-    ("SSE4", "SSE4"),
-    ("SSE3", "SSE3"),
-    ("SSE2", "SSE2"),
-    ("ARM64", "ARM64"),
-    ("AVX", "AVX"),
+RELEASE_PROFILES = (
+    "AVX512",
+    "AVX2",
+    "SSE4",
+    "SSE3",
+    "ARM64",
+    "AVX",
 )
 
 
@@ -37,19 +38,30 @@ class PortableError(RuntimeError):
     """An expected portable packaging failure."""
 
 
+@dataclass(frozen=True)
+class LinuxPackageMetadata:
+    version: str
+    architecture: str
+
+
+@dataclass(frozen=True)
+class WindowsPackageMetadata:
+    version: str
+    shell: Path
+
+
 def environment_path(value: str) -> Path:
     return Path(os.path.expandvars(value)).expanduser()
 
 
 def profile_argument(value: str) -> str:
-    profiles = {label.upper(): label for _, label in WINDOWS_PROFILES}
-    try:
-        return profiles[value.upper()]
-    except KeyError as error:
-        allowed = ", ".join(profiles.values())
-        raise argparse.ArgumentTypeError(
-            f"unsupported profile {value!r}; choose one of: {allowed}"
-        ) from error
+    profile = value.upper()
+    if profile in RELEASE_PROFILES:
+        return profile
+    allowed = ", ".join(RELEASE_PROFILES)
+    raise argparse.ArgumentTypeError(
+        f"unsupported profile {value!r}; choose one of: {allowed}"
+    )
 
 
 def parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
@@ -83,7 +95,10 @@ def parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
         "--profile",
         type=profile_argument,
         metavar="NAME",
-        help="Windows SIMD profile used in the output name when it cannot be inferred",
+        help=(
+            "SIMD profile used in the release-style output name when it "
+            "cannot be inferred"
+        ),
     )
     parser.add_argument(
         "--expected-version",
@@ -114,21 +129,20 @@ def detect_platform(requested: str, package: Path) -> str:
     raise PortableError("could not infer the platform; pass --platform explicitly")
 
 
-def run(command: Sequence[str]) -> None:
-    print(f"Running: {subprocess.list2cmdline(command)}")
+def execute(
+    command: Sequence[str], *, capture_output: bool
+) -> subprocess.CompletedProcess[str]:
+    if not capture_output:
+        rendered_command = (
+            subprocess.list2cmdline(command)
+            if os.name == "nt"
+            else shlex.join(command)
+        )
+        print(f"Running: {rendered_command}")
     try:
-        subprocess.run(command, check=True)
-    except subprocess.CalledProcessError as error:
-        raise PortableError(
-            f"command failed with exit code {error.returncode}: {command[0]}"
-        ) from error
-    except OSError as error:
-        raise PortableError(f"could not run {command[0]}: {error}") from error
-
-
-def run_capture(command: Sequence[str]) -> str:
-    try:
-        result = subprocess.run(
+        if not capture_output:
+            return subprocess.run(command, check=True)
+        return subprocess.run(
             command,
             check=True,
             capture_output=True,
@@ -137,14 +151,24 @@ def run_capture(command: Sequence[str]) -> str:
             errors="replace",
         )
     except subprocess.CalledProcessError as error:
-        details = (error.stderr or error.stdout).strip()
+        details = ""
+        if capture_output:
+            details = (error.stderr or error.stdout or "").strip()
         suffix = f": {details}" if details else ""
         raise PortableError(
-            f"command failed with exit code {error.returncode}: {command[0]}{suffix}"
+            f"command failed with exit code {error.returncode}: "
+            f"{command[0]}{suffix}"
         ) from error
     except OSError as error:
         raise PortableError(f"could not run {command[0]}: {error}") from error
-    return result.stdout.strip()
+
+
+def run(command: Sequence[str]) -> None:
+    execute(command, capture_output=False)
+
+
+def run_capture(command: Sequence[str]) -> str:
+    return execute(command, capture_output=True).stdout.strip()
 
 
 def find_program(name: str, configured: Path | None = None) -> str:
@@ -165,12 +189,6 @@ def find_program(name: str, configured: Path | None = None) -> str:
     if not found:
         raise PortableError(f"{name} was not found in PATH")
     return found
-
-
-def copy_contents(source: Path, destination: Path) -> None:
-    if not source.is_dir():
-        raise PortableError(f"package payload directory is missing: {source}")
-    shutil.copytree(source, destination, symlinks=True)
 
 
 def validate_payload_tree(root: Path) -> None:
@@ -209,16 +227,26 @@ def validate_payload_tree(root: Path) -> None:
                     )
 
 
-def extract_linux(package: Path, staging: Path, work: Path) -> tuple[str, str]:
-    dpkg_deb = find_program("dpkg-deb")
-    package_name = run_capture((dpkg_deb, "--field", str(package), "Package"))
+def inspect_linux_package(package: Path, dpkg_deb: str) -> LinuxPackageMetadata:
+    fields = run_capture(
+        (
+            dpkg_deb,
+            "--show",
+            "--showformat=${Package}\n${Version}\n${Architecture}\n",
+            str(package),
+        )
+    ).splitlines()
+    if len(fields) != 3:
+        raise PortableError(
+            "could not read package name, version, and architecture from "
+            f"Debian package metadata: {package}"
+        )
+    package_name, package_version, architecture = fields
     if package_name != "thorium-browser":
         raise PortableError(
             f"unexpected Debian package name {package_name!r}; expected "
             "'thorium-browser'"
         )
-    package_version = run_capture((dpkg_deb, "--field", str(package), "Version"))
-    architecture = run_capture((dpkg_deb, "--field", str(package), "Architecture"))
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.+-]*", architecture):
         raise PortableError(f"invalid Debian architecture {architecture!r}")
     version_match = VERSION_PATTERN.search(package_version)
@@ -227,12 +255,21 @@ def extract_linux(package: Path, staging: Path, work: Path) -> tuple[str, str]:
             f"could not determine Thorium version from Debian version "
             f"{package_version!r}"
         )
+    return LinuxPackageMetadata(version_match.group(1), architecture)
+
+
+def extract_linux(
+    package: Path,
+    staging: Path,
+    work: Path,
+    dpkg_deb: str,
+) -> None:
     extracted = work / "deb"
     run((dpkg_deb, "--extract", str(package), str(extracted)))
     payload = extracted / "opt/chromium.org/thorium"
     validate_payload_tree(payload)
-    copy_contents(payload, staging)
-    for obsolete in ("cron", "thorium-browser"):
+    shutil.copytree(payload, staging, symlinks=True)
+    for obsolete in ("apparmor.d", "cron", "thorium-browser"):
         path = staging / obsolete
         if path.is_dir():
             shutil.rmtree(path)
@@ -240,25 +277,43 @@ def extract_linux(package: Path, staging: Path, work: Path) -> tuple[str, str]:
             path.unlink()
     browser = staging / "thorium"
     if not browser.is_file() or browser.is_symlink():
-        raise PortableError("Thorium browser executable is missing from the DEB payload")
+        raise PortableError(
+            "Thorium browser executable is missing from the DEB payload"
+        )
     if not browser.stat().st_mode & 0o111:
         raise PortableError("Thorium browser file in the DEB is not executable")
+    sandbox = staging / "chrome-sandbox"
+    if not sandbox.is_file() or sandbox.is_symlink():
+        raise PortableError("Chrome sandbox helper is missing from the DEB payload")
+    sandbox.chmod(stat.S_IMODE(sandbox.stat().st_mode) & 0o777)
     shell = staging / "thorium_shell"
     if not shell.is_file() or shell.is_symlink():
         raise PortableError("Thorium Content Shell is missing from the DEB payload")
     if not shell.stat().st_mode & 0o111:
         raise PortableError("Thorium Content Shell file in the DEB is not executable")
-    return version_match.group(1), architecture
 
 
-def find_unique(root: Path, name: str) -> Path:
-    matches = [path for path in root.rglob(name) if path.is_file()]
-    if len(matches) != 1:
+def find_unique(
+    root: Path,
+    name: str,
+    location: str,
+    *,
+    directory: bool = False,
+) -> Path:
+    match = None
+    for path in root.rglob(name):
+        matches_type = path.is_dir() if directory else path.is_file()
+        if matches_type:
+            if match is not None:
+                raise PortableError(
+                    f"expected exactly one {name} in {location}; found multiple"
+                )
+            match = path
+    if match is None:
         raise PortableError(
-            f"expected exactly one {name} in the extracted installer; "
-            f"found {len(matches)}"
+            f"expected exactly one {name} in {location}; found none"
         )
-    return matches[0]
+    return match
 
 
 def extract_windows(
@@ -266,28 +321,37 @@ def extract_windows(
     staging: Path,
     work: Path,
     seven_zip: Path | None,
-) -> tuple[str, None]:
+) -> WindowsPackageMetadata:
     executable = find_program("7z", seven_zip)
     installer = work / "installer"
     payload = work / "payload"
     installer.mkdir()
     payload.mkdir()
     run((executable, "x", "-y", f"-o{installer}", str(package)))
-    chrome_archive = find_unique(installer, "chrome.7z")
+    chrome_archive = find_unique(installer, "chrome.7z", "the extracted installer")
     run((executable, "x", "-y", f"-o{payload}", str(chrome_archive)))
-    chrome_bin = payload / "Chrome-bin"
-    if not chrome_bin.is_dir():
-        directories = [path for path in payload.rglob("Chrome-bin") if path.is_dir()]
-        if len(directories) != 1:
-            raise PortableError("Chrome-bin was not found in the installer payload")
-        chrome_bin = directories[0]
+    chrome_bin = find_unique(
+        payload,
+        "Chrome-bin",
+        "the installer payload",
+        directory=True,
+    )
     validate_payload_tree(chrome_bin)
-    copy_contents(chrome_bin, staging / "BIN")
+    shutil.copytree(chrome_bin, staging / "BIN", symlinks=True)
     (staging / "USER_DATA").mkdir()
     browser = staging / "BIN/thorium.exe"
     if not browser.is_file() or browser.is_symlink():
         raise PortableError("Thorium browser executable is missing from the installer")
-    return windows_version_directory(staging).name, None
+    version_directory = windows_version_directory(staging)
+    shell = version_directory / "thorium_shell.exe"
+    if not shell.is_file() or shell.is_symlink():
+        raise PortableError(
+            "Thorium Content Shell is missing from the Windows version directory"
+        )
+    return WindowsPackageMetadata(
+        version_directory.name,
+        shell.relative_to(staging),
+    )
 
 
 def windows_version_directory(staging: Path) -> Path:
@@ -305,22 +369,11 @@ def windows_version_directory(staging: Path) -> Path:
     return versions[0]
 
 
-def windows_shell_path(staging: Path) -> Path:
-    version_directory = windows_version_directory(staging)
-    matches = [path for path in version_directory.rglob("thorium_shell.exe")]
-    if len(matches) != 1:
-        raise PortableError(
-            "expected exactly one thorium_shell.exe in the Windows version "
-            f"directory; found {len(matches)}"
-        )
-    return matches[0]
-
-
 def inferred_profile(package: Path) -> str | None:
-    upper_name = package.name.upper()
-    for marker, label in WINDOWS_PROFILES:
-        if marker in upper_name:
-            return label
+    filename_parts = set(re.split(r"[_-]", package.stem.upper()))
+    for profile in RELEASE_PROFILES:
+        if profile in filename_parts:
+            return profile
     return None
 
 
@@ -334,36 +387,113 @@ def profile_name(package: Path, configured: str | None) -> str | None:
     return configured or inferred
 
 
+def linux_release_variant(
+    package: Path,
+    architecture: str,
+    configured_profile: str | None,
+) -> str:
+    architecture_variant = {
+        "arm64": "arm64",
+        "i386": "i386",
+    }.get(architecture)
+    inferred = inferred_profile(package)
+
+    if architecture_variant is not None:
+        expected_profile = "ARM64" if architecture == "arm64" else None
+        if configured_profile and configured_profile != expected_profile:
+            raise PortableError(
+                f"--profile {configured_profile!r} conflicts with Debian "
+                f"architecture {architecture!r}"
+            )
+        if inferred and inferred != expected_profile:
+            raise PortableError(
+                f"profile {inferred!r} in the package filename conflicts with "
+                f"Debian architecture {architecture!r}"
+            )
+        return architecture_variant
+
+    if architecture != "amd64":
+        raise PortableError(
+            f"unsupported Debian architecture {architecture!r} for release naming"
+        )
+    profile = profile_name(package, configured_profile)
+    if profile is None:
+        raise PortableError(
+            "could not infer the Linux SIMD profile; pass --profile to create "
+            "a release-style archive name"
+        )
+    if profile == "ARM64":
+        raise PortableError("ARM64 profile conflicts with Debian architecture 'amd64'")
+    return profile
+
+
 def default_output(
     package: Path,
     platform_name: str,
     version: str,
-    architecture: str | None,
-    configured_profile: str | None,
+    release_variant: str,
 ) -> Path:
-    profile = profile_name(package, configured_profile)
-    if platform_name == "windows" and version and profile:
-        name = f"Thorium_{profile}_{version}.zip"
-    elif platform_name == "windows" and version:
-        print(
-            "warning: could not infer the Windows SIMD profile; use --profile "
-            "to include it in the archive name",
-            file=sys.stderr,
-        )
-        name = f"Thorium_{version}_portable.zip"
-    elif platform_name == "linux" and architecture:
-        name = f"Thorium_Linux_{architecture}_{version}_portable.zip"
+    if platform_name == "windows":
+        name = f"Thorium_{release_variant}_{version}.zip"
+    elif platform_name == "linux":
+        name = f"thorium-browser_{version}_{release_variant}.zip"
     else:
-        name = f"{package.stem}_portable.zip"
+        raise PortableError("could not determine a release-style output name")
     return package.parent / name
+
+
+def validate_expected_version(actual: str, expected: str | None) -> None:
+    if expected and actual != expected:
+        raise PortableError(
+            f"version mismatch: expected {expected!r}, package contains {actual!r}"
+        )
+
+
+def prepare_linux_package(
+    package: Path,
+    staging: Path,
+    work: Path,
+    configured_profile: str | None,
+    expected_version: str | None,
+) -> tuple[LinuxPackageMetadata, str]:
+    dpkg_deb = find_program("dpkg-deb")
+    metadata = inspect_linux_package(package, dpkg_deb)
+    validate_expected_version(metadata.version, expected_version)
+    release_variant = linux_release_variant(
+        package,
+        metadata.architecture,
+        configured_profile,
+    )
+    extract_linux(package, staging, work, dpkg_deb)
+    return metadata, release_variant
+
+
+def prepare_windows_package(
+    package: Path,
+    staging: Path,
+    work: Path,
+    seven_zip: Path | None,
+    configured_profile: str | None,
+    expected_version: str | None,
+) -> tuple[WindowsPackageMetadata, str]:
+    release_variant = profile_name(package, configured_profile)
+    if release_variant is None:
+        raise PortableError(
+            "could not infer the Windows SIMD profile; pass --profile to "
+            "create a release-style archive name"
+        )
+    staging.mkdir()
+    metadata = extract_windows(package, staging, work, seven_zip)
+    validate_expected_version(metadata.version, expected_version)
+    return metadata, release_variant
 
 
 def copy_support_files(
     portable_dir: Path,
     staging: Path,
-    platform_name: str,
+    metadata: LinuxPackageMetadata | WindowsPackageMetadata,
 ) -> None:
-    if platform_name == "linux":
+    if isinstance(metadata, LinuxPackageMetadata):
         files = (
             ("README.linux", "README.txt"),
             ("launchers/linux-browser.sh", "THORIUM-PORTABLE"),
@@ -378,27 +508,36 @@ def copy_support_files(
             ),
         )
     else:
-        shell_path = windows_shell_path(staging)
         files = (
             ("README.win", "README.txt"),
-            ("launchers/windows-browser.cmd", "THORIUM.cmd"),
-            ("launchers/windows-shell.cmd", "THORIUM_SHELL.cmd"),
+            ("launchers/windows-browser.cmd", "THORIUM.BAT"),
+            ("launchers/windows-shell.cmd", "THORIUM_SHELL.BAT"),
         )
     for source_name, destination_name in files:
         source = portable_dir / source_name
         if not source.is_file():
             raise PortableError(f"portable support file is missing: {source}")
         shutil.copy2(source, staging / destination_name)
-    if platform_name == "windows":
-        launcher = staging / "THORIUM_SHELL.cmd"
-        relative_shell = shell_path.relative_to(staging).as_posix().replace("/", "\\")
-        launcher.write_text(
-            launcher.read_text(encoding="utf-8").replace(
-                "@THORIUM_SHELL_RELATIVE@", relative_shell
-            ),
-            encoding="utf-8",
+    if isinstance(metadata, WindowsPackageMetadata):
+        placeholder = b"@THORIUM_SHELL_RELATIVE@"
+        launcher = staging / "THORIUM_SHELL.BAT"
+        launcher_contents = launcher.read_bytes()
+        if launcher_contents.count(placeholder) != 1:
+            raise PortableError(
+                "Windows Shell launcher must contain exactly one "
+                "@THORIUM_SHELL_RELATIVE@ placeholder"
+            )
+        relative_shell = metadata.shell.as_posix().replace("/", "\\")
+        launcher.write_bytes(
+            launcher_contents.replace(placeholder, relative_shell.encode("ascii"))
         )
-    if platform_name == "linux":
+        for name in ("THORIUM.BAT", "THORIUM_SHELL.BAT"):
+            path = staging / name
+            contents = path.read_bytes().replace(b"\r\n", b"\n").replace(
+                b"\r", b"\n"
+            )
+            path.write_bytes(contents.replace(b"\n", b"\r\n"))
+    else:
         for name in ("THORIUM-PORTABLE", "THORIUM-SHELL"):
             path = staging / name
             path.chmod(path.stat().st_mode | 0o111)
@@ -495,36 +634,41 @@ def output_lock(output: Path):
     if not current_running:
         raise PortableError("could not identify the current packaging process")
     for attempt in range(2):
-        descriptor, pending_name = tempfile.mkstemp(
-            prefix=f".{lock.name}.", suffix=".new", dir=lock.parent
-        )
-        pending = Path(pending_name)
         try:
-            with os.fdopen(descriptor, "w", encoding="utf-8") as lock_file:
-                json.dump(
-                    {"pid": os.getpid(), "identity": current_identity}, lock_file
-                )
-                lock_file.write("\n")
-                lock_file.flush()
-                os.fsync(lock_file.fileno())
+            descriptor = os.open(
+                lock,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+                0o600,
+            )
+        except FileExistsError as error:
+            lock_error = error
+        else:
+            lock_initialized = False
             try:
-                os.link(pending, lock)
-            except FileExistsError as error:
-                lock_error = error
-            else:
-                acquired_stat = lock.stat()
-                break
-        finally:
-            try:
-                pending.unlink()
-            except FileNotFoundError:
-                pass
+                with os.fdopen(descriptor, "w", encoding="utf-8") as lock_file:
+                    json.dump(
+                        {"pid": os.getpid(), "identity": current_identity},
+                        lock_file,
+                    )
+                    lock_file.write("\n")
+                    lock_file.flush()
+                    os.fsync(lock_file.fileno())
+                    acquired_stat = os.fstat(lock_file.fileno())
+                lock_initialized = True
+            finally:
+                if not lock_initialized:
+                    try:
+                        lock.unlink()
+                    except FileNotFoundError:
+                        pass
+            break
         try:
             lock_stat = lock.stat()
         except OSError as stat_error:
             raise PortableError(
                 f"could not inspect output lock {lock}: {stat_error}"
             ) from stat_error
+        record_valid = True
         try:
             record = json.loads(lock.read_text(encoding="utf-8"))
             process_id = int(record["pid"])
@@ -532,8 +676,14 @@ def output_lock(output: Path):
             if recorded_identity is not None:
                 recorded_identity = str(recorded_identity)
         except (OSError, TypeError, ValueError, KeyError):
+            record_valid = False
             process_id = -1
             recorded_identity = None
+        if not record_valid and time.time() - lock_stat.st_mtime < 60:
+            raise PortableError(
+                f"another portable packaging process is initializing the "
+                f"output lock: {lock}"
+            ) from lock_error
         running, observed_identity = process_state(process_id)
         same_process = running and (
             recorded_identity is None
@@ -574,7 +724,10 @@ def output_lock(output: Path):
         except FileNotFoundError:
             pass
         except OSError as error:
-            print(f"warning: could not remove output lock {lock}: {error}", file=sys.stderr)
+            print(
+                f"warning: could not remove output lock {lock}: {error}",
+                file=sys.stderr,
+            )
 
 
 def write_zip(staging: Path, output: Path, *, force: bool) -> None:
@@ -600,7 +753,9 @@ def write_zip(staging: Path, output: Path, *, force: bool) -> None:
                     if path.is_symlink():
                         target = os.readlink(path)
                         try:
-                            resolved_target = (path.parent / target).resolve(strict=True)
+                            resolved_target = (path.parent / target).resolve(
+                                strict=True
+                            )
                         except FileNotFoundError as error:
                             raise PortableError(
                                 f"broken symbolic link in package payload: "
@@ -625,16 +780,15 @@ def write_zip(staging: Path, output: Path, *, force: bool) -> None:
                         raise PortableError(
                             f"unsupported special file in package payload: {relative}"
                         )
-            if force:
-                os.replace(temporary, output)
-            else:
-                try:
-                    os.link(temporary, output)
-                except FileExistsError as error:
-                    raise PortableError(
-                        f"output was created while packaging; pass --force to "
-                        f"replace it: {output}"
-                    ) from error
+            current_umask = os.umask(0)
+            os.umask(current_umask)
+            temporary.chmod(0o666 & ~current_umask)
+            if not force and output.exists():
+                raise PortableError(
+                    f"output was created while packaging; pass --force to "
+                    f"replace it: {output}"
+                )
+            os.replace(temporary, output)
         finally:
             if temporary.exists() or temporary.is_symlink():
                 temporary.unlink()
@@ -654,39 +808,36 @@ def main(argv: Sequence[str] | None = None) -> int:
         platform_name = detect_platform(args.platform, package)
         if platform_name == "linux" and args.seven_zip is not None:
             raise PortableError("--seven-zip is only valid for Windows packages")
-        if platform_name == "linux" and args.profile is not None:
-            raise PortableError("--profile is only valid for Windows packages")
-        selected_profile = (
-            profile_name(package, args.profile)
-            if platform_name == "windows"
-            else None
-        )
         portable_dir = Path(__file__).resolve().parent
         with tempfile.TemporaryDirectory(prefix="thorium-portable-") as temporary:
             work = Path(temporary)
             staging = work / "staging"
             if platform_name == "linux":
-                version, architecture = extract_linux(package, staging, work)
+                metadata, release_variant = prepare_linux_package(
+                    package,
+                    staging,
+                    work,
+                    args.profile,
+                    args.expected_version,
+                )
             else:
-                staging.mkdir()
-                version, architecture = extract_windows(
-                    package, staging, work, args.seven_zip
+                metadata, release_variant = prepare_windows_package(
+                    package,
+                    staging,
+                    work,
+                    args.seven_zip,
+                    args.profile,
+                    args.expected_version,
                 )
-            if args.expected_version and version != args.expected_version:
-                raise PortableError(
-                    f"version mismatch: expected {args.expected_version!r}, "
-                    f"package contains {version!r}"
-                )
-            copy_support_files(portable_dir, staging, platform_name)
+            copy_support_files(portable_dir, staging, metadata)
             output = (
                 args.output.resolve()
                 if args.output is not None
                 else default_output(
                     package,
                     platform_name,
-                    version,
-                    architecture,
-                    selected_profile,
+                    metadata.version,
+                    release_variant,
                 ).resolve()
             )
             write_zip(staging, output, force=args.force)

@@ -323,7 +323,7 @@ index 95ad4098919a8..82f91a9db81d1 100644
                           kClearBrowsingDataMenuItem);
  
 diff --git a/chrome/browser/ui/views/extensions/extensions_menu_entry_view.cc b/chrome/browser/ui/views/extensions/extensions_menu_entry_view.cc
-index 5b4a2131316f4..17bec4a17837f 100644
+index 390bc2ae56136..ed6990a5bdc38 100644
 --- a/chrome/browser/ui/views/extensions/extensions_menu_entry_view.cc
 +++ b/chrome/browser/ui/views/extensions/extensions_menu_entry_view.cc
 @@ -4,6 +4,7 @@
@@ -357,6 +357,66 @@ index 5b4a2131316f4..17bec4a17837f 100644
          kColorExtensionMenuIcon, small_icon_size);
  
      button_builder.SetHorizontalAlignment(gfx::ALIGN_RIGHT)
+@@ -281,9 +287,15 @@ void ExtensionsMenuEntryView::UpdateContextMenuButton(
+     ExtensionsMenuViewModel::ControlState button_state) {
+   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
++  static const bool disable_thorium_icons =
++      base::CommandLine::ForCurrentProcess()->HasSwitch(
++          "disable-thorium-icons");
+   auto three_dot_icon = ui::ImageModel::FromVectorIcon(
+-      features::IsRoundedIconsEnabled() ? kMoreVertIcon
+-                                        : kBrowserToolsChromeRefreshOldIcon,
++      disable_thorium_icons
++          ? (features::IsRoundedIconsEnabled()
++                 ? kMoreVertIcon
++                 : kBrowserToolsChromeRefreshOldIcon)
++          : kBrowserToolsOldIcon,
+       kColorExtensionMenuIcon, icon_size);
+ 
+   // Show a pin button for the context menu normal state icon when the action is
+diff --git a/chrome/browser/ui/views/extensions/extensions_menu_item_view.cc b/chrome/browser/ui/views/extensions/extensions_menu_item_view.cc
+index d0f3cd61eabe1..27b4c4e5cfb3d 100644
+--- a/chrome/browser/ui/views/extensions/extensions_menu_item_view.cc
++++ b/chrome/browser/ui/views/extensions/extensions_menu_item_view.cc
+@@ -8,6 +8,7 @@
+ #include <string>
+ #include <utility>
+ 
++#include "base/command_line.h"
+ #include "base/functional/bind.h"
+ #include "base/functional/callback_helpers.h"
+ #include "base/metrics/user_metrics.h"
+@@ -149,16 +150,23 @@ ExtensionMenuItemView::ExtensionMenuItemView(
+                       view_model_->GetActionName()))
+                   .SetImageModel(views::Button::STATE_NORMAL,
+                                  ui::ImageModel::FromVectorIcon(
+-                                     features::IsRoundedIconsEnabled()
+-                                         ? kMoreVertIcon
+-                                         : kBrowserToolsChromeRefreshOldIcon,
++                                     base::CommandLine::ForCurrentProcess()
++                                             ->HasSwitch(
++                                                 "disable-thorium-icons")
++                                         ? (features::IsRoundedIconsEnabled()
++                                                ? kMoreVertIcon
++                                                : kBrowserToolsChromeRefreshOldIcon)
++                                         : kBrowserToolsOldIcon,
+                                      kColorExtensionMenuIcon, icon_size))
+                   .SetImageModel(
+                       views::Button::STATE_DISABLED,
+                       ui::ImageModel::FromVectorIcon(
+-                          features::IsRoundedIconsEnabled()
+-                              ? kMoreVertIcon
+-                              : kBrowserToolsChromeRefreshOldIcon,
++                          base::CommandLine::ForCurrentProcess()->HasSwitch(
++                              "disable-thorium-icons")
++                              ? (features::IsRoundedIconsEnabled()
++                                     ? kMoreVertIcon
++                                     : kBrowserToolsChromeRefreshOldIcon)
++                              : kBrowserToolsOldIcon,
+                           kColorExtensionMenuIconDisabled, icon_size)));
+ 
+   if (allow_pinning) {
 diff --git a/chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.cc b/chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.cc
 index 5e008d4166e48..d1977d97c5fb7 100644
 --- a/chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.cc

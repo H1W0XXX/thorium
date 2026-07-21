@@ -653,7 +653,7 @@ index 6446b2ba7287c..3227de2af4029 100644
  
  DownloadBubbleRowView* DownloadBubblePrimaryView::GetRow(
 diff --git a/chrome/browser/ui/views/extensions/extensions_menu_entry_view.cc b/chrome/browser/ui/views/extensions/extensions_menu_entry_view.cc
-index 405cb0f1204b7..5b4a2131316f4 100644
+index 405cb0f1204b7..390bc2ae56136 100644
 --- a/chrome/browser/ui/views/extensions/extensions_menu_entry_view.cc
 +++ b/chrome/browser/ui/views/extensions/extensions_menu_entry_view.cc
 @@ -64,9 +64,11 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
@@ -671,50 +671,6 @@ index 405cb0f1204b7..5b4a2131316f4 100644
          kColorExtensionMenuIcon, small_icon_size);
  
      button_builder.SetHorizontalAlignment(gfx::ALIGN_RIGHT)
-@@ -280,8 +282,10 @@ void ExtensionsMenuEntryView::UpdateContextMenuButton(
-   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
-   auto three_dot_icon = ui::ImageModel::FromVectorIcon(
--      features::IsRoundedIconsEnabled() ? kMoreVertIcon
--                                        : kBrowserToolsChromeRefreshOldIcon,
-+      features::IsThorium2024()
-+          ? kBrowserToolsOldIcon
-+          : features::IsRoundedIconsEnabled() ? kMoreVertIcon
-+                                              : kBrowserToolsChromeRefreshOldIcon,
-       kColorExtensionMenuIcon, icon_size);
- 
-   // Show a pin button for the context menu normal state icon when the action is
-diff --git a/chrome/browser/ui/views/extensions/extensions_menu_item_view.cc b/chrome/browser/ui/views/extensions/extensions_menu_item_view.cc
-index d0f3cd61eabe1..ad2d9a0a44fd5 100644
---- a/chrome/browser/ui/views/extensions/extensions_menu_item_view.cc
-+++ b/chrome/browser/ui/views/extensions/extensions_menu_item_view.cc
-@@ -149,16 +149,20 @@ ExtensionMenuItemView::ExtensionMenuItemView(
-                       view_model_->GetActionName()))
-                   .SetImageModel(views::Button::STATE_NORMAL,
-                                  ui::ImageModel::FromVectorIcon(
--                                     features::IsRoundedIconsEnabled()
--                                         ? kMoreVertIcon
--                                         : kBrowserToolsChromeRefreshOldIcon,
-+                                     features::IsThorium2024()
-+                                         ? kBrowserToolsOldIcon
-+                                         : features::IsRoundedIconsEnabled()
-+                                             ? kMoreVertIcon
-+                                             : kBrowserToolsChromeRefreshOldIcon,
-                                      kColorExtensionMenuIcon, icon_size))
-                   .SetImageModel(
-                       views::Button::STATE_DISABLED,
-                       ui::ImageModel::FromVectorIcon(
--                          features::IsRoundedIconsEnabled()
--                              ? kMoreVertIcon
--                              : kBrowserToolsChromeRefreshOldIcon,
-+                          features::IsThorium2024()
-+                              ? kBrowserToolsOldIcon
-+                              : features::IsRoundedIconsEnabled()
-+                                  ? kMoreVertIcon
-+                                  : kBrowserToolsChromeRefreshOldIcon,
-                           kColorExtensionMenuIconDisabled, icon_size)));
- 
-   if (allow_pinning) {
 diff --git a/chrome/browser/ui/views/frame/browser_frame_view_layout_linux.cc b/chrome/browser/ui/views/frame/browser_frame_view_layout_linux.cc
 index 6625553e74359..a07063e646be8 100644
 --- a/chrome/browser/ui/views/frame/browser_frame_view_layout_linux.cc

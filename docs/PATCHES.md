@@ -163,7 +163,6 @@ overlay-derived, or still need separate provenance review.
 - [`fix-policy-templates.patch`](../other/fix-policy-templates.patch)
 - [`ftp-support-thorium.patch`](../other/ftp-support-thorium.patch)
 - [`GPC.patch`](../other/GPC.patch)
-- [`add-boss-key.patch`](../other/add-boss-key.patch)
 - [`add-flag-for-close-confirmation.patch`](../other/add-flag-for-close-confirmation.patch)
 - [`thorium-debug-mode.patch`](../other/thorium-debug-mode.patch)
 - [`thorium-first-run-welcome.patch`](../other/thorium-first-run-welcome.patch)

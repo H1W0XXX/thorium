@@ -90,7 +90,6 @@ other/enable-whats-new-by-default.patch
 other/fix-policy-templates.patch
 other/ftp-support-thorium.patch
 other/GPC.patch
-other/add-boss-key.patch
 other/add-flag-for-close-confirmation.patch
 other/thorium-debug-mode.patch
 other/thorium-first-run-welcome.patch

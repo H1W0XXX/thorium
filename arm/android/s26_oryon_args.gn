@@ -4,6 +4,7 @@ target_os = "android"
 target_cpu = "arm64"
 v8_target_cpu = "arm64"
 thorium_arm_cpu = "oryon-1"
+use_siso = false
 is_official_build = true
 is_high_end_android = true
 optimize_for_size = false

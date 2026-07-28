@@ -147,15 +147,39 @@ jobs:
           export PATH="${DEPOT_TOOLS_DIR}:${PATH}"
           gn_bin="${CR_DIR}/buildtools/linux64/gn"
           test -x "${gn_bin}"
-          mkdir -p "${CR_DIR}/out/thorium"
-          cp arm/android/s26_oryon_args.gn "${CR_DIR}/out/thorium/args.gn"
-          "${gn_bin}" gen "${CR_DIR}/out/thorium" \
+          out_dir="${CR_DIR}/out/thorium"
+          mkdir -p "${out_dir}"
+          cp arm/android/s26_oryon_args.gn "${out_dir}/args.gn"
+
+          # Siso has repeatedly panicked or hung on this WSL runner. Migrate
+          # this existing output directory to Chromium's supported Ninja path.
+          rm -f -- "${out_dir}/.siso_deps"
+
+          # Earlier unstable runs also produced a truncated Clang module.
+          # Rebuild only generated PCM files, while preserving all other
+          # incremental objects.
+          while IFS= read -r -d '' pcm; do
+            case "${pcm}" in
+              "${out_dir}"/*) rm -f -- "${pcm}" ;;
+              *)
+                echo "Refusing to remove PCM outside ${out_dir}: ${pcm}" >&2
+                exit 2
+                ;;
+            esac
+          done < <(find "${out_dir}" -type f -name '*.pcm' -print0)
+
+          "${gn_bin}" gen "${out_dir}" \
             --root="${CR_DIR}" 2>&1 | tee -a "${BUILD_LOG}"
-          "${gn_bin}" args "${CR_DIR}/out/thorium" \
+          "${gn_bin}" args "${out_dir}" \
             --root="${CR_DIR}" \
             --list=thorium_arm_cpu \
             --short 2>&1 | tee -a "${BUILD_LOG}" |
             grep --fixed-strings 'thorium_arm_cpu = "oryon-1"'
+          "${gn_bin}" args "${out_dir}" \
+            --root="${CR_DIR}" \
+            --list=use_siso \
+            --short 2>&1 | tee -a "${BUILD_LOG}" |
+            grep --fixed-strings 'use_siso = false'
 
           build_with_retry() {
             local attempt=1

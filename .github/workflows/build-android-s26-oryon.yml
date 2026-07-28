@@ -140,10 +140,14 @@ jobs:
         run: |
           set -euo pipefail
           export PATH="${DEPOT_TOOLS_DIR}:${PATH}"
+          gn_bin="${CR_DIR}/buildtools/linux64/gn"
+          test -x "${gn_bin}"
           mkdir -p "${CR_DIR}/out/thorium"
           cp arm/android/s26_oryon_args.gn "${CR_DIR}/out/thorium/args.gn"
-          gn gen "${CR_DIR}/out/thorium" 2>&1 | tee -a "${BUILD_LOG}"
-          gn args "${CR_DIR}/out/thorium" \
+          "${gn_bin}" gen "${CR_DIR}/out/thorium" \
+            --root="${CR_DIR}" 2>&1 | tee -a "${BUILD_LOG}"
+          "${gn_bin}" args "${CR_DIR}/out/thorium" \
+            --root="${CR_DIR}" \
             --list=thorium_arm_cpu \
             --short 2>&1 | tee -a "${BUILD_LOG}" |
             grep --fixed-strings 'thorium_arm_cpu = "oryon-1"'

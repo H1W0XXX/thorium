@@ -138,12 +138,21 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         action="store_true",
         help="install Debian build dependencies without Chrome OS fonts",
     )
-    parser.add_argument(
+    existing_checkout = parser.add_mutually_exclusive_group()
+    existing_checkout.add_argument(
         "--sync-existing",
         action="store_true",
         help=(
             "allow trunk.py to reset and synchronize an existing Chromium "
             "checkout, discarding uncommitted and untracked files"
+        ),
+    )
+    existing_checkout.add_argument(
+        "--reuse-existing",
+        action="store_true",
+        help=(
+            "reuse an existing Chromium checkout without synchronizing it; "
+            "the caller must run version.py next"
         ),
     )
     parser.add_argument(
@@ -715,11 +724,11 @@ def resolve_and_validate_paths(args: argparse.Namespace) -> None:
     validate_paths(args.chromium_src, args.thorium_root, args.depot_tools)
     args.chromium_state = chromium_checkout_state(args.chromium_src)
     if args.chromium_state == "existing":
-        if not args.sync_existing:
+        if not (args.sync_existing or args.reuse_existing):
             raise BootstrapError(
                 f"Chromium checkout already exists: {args.chromium_src}; "
-                "pass --sync-existing to explicitly allow trunk.py to reset "
-                "and clean it"
+                "pass --sync-existing to reset it with trunk.py or "
+                "--reuse-existing to prepare it for version.py"
             )
     elif args.chromium_state == "incomplete":
         fetch_marker = args.chromium_src.parent / FETCH_INCOMPLETE_MARKER
@@ -793,6 +802,11 @@ def bootstrap(args: argparse.Namespace) -> None:
         print("\nRunning Chromium hooks.")
         run([str(depot_command(depot_tools, "gclient")), "runhooks"], chromium_src)
         remove_fetch_marker(chromium_src.parent / FETCH_INCOMPLETE_MARKER)
+    elif args.reuse_existing:
+        print(
+            "\nReusing the existing Chromium checkout without a main-branch "
+            "synchronization; version.py must run next."
+        )
     else:
         trunk = thorium_root / "trunk.py"
         print("\nResetting and synchronizing the existing Chromium checkout.")

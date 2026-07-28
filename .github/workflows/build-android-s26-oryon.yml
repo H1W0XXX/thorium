@@ -18,7 +18,7 @@ permissions:
 
 concurrency:
   group: android-s26-oryon-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -35,6 +35,8 @@ jobs:
       BUILD_JOBS: "16"
       NETWORK_ATTEMPTS: "5"
       NETWORK_RETRY_SECONDS: "20"
+      GIT_HTTP_LOW_SPEED_LIMIT: "1"
+      GIT_HTTP_LOW_SPEED_TIME: "60"
     steps:
       - name: Check out Thorium
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -89,7 +91,7 @@ jobs:
             --yes
           )
           if [[ -d "${CR_DIR}/.git" ]]; then
-            bootstrap_args+=(--sync-existing)
+            bootstrap_args+=(--reuse-existing)
           fi
           retry_network_step \
             python3 get_repo.py "${bootstrap_args[@]}" 2>&1 |

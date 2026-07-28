@@ -31,6 +31,16 @@ def environment_path(value: str) -> Path:
     return Path(os.path.expandvars(value)).expanduser()
 
 
+def positive_integer(value: str) -> int:
+    try:
+        number = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("must be an integer") from error
+    if number < 1:
+        raise argparse.ArgumentTypeError("must be greater than zero")
+    return number
+
+
 def default_chromium_src() -> Path:
     configured = os.environ.get("CR_DIR")
     if configured:
@@ -86,6 +96,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
             "depot_tools directory (default: DEPOT_TOOLS_DIR, the gclient "
             "location, or the platform default)"
         ),
+    )
+    parser.add_argument(
+        "--jobs",
+        type=positive_integer,
+        help="maximum parallel gclient SCM operations",
     )
     return parser.parse_args(argv)
 
@@ -167,6 +182,7 @@ def synchronize(
     chromium_src: Path,
     thorium_root: Path,
     depot_tools: Path,
+    jobs: int | None,
 ) -> None:
     chromium_src = chromium_src.expanduser().resolve()
     thorium_root = thorium_root.expanduser().resolve()
@@ -204,17 +220,21 @@ def synchronize(
     run([git, "fetch", "--tags"], chromium_src)
 
     print("\ngclient sync", flush=True)
-    run(
+    sync_command = [gclient, "sync"]
+    if jobs is not None:
+        sync_command.append(f"--jobs={jobs}")
+    sync_command.extend(
         [
-            gclient,
-            "sync",
             "--with_branch_heads",
             "--with_tags",
             "--force",
             "--reset",
             "--nohooks",
             "--delete_unversioned_trees",
-        ],
+        ]
+    )
+    run(
+        sync_command,
         chromium_src,
     )
     run([git, "clean", "-ffd"], chromium_src)
@@ -236,7 +256,12 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     args = parse_args(sys.argv[1:] if argv is None else argv)
     try:
-        synchronize(args.chromium_src, args.thorium_root, args.depot_tools)
+        synchronize(
+            args.chromium_src,
+            args.thorium_root,
+            args.depot_tools,
+            args.jobs,
+        )
     except TrunkError as error:
         print(f"{Path(sys.argv[0]).name}: {error}", file=sys.stderr)
         return EXIT_FAILURE

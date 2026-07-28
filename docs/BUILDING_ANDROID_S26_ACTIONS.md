@@ -45,7 +45,11 @@ created with owner-only permissions and removed before the signing step exits.
 
 Open **Actions**, choose **Build Android S26+ Oryon APK**, and select **Run
 workflow**. Compile parallelism is fixed at 16 jobs to avoid accidentally
-overloading the builder.
+overloading the builder. Chromium checkout and synchronization use four
+parallel SCM operations so a shared proxy or anonymous googlesource.com
+connection is less likely to hit short-term HTTP 429 rate limits. Interrupted
+first-time downloads retain a recovery marker and resume through `gclient`
+instead of discarding the existing checkout.
 
 Live output is shown in the workflow job. On completion, download
 `thorium-s26plus-oryon-arm64` from the run's **Artifacts** section. The artifact

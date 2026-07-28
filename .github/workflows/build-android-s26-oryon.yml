@@ -20,6 +20,7 @@ jobs:
       BUILD_LOG: ${{ github.workspace }}/build-android-s26.log
       DEPOT_TOOLS_DIR: ${{ github.workspace }}/../thorium-android-ci/depot_tools
       CR_DIR: ${{ github.workspace }}/../thorium-android-ci/chromium/src
+      SYNC_JOBS: "4"
       BUILD_JOBS: "16"
     steps:
       - name: Check out Thorium
@@ -32,6 +33,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo "Chromium synchronization is fixed at ${SYNC_JOBS} jobs."
           echo "Compile parallelism is fixed at ${BUILD_JOBS} jobs."
           python3 --version
           git --version
@@ -52,6 +54,7 @@ jobs:
             --thorium-root "${THOR_DIR}"
             --depot-tools "${DEPOT_TOOLS_DIR}"
             --no-history
+            --jobs "${SYNC_JOBS}"
             --yes
           )
           if [[ -d "${CR_DIR}/.git" ]]; then
@@ -67,7 +70,8 @@ jobs:
 
           python3 version.py \
             --chromium-src "${CR_DIR}" \
-            --depot-tools "${DEPOT_TOOLS_DIR}" 2>&1 | tee -a "${BUILD_LOG}"
+            --depot-tools "${DEPOT_TOOLS_DIR}" \
+            --jobs "${SYNC_JOBS}" 2>&1 | tee -a "${BUILD_LOG}"
 
       - name: Apply Thorium Android profile
         shell: bash

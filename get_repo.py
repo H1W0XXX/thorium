@@ -29,6 +29,15 @@ FETCH_INCOMPLETE_MARKER = ".thorium-fetch-incomplete"
 FETCH_PHASE = "fetch --nohooks chromium"
 SYNC_PHASE = "gclient sync --nohooks"
 HOOKS_PHASE = "gclient runhooks pending"
+CHROMIUM_GCLIENT_SPEC = """solutions = [
+  {
+    "name": "src",
+    "url": "https://chromium.googlesource.com/chromium/src.git",
+    "custom_deps": {},
+    "custom_vars": {},
+  },
+]
+"""
 
 
 class BootstrapError(RuntimeError):
@@ -37,6 +46,16 @@ class BootstrapError(RuntimeError):
 
 def environment_path(value: str) -> Path:
     return Path(os.path.expandvars(value)).expanduser()
+
+
+def positive_integer(value: str) -> int:
+    try:
+        number = int(value)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("must be an integer") from error
+    if number < 1:
+        raise argparse.ArgumentTypeError("must be greater than zero")
+    return number
 
 
 def default_chromium_src() -> Path:
@@ -103,6 +122,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         "--no-history",
         action="store_true",
         help="fetch Chromium without full Git history",
+    )
+    parser.add_argument(
+        "--jobs",
+        type=positive_integer,
+        help="maximum parallel gclient SCM operations",
     )
     parser.add_argument(
         "--skip-build-deps",
@@ -455,6 +479,7 @@ def prepare_chromium(
     depot_tools: Path,
     *,
     no_history: bool,
+    jobs: int | None,
 ) -> str:
     state = chromium_checkout_state(chromium_src)
     fetch_marker = chromium_src.parent / FETCH_INCOMPLETE_MARKER
@@ -473,19 +498,22 @@ def prepare_chromium(
         else:
             gclient = str(depot_command(depot_tools, "gclient"))
             write_fetch_marker(fetch_marker, SYNC_PHASE)
-            run(
+            command = [gclient, "sync"]
+            if jobs is not None:
+                command.append(f"--jobs={jobs}")
+            command.extend(
                 [
-                    gclient,
-                    "sync",
                     "--with_branch_heads",
                     "--with_tags",
                     "--force",
                     "--reset",
                     "--nohooks",
                     "--delete_unversioned_trees",
-                ],
-                chromium_src.parent,
+                ]
             )
+            if no_history:
+                command.append("--no-history")
+            run(command, chromium_src.parent)
             require_checkout(chromium_src, "Chromium")
             if not chromium_required_checkouts_exist(chromium_src):
                 raise BootstrapError(
@@ -509,12 +537,23 @@ def prepare_chromium(
             f"failed to create Chromium checkout root {checkout_root}: {error}"
         ) from error
     write_fetch_marker(fetch_marker, FETCH_PHASE)
-    command = [str(depot_command(depot_tools, "fetch")), "--nohooks"]
-    if no_history:
-        command.append("--no-history")
-    command.append("chromium")
     print("\nDownloading Chromium source; this may take a long time.")
-    run(command, checkout_root)
+    if jobs is None:
+        command = [str(depot_command(depot_tools, "fetch")), "--nohooks"]
+        if no_history:
+            command.append("--no-history")
+        command.append("chromium")
+        run(command, checkout_root)
+    else:
+        gclient = str(depot_command(depot_tools, "gclient"))
+        run(
+            [gclient, "config", "--spec", CHROMIUM_GCLIENT_SPEC],
+            checkout_root,
+        )
+        command = [gclient, "sync", f"--jobs={jobs}", "--nohooks"]
+        if no_history:
+            command.append("--no-history")
+        run(command, checkout_root)
     require_checkout(chromium_src, "Chromium")
     if not chromium_required_checkouts_exist(chromium_src):
         raise BootstrapError(
@@ -661,6 +700,7 @@ def bootstrap(args: argparse.Namespace) -> None:
         chromium_src,
         depot_tools,
         no_history=args.no_history,
+        jobs=args.jobs,
     )
     ensure_checkout_pgo_profiles(chromium_src.parent / ".gclient")
     install_linux_dependencies(chromium_src, skip=args.skip_build_deps)
@@ -679,6 +719,7 @@ def bootstrap(args: argparse.Namespace) -> None:
                 f"--chromium-src={chromium_src}",
                 f"--thorium-root={thorium_root}",
                 f"--depot-tools={depot_tools}",
+                *([f"--jobs={args.jobs}"] if args.jobs is not None else []),
             ],
             thorium_root,
         )

@@ -55,6 +55,7 @@ jobs:
             --depot-tools "${DEPOT_TOOLS_DIR}"
             --no-history
             --jobs "${SYNC_JOBS}"
+            --no-chromeos-fonts
             --yes
           )
           if [[ -d "${CR_DIR}/.git" ]]; then

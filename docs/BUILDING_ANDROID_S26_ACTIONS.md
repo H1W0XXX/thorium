@@ -52,7 +52,10 @@ first-time downloads retain a recovery marker and resume through `gclient`
 instead of discarding the existing checkout. If an interrupted fetch leaves an
 initialized nested Git repository without a `HEAD`, the recovery step moves
 only that unusable checkout under Chromium's `_bad_scm/thorium-recovery`
-directory before downloading it again.
+directory before downloading it again. The Android workflow also passes
+`--no-chromeos-fonts` because Chrome OS fonts are not required for the APK and
+their separate Google Storage download may be unavailable through a shared
+proxy.
 
 Live output is shown in the workflow job. On completion, download
 `thorium-s26plus-oryon-arm64` from the run's **Artifacts** section. The artifact

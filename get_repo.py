@@ -134,6 +134,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         help="do not install Debian build dependencies",
     )
     parser.add_argument(
+        "--no-chromeos-fonts",
+        action="store_true",
+        help="install Debian build dependencies without Chrome OS fonts",
+    )
+    parser.add_argument(
         "--sync-existing",
         action="store_true",
         help=(
@@ -632,7 +637,12 @@ def prepare_chromium(
     return "new"
 
 
-def install_linux_dependencies(chromium_src: Path, *, skip: bool) -> None:
+def install_linux_dependencies(
+    chromium_src: Path,
+    *,
+    skip: bool,
+    chromeos_fonts: bool,
+) -> None:
     if skip:
         print("\nSkipping Linux build dependency installation.")
         return
@@ -646,7 +656,8 @@ def install_linux_dependencies(chromium_src: Path, *, skip: bool) -> None:
         raise BootstrapError(f"Chromium dependency installer is missing: {installer}")
 
     print("\nInstalling Debian build prerequisites.")
-    run([str(installer), "--arm", "--chromeos-fonts"], chromium_src)
+    fonts_option = "--chromeos-fonts" if chromeos_fonts else "--no-chromeos-fonts"
+    run([str(installer), "--arm", fonts_option], chromium_src)
 
 
 def confirm(args: argparse.Namespace) -> None:
@@ -772,7 +783,11 @@ def bootstrap(args: argparse.Namespace) -> None:
         jobs=args.jobs,
     )
     ensure_checkout_pgo_profiles(chromium_src.parent / ".gclient")
-    install_linux_dependencies(chromium_src, skip=args.skip_build_deps)
+    install_linux_dependencies(
+        chromium_src,
+        skip=args.skip_build_deps,
+        chromeos_fonts=not args.no_chromeos_fonts,
+    )
 
     if chromium_state in ("new", "recovered"):
         print("\nRunning Chromium hooks.")

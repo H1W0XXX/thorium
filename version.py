@@ -124,6 +124,27 @@ def run(command: Sequence[str], cwd: Path) -> None:
         ) from error
 
 
+def command_output(command: Sequence[str], cwd: Path) -> str:
+    printable = (
+        subprocess.list2cmdline(command) if os.name == "nt" else shlex.join(command)
+    )
+    try:
+        result = subprocess.run(
+            command,
+            cwd=cwd,
+            check=True,
+            stdout=subprocess.PIPE,
+            text=True,
+        )
+    except OSError as error:
+        raise VersionError(f"could not run {printable}: {error}") from error
+    except subprocess.CalledProcessError as error:
+        raise VersionError(
+            f"command failed with exit code {error.returncode}: {printable}"
+        ) from error
+    return result.stdout.strip()
+
+
 def require_directory(path: Path, description: str) -> None:
     if not path.is_dir():
         raise VersionError(f"{description} directory does not exist: {path}")
@@ -156,9 +177,24 @@ def prepare_checkout(
     gclient = depot_command(depot_tools, "gclient")
 
     print(f"\nCurrent Thorium version is: {THORIUM_VERSION}\n")
-    print(f"Checking out tags/{THORIUM_VERSION} in {chromium_src}")
+    tag_ref = f"refs/tags/{THORIUM_VERSION}"
+    print(f"Fetching the required Chromium tag {tag_ref}")
+    fetch_command = [git, "fetch", "--no-tags"]
+    shallow = command_output(
+        [git, "rev-parse", "--is-shallow-repository"],
+        chromium_src,
+    )
+    if shallow == "true":
+        fetch_command.append("--depth=1")
+    elif shallow != "false":
+        raise VersionError(
+            f"unexpected git --is-shallow-repository result: {shallow!r}"
+        )
+    fetch_command.extend(["origin", f"{tag_ref}:{tag_ref}"])
+    run(fetch_command, chromium_src)
 
-    run([git, "checkout", "-f", f"tags/{THORIUM_VERSION}"], chromium_src)
+    print(f"\nChecking out {tag_ref} in {chromium_src}")
+    run([git, "checkout", "-f", tag_ref], chromium_src)
     run([git, "clean", "-ffd"], chromium_src)
 
     print("\ngclient sync", flush=True)

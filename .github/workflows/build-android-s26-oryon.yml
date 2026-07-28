@@ -7,6 +7,11 @@ on:
       - main
     paths:
       - .github/workflows/build-android-s26-oryon.yml
+      - get_repo.py
+      - version.py
+      - setup.py
+      - build.py
+      - arm/android/s26_oryon_args.gn
 
 permissions:
   contents: read

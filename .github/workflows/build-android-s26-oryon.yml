@@ -57,6 +57,7 @@ jobs:
           echo "Compile parallelism is fixed at ${BUILD_JOBS} jobs."
           python3 --version
           git --version
+          taskset -pc "$$"
           df -h "${GITHUB_WORKSPACE}"
           available_kib=$(df --output=avail "${GITHUB_WORKSPACE}" | tail -n 1)
           if (( available_kib < 157286400 )); then

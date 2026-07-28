@@ -49,7 +49,10 @@ overloading the builder. Chromium checkout and synchronization use four
 parallel SCM operations so a shared proxy or anonymous googlesource.com
 connection is less likely to hit short-term HTTP 429 rate limits. Interrupted
 first-time downloads retain a recovery marker and resume through `gclient`
-instead of discarding the existing checkout.
+instead of discarding the existing checkout. If an interrupted fetch leaves an
+initialized nested Git repository without a `HEAD`, the recovery step moves
+only that unusable checkout under Chromium's `_bad_scm/thorium-recovery`
+directory before downloading it again.
 
 Live output is shown in the workflow job. On completion, download
 `thorium-s26plus-oryon-arm64` from the run's **Artifacts** section. The artifact

@@ -331,6 +331,71 @@ def read_fetch_marker(fetch_marker: Path) -> str | None:
         raise BootstrapError(f"failed to read {fetch_marker}: {error}") from error
 
 
+def quarantine_incomplete_git_checkouts(chromium_src: Path, git: str) -> None:
+    """Move nested Git repositories without a HEAD out of gclient's way."""
+    chromium_src = chromium_src.resolve()
+    repositories: list[Path] = []
+    for root, directories, _ in os.walk(chromium_src):
+        if ".git" not in directories:
+            continue
+        directories.remove(".git")
+        repository = Path(root).resolve()
+        if not repository.is_relative_to(chromium_src):
+            raise BootstrapError(
+                f"refusing to inspect Git checkout outside Chromium: {repository}"
+            )
+        repositories.append(repository)
+
+    incomplete: list[Path] = []
+    for repository in sorted(repositories, key=lambda path: len(path.parts)):
+        try:
+            result = subprocess.run(
+                [git, "-C", str(repository), "rev-parse", "--verify", "HEAD"],
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except OSError as error:
+            raise BootstrapError(
+                f"could not inspect Git checkout {repository}: {error}"
+            ) from error
+        if result.returncode == 0:
+            continue
+        if any(repository.is_relative_to(parent) for parent in incomplete):
+            continue
+        incomplete.append(repository)
+
+    if not incomplete:
+        return
+
+    quarantine_root = chromium_src.parent / "_bad_scm" / "thorium-recovery"
+    for repository in incomplete:
+        relative = (
+            Path(chromium_src.name)
+            if repository == chromium_src
+            else repository.relative_to(chromium_src)
+        )
+        destination = quarantine_root / relative
+        suffix = 1
+        while destination.exists() or destination.is_symlink():
+            destination = destination.with_name(
+                f"{relative.name}.{suffix}"
+            )
+            suffix += 1
+        try:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            print(
+                f"\nQuarantining incomplete Git checkout without HEAD: "
+                f"{repository} -> {destination}"
+            )
+            repository.rename(destination)
+        except OSError as error:
+            raise BootstrapError(
+                f"failed to quarantine incomplete Git checkout "
+                f"{repository}: {error}"
+            ) from error
+
+
 def ensure_checkout_pgo_profiles(gclient_file: Path) -> None:
     """Enable Chromium-managed optimization profile downloads in .gclient."""
     if gclient_file.is_symlink() or not gclient_file.is_file():
@@ -497,6 +562,10 @@ def prepare_chromium(
                 raise BootstrapError(cleanup_error)
         else:
             gclient = str(depot_command(depot_tools, "gclient"))
+            quarantine_incomplete_git_checkouts(
+                chromium_src,
+                find_command("git"),
+            )
             write_fetch_marker(fetch_marker, SYNC_PHASE)
             command = [gclient, "sync"]
             if jobs is not None:

@@ -113,7 +113,7 @@ index e1da11405c1f6..796deaad89b33 100644
      } else {
        ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
      }
-@@ -1296,9 +1329,46 @@ config("thinlto_optimize_max") {
+@@ -1296,9 +1329,48 @@ config("thinlto_optimize_max") {
      } else {
        lto_opt_level = 0
      }
@@ -162,7 +162,7 @@ index e1da11405c1f6..796deaad89b33 100644
      } else {
        ldflags = [ "-Wl,--lto-O" + lto_opt_level ]
      }
-@@ -1335,7 +1405,10 @@ config("compiler_cpu_abi") {
+@@ -1335,7 +1407,10 @@ config("compiler_cpu_abi") {
  # for particular Chromium code or for working around particular
  # compiler bugs (or the combination of the two).
  config("compiler_codegen") {
@@ -174,7 +174,7 @@ index e1da11405c1f6..796deaad89b33 100644
    cflags = []
    ldflags = []
  
-@@ -2403,6 +2476,40 @@ config("no_incompatible_pointer_warnings") {
+@@ -2403,6 +2478,40 @@ config("no_incompatible_pointer_warnings") {
    }
  }
  
@@ -215,7 +215,7 @@ index e1da11405c1f6..796deaad89b33 100644
  # Optimization -----------------------------------------------------------------
  #
  # The BUILDCONFIG file sets the "default_optimization" config on targets by
-@@ -2641,9 +2739,18 @@ config("optimize_max") {
+@@ -2641,9 +2741,18 @@ config("optimize_max") {
    if (is_win) {
      # Favor speed over size, /O2 must be before the common flags.
      # /O2 implies /Ot, /Oi, and /GF.

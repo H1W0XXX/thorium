@@ -33,8 +33,11 @@ jobs:
       CR_DIR: ${{ github.workspace }}/../thorium-android-ci/chromium/src
       DEPOT_TOOLS_UPDATE: "0"
       SYNC_JOBS: "4"
-      BUILD_JOBS: "16"
-      BUILD_ATTEMPTS: "3"
+      # The 14900K host produced transient Python interpreter corruption at
+      # 16-way Siso concurrency. Eight jobs keeps the existing incremental
+      # output while reducing sustained CPU and memory-controller pressure.
+      BUILD_JOBS: "8"
+      BUILD_ATTEMPTS: "5"
       NETWORK_ATTEMPTS: "5"
       NETWORK_RETRY_SECONDS: "20"
       GIT_HTTP_LOW_SPEED_LIMIT: "1"

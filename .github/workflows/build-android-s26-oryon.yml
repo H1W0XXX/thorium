@@ -34,6 +34,7 @@ jobs:
       DEPOT_TOOLS_UPDATE: "0"
       SYNC_JOBS: "4"
       BUILD_JOBS: "16"
+      BUILD_ATTEMPTS: "3"
       NETWORK_ATTEMPTS: "5"
       NETWORK_RETRY_SECONDS: "20"
       GIT_HTTP_LOW_SPEED_LIMIT: "1"
@@ -152,14 +153,31 @@ jobs:
             --list=thorium_arm_cpu \
             --short 2>&1 | tee -a "${BUILD_LOG}" |
             grep --fixed-strings 'thorium_arm_cpu = "oryon-1"'
-          python3 build.py \
-            --chromium-src "${CR_DIR}" \
-            --thorium-root "${THOR_DIR}" \
-            --out-dir out/thorium \
-            --target chrome_public_apk \
-            --expect-os android \
-            --expect-cpu arm64 \
-            --jobs "${BUILD_JOBS}" 2>&1 | tee -a "${BUILD_LOG}"
+
+          build_with_retry() {
+            local attempt=1
+            local exit_code
+            local delay
+            until python3 build.py \
+              --chromium-src "${CR_DIR}" \
+              --thorium-root "${THOR_DIR}" \
+              --out-dir out/thorium \
+              --target chrome_public_apk \
+              --expect-os android \
+              --expect-cpu arm64 \
+              --jobs "${BUILD_JOBS}"; do
+              exit_code=$?
+              if (( attempt >= BUILD_ATTEMPTS )); then
+                echo "Build failed after ${attempt} attempts (exit ${exit_code})." >&2
+                return "${exit_code}"
+              fi
+              delay=$((10 * attempt))
+              echo "Build attempt ${attempt}/${BUILD_ATTEMPTS} failed (exit ${exit_code}); resuming the incremental build in ${delay}s." >&2
+              sleep "${delay}"
+              ((attempt += 1))
+            done
+          }
+          build_with_retry 2>&1 | tee -a "${BUILD_LOG}"
 
       - name: Sign release APK
         shell: bash

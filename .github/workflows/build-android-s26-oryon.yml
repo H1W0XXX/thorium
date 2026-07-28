@@ -12,6 +12,7 @@ on:
       - setup.py
       - build.py
       - arm/android/s26_oryon_args.gn
+      - other/android-thorium-branding.patch
       - other/thorium-build-config-and-simd.patch
 
 permissions:

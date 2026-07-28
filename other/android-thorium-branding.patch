@@ -20,49 +20,7 @@ index 6f1aa2dcd2822..0750b64fd75ef 100644
  # Use of this source code is governed by a BSD-style license that can be
  # found in the LICENSE file.
  
-@@ -148,20 +148,14 @@ if (_is_default_toolchain) {
-       "java/res_chromium_base/drawable/themed_app_icon.xml",
-       "java/res_chromium_base/mipmap-hdpi/app_icon.png",
-       "java/res_chromium_base/mipmap-hdpi/layered_app_icon.png",
--      "java/res_chromium_base/mipmap-hdpi/layered_app_icon_background.png",
-       "java/res_chromium_base/mipmap-mdpi/app_icon.png",
-       "java/res_chromium_base/mipmap-mdpi/layered_app_icon.png",
--      "java/res_chromium_base/mipmap-mdpi/layered_app_icon_background.png",
--      "java/res_chromium_base/mipmap-nodpi/layered_app_icon_foreground.xml",
-       "java/res_chromium_base/mipmap-xhdpi/app_icon.png",
-       "java/res_chromium_base/mipmap-xhdpi/layered_app_icon.png",
--      "java/res_chromium_base/mipmap-xhdpi/layered_app_icon_background.png",
-       "java/res_chromium_base/mipmap-xxhdpi/app_icon.png",
-       "java/res_chromium_base/mipmap-xxhdpi/layered_app_icon.png",
--      "java/res_chromium_base/mipmap-xxhdpi/layered_app_icon_background.png",
-       "java/res_chromium_base/mipmap-xxxhdpi/app_icon.png",
-       "java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon.png",
--      "java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon_background.png",
-       "java/res_chromium_base/values/channel_constants.xml",
-     ]
-   }
-@@ -1776,20 +1770,14 @@ if (_is_default_toolchain) {
-       "java/res_chromium_base/drawable/themed_app_icon.xml",
-       "java/res_chromium_base/mipmap-hdpi/app_icon.png",
-       "java/res_chromium_base/mipmap-hdpi/layered_app_icon.png",
--      "java/res_chromium_base/mipmap-hdpi/layered_app_icon_background.png",
-       "java/res_chromium_base/mipmap-mdpi/app_icon.png",
-       "java/res_chromium_base/mipmap-mdpi/layered_app_icon.png",
--      "java/res_chromium_base/mipmap-mdpi/layered_app_icon_background.png",
--      "java/res_chromium_base/mipmap-nodpi/layered_app_icon_foreground.xml",
-       "java/res_chromium_base/mipmap-xhdpi/app_icon.png",
-       "java/res_chromium_base/mipmap-xhdpi/layered_app_icon.png",
--      "java/res_chromium_base/mipmap-xhdpi/layered_app_icon_background.png",
-       "java/res_chromium_base/mipmap-xxhdpi/app_icon.png",
-       "java/res_chromium_base/mipmap-xxhdpi/layered_app_icon.png",
--      "java/res_chromium_base/mipmap-xxhdpi/layered_app_icon_background.png",
-       "java/res_chromium_base/mipmap-xxxhdpi/app_icon.png",
-       "java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon.png",
--      "java/res_chromium_base/mipmap-xxxhdpi/layered_app_icon_background.png",
-       "java/res_chromium_base/values/channel_constants.xml",
-     ]
- 
-@@ -2081,7 +2069,7 @@ if (_is_default_toolchain) {
+@@ -2081,7 +2081,7 @@ if (_is_default_toolchain) {
  
    chrome_public_apk_or_module_tmpl("chrome_public_apk") {
      target_type = "android_apk"
@@ -71,7 +29,7 @@ index 6f1aa2dcd2822..0750b64fd75ef 100644
      if (defined(android_app_secondary_abi)) {
        # Ensure 64-bit chrome does not depend on 32-bit things.
        assert_no_deps =
-@@ -2097,7 +2085,7 @@ if (_is_default_toolchain) {
+@@ -2097,7 +2097,7 @@ if (_is_default_toolchain) {
    }
  
    chrome_public_bundle("chrome_public_bundle") {
@@ -80,7 +38,7 @@ index 6f1aa2dcd2822..0750b64fd75ef 100644
    }
  
    generate_jni("base_module_jni") {
-@@ -2334,7 +2322,7 @@ if (_is_default_toolchain) {
+@@ -2334,7 +2334,7 @@ if (_is_default_toolchain) {
    # scoped, and do not leave lingering state after execution.
    # TODO(crbug.com/40193330): Set clear rules for what tests can be added here.
    chrome_public_test_apk_tmpl("chrome_public_unit_test_apk") {
@@ -89,7 +47,7 @@ index 6f1aa2dcd2822..0750b64fd75ef 100644
      deps = [
        ":chrome_unit_test_java",
        "//build/config/android/test/resource_overlay:unit_device_javatests",
-@@ -2407,7 +2395,7 @@ if (_is_default_toolchain) {
+@@ -2407,7 +2407,7 @@ if (_is_default_toolchain) {
  
    # TODO(crbug.com/40193330): Rename to chrome_public_integration_test_apk
    chrome_public_test_apk_tmpl("chrome_public_test_apk") {

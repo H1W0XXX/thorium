@@ -20,6 +20,7 @@ jobs:
       BUILD_LOG: ${{ github.workspace }}/build-android-s26.log
       DEPOT_TOOLS_DIR: ${{ github.workspace }}/../thorium-android-ci/depot_tools
       CR_DIR: ${{ github.workspace }}/../thorium-android-ci/chromium/src
+      DEPOT_TOOLS_UPDATE: "0"
       SYNC_JOBS: "4"
       BUILD_JOBS: "16"
     steps:

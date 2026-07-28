@@ -55,7 +55,9 @@ only that unusable checkout under Chromium's `_bad_scm/thorium-recovery`
 directory before downloading it again. The Android workflow also passes
 `--no-chromeos-fonts` because Chrome OS fonts are not required for the APK and
 their separate Google Storage download may be unavailable through a shared
-proxy.
+proxy. The job sets `DEPOT_TOOLS_UPDATE=0` after reusing or cloning
+depot_tools, preventing its command wrappers from attempting an unrelated
+self-update before every `gclient` operation.
 
 Live output is shown in the workflow job. On completion, download
 `thorium-s26plus-oryon-arm64` from the run's **Artifacts** section. The artifact

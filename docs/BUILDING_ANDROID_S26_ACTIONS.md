@@ -44,8 +44,8 @@ created with owner-only permissions and removed before the signing step exits.
 ## Run and download
 
 Open **Actions**, choose **Build Android S26+ Oryon APK**, and select **Run
-workflow**. The default parallelism is 16; lower it if the remote builder has
-less memory.
+workflow**. Compile parallelism is fixed at 16 jobs to avoid accidentally
+overloading the builder.
 
 Live output is shown in the workflow job. On completion, download
 `thorium-s26plus-oryon-arm64` from the run's **Artifacts** section. The artifact

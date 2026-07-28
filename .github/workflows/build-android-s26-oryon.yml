@@ -2,12 +2,6 @@ name: Build Android S26+ Oryon APK
 
 on:
   workflow_dispatch:
-    inputs:
-      jobs:
-        description: Parallel compile jobs for the remote builder
-        required: true
-        default: "16"
-        type: string
 
 permissions:
   contents: read
@@ -26,6 +20,7 @@ jobs:
       BUILD_LOG: ${{ github.workspace }}/build-android-s26.log
       DEPOT_TOOLS_DIR: ${{ github.workspace }}/../thorium-android-ci/depot_tools
       CR_DIR: ${{ github.workspace }}/../thorium-android-ci/chromium/src
+      BUILD_JOBS: "16"
     steps:
       - name: Check out Thorium
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -37,10 +32,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! "${{ inputs.jobs }}" =~ ^[1-9][0-9]*$ ]]; then
-            echo "jobs must be a positive integer" >&2
-            exit 2
-          fi
+          echo "Compile parallelism is fixed at ${BUILD_JOBS} jobs."
           python3 --version
           git --version
           df -h "${GITHUB_WORKSPACE}"
@@ -121,7 +113,7 @@ jobs:
             --target chrome_public_apk \
             --expect-os android \
             --expect-cpu arm64 \
-            --jobs "${{ inputs.jobs }}" 2>&1 | tee -a "${BUILD_LOG}"
+            --jobs "${BUILD_JOBS}" 2>&1 | tee -a "${BUILD_LOG}"
 
       - name: Sign release APK
         shell: bash

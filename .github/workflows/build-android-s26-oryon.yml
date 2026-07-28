@@ -28,6 +28,8 @@ jobs:
       DEPOT_TOOLS_UPDATE: "0"
       SYNC_JOBS: "4"
       BUILD_JOBS: "16"
+      NETWORK_ATTEMPTS: "5"
+      NETWORK_RETRY_SECONDS: "20"
     steps:
       - name: Check out Thorium
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -54,6 +56,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          retry_network_step() {
+            local attempt=1
+            local exit_code
+            local delay
+            until "$@"; do
+              exit_code=$?
+              if (( attempt >= NETWORK_ATTEMPTS )); then
+                echo "Command failed after ${attempt} attempts (exit ${exit_code}): $*" >&2
+                return "${exit_code}"
+              fi
+              delay=$((NETWORK_RETRY_SECONDS * attempt))
+              echo "Network-sensitive command failed (exit ${exit_code}); retrying in ${delay}s (${attempt}/${NETWORK_ATTEMPTS}): $*" >&2
+              sleep "${delay}"
+              ((attempt += 1))
+            done
+          }
+
           mkdir -p "$(dirname "${DEPOT_TOOLS_DIR}")" "$(dirname "${CR_DIR}")"
           bootstrap_args=(
             --chromium-src "${CR_DIR}"
@@ -67,7 +86,9 @@ jobs:
           if [[ -d "${CR_DIR}/.git" ]]; then
             bootstrap_args+=(--sync-existing)
           fi
-          python3 get_repo.py "${bootstrap_args[@]}" 2>&1 | tee -a "${BUILD_LOG}"
+          retry_network_step \
+            python3 get_repo.py "${bootstrap_args[@]}" 2>&1 |
+            tee -a "${BUILD_LOG}"
 
           gclient_file="$(dirname "${CR_DIR}")/.gclient"
           if ! grep --quiet --fixed-strings 'target_os = ["android"]' "${gclient_file}"; then
@@ -75,10 +96,12 @@ jobs:
               >> "${gclient_file}"
           fi
 
-          python3 version.py \
-            --chromium-src "${CR_DIR}" \
-            --depot-tools "${DEPOT_TOOLS_DIR}" \
-            --jobs "${SYNC_JOBS}" 2>&1 | tee -a "${BUILD_LOG}"
+          retry_network_step \
+            python3 version.py \
+              --chromium-src "${CR_DIR}" \
+              --depot-tools "${DEPOT_TOOLS_DIR}" \
+              --jobs "${SYNC_JOBS}" 2>&1 |
+            tee -a "${BUILD_LOG}"
 
       - name: Apply Thorium Android profile
         shell: bash

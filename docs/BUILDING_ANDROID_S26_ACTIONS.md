@@ -44,7 +44,10 @@ created with owner-only permissions and removed before the signing step exits.
 ## Run and download
 
 Open **Actions**, choose **Build Android S26+ Oryon APK**, and select **Run
-workflow**. Compile parallelism is fixed at 16 jobs to avoid accidentally
+workflow**. A push to `main` that changes this workflow file also starts it
+automatically, allowing CI-only fixes to resume without a separate manual
+dispatch. Ordinary source and documentation pushes do not trigger this large
+build. Compile parallelism is fixed at 16 jobs to avoid accidentally
 overloading the builder. Chromium checkout and synchronization use four
 parallel SCM operations so a shared proxy or anonymous googlesource.com
 connection is less likely to hit short-term HTTP 429 rate limits. Interrupted

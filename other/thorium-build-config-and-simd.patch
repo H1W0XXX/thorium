@@ -172,10 +172,15 @@ index e1da11405c1f6..796deaad89b33 100644
    cflags = []
    ldflags = []
  
-@@ -2403,6 +2476,31 @@ config("no_incompatible_pointer_warnings") {
+@@ -2403,6 +2476,40 @@ config("no_incompatible_pointer_warnings") {
    }
  }
  
++declare_args() {
++  # Optional ARM64 CPU model for device-specific Thorium builds.
++  thorium_arm_cpu = ""
++}
++
 +# Thorium x86 ISA requirements are applied directly to all target code. Tuning
 +# is nested under compiler_codegen so targets that intentionally replace code
 +# generation policy can opt out without losing the required ISA baseline.
@@ -192,8 +197,12 @@ index e1da11405c1f6..796deaad89b33 100644
 +# Keep the existing ARM product tuning independent of the x86 profile system.
 +config("thorium_arm_tune") {
 +  cflags = []
++  rustflags = []
 +  if (is_a_target_toolchain && current_cpu == "arm64") {
-+    if (is_mac) {
++    if (thorium_arm_cpu != "") {
++      cflags += [ "-mcpu=" + thorium_arm_cpu ]
++      rustflags += [ "-Ctarget-cpu=" + thorium_arm_cpu ]
++    } else if (is_mac) {
 +      cflags += [ "-mcpu=apple-m1" ]
 +    } else if (is_linux && is_raspi) {
 +      cflags += [ "-mtune=cortex-a72" ]

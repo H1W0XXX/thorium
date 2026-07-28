@@ -1,0 +1,189 @@
+name: Build Android S26+ Oryon APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      jobs:
+        description: Parallel compile jobs for the remote builder
+        required: true
+        default: "16"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-s26-oryon-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Thorium ARM64 for Samsung Galaxy S26+
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 1440
+    env:
+      THOR_DIR: ${{ github.workspace }}
+      BUILD_LOG: ${{ github.workspace }}/build-android-s26.log
+      DEPOT_TOOLS_DIR: ${{ github.workspace }}/../thorium-android-ci/depot_tools
+      CR_DIR: ${{ github.workspace }}/../thorium-android-ci/chromium/src
+    steps:
+      - name: Check out Thorium
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+
+      - name: Validate workflow input and builder capacity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "${{ inputs.jobs }}" =~ ^[1-9][0-9]*$ ]]; then
+            echo "jobs must be a positive integer" >&2
+            exit 2
+          fi
+          python3 --version
+          git --version
+          df -h "${GITHUB_WORKSPACE}"
+          available_kib=$(df --output=avail "${GITHUB_WORKSPACE}" | tail -n 1)
+          if (( available_kib < 157286400 )); then
+            echo "At least 150 GiB of free disk space is required." >&2
+            exit 2
+          fi
+
+      - name: Bootstrap and synchronize Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "${DEPOT_TOOLS_DIR}")" "$(dirname "${CR_DIR}")"
+          bootstrap_args=(
+            --chromium-src "${CR_DIR}"
+            --thorium-root "${THOR_DIR}"
+            --depot-tools "${DEPOT_TOOLS_DIR}"
+            --no-history
+            --yes
+          )
+          if [[ -d "${CR_DIR}/.git" ]]; then
+            bootstrap_args+=(--sync-existing)
+          fi
+          python3 get_repo.py "${bootstrap_args[@]}" 2>&1 | tee -a "${BUILD_LOG}"
+
+          gclient_file="$(dirname "${CR_DIR}")/.gclient"
+          if ! grep --quiet --fixed-strings 'target_os = ["android"]' "${gclient_file}"; then
+            printf '\n# Thorium Android CI target dependencies.\ntarget_os = ["android"]\n' \
+              >> "${gclient_file}"
+          fi
+
+          python3 version.py \
+            --chromium-src "${CR_DIR}" \
+            --depot-tools "${DEPOT_TOOLS_DIR}" 2>&1 | tee -a "${BUILD_LOG}"
+
+      - name: Apply Thorium Android profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="${DEPOT_TOOLS_DIR}:${PATH}"
+          python3 setup.py \
+            --android \
+            --chromium-src "${CR_DIR}" \
+            --thorium-root "${THOR_DIR}" 2>&1 | tee -a "${BUILD_LOG}"
+
+      - name: Verify Oryon compiler support
+        shell: bash
+        run: |
+          set -euo pipefail
+          clang="${CR_DIR}/third_party/llvm-build/Release+Asserts/bin/clang"
+          rustc="${CR_DIR}/third_party/rust-toolchain/bin/rustc"
+          test -x "${clang}"
+          test -x "${rustc}"
+          "${clang}" --target=aarch64-linux-android -mcpu=help 2>&1 |
+            tee "${RUNNER_TEMP}/clang-arm64-cpus.txt" |
+            grep --fixed-strings "oryon-1"
+          "${rustc}" --print target-cpus --target aarch64-linux-android |
+            tee "${RUNNER_TEMP}/rust-arm64-cpus.txt" |
+            grep --fixed-strings "oryon-1"
+
+      - name: Generate S26+ ARM64 build
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="${DEPOT_TOOLS_DIR}:${PATH}"
+          mkdir -p "${CR_DIR}/out/thorium"
+          cp arm/android/s26_oryon_args.gn "${CR_DIR}/out/thorium/args.gn"
+          gn gen "${CR_DIR}/out/thorium" 2>&1 | tee -a "${BUILD_LOG}"
+          gn args "${CR_DIR}/out/thorium" \
+            --list=thorium_arm_cpu \
+            --short 2>&1 | tee -a "${BUILD_LOG}" |
+            grep --fixed-strings 'thorium_arm_cpu = "oryon-1"'
+          python3 build.py \
+            --chromium-src "${CR_DIR}" \
+            --thorium-root "${THOR_DIR}" \
+            --out-dir out/thorium \
+            --target chrome_public_apk \
+            --expect-os android \
+            --expect-cpu arm64 \
+            --jobs "${{ inputs.jobs }}" 2>&1 | tee -a "${BUILD_LOG}"
+
+      - name: Sign release APK
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          : "${ANDROID_KEYSTORE_BASE64:?missing ANDROID_KEYSTORE_BASE64 secret}"
+          : "${ANDROID_KEYSTORE_PASSWORD:?missing ANDROID_KEYSTORE_PASSWORD secret}"
+          : "${ANDROID_KEY_ALIAS:?missing ANDROID_KEY_ALIAS secret}"
+          : "${ANDROID_KEY_PASSWORD:?missing ANDROID_KEY_PASSWORD secret}"
+          unsigned_apk="${CR_DIR}/out/thorium/apks/ChromePublic.apk"
+          test -f "${unsigned_apk}"
+
+          apksigner=$(find "${CR_DIR}/third_party/android_sdk" \
+            -type f -name apksigner -perm -u+x -print | sort -V | tail -n 1)
+          test -n "${apksigner}"
+          zipalign="$(dirname "${apksigner}")/zipalign"
+          test -x "${zipalign}"
+
+          mkdir -p dist
+          version=$(python3 -c 'import version; print(version.THORIUM_VERSION)')
+          aligned_apk="${RUNNER_TEMP}/Thorium-S26Plus-Oryon-aligned.apk"
+          signed_apk="dist/Thorium-S26Plus-Oryon-arm64-${version}.apk"
+          keystore="${RUNNER_TEMP}/thorium-${GITHUB_RUN_ID}.jks"
+          cleanup() {
+            rm -f -- "${keystore}" "${aligned_apk}"
+          }
+          trap cleanup EXIT
+          umask 077
+          printf '%s' "${ANDROID_KEYSTORE_BASE64}" |
+            base64 --decode > "${keystore}"
+
+          "${zipalign}" -f -p 4 "${unsigned_apk}" "${aligned_apk}"
+          "${apksigner}" sign \
+            --ks "${keystore}" \
+            --ks-key-alias "${ANDROID_KEY_ALIAS}" \
+            --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
+            --key-pass env:ANDROID_KEY_PASSWORD \
+            --out "${signed_apk}" \
+            "${aligned_apk}"
+          "${apksigner}" verify --verbose --print-certs "${signed_apk}"
+          sha256sum "${signed_apk}" > "${signed_apk}.sha256"
+
+      - name: Upload signed APK
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: thorium-s26plus-oryon-arm64
+          path: |
+            dist/*.apk
+            dist/*.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: thorium-s26plus-build-log-${{ github.run_id }}
+          path: build-android-s26.log
+          if-no-files-found: warn
+          retention-days: 7

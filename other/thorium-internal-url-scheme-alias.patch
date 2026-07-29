@@ -15,14 +15,14 @@ diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/ch
 index edab63d18ffd0..8782ae107e30b 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -556,6 +556,7 @@
- #include "chrome/browser/search/instant_service_factory.h"
- #include "chrome/browser/themes/theme_service.h"
- #include "chrome/browser/themes/theme_service_factory.h"
+@@ -148,6 +148,7 @@
+ #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+ #include "chrome/browser/profiles/profile.h"
+ #include "chrome/browser/profiles/profile_io_data.h"
 +#include "chrome/browser/thorium_url_utils.h"
- #include "chrome/browser/ui/browser.h"
- #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
- #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+ #include "chrome/browser/profiles/profile_manager.h"
+ #include "chrome/browser/profiles/profile_selections.h"
+ #include "chrome/browser/profiles/renderer_updater.h"
 @@ -5148,6 +5149,8 @@ bool ChromeContentBrowserClient::
  
  void ChromeContentBrowserClient::BrowserURLHandlerCreated(

@@ -14,6 +14,7 @@ on:
       - arm/android/s26_oryon_args.gn
       - other/android-thorium-branding.patch
       - other/thorium-build-config-and-simd.patch
+      - other/thorium-internal-url-scheme-alias.patch
 
 permissions:
   contents: read

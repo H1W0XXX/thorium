@@ -124,8 +124,7 @@ jobs:
              [[ -f "${CR_DIR}/out/thorium/build.ninja" ]] &&
              git -C "${CR_DIR}" rev-parse --verify \
                "refs/tags/${thorium_version}^{commit}" >/dev/null 2>&1 &&
-             [[ "$(git -C "${CR_DIR}" rev-parse HEAD)" ==
-                "$(git -C "${CR_DIR}" rev-parse "refs/tags/${thorium_version}^{commit}")" ]]; then
+             [[ "$(git -C "${CR_DIR}" rev-parse HEAD)" == "$(git -C "${CR_DIR}" rev-parse "refs/tags/${thorium_version}^{commit}")" ]]; then
             reuse_setup=1
           fi
           {

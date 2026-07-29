@@ -6,6 +6,7 @@
 
 import argparse
 import dataclasses
+import filecmp
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -202,10 +203,18 @@ def require_file(path: Path, description: str) -> None:
 def copy_file(source: Path, destination: Path) -> None:
     require_file(source, "source file")
     destination.parent.mkdir(parents=True, exist_ok=True)
+    if (
+        destination.is_file()
+        and filecmp.cmp(source, destination, shallow=False)
+        and stat.S_IMODE(source.stat().st_mode)
+        == stat.S_IMODE(destination.stat().st_mode)
+    ):
+        print(f"Unchanged {destination}")
+        return
     print(f"Copying {source} -> {destination}")
     try:
-        # Keep executable mode bits, but refresh the destination timestamp so
-        # Ninja observes an overlaid source file as changed.
+        # Keep executable mode bits and refresh the timestamp only when the
+        # overlay content or mode changed, so Ninja can reuse unchanged work.
         shutil.copy(source, destination)
     except OSError as error:
         raise SetupError(
@@ -216,11 +225,16 @@ def copy_file(source: Path, destination: Path) -> None:
 def copy_tree(source: Path, destination: Path) -> None:
     require_directory(source, "source")
     print(f"Copying directory {source} -> {destination}")
+
+    def copy_changed(source_file: str, destination_file: str) -> str:
+        copy_file(Path(source_file), Path(destination_file))
+        return destination_file
+
     try:
         shutil.copytree(
             source,
             destination,
-            copy_function=shutil.copy,
+            copy_function=copy_changed,
             dirs_exist_ok=True,
         )
     except OSError as error:

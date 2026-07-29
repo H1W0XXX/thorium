@@ -102,28 +102,71 @@ jobs:
             python3 get_repo.py "${bootstrap_args[@]}" 2>&1 |
             tee -a "${BUILD_LOG}"
 
+          setup_fingerprint="$(
+            git ls-files -s -- \
+              setup.py \
+              version.py \
+              patch_scripts \
+              src \
+              thorium_shell \
+              pak_src \
+              infra/thor_ver \
+              other |
+              sha256sum |
+              awk '{print $1}'
+          )"
+          setup_stamp="${CR_DIR}/out/thorium/.thorium-android-setup.sha256"
+          thorium_version="$(python3 -c 'import version; print(version.THORIUM_VERSION)')"
+          reuse_setup=0
+          if [[ -f "${setup_stamp}" ]] &&
+             grep --quiet --fixed-strings --line-regexp \
+               "${setup_fingerprint}" "${setup_stamp}" &&
+             [[ -f "${CR_DIR}/out/thorium/build.ninja" ]] &&
+             git -C "${CR_DIR}" rev-parse --verify \
+               "refs/tags/${thorium_version}^{commit}" >/dev/null 2>&1 &&
+             [[ "$(git -C "${CR_DIR}" rev-parse HEAD)" ==
+                "$(git -C "${CR_DIR}" rev-parse "refs/tags/${thorium_version}^{commit}")" ]]; then
+            reuse_setup=1
+          fi
+          {
+            echo "THORIUM_SETUP_FINGERPRINT=${setup_fingerprint}"
+            echo "THORIUM_REUSE_SETUP=${reuse_setup}"
+          } >> "${GITHUB_ENV}"
+
           gclient_file="$(dirname "${CR_DIR}")/.gclient"
           if ! grep --quiet --fixed-strings 'target_os = ["android"]' "${gclient_file}"; then
             printf '\n# Thorium Android CI target dependencies.\ntarget_os = ["android"]\n' \
               >> "${gclient_file}"
           fi
 
-          retry_network_step \
-            python3 version.py \
-              --chromium-src "${CR_DIR}" \
-              --depot-tools "${DEPOT_TOOLS_DIR}" \
-              --jobs "${SYNC_JOBS}" 2>&1 |
-            tee -a "${BUILD_LOG}"
+          if (( reuse_setup )); then
+            echo "Reusing prepared Chromium source and Ninja output for ${setup_fingerprint}."
+          else
+            retry_network_step \
+              python3 version.py \
+                --chromium-src "${CR_DIR}" \
+                --depot-tools "${DEPOT_TOOLS_DIR}" \
+                --jobs "${SYNC_JOBS}" 2>&1 |
+              tee -a "${BUILD_LOG}"
+          fi
 
       - name: Apply Thorium Android profile
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${THORIUM_REUSE_SETUP}" == "1" ]]; then
+            echo "Thorium Android source profile is unchanged; preserving prepared sources."
+            exit 0
+          fi
           export PATH="${DEPOT_TOOLS_DIR}:${PATH}"
           python3 setup.py \
             --android \
             --chromium-src "${CR_DIR}" \
             --thorium-root "${THOR_DIR}" 2>&1 | tee -a "${BUILD_LOG}"
+          setup_stamp="${CR_DIR}/out/thorium/.thorium-android-setup.sha256"
+          temporary_stamp="${setup_stamp}.tmp.${GITHUB_RUN_ID}"
+          printf '%s\n' "${THORIUM_SETUP_FINGERPRINT}" > "${temporary_stamp}"
+          mv -f -- "${temporary_stamp}" "${setup_stamp}"
 
       - name: Verify Oryon compiler support
         shell: bash
@@ -149,24 +192,13 @@ jobs:
           test -x "${gn_bin}"
           out_dir="${CR_DIR}/out/thorium"
           mkdir -p "${out_dir}"
-          cp arm/android/s26_oryon_args.gn "${out_dir}/args.gn"
+          if ! cmp --silent arm/android/s26_oryon_args.gn "${out_dir}/args.gn"; then
+            cp arm/android/s26_oryon_args.gn "${out_dir}/args.gn"
+          fi
 
           # Siso has repeatedly panicked or hung on this WSL runner. Migrate
           # this existing output directory to Chromium's supported Ninja path.
           rm -f -- "${out_dir}/.siso_deps"
-
-          # Earlier unstable runs also produced a truncated Clang module.
-          # Rebuild only generated PCM files, while preserving all other
-          # incremental objects.
-          while IFS= read -r -d '' pcm; do
-            case "${pcm}" in
-              "${out_dir}"/*) rm -f -- "${pcm}" ;;
-              *)
-                echo "Refusing to remove PCM outside ${out_dir}: ${pcm}" >&2
-                exit 2
-                ;;
-            esac
-          done < <(find "${out_dir}" -type f -name '*.pcm' -print0)
 
           "${gn_bin}" gen "${out_dir}" \
             --root="${CR_DIR}" 2>&1 | tee -a "${BUILD_LOG}"

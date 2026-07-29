@@ -269,21 +269,12 @@ jobs:
           }
           build_with_retry 2>&1 | tee -a "${BUILD_LOG}"
 
-      - name: Sign release APK
+      - name: Package public-signed APK
         shell: bash
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           set -euo pipefail
-          : "${ANDROID_KEYSTORE_BASE64:?missing ANDROID_KEYSTORE_BASE64 secret}"
-          : "${ANDROID_KEYSTORE_PASSWORD:?missing ANDROID_KEYSTORE_PASSWORD secret}"
-          : "${ANDROID_KEY_ALIAS:?missing ANDROID_KEY_ALIAS secret}"
-          : "${ANDROID_KEY_PASSWORD:?missing ANDROID_KEY_PASSWORD secret}"
-          unsigned_apk="${CR_DIR}/out/thorium/apks/Thorium_Public.apk"
-          test -f "${unsigned_apk}"
+          built_apk="${CR_DIR}/out/thorium/apks/Thorium_Public.apk"
+          test -f "${built_apk}"
 
           export JAVA_HOME="${CR_DIR}/third_party/jdk/current"
           test -x "${JAVA_HOME}/bin/java"
@@ -292,40 +283,20 @@ jobs:
           apksigner=$(find "${CR_DIR}/third_party/android_sdk" \
             -type f -name apksigner -perm -u+x -print | sort -V | tail -n 1)
           test -n "${apksigner}"
-          zipalign="$(dirname "${apksigner}")/zipalign"
-          test -x "${zipalign}"
 
           mkdir -p dist
-          version=$(python3 -c 'import version; print(version.THORIUM_VERSION)')
-          aligned_apk="${RUNNER_TEMP}/Thorium-S26Plus-Oryon-aligned.apk"
-          signed_apk="dist/Thorium-S26Plus-Oryon-arm64-${version}.apk"
-          keystore="${RUNNER_TEMP}/thorium-${GITHUB_RUN_ID}.jks"
-          cleanup() {
-            rm -f -- "${keystore}" "${aligned_apk}"
-          }
-          trap cleanup EXIT
-          umask 077
-          printf '%s' "${ANDROID_KEYSTORE_BASE64}" |
-            base64 --decode > "${keystore}"
+          public_apk="dist/Thorium-S26Plus-Oryon-arm64-public.apk"
+          cp -f -- "${built_apk}" "${public_apk}"
+          "${apksigner}" verify --verbose --print-certs "${public_apk}"
+          sha256sum "${public_apk}" > "${public_apk}.sha256"
 
-          "${zipalign}" -f -p 4 "${unsigned_apk}" "${aligned_apk}"
-          "${apksigner}" sign \
-            --ks "${keystore}" \
-            --ks-key-alias "${ANDROID_KEY_ALIAS}" \
-            --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
-            --key-pass env:ANDROID_KEY_PASSWORD \
-            --out "${signed_apk}" \
-            "${aligned_apk}"
-          "${apksigner}" verify --verbose --print-certs "${signed_apk}"
-          sha256sum "${signed_apk}" > "${signed_apk}.sha256"
-
-      - name: Upload signed APK
+      - name: Upload public-signed APK
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: thorium-s26plus-oryon-arm64
           path: |
-            dist/*.apk
-            dist/*.sha256
+            dist/Thorium-S26Plus-Oryon-arm64-public.apk
+            dist/Thorium-S26Plus-Oryon-arm64-public.apk.sha256
           if-no-files-found: error
           retention-days: 14
 

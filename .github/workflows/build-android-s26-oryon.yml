@@ -285,6 +285,10 @@ jobs:
           unsigned_apk="${CR_DIR}/out/thorium/apks/Thorium_Public.apk"
           test -f "${unsigned_apk}"
 
+          export JAVA_HOME="${CR_DIR}/third_party/jdk/current"
+          test -x "${JAVA_HOME}/bin/java"
+          export PATH="${JAVA_HOME}/bin:${PATH}"
+
           apksigner=$(find "${CR_DIR}/third_party/android_sdk" \
             -type f -name apksigner -perm -u+x -print | sort -V | tail -n 1)
           test -n "${apksigner}"

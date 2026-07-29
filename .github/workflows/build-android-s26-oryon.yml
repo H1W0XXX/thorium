@@ -34,9 +34,8 @@ jobs:
       CR_DIR: ${{ github.workspace }}/../thorium-android-ci/chromium/src
       DEPOT_TOOLS_UPDATE: "0"
       SYNC_JOBS: "4"
-      # The 14900K host produced transient process corruption under sustained
-      # load. Keep this build conservative until its BIOS/RAM is serviced.
-      BUILD_JOBS: "2"
+      # Use the runner's 16-core CPU affinity for the local 14900K build.
+      BUILD_JOBS: "16"
       BUILD_ATTEMPTS: "10"
       NETWORK_ATTEMPTS: "5"
       NETWORK_RETRY_SECONDS: "20"

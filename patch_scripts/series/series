@@ -178,6 +178,9 @@ other/chrome-web-store-protection.patch
 other/enable-extension-in-incognito.patch
 other/add-quick-extension-toggle-menu.patch
 
+# 90 - Android private synchronization.
+other/android-private-sync.patch
+
 # 95 - Conditional / platform-specific overlays that are still active.
 [raspi] other/linux-widevine-cdm-locations.patch
 [raspi] other/raspi-netflix-chromeos-ua.patch

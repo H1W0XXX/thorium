@@ -1,0 +1,76 @@
+# Copyright 2026 The Chromium Authors and Thorium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+assert(is_android)
+
+source_set("private_sync") {
+  sources = [
+    "private_sync_service.cc",
+    "private_sync_service.h",
+    "private_sync_service_factory.cc",
+    "private_sync_service_factory.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/history",
+    "//chrome/browser/profiles:profile",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//crypto",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/jni_zero",
+    "//url",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/private_sync/PrivateSyncSecureStorage.java",
+    "android/java/src/org/chromium/chrome/browser/private_sync/PrivateSyncSettings.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
+    "//components/browser_ui/settings/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  srcjar_deps = [ ":jni_headers" ]
+  resources_package = "org.chromium.chrome.browser.private_sync"
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/private_sync/PrivateSyncSecureStorage.java",
+    "android/java/src/org/chromium/chrome/browser/private_sync/PrivateSyncSettings.java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "android/java/res/values-zh-rCN/strings.xml",
+    "android/java/res/values/strings.xml",
+    "android/java/res/xml/private_sync_preferences.xml",
+  ]
+
+  deps = [ "//components/browser_ui/settings/android:java_resources" ]
+}

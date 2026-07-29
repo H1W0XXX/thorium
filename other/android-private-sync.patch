@@ -1,0 +1,70 @@
+diff --git a/chrome/android/BUILD.gn b/chrome/android/BUILD.gn
+index 66e547fce475b..fb8ed0956f6fb 100644
+--- a/chrome/android/BUILD.gn
++++ b/chrome/android/BUILD.gn
+@@ -180,6 +180,7 @@ if (is_android) {
+       "//chrome/browser/ntp_customization:java_resources",
+       "//chrome/browser/password_manager/android:java_resources",
++      "//chrome/browser/private_sync:java_resources",
+       "//chrome/browser/quick_delete:java_resources",
+       "//chrome/browser/signin/services/android:java_resources",
+       "//chrome/browser/single_tab/android:java_resources",
+       "//chrome/browser/tab:java_resources",
+@@ -484,6 +485,7 @@ if (is_android) {
+       "//chrome/browser/privacy:java",
+       "//chrome/browser/privacy:privacy_settings_java",
+       "//chrome/browser/privacy_guide/android:java",
+       "//chrome/browser/privacy_sandbox/android:java",
++      "//chrome/browser/private_sync:java",
+       "//chrome/browser/profiles/android:java",
+       "//chrome/browser/quick_delete:java",
+diff --git a/chrome/android/java/res/xml/main_preferences.xml b/chrome/android/java/res/xml/main_preferences.xml
+index 5df4264b1d0a1..89710343201ad 100644
+--- a/chrome/android/java/res/xml/main_preferences.xml
++++ b/chrome/android/java/res/xml/main_preferences.xml
+@@ -106,6 +106,11 @@ found in the LICENSE file.
+         android:key="appearance"
+         android:order="23"
+         android:title="@string/appearance_settings" />
++    <Preference
++        android:fragment="org.chromium.chrome.browser.private_sync.PrivateSyncSettings"
++        android:key="private_sync"
++        android:order="24"
++        android:title="@string/private_sync_settings_title" />
+     <Preference
+         android:fragment="org.chromium.chrome.browser.glic.GlicSettings"
+         android:key="glic"
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index dc5024654b8b5..9458a3a189ff4 100644
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -2725,6 +2725,7 @@ static_library("browser") {
+       "//chrome/browser/lens:impl",
+       "//chrome/browser/partnerbookmarks:android_impl",
+       "//chrome/browser/privacy:secure_dns_bridge",
++      "//chrome/browser/private_sync",
+       "//chrome/browser/touch_to_fill/autofill/android:impl",
+       "//chrome/browser/touch_to_fill/password_manager:impl",
+       "//chrome/browser/translate/android:android_impl",
+diff --git a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc b/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
+index 39f2a0e536d59..7fc0d45e61baa 100644
+--- a/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
++++ b/chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.cc
+@@ -337,6 +337,7 @@
+ #include "chrome/browser/flags/android/chrome_feature_list.h"
+ #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
+ #include "chrome/browser/password_manager/android/delayed_password_field_classification_model_handler_factory.h"
++#include "chrome/browser/private_sync/private_sync_service_factory.h"
+ #include "chrome/browser/signin/android/signin_bridge_factory.h"
+ #include "chrome/browser/signin/signin_manager_android_factory.h"
+ #include "chrome/browser/ui/android/android_profile_browser_collection_service_factory.h"
+@@ -1308,6 +1309,9 @@ void ChromeBrowserMainExtraPartsProfiles::
+   PrefMetricsService::Factory::GetInstance();
+   PrefsTabHelper::GetServiceInstance();
+   prerender::NoStatePrefetchLinkManagerFactory::GetInstance();
++#if BUILDFLAG(IS_ANDROID)
++  PrivateSyncServiceFactory::GetInstance();
++#endif
+   prerender::NoStatePrefetchManagerFactory::GetInstance();
+   PrivacyMetricsServiceFactory::GetInstance();
+   PrivacySandboxNoticeServiceFactory::GetInstance();

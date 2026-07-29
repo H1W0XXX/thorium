@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors and Thorium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <string name="private_sync_settings_title">私有同步</string>
+    <string name="private_sync_import_title">导入 Android 客户端 JSON</string>
+    <string name="private_sync_import_dialog_title">粘贴专用于 Android 的客户端 JSON</string>
+    <string name="private_sync_configured_summary">已配置。JSON 已由 Android Keystore 加密，本页不会回显。</string>
+    <string name="private_sync_not_configured_summary">尚未配置。请使用独立的 Android 设备 ID 和令牌，不要复用电脑端客户端文件。</string>
+    <string name="private_sync_now_title">立即同步</string>
+    <string name="private_sync_now_summary">从私有服务器拉取加密的历史记录和书签。</string>
+    <string name="private_sync_invalid_config">私有同步客户端 JSON 无效。</string>
+    <string name="private_sync_keystore_error">Android Keystore 无法安全保存配置。</string>
+    <string name="private_sync_saved">配置已加密保存，并已请求同步。</string>
+    <string name="private_sync_not_configured">请先导入 Android 客户端 JSON。</string>
+    <string name="private_sync_requested">已请求私有同步。</string>
+</resources>

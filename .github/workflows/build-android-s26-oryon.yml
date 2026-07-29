@@ -11,7 +11,10 @@ on:
       - version.py
       - setup.py
       - build.py
+      - patch_scripts/series/**
+      - src/chrome/browser/private_sync/**
       - arm/android/s26_oryon_args.gn
+      - other/android-private-sync.patch
       - other/android-thorium-branding.patch
       - other/thorium-build-config-and-simd.patch
       - other/thorium-internal-url-scheme-alias.patch
@@ -196,6 +199,12 @@ jobs:
           out_dir="${CR_DIR}/out/thorium"
           mkdir -p "${out_dir}"
           regenerate_ninja=0
+          if [[ "${THORIUM_REUSE_SETUP}" != "1" ]]; then
+            # Source overlays or patch-series inputs changed. Regenerate before
+            # applying the ThinLTO cap so autoninja cannot regenerate later and
+            # silently restore --thinlto-jobs=all.
+            regenerate_ninja=1
+          fi
           if ! cmp --silent arm/android/s26_oryon_args.gn "${out_dir}/args.gn"; then
             cp arm/android/s26_oryon_args.gn "${out_dir}/args.gn"
             regenerate_ninja=1

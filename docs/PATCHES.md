@@ -254,6 +254,11 @@ overlay-derived, or still need separate provenance review.
 - [`enable-extension-in-incognito.patch`](../other/enable-extension-in-incognito.patch)
 - [`add-quick-extension-toggle-menu.patch`](../other/add-quick-extension-toggle-menu.patch) - Adds a default-off, `chrome://flags`-controlled quick enable/disable section to the extensions menu.
 
+### 90 - Android private synchronization.
+
+- [`android-private-sync.patch`](../other/android-private-sync.patch) - Wires the Android-only private sync service and Keystore-backed client JSON settings into Chromium. Phase 1 imports end-to-end encrypted history and bookmarks without altering Google Sync.
+- See [`ANDROID_PRIVATE_SYNC.md`](ANDROID_PRIVATE_SYNC.md) for the client JSON contract, security boundaries, and Phase 1 behavior.
+
 ### 95 - Conditional / platform-specific overlays that are still active.
 
 - [`linux-widevine-cdm-locations.patch`](../other/linux-widevine-cdm-locations.patch) (condition: `raspi`)

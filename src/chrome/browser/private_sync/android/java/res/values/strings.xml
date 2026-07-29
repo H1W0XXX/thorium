@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors and Thorium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <string name="private_sync_settings_title">Private sync</string>
+    <string name="private_sync_import_title">Import Android client JSON</string>
+    <string name="private_sync_import_dialog_title">Paste the dedicated Android client JSON</string>
+    <string name="private_sync_configured_summary">Configured. The JSON is encrypted with Android Keystore and is never shown here.</string>
+    <string name="private_sync_not_configured_summary">Not configured. Use a dedicated Android device ID and token, not the desktop client file.</string>
+    <string name="private_sync_now_title">Sync now</string>
+    <string name="private_sync_now_summary">Pull encrypted history and bookmarks from the private server.</string>
+    <string name="private_sync_invalid_config">Invalid private sync client JSON.</string>
+    <string name="private_sync_keystore_error">Android Keystore could not protect the configuration.</string>
+    <string name="private_sync_saved">Configuration encrypted and saved. Sync requested.</string>
+    <string name="private_sync_not_configured">Import the Android client JSON first.</string>
+    <string name="private_sync_requested">Private sync requested.</string>
+</resources>

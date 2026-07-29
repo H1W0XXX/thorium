@@ -114,6 +114,11 @@ def parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
         type=positive_integer,
         help="maximum parallel jobs (default: let autoninja choose)",
     )
+    parser.add_argument(
+        "--keep-going",
+        action="store_true",
+        help="continue independent Ninja work after command failures (-k 0)",
+    )
     target_mode = parser.add_mutually_exclusive_group()
     target_mode.add_argument(
         "--no-installer",
@@ -342,6 +347,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             ninja_arguments = ["-C", str(out_dir), *phase]
             if arguments.jobs is not None:
                 ninja_arguments.extend(["-j", str(arguments.jobs)])
+            if arguments.keep_going:
+                ninja_arguments.extend(["-k", "0"])
             command = platform_command(autoninja, ninja_arguments)
             build_steps.append((phase, command))
 

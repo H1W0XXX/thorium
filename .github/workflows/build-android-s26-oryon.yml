@@ -192,7 +192,8 @@ jobs:
               --target chrome_public_apk \
               --expect-os android \
               --expect-cpu arm64 \
-              --jobs "${BUILD_JOBS}"; do
+              --jobs "${BUILD_JOBS}" \
+              --keep-going; do
               exit_code=$?
               if (( attempt >= BUILD_ATTEMPTS )); then
                 echo "Build failed after ${attempt} attempts (exit ${exit_code})." >&2

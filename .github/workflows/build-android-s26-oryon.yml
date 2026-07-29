@@ -192,16 +192,25 @@ jobs:
           test -x "${gn_bin}"
           out_dir="${CR_DIR}/out/thorium"
           mkdir -p "${out_dir}"
+          regenerate_ninja=0
           if ! cmp --silent arm/android/s26_oryon_args.gn "${out_dir}/args.gn"; then
             cp arm/android/s26_oryon_args.gn "${out_dir}/args.gn"
+            regenerate_ninja=1
+          fi
+          if [[ ! -f "${out_dir}/build.ninja" ]]; then
+            regenerate_ninja=1
           fi
 
           # Siso has repeatedly panicked or hung on this WSL runner. Migrate
           # this existing output directory to Chromium's supported Ninja path.
           rm -f -- "${out_dir}/.siso_deps"
 
-          "${gn_bin}" gen "${out_dir}" \
-            --root="${CR_DIR}" 2>&1 | tee -a "${BUILD_LOG}"
+          if (( regenerate_ninja )); then
+            "${gn_bin}" gen "${out_dir}" \
+              --root="${CR_DIR}" 2>&1 | tee -a "${BUILD_LOG}"
+          else
+            echo "Reusing existing Ninja graph because args.gn is unchanged."
+          fi
           "${gn_bin}" args "${out_dir}" \
             --root="${CR_DIR}" \
             --list=thorium_arm_cpu \

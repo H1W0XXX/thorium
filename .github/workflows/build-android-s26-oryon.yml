@@ -37,6 +37,8 @@ jobs:
       SYNC_JOBS: "4"
       # Use the runner's 16-core CPU affinity for the local 14900K build.
       BUILD_JOBS: "16"
+      # LLD otherwise interprets "all" as all 24 host threads, bypassing -j16.
+      THINLTO_JOBS: "4"
       BUILD_ATTEMPTS: "10"
       NETWORK_ATTEMPTS: "5"
       NETWORK_RETRY_SECONDS: "20"
@@ -55,6 +57,7 @@ jobs:
           set -euo pipefail
           echo "Chromium synchronization is fixed at ${SYNC_JOBS} jobs."
           echo "Compile parallelism is fixed at ${BUILD_JOBS} jobs."
+          echo "ThinLTO link parallelism is fixed at ${THINLTO_JOBS} jobs."
           python3 --version
           git --version
           taskset -pc "$$"
@@ -211,6 +214,21 @@ jobs:
           else
             echo "Reusing existing Ninja graph because args.gn is unchanged."
           fi
+
+          # Chromium hard-codes --thinlto-jobs=all for non-Windows builds.
+          # On this runner that means all 24 host threads even though Ninja is
+          # capped at 16, and lld has repeatedly crashed in an LLVM worker.
+          libchrome_ninja="${out_dir}/obj/chrome/android/libchrome.ninja"
+          test -f "${libchrome_ninja}"
+          if grep --quiet --fixed-strings -- '--thinlto-jobs=all' "${libchrome_ninja}"; then
+            sed -i \
+              "s/--thinlto-jobs=all/--thinlto-jobs=${THINLTO_JOBS}/g" \
+              "${libchrome_ninja}"
+          fi
+          grep --quiet --fixed-strings -- \
+            "--thinlto-jobs=${THINLTO_JOBS}" "${libchrome_ninja}"
+          echo "libchrome ThinLTO parallelism is capped at ${THINLTO_JOBS} jobs."
+
           "${gn_bin}" args "${out_dir}" \
             --root="${CR_DIR}" \
             --list=thorium_arm_cpu \
@@ -264,7 +282,7 @@ jobs:
           : "${ANDROID_KEYSTORE_PASSWORD:?missing ANDROID_KEYSTORE_PASSWORD secret}"
           : "${ANDROID_KEY_ALIAS:?missing ANDROID_KEY_ALIAS secret}"
           : "${ANDROID_KEY_PASSWORD:?missing ANDROID_KEY_PASSWORD secret}"
-          unsigned_apk="${CR_DIR}/out/thorium/apks/ChromePublic.apk"
+          unsigned_apk="${CR_DIR}/out/thorium/apks/Thorium_Public.apk"
           test -f "${unsigned_apk}"
 
           apksigner=$(find "${CR_DIR}/third_party/android_sdk" \

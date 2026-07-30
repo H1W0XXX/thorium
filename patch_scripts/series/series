@@ -182,6 +182,7 @@ other/add-quick-extension-toggle-menu.patch
 other/android-private-sync.patch
 other/android-disable-discover-feed.patch
 other/android-recover-stalled-gpu-channel.patch
+other/android-reload-visible-tabs-after-gpu-recovery.patch
 
 # 95 - Conditional / platform-specific overlays that are still active.
 [raspi] other/linux-widevine-cdm-locations.patch

@@ -338,7 +338,9 @@ jobs:
           "${apksigner}" verify --verbose --print-certs "${public_apk}"
           sha256sum "${public_apk}" > "${public_apk}.sha256"
 
-      - name: Upload public-signed APK
+      - name: Upload public-signed APK (attempt 1)
+        id: upload_public_apk_1
+        continue-on-error: true
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: thorium-s26plus-oryon-arm64
@@ -347,9 +349,41 @@ jobs:
             dist/Thorium-S26Plus-Oryon-arm64-public.apk.sha256
           if-no-files-found: error
           retention-days: 14
+          compression-level: 0
+
+      - name: Upload public-signed APK (attempt 2)
+        id: upload_public_apk_2
+        if: steps.upload_public_apk_1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: thorium-s26plus-oryon-arm64
+          path: |
+            dist/Thorium-S26Plus-Oryon-arm64-public.apk
+            dist/Thorium-S26Plus-Oryon-arm64-public.apk.sha256
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+          overwrite: true
+
+      - name: Upload public-signed APK (attempt 3)
+        if: >-
+          steps.upload_public_apk_1.outcome == 'failure' &&
+          steps.upload_public_apk_2.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: thorium-s26plus-oryon-arm64
+          path: |
+            dist/Thorium-S26Plus-Oryon-arm64-public.apk
+            dist/Thorium-S26Plus-Oryon-arm64-public.apk.sha256
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+          overwrite: true
 
       - name: Upload build log
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: thorium-s26plus-build-log-${{ github.run_id }}

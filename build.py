@@ -363,7 +363,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 0
 
         environment = os.environ.copy()
-        environment["NINJA_SUMMARIZE_BUILD"] = "1"
+        if target_os == "android":
+            # Android CI deliberately uses Ninja instead of Siso. Chromium's
+            # post-build summary can still invoke `siso metrics summary` on
+            # this output directory after Ninja has successfully completed,
+            # turning a successful APK build into a false failure.
+            environment.pop("NINJA_SUMMARIZE_BUILD", None)
+        else:
+            environment["NINJA_SUMMARIZE_BUILD"] = "1"
         environment["NINJA_STATUS"] = NINJA_STATUS
         for index, (_, command) in enumerate(build_steps, start=1):
             print(f"Starting build phase {index}/{phase_count}...")

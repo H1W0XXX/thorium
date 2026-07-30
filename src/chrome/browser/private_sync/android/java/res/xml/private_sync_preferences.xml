@@ -8,6 +8,7 @@ found in the LICENSE file.
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <androidx.preference.EditTextPreference
         android:key="private_sync_client_json"
+        android:dialogLayout="@layout/private_sync_preference_dialog_edittext"
         android:persistent="false"
         android:title="@string/private_sync_import_title"
         android:dialogTitle="@string/private_sync_import_dialog_title" />

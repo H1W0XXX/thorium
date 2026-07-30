@@ -71,6 +71,7 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "android/java/res/layout/private_sync_preference_dialog_edittext.xml",
     "android/java/res/values-zh-rCN/strings.xml",
     "android/java/res/values/strings.xml",
     "android/java/res/xml/private_sync_preferences.xml",

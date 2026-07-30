@@ -123,9 +123,19 @@ jobs:
               awk '{print $1}'
           )"
           setup_stamp="${CR_DIR}/out/thorium/.thorium-android-setup.sha256"
+          patch_fingerprint="$(
+            git ls-files -s -- \
+              patch_scripts/series/series \
+              patch_scripts/series/apply_series.py \
+              'other/*.patch' |
+              sha256sum |
+              awk '{print $1}'
+          )"
+          patch_stamp="${CR_DIR}/out/thorium/.thorium-android-patches.sha256"
           thorium_version="$(python3 -c 'import version; print(version.THORIUM_VERSION)')"
           reuse_setup=0
           incremental_setup=0
+          skip_patches=0
           if [[ -f "${setup_stamp}" ]] &&
              [[ -f "${CR_DIR}/out/thorium/build.ninja" ]] &&
              git -C "${CR_DIR}" rev-parse --verify \
@@ -134,14 +144,19 @@ jobs:
             if grep --quiet --fixed-strings --line-regexp \
                  "${setup_fingerprint}" "${setup_stamp}"; then
               reuse_setup=1
-            else
+            elif [[ -f "${patch_stamp}" ]] &&
+                 grep --quiet --fixed-strings --line-regexp \
+                   "${patch_fingerprint}" "${patch_stamp}"; then
               incremental_setup=1
+              skip_patches=1
             fi
           fi
           {
             echo "THORIUM_SETUP_FINGERPRINT=${setup_fingerprint}"
+            echo "THORIUM_PATCH_FINGERPRINT=${patch_fingerprint}"
             echo "THORIUM_REUSE_SETUP=${reuse_setup}"
             echo "THORIUM_INCREMENTAL_SETUP=${incremental_setup}"
+            echo "THORIUM_SKIP_PATCHES=${skip_patches}"
           } >> "${GITHUB_ENV}"
 
           gclient_file="$(dirname "${CR_DIR}")/.gclient"
@@ -154,8 +169,10 @@ jobs:
             echo "Reusing prepared Chromium source and Ninja output for ${setup_fingerprint}."
           elif (( incremental_setup )); then
             echo "Chromium ${thorium_version} and out/thorium are reusable."
-            echo "Applying only changed Thorium overlays and patches; version.py reset is skipped."
+            echo "The patch set is unchanged; applying only changed Thorium overlays."
+            echo "version.py reset and patch reapplication are both skipped."
           else
+            rm -f -- "${patch_stamp}"
             retry_network_step \
               python3 version.py \
                 --chromium-src "${CR_DIR}" \
@@ -168,55 +185,32 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          retry_network_step() {
-            local attempt=1
-            local exit_code
-            local delay
-            until "$@"; do
-              exit_code=$?
-              if (( attempt >= NETWORK_ATTEMPTS )); then
-                echo "Command failed after ${attempt} attempts (exit ${exit_code}): $*" >&2
-                return "${exit_code}"
-              fi
-              delay=$((NETWORK_RETRY_SECONDS * attempt))
-              echo "Network-sensitive command failed (exit ${exit_code}); retrying in ${delay}s (${attempt}/${NETWORK_ATTEMPTS}): $*" >&2
-              sleep "${delay}"
-              ((attempt += 1))
-            done
-          }
-
-          apply_profile() {
-            python3 setup.py \
-              --android \
-              --chromium-src "${CR_DIR}" \
-              --thorium-root "${THOR_DIR}"
-          }
-
           if [[ "${THORIUM_REUSE_SETUP}" == "1" ]]; then
             echo "Thorium Android source profile is unchanged; preserving prepared sources."
+            patch_stamp="${CR_DIR}/out/thorium/.thorium-android-patches.sha256"
+            temporary_patch_stamp="${patch_stamp}.tmp.${GITHUB_RUN_ID}"
+            printf '%s\n' "${THORIUM_PATCH_FINGERPRINT}" > "${temporary_patch_stamp}"
+            mv -f -- "${temporary_patch_stamp}" "${patch_stamp}"
             exit 0
           fi
           export PATH="${DEPOT_TOOLS_DIR}:${PATH}"
-          if ! apply_profile 2>&1 | tee -a "${BUILD_LOG}"; then
-            if [[ "${THORIUM_INCREMENTAL_SETUP}" != "1" ]]; then
-              echo "Thorium setup failed after a clean Chromium preparation." >&2
-              exit 1
-            fi
-            echo "Incremental Thorium setup could not reconcile the existing source tree." >&2
-            echo "Falling back to a full Chromium reset for this run only." >&2
-            retry_network_step \
-              python3 version.py \
-                --chromium-src "${CR_DIR}" \
-                --depot-tools "${DEPOT_TOOLS_DIR}" \
-                --jobs "${SYNC_JOBS}" 2>&1 |
-              tee -a "${BUILD_LOG}"
-            apply_profile 2>&1 | tee -a "${BUILD_LOG}"
-            echo "THORIUM_INCREMENTAL_SETUP=0" >> "${GITHUB_ENV}"
+          setup_args=(
+            --android
+            --chromium-src "${CR_DIR}"
+            --thorium-root "${THOR_DIR}"
+          )
+          if [[ "${THORIUM_SKIP_PATCHES}" == "1" ]]; then
+            setup_args+=(--skip-patches)
           fi
+          python3 setup.py "${setup_args[@]}" 2>&1 | tee -a "${BUILD_LOG}"
           setup_stamp="${CR_DIR}/out/thorium/.thorium-android-setup.sha256"
           temporary_stamp="${setup_stamp}.tmp.${GITHUB_RUN_ID}"
           printf '%s\n' "${THORIUM_SETUP_FINGERPRINT}" > "${temporary_stamp}"
           mv -f -- "${temporary_stamp}" "${setup_stamp}"
+          patch_stamp="${CR_DIR}/out/thorium/.thorium-android-patches.sha256"
+          temporary_patch_stamp="${patch_stamp}.tmp.${GITHUB_RUN_ID}"
+          printf '%s\n' "${THORIUM_PATCH_FINGERPRINT}" > "${temporary_patch_stamp}"
+          mv -f -- "${temporary_patch_stamp}" "${patch_stamp}"
 
       - name: Verify Oryon compiler support
         shell: bash

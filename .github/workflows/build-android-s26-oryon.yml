@@ -237,44 +237,48 @@ jobs:
           test -x "${gn_bin}"
           out_dir="${CR_DIR}/out/thorium"
           mkdir -p "${out_dir}"
-          regenerate_ninja=0
-          if [[ "${THORIUM_REUSE_SETUP}" != "1" ]]; then
-            # Source overlays or patch-series inputs changed. Regenerate before
-            # applying the ThinLTO cap so autoninja cannot regenerate later and
-            # silently restore --thinlto-jobs=all.
-            regenerate_ninja=1
+
+          # Cap ThinLTO in the GN source that generates libchrome.ninja.
+          # Editing the generated Ninja file is not durable: autoninja checks
+          # the GN inputs before each build and regenerates it back to "all".
+          compiler_config="${CR_DIR}/build/config/compiler/BUILD.gn"
+          test -f "${compiler_config}"
+          if grep --quiet --fixed-strings -- \
+               '-Wl,--thinlto-jobs=all' "${compiler_config}"; then
+            sed -i \
+              "s/-Wl,--thinlto-jobs=all/-Wl,--thinlto-jobs=${THINLTO_JOBS}/g" \
+              "${compiler_config}"
           fi
+          grep --quiet --fixed-strings -- \
+            "-Wl,--thinlto-jobs=${THINLTO_JOBS}" "${compiler_config}"
+          if grep --quiet --fixed-strings -- \
+               '-Wl,--thinlto-jobs=all' "${compiler_config}"; then
+            echo "Chromium compiler config still enables all ThinLTO workers." >&2
+            exit 3
+          fi
+          # Always refresh the graph after checking the source-level cap. This
+          # is inexpensive and preserves the existing object cache.
           if ! cmp --silent arm/android/s26_oryon_args.gn "${out_dir}/args.gn"; then
             cp arm/android/s26_oryon_args.gn "${out_dir}/args.gn"
-            regenerate_ninja=1
-          fi
-          if [[ ! -f "${out_dir}/build.ninja" ]]; then
-            regenerate_ninja=1
           fi
 
           # Siso has repeatedly panicked or hung on this WSL runner. Migrate
           # this existing output directory to Chromium's supported Ninja path.
           rm -f -- "${out_dir}/.siso_deps"
 
-          if (( regenerate_ninja )); then
-            "${gn_bin}" gen "${out_dir}" \
-              --root="${CR_DIR}" 2>&1 | tee -a "${BUILD_LOG}"
-          else
-            echo "Reusing existing Ninja graph because args.gn is unchanged."
-          fi
+          "${gn_bin}" gen "${out_dir}" \
+            --root="${CR_DIR}" 2>&1 | tee -a "${BUILD_LOG}"
 
-          # Chromium hard-codes --thinlto-jobs=all for non-Windows builds.
-          # On this runner that means all 24 host threads even though Ninja is
-          # capped at 16, and lld has repeatedly crashed in an LLVM worker.
+          # Verify the generated link rule, not only the GN source.
           libchrome_ninja="${out_dir}/obj/chrome/android/libchrome.ninja"
           test -f "${libchrome_ninja}"
-          if grep --quiet --fixed-strings -- '--thinlto-jobs=all' "${libchrome_ninja}"; then
-            sed -i \
-              "s/--thinlto-jobs=all/--thinlto-jobs=${THINLTO_JOBS}/g" \
-              "${libchrome_ninja}"
-          fi
           grep --quiet --fixed-strings -- \
             "--thinlto-jobs=${THINLTO_JOBS}" "${libchrome_ninja}"
+          if grep --quiet --fixed-strings -- \
+               '--thinlto-jobs=all' "${libchrome_ninja}"; then
+            echo "Generated libchrome rule still enables all ThinLTO workers." >&2
+            exit 3
+          fi
           echo "libchrome ThinLTO parallelism is capped at ${THINLTO_JOBS} jobs."
 
           "${gn_bin}" args "${out_dir}" \

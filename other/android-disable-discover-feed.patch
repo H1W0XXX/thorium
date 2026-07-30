@@ -1,0 +1,25 @@
+diff --git a/chrome/browser/feed/android/feed_service_bridge.cc b/chrome/browser/feed/android/feed_service_bridge.cc
+index 893b76e704f5f..5e8f75b935741 100644
+--- a/chrome/browser/feed/android/feed_service_bridge.cc
++++ b/chrome/browser/feed/android/feed_service_bridge.cc
+@@ -48,6 +48,9 @@ static bool JNI_FeedServiceBridge_IsEnabled(JNIEnv* env) {
+ }
+ 
+ static void JNI_FeedServiceBridge_Startup(JNIEnv* env) {
++  if (!FeedServiceBridge::IsEnabled()) {
++    return;
++  }
+   // Trigger creation FeedService, since we need to handle certain browser
+   // events, like sign-in/sign-out, even if the Feed isn't visible.
+   GetFeedService();
+@@ -118,8 +121,8 @@ void FeedServiceBridge::ClearAll() {
+ }
+ 
+ bool FeedServiceBridge::IsEnabled() {
+-  Profile* profile = ProfileManager::GetLastUsedProfile();
+-  return FeedService::IsEnabled(*profile->GetPrefs());
++  // Thorium Android intentionally disables Discover and its backing service.
++  return false;
+ }
+ 
+ void FeedServiceBridge::PrefetchImage(const GURL& url) {

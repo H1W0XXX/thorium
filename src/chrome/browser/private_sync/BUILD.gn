@@ -42,6 +42,10 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/private_sync/PrivateSyncSettings.java",
   ]
 
+  # private_sync_preferences.xml inflates EditTextPreference by class name.
+  # Chromium's final R8 pass cannot otherwise see that reflective reference.
+  proguard_configs = [ "android/private_sync.flags" ]
+
   deps = [
     ":java_resources",
     "//base:base_java",

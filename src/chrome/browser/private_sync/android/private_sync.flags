@@ -1,0 +1,11 @@
+# Copyright 2026 The Chromium Authors and Thorium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# private_sync_preferences.xml inflates this class reflectively. Keep the
+# class name as well as both constructors used by AndroidX preference
+# inflation so the optimized APK can open PrivateSyncSettings.
+-keep class androidx.preference.EditTextPreference {
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, android.util.AttributeSet);
+}

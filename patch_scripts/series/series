@@ -180,6 +180,7 @@ other/add-quick-extension-toggle-menu.patch
 
 # 90 - Android private synchronization.
 other/android-private-sync.patch
+other/android-disable-discover-feed.patch
 
 # 95 - Conditional / platform-specific overlays that are still active.
 [raspi] other/linux-widevine-cdm-locations.patch

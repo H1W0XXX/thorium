@@ -257,6 +257,7 @@ overlay-derived, or still need separate provenance review.
 ### 90 - Android private synchronization.
 
 - [`android-private-sync.patch`](../other/android-private-sync.patch) - Wires the Android-only private sync service and Keystore-backed client JSON settings into Chromium. Phase 1 imports end-to-end encrypted history and bookmarks without altering Google Sync.
+- [`android-disable-discover-feed.patch`](../other/android-disable-discover-feed.patch) - Hard-disables the Android Discover feed and prevents its backing service from starting.
 - See [`ANDROID_PRIVATE_SYNC.md`](ANDROID_PRIVATE_SYNC.md) for the client JSON contract, security boundaries, and Phase 1 behavior.
 
 ### 95 - Conditional / platform-specific overlays that are still active.

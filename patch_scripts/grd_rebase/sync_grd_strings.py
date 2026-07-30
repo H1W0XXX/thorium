@@ -1156,9 +1156,16 @@ def write_xtb_missing_summary_report(
 
 
 def write_updated_files(source_root: Path, updated_contents: dict[str, str]) -> None:
-    """Write prepared source-relative file contents."""
+    """Write only source-relative files whose prepared bytes changed."""
     for chromium_path, contents in updated_contents.items():
-        (source_root / chromium_path).write_bytes(contents.encode("utf-8"))
+        destination = source_root / chromium_path
+        encoded = contents.encode("utf-8")
+        try:
+            if destination.read_bytes() == encoded:
+                continue
+        except FileNotFoundError:
+            pass
+        destination.write_bytes(encoded)
 
 
 def write_dry_run_report(

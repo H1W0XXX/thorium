@@ -14,6 +14,7 @@ on:
       - patch_scripts/series/**
       - src/chrome/browser/private_sync/**
       - arm/android/s26_oryon_args.gn
+      - other/android-recover-stalled-gpu-channel.patch
       - other/android-private-sync.patch
       - other/android-thorium-branding.patch
       - other/thorium-build-config-and-simd.patch

@@ -122,6 +122,15 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
             "set is unchanged from the prepared source tree"
         ),
     )
+    parser.add_argument(
+        "--patch-start-index",
+        type=int,
+        default=0,
+        help=(
+            "apply only selected patch-series entries at or after this index; "
+            "the caller must first verify an append-only series transition"
+        ),
+    )
     profiles = parser.add_mutually_exclusive_group()
     profiles.add_argument(
         "--mac",
@@ -596,7 +605,10 @@ def execute_copy_plan(plan: CopyPlan) -> None:
 
 
 def apply_patch_series(
-    thorium_root: Path, chromium_src: Path, profile: str
+    thorium_root: Path,
+    chromium_src: Path,
+    profile: str,
+    patch_start_index: int,
 ) -> None:
     script = thorium_root / "patch_scripts" / "series" / "apply_series.py"
     condition = {
@@ -611,6 +623,8 @@ def apply_patch_series(
         str(thorium_root),
         "--source-tree",
         str(chromium_src),
+        "--start-index",
+        str(patch_start_index),
         "--apply",
     ]
     if condition:
@@ -673,6 +687,7 @@ def setup(
     profile: str,
     *,
     skip_patches: bool = False,
+    patch_start_index: int = 0,
 ) -> None:
     thorium_root = thorium_root.expanduser().resolve()
     chromium_src = chromium_src.expanduser().resolve()
@@ -712,10 +727,22 @@ def setup(
     print("\nCopying Thorium source overlays over the Chromium tree")
     execute_copy_plan(base_plan)
 
+    if patch_start_index < 0:
+        raise SetupError("patch start index must not be negative")
+    if skip_patches and patch_start_index:
+        raise SetupError(
+            "patch start index cannot be used together with --skip-patches"
+        )
+
     if skip_patches:
         print("\nThorium patch set is unchanged; preserving applied patches")
     else:
-        apply_patch_series(thorium_root, chromium_src, profile)
+        apply_patch_series(
+            thorium_root,
+            chromium_src,
+            profile,
+            patch_start_index,
+        )
     apply_grd_rebase(thorium_root, chromium_src)
 
     execute_profile_plan(selected_profile_plan)
@@ -742,6 +769,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.chromium_src,
             args.profile,
             skip_patches=args.skip_patches,
+            patch_start_index=args.patch_start_index,
         )
     except SetupError as error:
         print(f"{Path(sys.argv[0]).name}: {error}", file=sys.stderr)

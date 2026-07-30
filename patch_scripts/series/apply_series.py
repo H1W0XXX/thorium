@@ -183,10 +183,21 @@ def main(argv: list[str]) -> int:
     )
     parser.add_argument("--series", type=Path, default=default_root / "patch_scripts" / "series" / "series")
     parser.add_argument("--condition", action="append", default=[], help="Enable one conditional entry, e.g. raspi or sse2.")
+    parser.add_argument(
+        "--start-index",
+        type=int,
+        default=0,
+        help=(
+            "skip this many selected entries before checking or applying; "
+            "used only after an append-only series transition was verified"
+        ),
+    )
     parser.add_argument("--apply", action="store_true", help="Apply patches with git apply --reject.")
     args = parser.parse_args(argv)
     if len(args.condition) > 1:
         parser.error("only one --condition value is supported per run")
+    if args.start_index < 0:
+        parser.error("--start-index must not be negative")
 
     thorium_root = args.thorium_root.resolve()
     source_tree = (args.source_tree or default_source_tree()).resolve()
@@ -195,6 +206,12 @@ def main(argv: list[str]) -> int:
     entries = parse_series(series_path)
     enabled_conditions = {item.lower() for item in args.condition}
     entries = [entry for entry in entries if selected(entry, enabled_conditions)]
+    if args.start_index > len(entries):
+        parser.error(
+            f"--start-index {args.start_index} exceeds "
+            f"{len(entries)} selected entries"
+        )
+    entries = entries[args.start_index :]
 
     errors = validate_entries(entries, thorium_root, source_tree)
     if errors:

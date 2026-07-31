@@ -16,6 +16,7 @@ on:
       - arm/android/s26_oryon_args.gn
       - other/android-recover-stalled-gpu-channel.patch
       - other/android-private-sync.patch
+      - other/android-socks5-h3.patch
       - other/android-thorium-branding.patch
       - other/thorium-build-config-and-simd.patch
       - other/thorium-internal-url-scheme-alias.patch
@@ -171,10 +172,7 @@ jobs:
                    "${patch_fingerprint}" "${patch_stamp}"; then
               incremental_setup=1
               skip_patches=1
-            elif [[ -f "${overlay_stamp}" ]] &&
-                 grep --quiet --fixed-strings --line-regexp \
-                   "${overlay_fingerprint}" "${overlay_stamp}" &&
-                 python3 patch_scripts/series/incremental_state.py \
+            elif python3 patch_scripts/series/incremental_state.py \
                    check-appended \
                    --thorium-root "${THOR_DIR}" \
                    --series "${THOR_DIR}/patch_scripts/series/series" \

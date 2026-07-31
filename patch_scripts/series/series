@@ -187,3 +187,6 @@ other/android-reload-visible-tabs-after-gpu-recovery.patch
 # 95 - Conditional / platform-specific overlays that are still active.
 [raspi] other/linux-widevine-cdm-locations.patch
 [raspi] other/raspi-netflix-chromeos-ua.patch
+
+# 100 - Experimental Android SOCKS5 UDP transport for HTTP/3.
+other/android-socks5-h3.patch

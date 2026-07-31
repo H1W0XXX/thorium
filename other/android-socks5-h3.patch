@@ -1,0 +1,1563 @@
+diff --git a/net/http/http_stream_factory_job.cc b/net/http/http_stream_factory_job.cc
+index 5b6433534e..92ebe38ed9 100644
+--- a/net/http/http_stream_factory_job.cc
++++ b/net/http/http_stream_factory_job.cc
+@@ -24,6 +24,7 @@
+ #include "net/base/port_util.h"
+ #include "net/base/proxy_chain.h"
+ #include "net/base/proxy_delegate.h"
++#include "net/base/proxy_server.h"
+ #include "net/base/session_usage.h"
+ #include "net/base/task/task_runner.h"
+ #include "net/base/url_util.h"
+@@ -62,6 +63,18 @@ namespace net {
+ 
+ namespace {
+ 
++bool IsSupportedQuicProxyChain(const ProxyChain& proxy_chain) {
++  if (proxy_chain.is_direct()) {
++    return true;
++  }
++  if (proxy_chain.is_single_proxy() &&
++      proxy_chain.Last().scheme() == ProxyServer::SCHEME_SOCKS5) {
++    return true;
++  }
++  return !proxy_chain.AnyProxy(
++      [](const ProxyServer& proxy) { return !proxy.is_quic(); });
++}
++
+ // Experiment to preconnect only one connection if HttpServerProperties is
+ // not supported or initialized.
+ BASE_FEATURE(kLimitEarlyPreconnectsExperiment,
+@@ -726,10 +739,9 @@ int HttpStreamFactory::Job::DoInitConnection() {
+ int HttpStreamFactory::Job::DoInitConnectionImpl() {
+   DCHECK(!connection_->is_initialized());
+ 
+-  if (using_quic_ && !proxy_info_.is_direct() &&
+-      !proxy_info_.proxy_chain().Last().is_quic()) {
+-    // QUIC can not be spoken to non-QUIC proxies.  This error should not be
+-    // user visible, because the non-alternative Job should be resumed.
++  if (using_quic_ && !IsSupportedQuicProxyChain(proxy_info_.proxy_chain())) {
++    // This error should not be user visible, because the non-alternative Job
++    // should be resumed.
+     return ERR_NO_SUPPORTED_PROXIES;
+   }
+ 
+@@ -852,16 +864,11 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
+       (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3);
+ 
+   ProxyChain proxy_chain = proxy_info_.proxy_chain();
+-  if (!proxy_chain.is_direct()) {
+-    // We only support proxying QUIC over QUIC. While MASQUE defines mechanisms
+-    // to carry QUIC traffic over non-QUIC proxies, the performance of these
+-    // mechanisms would be worse than simply using H/1 or H/2 to reach the
+-    // destination. The error for an invalid condition should not be user
+-    // visible, because the non-alternative Job should be resumed.
+-    if (proxy_chain.AnyProxy(
+-            [](const ProxyServer& s) { return !s.is_quic(); })) {
+-      return ERR_NO_SUPPORTED_PROXIES;
+-    }
++  if (!IsSupportedQuicProxyChain(proxy_chain)) {
++    // QUIC is supported over QUIC/MASQUE proxy chains and a single SOCKS5
++    // proxy with UDP ASSOCIATE. The error for any other chain should not be
++    // user visible because the non-alternative Job will be resumed.
++    return ERR_NO_SUPPORTED_PROXIES;
+   }
+ 
+   std::optional<NetworkTrafficAnnotationTag> traffic_annotation =
+diff --git a/net/quic/quic_session_attempt.cc b/net/quic/quic_session_attempt.cc
+index ec7876cd24..e75a038c40 100644
+--- a/net/quic/quic_session_attempt.cc
++++ b/net/quic/quic_session_attempt.cc
+@@ -19,6 +19,7 @@
+ #include "net/quic/address_utils.h"
+ #include "net/quic/quic_http_stream.h"
+ #include "net/quic/quic_session_pool.h"
++#include "net/socket/datagram_client_socket.h"
+ #include "net/spdy/multiplexed_session_creation_initiator.h"
+ #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+ 
+@@ -90,6 +91,32 @@ QuicSessionAttempt::QuicSessionAttempt(
+   DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
+ }
+ 
++QuicSessionAttempt::QuicSessionAttempt(
++    Delegate* delegate,
++    IPEndPoint proxy_peer_endpoint,
++    quic::ParsedQuicVersion quic_version,
++    int cert_verify_flags,
++    std::unique_ptr<DatagramClientSocket> proxy_datagram_socket,
++    MultiplexedSessionCreationInitiator session_creation_initiator,
++    std::optional<ConnectionManagementConfig> connection_management_config)
++    : delegate_(delegate),
++      ip_endpoint_(std::move(proxy_peer_endpoint)),
++      quic_version_(std::move(quic_version)),
++      cert_verify_flags_(cert_verify_flags),
++      dns_resolution_start_time_(base::TimeTicks::Now()),
++      dns_resolution_end_time_(dns_resolution_start_time_),
++      was_alternative_service_recently_broken_(
++          pool()->WasQuicRecentlyBroken(key().session_key())),
++      retry_on_alternate_network_before_handshake_(false),
++      use_dns_aliases_(false),
++      proxy_datagram_socket_(std::move(proxy_datagram_socket)),
++      session_creation_initiator_(session_creation_initiator),
++      connection_management_config_(connection_management_config) {
++  CHECK(delegate_);
++  CHECK(proxy_datagram_socket_);
++  DCHECK_NE(quic_version_, quic::ParsedQuicVersion::Unsupported());
++}
++
+ QuicSessionAttempt::QuicSessionAttempt(
+     Delegate* delegate,
+     IPEndPoint local_endpoint,
+@@ -183,7 +210,18 @@ int QuicSessionAttempt::DoCreateSession() {
+       "require_confirmation", require_confirmation);
+ 
+   int rv;
+-  if (proxy_stream_) {
++  if (proxy_datagram_socket_) {
++    // The proxy association follows the current default network. QUIC network
++    // migration cannot move a SOCKS5 TCP control connection and its UDP relay
++    // independently, so expose no migratable network handle for this session.
++    network_ = handles::kInvalidNetworkHandle;
++    rv = pool()->CreateSessionOnProxyDatagramSocket(
++        base::BindOnce(&QuicSessionAttempt::OnCreateSessionComplete,
++                       weak_ptr_factory_.GetWeakPtr()),
++        key(), quic_version_, cert_verify_flags_, require_confirmation,
++        ip_endpoint_, std::move(proxy_datagram_socket_), net_log(), network_,
++        session_creation_initiator_, connection_management_config_);
++  } else if (proxy_stream_) {
+     std::string user_agent;
+     if (http_user_agent_settings_) {
+       user_agent = http_user_agent_settings_->GetUserAgent();
+diff --git a/net/quic/quic_session_attempt.h b/net/quic/quic_session_attempt.h
+index 6bb89e34a9..3b2283c2c2 100644
+--- a/net/quic/quic_session_attempt.h
++++ b/net/quic/quic_session_attempt.h
+@@ -27,6 +27,7 @@
+ 
+ namespace net {
+ 
++class DatagramClientSocket;
+ class QuicSessionPool;
+ 
+ // Handles a single attempt to create a new QUIC session for an endpoint.
+@@ -95,6 +96,17 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
+       MultiplexedSessionCreationInitiator session_creation_initiator,
+       std::optional<ConnectionManagementConfig> connection_management_config);
+ 
++  // Create a SessionAttempt whose UDP packets are carried by a preconfigured
++  // proxy datagram socket (for example a SOCKS5 UDP association).
++  QuicSessionAttempt(
++      Delegate* delegate,
++      IPEndPoint proxy_peer_endpoint,
++      quic::ParsedQuicVersion quic_version,
++      int cert_verify_flags,
++      std::unique_ptr<DatagramClientSocket> proxy_datagram_socket,
++      MultiplexedSessionCreationInitiator session_creation_initiator,
++      std::optional<ConnectionManagementConfig> connection_management_config);
++
+   ~QuicSessionAttempt();
+ 
+   QuicSessionAttempt(const QuicSessionAttempt&) = delete;
+@@ -159,6 +171,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
+ 
+   // Fields only used for session attempts to a proxy.
+   std::unique_ptr<QuicChromiumClientStream::Handle> proxy_stream_;
++  std::unique_ptr<DatagramClientSocket> proxy_datagram_socket_;
+   const raw_ptr<const HttpUserAgentSettings> http_user_agent_settings_;
+   const IPEndPoint local_endpoint_;
+ 
+diff --git a/net/quic/quic_session_pool.cc b/net/quic/quic_session_pool.cc
+index 3e0cca96db..3d8e40e954 100644
+--- a/net/quic/quic_session_pool.cc
++++ b/net/quic/quic_session_pool.cc
+@@ -71,6 +71,7 @@
+ #include "net/quic/quic_session_pool_direct_job.h"
+ #include "net/quic/quic_session_pool_job.h"
+ #include "net/quic/quic_session_pool_proxy_job.h"
++#include "net/quic/quic_session_pool_socks5_job.h"
+ #include "net/socket/client_socket_factory.h"
+ #include "net/socket/next_proto.h"
+ #include "net/socket/socket_performance_watcher.h"
+@@ -104,6 +105,11 @@ namespace net {
+ 
+ namespace {
+ 
++bool IsSingleSocks5Proxy(const ProxyChain& proxy_chain) {
++  return proxy_chain.is_single_proxy() &&
++         proxy_chain.Last().scheme() == ProxyServer::SCHEME_SOCKS5;
++}
++
+ enum InitialRttEstimateSource {
+   INITIAL_RTT_DEFAULT,
+   INITIAL_RTT_CACHED,
+@@ -964,6 +970,12 @@ int QuicSessionPool::RequestSession(
+         use_dns_aliases, session_key.require_dns_https_alpn(),
+         cert_verify_flags, session_creation_initiator, management_config,
+         net_log);
++  } else if (IsSingleSocks5Proxy(session_key.proxy_chain())) {
++    job = std::make_unique<Socks5Job>(
++        this, quic_version, host_resolver_, std::move(key),
++        *proxy_annotation_tag, session_creation_initiator, management_config,
++        CreateCryptoConfigHandle(QuicCryptoClientConfigKey(session_key)),
++        priority, cert_verify_flags, net_log);
+   } else {
+     job = std::make_unique<ProxyJob>(
+         this, quic_version, std::move(key), *proxy_annotation_tag,
+@@ -1900,6 +1912,38 @@ int QuicSessionPool::CreateSessionAsync(
+   return ERR_IO_PENDING;
+ }
+ 
++int QuicSessionPool::CreateSessionOnProxyDatagramSocket(
++    CreateSessionCallback callback,
++    QuicSessionAliasKey key,
++    quic::ParsedQuicVersion quic_version,
++    int cert_verify_flags,
++    bool require_confirmation,
++    IPEndPoint proxy_peer_address,
++    std::unique_ptr<DatagramClientSocket> proxy_datagram_socket,
++    const NetLogWithSource& net_log,
++    handles::NetworkHandle network,
++    MultiplexedSessionCreationInitiator session_creation_initiator,
++    std::optional<ConnectionManagementConfig> connection_management_config) {
++  DatagramClientSocket* socket_ptr = proxy_datagram_socket.get();
++  const SocketTag socket_tag = key.session_key().socket_tag();
++  ConnectionEndpointMetadata metadata;
++  const base::TimeTicks dns_resolution_time = base::TimeTicks::Now();
++
++  CompletionOnceCallback connect_and_configure_callback = base::BindOnce(
++      &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
++      std::move(callback), std::move(key), quic_version, cert_verify_flags,
++      require_confirmation, proxy_peer_address, std::move(metadata),
++      dns_resolution_time, dns_resolution_time, std::nullopt,
++      /*session_max_packet_length=*/0, net_log, network,
++      std::move(proxy_datagram_socket), session_creation_initiator,
++      connection_management_config);
++
++  ConnectAndConfigureSocket(std::move(connect_and_configure_callback),
++                            socket_ptr, proxy_peer_address, network,
++                            socket_tag);
++  return ERR_IO_PENDING;
++}
++
+ int QuicSessionPool::CreateSessionOnProxyStream(
+     CreateSessionCallback callback,
+     QuicSessionAliasKey key,
+diff --git a/net/quic/quic_session_pool.h b/net/quic/quic_session_pool.h
+index a580bf6eaf..a569f67b43 100644
+--- a/net/quic/quic_session_pool.h
++++ b/net/quic/quic_session_pool.h
+@@ -561,6 +561,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
+   class Job;
+   class DirectJob;
+   class ProxyJob;
++  class Socks5Job;
+   class QuicCryptoClientConfigOwner;
+   class CryptoClientConfigHandle;
+   friend class QuicSessionAttempt;
+@@ -674,6 +675,18 @@ class NET_EXPORT_PRIVATE QuicSessionPool
+       std::string user_agent,
+       const NetLogWithSource& net_log,
+       handles::NetworkHandle network);
++  int CreateSessionOnProxyDatagramSocket(
++      CreateSessionCallback callback,
++      QuicSessionAliasKey key,
++      quic::ParsedQuicVersion quic_version,
++      int cert_verify_flags,
++      bool require_confirmation,
++      IPEndPoint proxy_peer_address,
++      std::unique_ptr<DatagramClientSocket> proxy_datagram_socket,
++      const NetLogWithSource& net_log,
++      handles::NetworkHandle network,
++      MultiplexedSessionCreationInitiator session_creation_initiator,
++      std::optional<ConnectionManagementConfig> connection_management_config);
+   void FinishCreateSession(
+       CreateSessionCallback callback,
+       QuicSessionAliasKey key,
+diff --git a/net/BUILD.gn b/net/BUILD.gn
+--- a/net/BUILD.gn
++++ b/net/BUILD.gn
+@@ -941,6 +941,8 @@ component("net") {
+     "quic/quic_session_pool_job.h",
+     "quic/quic_session_pool_proxy_job.cc",
+     "quic/quic_session_pool_proxy_job.h",
++    "quic/quic_session_pool_socks5_job.cc",
++    "quic/quic_session_pool_socks5_job.h",
+     "quic/set_quic_flag.cc",
+     "quic/set_quic_flag.h",
+     "quic/web_transport_client.cc",
+@@ -1007,6 +1009,8 @@ component("net") {
+     "socket/socket_tag.h",
+     "socket/socks5_client_socket.cc",
+     "socket/socks5_client_socket.h",
++    "socket/socks5_proxy_datagram_client_socket.cc",
++    "socket/socks5_proxy_datagram_client_socket.h",
+     "socket/socks_client_socket.cc",
+     "socket/socks_client_socket.h",
+     "socket/socks_connect_job.cc",
+@@ -3090,6 +3094,7 @@ target(_test_target_type, "net_unittests") {
+     "socket/socket_pool_additional_capacity_unittest.cc",
+     "socket/socket_tag_unittest.cc",
+     "socket/socks5_client_socket_unittest.cc",
++    "socket/socks5_proxy_datagram_client_socket_unittest.cc",
+     "socket/socks_client_socket_unittest.cc",
+     "socket/socks_connect_job_unittest.cc",
+     "socket/ssl_client_socket_unittest.cc",
+
+diff --git a/net/quic/quic_session_pool_socks5_job.cc b/net/quic/quic_session_pool_socks5_job.cc
+new file mode 100644
+--- /dev/null
++++ b/net/quic/quic_session_pool_socks5_job.cc
+@@ -0,0 +1,190 @@
++// Copyright 2026 The Thorium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "net/quic/quic_session_pool_socks5_job.h"
++
++#include "base/functional/bind.h"
++#include "net/base/host_port_pair.h"
++#include "net/base/net_errors.h"
++#include "net/base/proxy_chain.h"
++#include "net/base/proxy_server.h"
++#include "net/dns/host_resolver.h"
++#include "net/quic/quic_crypto_client_config_handle.h"
++#include "net/socket/client_socket_factory.h"
++#include "net/socket/socks5_proxy_datagram_client_socket.h"
++#include "net/socket/transport_client_socket.h"
++
++namespace net {
++
++QuicSessionPool::Socks5Job::Socks5Job(
++    QuicSessionPool* pool,
++    quic::ParsedQuicVersion target_quic_version,
++    HostResolver* host_resolver,
++    QuicSessionAliasKey key,
++    NetworkTrafficAnnotationTag proxy_annotation_tag,
++    MultiplexedSessionCreationInitiator session_creation_initiator,
++    std::optional<ConnectionManagementConfig> connection_management_config,
++    std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
++    RequestPriority priority,
++    int cert_verify_flags,
++    const NetLogWithSource& net_log)
++    : QuicSessionPool::Job::Job(
++          pool,
++          std::move(key),
++          std::move(client_config_handle),
++          priority,
++          NetLogWithSource::Make(
++              net_log.net_log(),
++              NetLogSourceType::QUIC_SESSION_POOL_PROXY_JOB)),
++      target_quic_version_(target_quic_version),
++      host_resolver_(host_resolver),
++      proxy_annotation_tag_(proxy_annotation_tag),
++      session_creation_initiator_(session_creation_initiator),
++      connection_management_config_(connection_management_config),
++      cert_verify_flags_(cert_verify_flags) {
++  const ProxyChain& proxy_chain = key_.session_key().proxy_chain();
++  CHECK(proxy_chain.is_single_proxy());
++  CHECK_EQ(proxy_chain.Last().scheme(), ProxyServer::SCHEME_SOCKS5);
++  CHECK(target_quic_version_.IsKnown());
++}
++
++QuicSessionPool::Socks5Job::~Socks5Job() = default;
++
++int QuicSessionPool::Socks5Job::Run(CompletionOnceCallback callback) {
++  int rv = DoLoop(OK);
++  if (rv == ERR_IO_PENDING) {
++    callback_ = std::move(callback);
++  }
++  return rv > 0 ? OK : rv;
++}
++
++void QuicSessionPool::Socks5Job::SetRequestExpectations(
++    QuicSessionRequest* request) {
++  const bool session_creation_finished =
++      session_attempt_ && session_attempt_->session_creation_finished();
++  if (!session_creation_finished) {
++    request->ExpectQuicSessionCreation();
++  }
++}
++
++void QuicSessionPool::Socks5Job::UpdatePriority(RequestPriority old_priority,
++                                                RequestPriority new_priority) {
++  if (old_priority != new_priority && resolve_host_request_) {
++    resolve_host_request_->ChangeRequestPriority(new_priority);
++  }
++}
++
++void QuicSessionPool::Socks5Job::PopulateNetErrorDetails(
++    NetErrorDetails* details) const {
++  if (session_attempt_) {
++    session_attempt_->PopulateNetErrorDetails(details);
++  }
++}
++
++int QuicSessionPool::Socks5Job::DoLoop(int rv) {
++  do {
++    const State state = next_state_;
++    next_state_ = State::kNone;
++    switch (state) {
++      case State::kNone:
++        NOTREACHED();
++      case State::kResolveProxy:
++        rv = DoResolveProxy();
++        break;
++      case State::kResolveProxyComplete:
++        rv = DoResolveProxyComplete(rv);
++        break;
++      case State::kConnectControl:
++        rv = DoConnectControl();
++        break;
++      case State::kConnectControlComplete:
++        rv = DoConnectControlComplete(rv);
++        break;
++      case State::kAttemptSession:
++        rv = DoAttemptSession();
++        break;
++    }
++  } while (next_state_ != State::kNone && rv != ERR_IO_PENDING);
++  return rv;
++}
++
++int QuicSessionPool::Socks5Job::DoResolveProxy() {
++  next_state_ = State::kResolveProxyComplete;
++
++  HostResolver::ResolveHostParameters parameters;
++  parameters.initial_priority = priority_;
++  parameters.secure_dns_policy = key_.session_key().secure_dns_policy();
++  resolve_host_request_ = host_resolver_->CreateRequest(
++      key_.session_key().proxy_chain().Last().host_port_pair(),
++      key_.session_key().network_anonymization_key(), net_log(), parameters);
++  return resolve_host_request_->Start(
++      base::BindOnce(&Socks5Job::OnIOComplete, base::Unretained(this)));
++}
++
++int QuicSessionPool::Socks5Job::DoResolveProxyComplete(int rv) {
++  if (rv != OK) {
++    return rv;
++  }
++  if (resolve_host_request_->GetAddressResults().empty()) {
++    return ERR_NAME_NOT_RESOLVED;
++  }
++  next_state_ = State::kConnectControl;
++  return OK;
++}
++
++int QuicSessionPool::Socks5Job::DoConnectControl() {
++  next_state_ = State::kConnectControlComplete;
++  control_socket_ = pool_->client_socket_factory_->CreateTransportClientSocket(
++      resolve_host_request_->GetAddressResults(),
++      /*socket_performance_watcher=*/nullptr,
++      /*network_quality_estimator=*/nullptr, net_log().net_log(),
++      net_log().source());
++  control_socket_->ApplySocketTag(key_.session_key().socket_tag());
++  return control_socket_->Connect(
++      base::BindOnce(&Socks5Job::OnIOComplete, base::Unretained(this)));
++}
++
++int QuicSessionPool::Socks5Job::DoConnectControlComplete(int rv) {
++  if (rv != OK) {
++    return rv;
++  }
++  rv = control_socket_->GetPeerAddress(&proxy_peer_endpoint_);
++  if (rv != OK) {
++    return rv;
++  }
++  next_state_ = State::kAttemptSession;
++  return OK;
++}
++
++int QuicSessionPool::Socks5Job::DoAttemptSession() {
++  auto proxy_datagram_socket =
++      std::make_unique<Socks5ProxyDatagramClientSocket>(
++          std::move(control_socket_),
++          pool_->CreateSocket(net_log().net_log(), net_log().source()),
++          HostPortPair::FromSchemeHostPort(key_.destination()),
++          proxy_annotation_tag_, net_log());
++
++  session_attempt_ = std::make_unique<QuicSessionAttempt>(
++      this, proxy_peer_endpoint_, target_quic_version_, cert_verify_flags_,
++      std::move(proxy_datagram_socket), session_creation_initiator_,
++      connection_management_config_);
++  return session_attempt_->Start(
++      base::BindOnce(&Socks5Job::OnSessionAttemptComplete, GetWeakPtr()));
++}
++
++void QuicSessionPool::Socks5Job::OnIOComplete(int rv) {
++  rv = DoLoop(rv);
++  if (rv != ERR_IO_PENDING && !callback_.is_null()) {
++    std::move(callback_).Run(rv);
++  }
++}
++
++void QuicSessionPool::Socks5Job::OnSessionAttemptComplete(int rv) {
++  CHECK_NE(rv, ERR_IO_PENDING);
++  if (!callback_.is_null()) {
++    std::move(callback_).Run(rv);
++  }
++}
++
++}  // namespace net
+diff --git a/net/quic/quic_session_pool_socks5_job.h b/net/quic/quic_session_pool_socks5_job.h
+new file mode 100644
+--- /dev/null
++++ b/net/quic/quic_session_pool_socks5_job.h
+@@ -0,0 +1,89 @@
++// Copyright 2026 The Thorium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef NET_QUIC_QUIC_SESSION_POOL_SOCKS5_JOB_H_
++#define NET_QUIC_QUIC_SESSION_POOL_SOCKS5_JOB_H_
++
++#include <memory>
++
++#include "base/memory/weak_ptr.h"
++#include "net/base/request_priority.h"
++#include "net/dns/host_resolver.h"
++#include "net/quic/quic_session_pool.h"
++#include "net/quic/quic_session_pool_job.h"
++#include "net/spdy/multiplexed_session_creation_initiator.h"
++#include "net/traffic_annotation/network_traffic_annotation.h"
++
++namespace net {
++
++class TransportClientSocket;
++
++// Creates an origin QUIC session over a single SOCKS5 UDP ASSOCIATE proxy.
++// The proxy hostname is resolved locally, while the destination hostname is
++// encoded in the SOCKS5 UDP header and resolved by the proxy.
++class QuicSessionPool::Socks5Job : public QuicSessionPool::Job {
++ public:
++  Socks5Job(
++      QuicSessionPool* pool,
++      quic::ParsedQuicVersion target_quic_version,
++      HostResolver* host_resolver,
++      QuicSessionAliasKey key,
++      NetworkTrafficAnnotationTag proxy_annotation_tag,
++      MultiplexedSessionCreationInitiator session_creation_initiator,
++      std::optional<ConnectionManagementConfig> connection_management_config,
++      std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
++      RequestPriority priority,
++      int cert_verify_flags,
++      const NetLogWithSource& net_log);
++
++  ~Socks5Job() override;
++
++  int Run(CompletionOnceCallback callback) override;
++  void SetRequestExpectations(QuicSessionRequest* request) override;
++  void UpdatePriority(RequestPriority old_priority,
++                      RequestPriority new_priority) override;
++  void PopulateNetErrorDetails(NetErrorDetails* details) const override;
++
++ private:
++  enum class State {
++    kNone,
++    kResolveProxy,
++    kResolveProxyComplete,
++    kConnectControl,
++    kConnectControlComplete,
++    kAttemptSession,
++  };
++
++  int DoLoop(int rv);
++  int DoResolveProxy();
++  int DoResolveProxyComplete(int rv);
++  int DoConnectControl();
++  int DoConnectControlComplete(int rv);
++  int DoAttemptSession();
++
++  void OnIOComplete(int rv);
++  void OnSessionAttemptComplete(int rv);
++
++  base::WeakPtr<Socks5Job> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
++
++  State next_state_ = State::kResolveProxy;
++  const quic::ParsedQuicVersion target_quic_version_;
++  const raw_ptr<HostResolver> host_resolver_;
++  const NetworkTrafficAnnotationTag proxy_annotation_tag_;
++  const MultiplexedSessionCreationInitiator session_creation_initiator_;
++  const std::optional<ConnectionManagementConfig> connection_management_config_;
++  const int cert_verify_flags_;
++
++  CompletionOnceCallback callback_;
++  std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;
++  std::unique_ptr<TransportClientSocket> control_socket_;
++  IPEndPoint proxy_peer_endpoint_;
++  std::unique_ptr<QuicSessionAttempt> session_attempt_;
++
++  base::WeakPtrFactory<Socks5Job> weak_factory_{this};
++};
++
++}  // namespace net
++
++#endif  // NET_QUIC_QUIC_SESSION_POOL_SOCKS5_JOB_H_
+diff --git a/net/socket/socks5_proxy_datagram_client_socket.cc b/net/socket/socks5_proxy_datagram_client_socket.cc
+new file mode 100644
+--- /dev/null
++++ b/net/socket/socks5_proxy_datagram_client_socket.cc
+@@ -0,0 +1,643 @@
++// Copyright 2026 The Thorium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "net/socket/socks5_proxy_datagram_client_socket.h"
++
++#include <algorithm>
++#include <array>
++#include <limits>
++#include <utility>
++
++#include "base/check.h"
++#include "base/containers/span.h"
++#include "base/functional/bind.h"
++#include "base/memory/ref_counted.h"
++#include "base/numerics/safe_conversions.h"
++#include "base/notreached.h"
++#include "base/numerics/byte_conversions.h"
++#include "net/base/io_buffer.h"
++#include "net/base/ip_address.h"
++#include "net/base/net_errors.h"
++#include "net/log/net_log.h"
++#include "net/log/net_log_event_type.h"
++#include "net/log/net_log_source_type.h"
++#include "net/socket/socket_tag.h"
++#include "net/socket/stream_socket.h"
++
++namespace net {
++
++namespace {
++
++constexpr uint8_t kSocksVersion = 0x05;
++constexpr uint8_t kNoAuthentication = 0x00;
++constexpr uint8_t kUdpAssociate = 0x03;
++constexpr uint8_t kReserved = 0x00;
++constexpr uint8_t kAddressTypeIpv4 = 0x01;
++constexpr uint8_t kAddressTypeDomain = 0x03;
++constexpr uint8_t kAddressTypeIpv6 = 0x04;
++constexpr size_t kInitialAssociateReplySize = 5;
++constexpr size_t kMaxSocksUdpHeaderSize = 4 + 1 + 255 + 2;
++
++scoped_refptr<DrainableIOBuffer> MakeDrainableBuffer(
++    std::vector<uint8_t> bytes) {
++  auto buffer = base::MakeRefCounted<VectorIOBuffer>(std::move(bytes));
++  const size_t size = buffer->size();
++  return base::MakeRefCounted<DrainableIOBuffer>(std::move(buffer),
++                                                 size);
++}
++
++}  // namespace
++
++Socks5ProxyDatagramClientSocket::Socks5ProxyDatagramClientSocket(
++    std::unique_ptr<StreamSocket> control_socket,
++    std::unique_ptr<DatagramClientSocket> udp_socket,
++    HostPortPair destination,
++    NetworkTrafficAnnotationTag traffic_annotation,
++    const NetLogWithSource& source_net_log)
++    : control_socket_(std::move(control_socket)),
++      udp_socket_(std::move(udp_socket)),
++      destination_(std::move(destination)),
++      traffic_annotation_(traffic_annotation),
++      net_log_(NetLogWithSource::Make(source_net_log.net_log(),
++                                      NetLogSourceType::SOCKET)) {
++  CHECK(control_socket_);
++  CHECK(udp_socket_);
++  net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE,
++                                       source_net_log.source());
++}
++
++Socks5ProxyDatagramClientSocket::~Socks5ProxyDatagramClientSocket() {
++  Close();
++  net_log_.EndEvent(NetLogEventType::SOCKET_ALIVE);
++}
++
++int Socks5ProxyDatagramClientSocket::Connect(const IPEndPoint& address) {
++  return ERR_NOT_IMPLEMENTED;
++}
++
++int Socks5ProxyDatagramClientSocket::ConnectUsingNetwork(
++    handles::NetworkHandle network,
++    const IPEndPoint& address) {
++  return ERR_NOT_IMPLEMENTED;
++}
++
++int Socks5ProxyDatagramClientSocket::ConnectUsingDefaultNetwork(
++    const IPEndPoint& address) {
++  return ERR_NOT_IMPLEMENTED;
++}
++
++int Socks5ProxyDatagramClientSocket::ConnectAsync(
++    const IPEndPoint& address,
++    CompletionOnceCallback callback) {
++  return StartConnect(ConnectNetworkMode::kDefault,
++                      handles::kInvalidNetworkHandle, std::move(callback));
++}
++
++int Socks5ProxyDatagramClientSocket::ConnectUsingNetworkAsync(
++    handles::NetworkHandle network,
++    const IPEndPoint& address,
++    CompletionOnceCallback callback) {
++  return StartConnect(ConnectNetworkMode::kSpecific, network,
++                      std::move(callback));
++}
++
++int Socks5ProxyDatagramClientSocket::ConnectUsingDefaultNetworkAsync(
++    const IPEndPoint& address,
++    CompletionOnceCallback callback) {
++  return StartConnect(ConnectNetworkMode::kExplicitDefault,
++                      handles::kInvalidNetworkHandle, std::move(callback));
++}
++
++int Socks5ProxyDatagramClientSocket::StartConnect(
++    ConnectNetworkMode mode,
++    handles::NetworkHandle network,
++    CompletionOnceCallback callback) {
++  CHECK_EQ(next_state_, State::kDisconnected);
++  CHECK(connect_callback_.is_null());
++  if (!control_socket_->IsConnected()) {
++    return ERR_SOCKET_NOT_CONNECTED;
++  }
++  if (destination_.host().empty() || destination_.host().size() > 255 ||
++      destination_.port() == 0) {
++    return ERR_ADDRESS_INVALID;
++  }
++
++  connect_network_mode_ = mode;
++  connect_network_ = network;
++  next_state_ = State::kGreetWrite;
++  int rv = DoLoop(OK);
++  if (rv == ERR_IO_PENDING) {
++    connect_callback_ = std::move(callback);
++  }
++  return rv;
++}
++
++int Socks5ProxyDatagramClientSocket::DoLoop(int result) {
++  while (result != ERR_IO_PENDING &&
++         next_state_ != State::kDisconnected &&
++         next_state_ != State::kConnected) {
++    State state = next_state_;
++    next_state_ = State::kDisconnected;
++    switch (state) {
++      case State::kGreetWrite:
++        result = DoGreetWrite();
++        break;
++      case State::kGreetWriteComplete:
++        result = DoGreetWriteComplete(result);
++        break;
++      case State::kGreetRead:
++        result = DoGreetRead();
++        break;
++      case State::kGreetReadComplete:
++        result = DoGreetReadComplete(result);
++        break;
++      case State::kAssociateWrite:
++        result = DoAssociateWrite();
++        break;
++      case State::kAssociateWriteComplete:
++        result = DoAssociateWriteComplete(result);
++        break;
++      case State::kAssociateRead:
++        result = DoAssociateRead();
++        break;
++      case State::kAssociateReadComplete:
++        result = DoAssociateReadComplete(result);
++        break;
++      case State::kUdpConnect:
++        result = DoUdpConnect();
++        break;
++      case State::kUdpConnectComplete:
++        result = DoUdpConnectComplete(result);
++        break;
++      case State::kDisconnected:
++      case State::kConnected:
++        NOTREACHED();
++    }
++  }
++  return result;
++}
++
++int Socks5ProxyDatagramClientSocket::DoGreetWrite() {
++  if (!control_write_buffer_) {
++    control_write_buffer_ =
++        MakeDrainableBuffer({kSocksVersion, 0x01, kNoAuthentication});
++  }
++  next_state_ = State::kGreetWriteComplete;
++  return control_socket_->Write(control_write_buffer_.get(),
++                                control_write_buffer_->BytesRemaining(),
++                                base::BindOnce(
++                                    &Socks5ProxyDatagramClientSocket::
++                                        OnConnectIOComplete,
++                                    base::Unretained(this)),
++                                traffic_annotation_);
++}
++
++int Socks5ProxyDatagramClientSocket::DoGreetWriteComplete(int result) {
++  if (result <= 0) {
++    return result == 0 ? ERR_CONNECTION_CLOSED : result;
++  }
++  control_write_buffer_->DidConsume(result);
++  if (control_write_buffer_->BytesRemaining() != 0) {
++    next_state_ = State::kGreetWrite;
++    return OK;
++  }
++  control_write_buffer_.reset();
++  control_read_buffer_ = base::MakeRefCounted<GrowableIOBuffer>();
++  control_read_buffer_->SetCapacity(2);
++  next_state_ = State::kGreetRead;
++  return OK;
++}
++
++int Socks5ProxyDatagramClientSocket::DoGreetRead() {
++  next_state_ = State::kGreetReadComplete;
++  return control_socket_->Read(
++      control_read_buffer_.get(), control_read_buffer_->RemainingCapacity(),
++      base::BindOnce(
++          &Socks5ProxyDatagramClientSocket::OnConnectIOComplete,
++          base::Unretained(this)));
++}
++
++int Socks5ProxyDatagramClientSocket::DoGreetReadComplete(int result) {
++  if (result <= 0) {
++    return result == 0 ? ERR_CONNECTION_CLOSED : result;
++  }
++  control_read_buffer_->set_offset(control_read_buffer_->offset() + result);
++  if (control_read_buffer_->RemainingCapacity() != 0) {
++    next_state_ = State::kGreetRead;
++    return OK;
++  }
++  const auto response = control_read_buffer_->span_before_offset();
++  if (response[0] != kSocksVersion || response[1] != kNoAuthentication) {
++    return ERR_SOCKS_CONNECTION_FAILED;
++  }
++  control_read_buffer_.reset();
++  next_state_ = State::kAssociateWrite;
++  return OK;
++}
++
++int Socks5ProxyDatagramClientSocket::DoAssociateWrite() {
++  if (!control_write_buffer_) {
++    // Request a relay for an unspecified IPv4 client address and port. The
++    // server returns the actual UDP relay endpoint in its reply.
++    control_write_buffer_ = MakeDrainableBuffer(
++        {kSocksVersion, kUdpAssociate, kReserved, kAddressTypeIpv4,
++         0x00, 0x00, 0x00, 0x00, 0x00, 0x00});
++  }
++  next_state_ = State::kAssociateWriteComplete;
++  return control_socket_->Write(control_write_buffer_.get(),
++                                control_write_buffer_->BytesRemaining(),
++                                base::BindOnce(
++                                    &Socks5ProxyDatagramClientSocket::
++                                        OnConnectIOComplete,
++                                    base::Unretained(this)),
++                                traffic_annotation_);
++}
++
++int Socks5ProxyDatagramClientSocket::DoAssociateWriteComplete(int result) {
++  if (result <= 0) {
++    return result == 0 ? ERR_CONNECTION_CLOSED : result;
++  }
++  control_write_buffer_->DidConsume(result);
++  if (control_write_buffer_->BytesRemaining() != 0) {
++    next_state_ = State::kAssociateWrite;
++    return OK;
++  }
++  control_write_buffer_.reset();
++  control_read_buffer_ = base::MakeRefCounted<GrowableIOBuffer>();
++  control_read_buffer_->SetCapacity(kInitialAssociateReplySize);
++  next_state_ = State::kAssociateRead;
++  return OK;
++}
++
++int Socks5ProxyDatagramClientSocket::DoAssociateRead() {
++  next_state_ = State::kAssociateReadComplete;
++  return control_socket_->Read(
++      control_read_buffer_.get(), control_read_buffer_->RemainingCapacity(),
++      base::BindOnce(
++          &Socks5ProxyDatagramClientSocket::OnConnectIOComplete,
++          base::Unretained(this)));
++}
++
++int Socks5ProxyDatagramClientSocket::DoAssociateReadComplete(int result) {
++  if (result <= 0) {
++    return result == 0 ? ERR_CONNECTION_CLOSED : result;
++  }
++  control_read_buffer_->set_offset(control_read_buffer_->offset() + result);
++  auto response = control_read_buffer_->span_before_offset();
++
++  if (response.size() < kInitialAssociateReplySize) {
++    next_state_ = State::kAssociateRead;
++    return OK;
++  }
++  if (response[0] != kSocksVersion || response[1] != 0x00 ||
++      response[2] != kReserved) {
++    return ERR_SOCKS_CONNECTION_FAILED;
++  }
++
++  size_t address_offset = 4;
++  size_t address_size = 0;
++  switch (response[3]) {
++    case kAddressTypeIpv4:
++      address_size = 4;
++      break;
++    case kAddressTypeIpv6:
++      address_size = 16;
++      break;
++    case kAddressTypeDomain:
++      // SOCKS5 permits a domain in BND.ADDR, but using one here would require
++      // a second asynchronous resolution after the control handshake. Most
++      // servers return an IP endpoint. Fail cleanly rather than leaking a
++      // direct destination connection.
++      return ERR_ADDRESS_INVALID;
++    default:
++      return ERR_ADDRESS_INVALID;
++  }
++
++  associate_reply_size_ = address_offset + address_size + 2;
++  const int associate_reply_size =
++      base::checked_cast<int>(associate_reply_size_);
++  if (control_read_buffer_->capacity() < associate_reply_size) {
++    control_read_buffer_->SetCapacity(associate_reply_size);
++  }
++  if (control_read_buffer_->offset() < associate_reply_size) {
++    next_state_ = State::kAssociateRead;
++    return OK;
++  }
++
++  response = control_read_buffer_->span_before_offset();
++  IPAddress relay_address(response.subspan(address_offset, address_size));
++  const size_t port_offset = address_offset + address_size;
++  const uint16_t relay_port =
++      static_cast<uint16_t>((response[port_offset] << 8) |
++                            response[port_offset + 1]);
++  if (relay_port == 0) {
++    return ERR_ADDRESS_INVALID;
++  }
++
++  if (relay_address.IsZero()) {
++    IPEndPoint control_peer;
++    int rv = control_socket_->GetPeerAddress(&control_peer);
++    if (rv != OK) {
++      return rv;
++    }
++    relay_address = control_peer.address();
++  }
++  relay_endpoint_ = IPEndPoint(std::move(relay_address), relay_port);
++  control_read_buffer_.reset();
++  next_state_ = State::kUdpConnect;
++  return OK;
++}
++
++int Socks5ProxyDatagramClientSocket::DoUdpConnect() {
++  next_state_ = State::kUdpConnectComplete;
++  auto callback = base::BindOnce(
++      &Socks5ProxyDatagramClientSocket::OnConnectIOComplete,
++      base::Unretained(this));
++  switch (connect_network_mode_) {
++    case ConnectNetworkMode::kDefault:
++      return udp_socket_->ConnectAsync(relay_endpoint_, std::move(callback));
++    case ConnectNetworkMode::kExplicitDefault:
++      return udp_socket_->ConnectUsingDefaultNetworkAsync(
++          relay_endpoint_, std::move(callback));
++    case ConnectNetworkMode::kSpecific:
++      return udp_socket_->ConnectUsingNetworkAsync(
++          connect_network_, relay_endpoint_, std::move(callback));
++  }
++  NOTREACHED();
++}
++
++int Socks5ProxyDatagramClientSocket::DoUdpConnectComplete(int result) {
++  if (result != OK) {
++    return result;
++  }
++  next_state_ = State::kConnected;
++  return OK;
++}
++
++void Socks5ProxyDatagramClientSocket::OnConnectIOComplete(int result) {
++  result = DoLoop(result);
++  if (result != ERR_IO_PENDING && !connect_callback_.is_null()) {
++    if (result != OK) {
++      next_state_ = State::kDisconnected;
++    }
++    std::move(connect_callback_).Run(result);
++  }
++}
++
++handles::NetworkHandle
++Socks5ProxyDatagramClientSocket::GetBoundNetwork() const {
++  return udp_socket_->GetBoundNetwork();
++}
++
++void Socks5ProxyDatagramClientSocket::ApplySocketTag(const SocketTag& tag) {
++  control_socket_->ApplySocketTag(tag);
++  udp_socket_->ApplySocketTag(tag);
++}
++
++int Socks5ProxyDatagramClientSocket::SetMulticastInterface(
++    uint32_t interface_index) {
++  return udp_socket_->SetMulticastInterface(interface_index);
++}
++
++void Socks5ProxyDatagramClientSocket::SetIOSNetworkServiceType(
++    int ios_network_service_type) {
++  udp_socket_->SetIOSNetworkServiceType(ios_network_service_type);
++}
++
++void Socks5ProxyDatagramClientSocket::Close() {
++  connect_callback_.Reset();
++  read_callback_.Reset();
++  write_callback_.Reset();
++  read_user_buffer_ = nullptr;
++  read_user_buffer_size_ = 0;
++  read_wire_buffer_.reset();
++  write_wire_buffer_.reset();
++  control_read_buffer_.reset();
++  control_write_buffer_.reset();
++  next_state_ = State::kDisconnected;
++  if (udp_socket_) {
++    udp_socket_->Close();
++  }
++  if (control_socket_) {
++    control_socket_->Disconnect();
++  }
++}
++
++int Socks5ProxyDatagramClientSocket::GetPeerAddress(
++    IPEndPoint* address) const {
++  if (next_state_ != State::kConnected) {
++    return ERR_SOCKET_NOT_CONNECTED;
++  }
++  *address = relay_endpoint_;
++  return OK;
++}
++
++int Socks5ProxyDatagramClientSocket::GetLocalAddress(
++    IPEndPoint* address) const {
++  return udp_socket_->GetLocalAddress(address);
++}
++
++void Socks5ProxyDatagramClientSocket::UseNonBlockingIO() {
++  udp_socket_->UseNonBlockingIO();
++}
++
++int Socks5ProxyDatagramClientSocket::SetDoNotFragment() {
++  return udp_socket_->SetDoNotFragment();
++}
++
++int Socks5ProxyDatagramClientSocket::SetRecvTos() {
++  return udp_socket_->SetRecvTos();
++}
++
++int Socks5ProxyDatagramClientSocket::SetTos(DiffServCodePoint dscp,
++                                             EcnCodePoint ecn) {
++  return udp_socket_->SetTos(dscp, ecn);
++}
++
++void Socks5ProxyDatagramClientSocket::SetMsgConfirm(bool confirm) {
++  udp_socket_->SetMsgConfirm(confirm);
++}
++
++const NetLogWithSource& Socks5ProxyDatagramClientSocket::NetLog() const {
++  return net_log_;
++}
++
++DscpAndEcn Socks5ProxyDatagramClientSocket::GetLastTos() const {
++  return udp_socket_->GetLastTos();
++}
++
++int Socks5ProxyDatagramClientSocket::Read(IOBuffer* buf,
++                                          int buf_len,
++                                          CompletionOnceCallback callback) {
++  CHECK(read_callback_.is_null());
++  CHECK(!read_user_buffer_);
++  if (next_state_ != State::kConnected) {
++    return ERR_SOCKET_NOT_CONNECTED;
++  }
++  if (buf_len <= 0 ||
++      buf_len > std::numeric_limits<int>::max() -
++                    static_cast<int>(kMaxSocksUdpHeaderSize)) {
++    return ERR_INVALID_ARGUMENT;
++  }
++
++  read_user_buffer_ = buf;
++  read_user_buffer_size_ = buf_len;
++  read_wire_buffer_ = base::MakeRefCounted<IOBufferWithSize>(
++      buf_len + static_cast<int>(kMaxSocksUdpHeaderSize));
++  int rv = udp_socket_->Read(
++      read_wire_buffer_.get(), read_wire_buffer_->size(),
++      base::BindOnce(&Socks5ProxyDatagramClientSocket::OnReadComplete,
++                     base::Unretained(this)));
++  if (rv == ERR_IO_PENDING) {
++    read_callback_ = std::move(callback);
++    return rv;
++  }
++  rv = ConsumeReadResult(rv);
++  read_user_buffer_ = nullptr;
++  read_user_buffer_size_ = 0;
++  read_wire_buffer_.reset();
++  return rv;
++}
++
++void Socks5ProxyDatagramClientSocket::OnReadComplete(int result) {
++  result = ConsumeReadResult(result);
++  read_user_buffer_ = nullptr;
++  read_user_buffer_size_ = 0;
++  read_wire_buffer_.reset();
++  std::move(read_callback_).Run(result);
++}
++
++int Socks5ProxyDatagramClientSocket::ConsumeReadResult(int result) {
++  if (result < 0) {
++    return result;
++  }
++  if (result < 4) {
++    return ERR_SOCKS_CONNECTION_FAILED;
++  }
++
++  const auto packet = read_wire_buffer_->span().first(
++      base::checked_cast<size_t>(result));
++  if (packet[0] != 0 || packet[1] != 0 || packet[2] != 0) {
++    // Fragmented SOCKS UDP packets are not supported. QUIC performs its own
++    // packetization and should not require SOCKS-level fragmentation.
++    return ERR_SOCKS_CONNECTION_FAILED;
++  }
++
++  size_t header_size = 0;
++  switch (packet[3]) {
++    case kAddressTypeIpv4:
++      header_size = 4 + 4 + 2;
++      break;
++    case kAddressTypeIpv6:
++      header_size = 4 + 16 + 2;
++      break;
++    case kAddressTypeDomain:
++      if (packet.size() < 5) {
++        return ERR_SOCKS_CONNECTION_FAILED;
++      }
++      header_size = 4 + 1 + packet[4] + 2;
++      break;
++    default:
++      return ERR_SOCKS_CONNECTION_FAILED;
++  }
++  if (packet.size() < header_size) {
++    return ERR_SOCKS_CONNECTION_FAILED;
++  }
++  const size_t payload_size = packet.size() - header_size;
++  if (payload_size > static_cast<size_t>(read_user_buffer_size_)) {
++    return ERR_MSG_TOO_BIG;
++  }
++  read_user_buffer_->span().copy_prefix_from(packet.subspan(header_size));
++  return static_cast<int>(payload_size);
++}
++
++int Socks5ProxyDatagramClientSocket::Write(
++    IOBuffer* buf,
++    int buf_len,
++    CompletionOnceCallback callback,
++    const NetworkTrafficAnnotationTag& traffic_annotation) {
++  CHECK(write_callback_.is_null());
++  if (next_state_ != State::kConnected) {
++    return ERR_SOCKET_NOT_CONNECTED;
++  }
++  if (buf_len < 0) {
++    return ERR_INVALID_ARGUMENT;
++  }
++
++  std::vector<uint8_t> header = BuildUdpHeader();
++  if (header.empty()) {
++    return ERR_ADDRESS_INVALID;
++  }
++  if (header.size() + static_cast<size_t>(buf_len) >
++      static_cast<size_t>(std::numeric_limits<int>::max())) {
++    return ERR_MSG_TOO_BIG;
++  }
++
++  write_payload_size_ = buf_len;
++  write_wire_buffer_ = base::MakeRefCounted<IOBufferWithSize>(
++      static_cast<int>(header.size()) + buf_len);
++  auto wire_span = write_wire_buffer_->span();
++  wire_span.first(header.size()).copy_from(base::span(header));
++  wire_span
++      .subspan(header.size(), base::checked_cast<size_t>(buf_len))
++      .copy_from(
++          buf->span().first(base::checked_cast<size_t>(buf_len)));
++
++  int rv = udp_socket_->Write(
++      write_wire_buffer_.get(), write_wire_buffer_->size(),
++      base::BindOnce(&Socks5ProxyDatagramClientSocket::OnWriteComplete,
++                     base::Unretained(this)),
++      traffic_annotation);
++  if (rv == ERR_IO_PENDING) {
++    write_callback_ = std::move(callback);
++    return rv;
++  }
++  rv = TranslateWriteResult(rv);
++  write_wire_buffer_.reset();
++  write_payload_size_ = 0;
++  return rv;
++}
++
++void Socks5ProxyDatagramClientSocket::OnWriteComplete(int result) {
++  result = TranslateWriteResult(result);
++  write_wire_buffer_.reset();
++  write_payload_size_ = 0;
++  std::move(write_callback_).Run(result);
++}
++
++int Socks5ProxyDatagramClientSocket::TranslateWriteResult(int result) const {
++  if (result < 0) {
++    return result;
++  }
++  if (!write_wire_buffer_ || result != write_wire_buffer_->size()) {
++    return ERR_FAILED;
++  }
++  return write_payload_size_;
++}
++
++std::vector<uint8_t>
++Socks5ProxyDatagramClientSocket::BuildUdpHeader() const {
++  const std::string& host = destination_.host();
++  if (host.empty() || host.size() > 255) {
++    return {};
++  }
++  std::vector<uint8_t> header;
++  header.reserve(4 + 1 + host.size() + 2);
++  header.insert(header.end(), {0x00, 0x00, 0x00, kAddressTypeDomain});
++  header.push_back(static_cast<uint8_t>(host.size()));
++  header.insert(header.end(), host.begin(), host.end());
++  const auto port = base::U16ToBigEndian(destination_.port());
++  header.insert(header.end(), port.begin(), port.end());
++  return header;
++}
++
++int Socks5ProxyDatagramClientSocket::SetReceiveBufferSize(int32_t size) {
++  return udp_socket_->SetReceiveBufferSize(size);
++}
++
++int Socks5ProxyDatagramClientSocket::SetSendBufferSize(int32_t size) {
++  return udp_socket_->SetSendBufferSize(size);
++}
++
++}  // namespace net
+diff --git a/net/socket/socks5_proxy_datagram_client_socket.h b/net/socket/socks5_proxy_datagram_client_socket.h
+new file mode 100644
+--- /dev/null
++++ b/net/socket/socks5_proxy_datagram_client_socket.h
+@@ -0,0 +1,168 @@
++// Copyright 2026 The Thorium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef NET_SOCKET_SOCKS5_PROXY_DATAGRAM_CLIENT_SOCKET_H_
++#define NET_SOCKET_SOCKS5_PROXY_DATAGRAM_CLIENT_SOCKET_H_
++
++#include <stddef.h>
++#include <stdint.h>
++
++#include <memory>
++#include <vector>
++
++#include "base/memory/raw_ptr.h"
++#include "net/base/completion_once_callback.h"
++#include "net/base/host_port_pair.h"
++#include "net/base/ip_endpoint.h"
++#include "net/base/net_export.h"
++#include "net/log/net_log_with_source.h"
++#include "net/socket/datagram_client_socket.h"
++#include "net/traffic_annotation/network_traffic_annotation.h"
++
++namespace net {
++
++class DrainableIOBuffer;
++class GrowableIOBuffer;
++class IOBufferWithSize;
++class StreamSocket;
++
++// A DatagramClientSocket that carries datagrams through a SOCKS5 UDP
++// ASSOCIATE relay (RFC 1928). The TCP control socket must already be connected
++// to the SOCKS5 server. Only the no-authentication method is supported.
++//
++// The TCP control connection is intentionally kept alive for the lifetime of
++// this socket because the UDP association terminates when that connection is
++// closed.
++class NET_EXPORT_PRIVATE Socks5ProxyDatagramClientSocket
++    : public DatagramClientSocket {
++ public:
++  Socks5ProxyDatagramClientSocket(
++      std::unique_ptr<StreamSocket> control_socket,
++      std::unique_ptr<DatagramClientSocket> udp_socket,
++      HostPortPair destination,
++      NetworkTrafficAnnotationTag traffic_annotation,
++      const NetLogWithSource& source_net_log);
++
++  Socks5ProxyDatagramClientSocket(
++      const Socks5ProxyDatagramClientSocket&) = delete;
++  Socks5ProxyDatagramClientSocket& operator=(
++      const Socks5ProxyDatagramClientSocket&) = delete;
++
++  ~Socks5ProxyDatagramClientSocket() override;
++
++  // DatagramClientSocket implementation.
++  int Connect(const IPEndPoint& address) override;
++  int ConnectUsingNetwork(handles::NetworkHandle network,
++                          const IPEndPoint& address) override;
++  int ConnectUsingDefaultNetwork(const IPEndPoint& address) override;
++  int ConnectAsync(const IPEndPoint& address,
++                   CompletionOnceCallback callback) override;
++  int ConnectUsingNetworkAsync(handles::NetworkHandle network,
++                               const IPEndPoint& address,
++                               CompletionOnceCallback callback) override;
++  int ConnectUsingDefaultNetworkAsync(const IPEndPoint& address,
++                                      CompletionOnceCallback callback) override;
++  handles::NetworkHandle GetBoundNetwork() const override;
++  void ApplySocketTag(const SocketTag& tag) override;
++  int SetMulticastInterface(uint32_t interface_index) override;
++  void SetIOSNetworkServiceType(int ios_network_service_type) override;
++
++  // DatagramSocket implementation.
++  void Close() override;
++  int GetPeerAddress(IPEndPoint* address) const override;
++  int GetLocalAddress(IPEndPoint* address) const override;
++  void UseNonBlockingIO() override;
++  int SetDoNotFragment() override;
++  int SetRecvTos() override;
++  int SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) override;
++  void SetMsgConfirm(bool confirm) override;
++  const NetLogWithSource& NetLog() const override;
++  DscpAndEcn GetLastTos() const override;
++
++  // Socket implementation.
++  int Read(IOBuffer* buf,
++           int buf_len,
++           CompletionOnceCallback callback) override;
++  int Write(IOBuffer* buf,
++            int buf_len,
++            CompletionOnceCallback callback,
++            const NetworkTrafficAnnotationTag& traffic_annotation) override;
++  int SetReceiveBufferSize(int32_t size) override;
++  int SetSendBufferSize(int32_t size) override;
++
++ private:
++  enum class State {
++    kDisconnected,
++    kGreetWrite,
++    kGreetWriteComplete,
++    kGreetRead,
++    kGreetReadComplete,
++    kAssociateWrite,
++    kAssociateWriteComplete,
++    kAssociateRead,
++    kAssociateReadComplete,
++    kUdpConnect,
++    kUdpConnectComplete,
++    kConnected,
++  };
++
++  enum class ConnectNetworkMode {
++    kDefault,
++    kExplicitDefault,
++    kSpecific,
++  };
++
++  int StartConnect(ConnectNetworkMode mode,
++                   handles::NetworkHandle network,
++                   CompletionOnceCallback callback);
++  int DoLoop(int result);
++  int DoGreetWrite();
++  int DoGreetWriteComplete(int result);
++  int DoGreetRead();
++  int DoGreetReadComplete(int result);
++  int DoAssociateWrite();
++  int DoAssociateWriteComplete(int result);
++  int DoAssociateRead();
++  int DoAssociateReadComplete(int result);
++  int DoUdpConnect();
++  int DoUdpConnectComplete(int result);
++
++  void OnConnectIOComplete(int result);
++  void OnReadComplete(int result);
++  void OnWriteComplete(int result);
++
++  int ConsumeReadResult(int result);
++  int TranslateWriteResult(int result) const;
++  std::vector<uint8_t> BuildUdpHeader() const;
++
++  std::unique_ptr<StreamSocket> control_socket_;
++  std::unique_ptr<DatagramClientSocket> udp_socket_;
++  const HostPortPair destination_;
++  const NetworkTrafficAnnotationTag traffic_annotation_;
++  NetLogWithSource net_log_;
++
++  State next_state_ = State::kDisconnected;
++  ConnectNetworkMode connect_network_mode_ = ConnectNetworkMode::kDefault;
++  handles::NetworkHandle connect_network_ =
++      handles::kInvalidNetworkHandle;
++  CompletionOnceCallback connect_callback_;
++
++  scoped_refptr<DrainableIOBuffer> control_write_buffer_;
++  scoped_refptr<GrowableIOBuffer> control_read_buffer_;
++  size_t associate_reply_size_ = 0;
++  IPEndPoint relay_endpoint_;
++
++  CompletionOnceCallback read_callback_;
++  raw_ptr<IOBuffer> read_user_buffer_ = nullptr;
++  int read_user_buffer_size_ = 0;
++  scoped_refptr<IOBufferWithSize> read_wire_buffer_;
++
++  CompletionOnceCallback write_callback_;
++  scoped_refptr<IOBufferWithSize> write_wire_buffer_;
++  int write_payload_size_ = 0;
++};
++
++}  // namespace net
++
++#endif  // NET_SOCKET_SOCKS5_PROXY_DATAGRAM_CLIENT_SOCKET_H_
+diff --git a/net/socket/socks5_proxy_datagram_client_socket_unittest.cc b/net/socket/socks5_proxy_datagram_client_socket_unittest.cc
+new file mode 100644
+--- /dev/null
++++ b/net/socket/socks5_proxy_datagram_client_socket_unittest.cc
+@@ -0,0 +1,141 @@
++// Copyright 2026 The Thorium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "net/socket/socks5_proxy_datagram_client_socket.h"
++
++#include <memory>
++#include <string>
++
++#include "net/base/address_list.h"
++#include "net/base/io_buffer.h"
++#include "net/base/ip_address.h"
++#include "net/base/test_completion_callback.h"
++#include "net/log/net_log.h"
++#include "net/log/net_log_source_type.h"
++#include "net/log/net_log_with_source.h"
++#include "net/socket/socket_test_util.h"
++#include "net/test/gtest_util.h"
++#include "net/test/test_with_task_environment.h"
++#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
++#include "testing/gtest/include/gtest/gtest.h"
++
++namespace net {
++
++namespace {
++
++using test::IsError;
++using test::IsOk;
++
++std::string Bytes(std::initializer_list<uint8_t> bytes) {
++  return std::string(reinterpret_cast<const char*>(bytes.begin()),
++                     bytes.size());
++}
++
++class Socks5ProxyDatagramClientSocketTest : public TestWithTaskEnvironment {
++ protected:
++  std::unique_ptr<StreamSocket> CreateConnectedControlSocket(
++      SocketDataProvider* data) {
++    AddressList addresses =
++        AddressList::CreateFromIPAddress(IPAddress(192, 0, 2, 10), 1080);
++    auto socket = std::make_unique<MockTCPClientSocket>(
++        addresses, NetLog::Get(), data);
++    TestCompletionCallback callback;
++    EXPECT_THAT(socket->Connect(callback.callback()), IsError(ERR_IO_PENDING));
++    EXPECT_THAT(callback.WaitForResult(), IsOk());
++    return socket;
++  }
++
++  NetLogWithSource source_net_log_{NetLogWithSource::Make(
++      NetLog::Get(), NetLogSourceType::SOCKET)};
++};
++
++TEST_F(Socks5ProxyDatagramClientSocketTest, HandshakeWriteAndRead) {
++  const std::string greet_request = Bytes({0x05, 0x01, 0x00});
++  const std::string greet_response = Bytes({0x05, 0x00});
++  const std::string associate_request =
++      Bytes({0x05, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00});
++  const std::string associate_response =
++      Bytes({0x05, 0x00, 0x00, 0x01, 198, 51, 100, 7, 0x14, 0xE9});
++
++  MockRead control_reads[] = {MockRead(SYNCHRONOUS, greet_response),
++                              MockRead(SYNCHRONOUS, associate_response)};
++  MockWrite control_writes[] = {MockWrite(SYNCHRONOUS, greet_request),
++                                MockWrite(SYNCHRONOUS, associate_request)};
++  StaticSocketDataProvider control_data(control_reads, control_writes);
++
++  const std::string payload = "quic packet";
++  std::string expected_write =
++      Bytes({0x00, 0x00, 0x00, 0x03, 0x0B});
++  expected_write.append("example.com");
++  expected_write.append(Bytes({0x01, 0xBB}));
++  expected_write.append(payload);
++
++  std::string udp_reply =
++      Bytes({0x00, 0x00, 0x00, 0x01, 203, 0, 113, 9, 0x01, 0xBB});
++  udp_reply.append(payload);
++  MockRead udp_reads[] = {MockRead(SYNCHRONOUS, udp_reply)};
++  MockWrite udp_writes[] = {MockWrite(SYNCHRONOUS, expected_write)};
++  StaticSocketDataProvider udp_data(udp_reads, udp_writes);
++  udp_data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
++
++  auto socket = std::make_unique<Socks5ProxyDatagramClientSocket>(
++      CreateConnectedControlSocket(&control_data),
++      std::make_unique<MockUDPClientSocket>(&udp_data),
++      HostPortPair("example.com", 443), TRAFFIC_ANNOTATION_FOR_TESTS,
++      source_net_log_);
++
++  TestCompletionCallback connect_callback;
++  EXPECT_THAT(socket->ConnectAsync(IPEndPoint(),
++                                   connect_callback.callback()),
++              IsOk());
++
++  IPEndPoint peer;
++  EXPECT_THAT(socket->GetPeerAddress(&peer), IsOk());
++  EXPECT_EQ(peer, IPEndPoint(IPAddress(198, 51, 100, 7), 5353));
++
++  auto write_buffer = base::MakeRefCounted<StringIOBuffer>(payload);
++  TestCompletionCallback write_callback;
++  EXPECT_EQ(socket->Write(write_buffer.get(), payload.size(),
++                          write_callback.callback(),
++                          TRAFFIC_ANNOTATION_FOR_TESTS),
++            static_cast<int>(payload.size()));
++
++  auto read_buffer = base::MakeRefCounted<IOBufferWithSize>(128);
++  TestCompletionCallback read_callback;
++  EXPECT_EQ(socket->Read(read_buffer.get(), read_buffer->size(),
++                         read_callback.callback()),
++            static_cast<int>(payload.size()));
++  EXPECT_EQ(std::string(read_buffer->data(), payload.size()), payload);
++
++  EXPECT_TRUE(control_data.AllReadDataConsumed());
++  EXPECT_TRUE(control_data.AllWriteDataConsumed());
++  EXPECT_TRUE(udp_data.AllReadDataConsumed());
++  EXPECT_TRUE(udp_data.AllWriteDataConsumed());
++}
++
++TEST_F(Socks5ProxyDatagramClientSocketTest, RejectsAuthenticationRequest) {
++  const std::string greet_request = Bytes({0x05, 0x01, 0x00});
++  const std::string auth_required = Bytes({0x05, 0x02});
++  MockRead control_reads[] = {MockRead(SYNCHRONOUS, auth_required)};
++  MockWrite control_writes[] = {MockWrite(SYNCHRONOUS, greet_request)};
++  StaticSocketDataProvider control_data(control_reads, control_writes);
++  StaticSocketDataProvider udp_data;
++  udp_data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
++
++  auto socket = std::make_unique<Socks5ProxyDatagramClientSocket>(
++      CreateConnectedControlSocket(&control_data),
++      std::make_unique<MockUDPClientSocket>(&udp_data),
++      HostPortPair("example.com", 443), TRAFFIC_ANNOTATION_FOR_TESTS,
++      source_net_log_);
++
++  TestCompletionCallback callback;
++  EXPECT_THAT(socket->ConnectAsync(IPEndPoint(), callback.callback()),
++              IsError(ERR_SOCKS_CONNECTION_FAILED));
++  EXPECT_TRUE(control_data.AllReadDataConsumed());
++  EXPECT_TRUE(control_data.AllWriteDataConsumed());
++}
++
++}  // namespace
++
++}  // namespace net

@@ -111,6 +111,12 @@
      "Encrypted ClientHello",
      "Controls whether Thorium allows TLS Encrypted ClientHello. Enabled still requires server support and usable HTTPS/SVCB DNS records.",
      kOsAll, MULTI_VALUE_TYPE(kEncryptedClientHelloChoices)},
+#if BUILDFLAG(IS_ANDROID)
+    {"thorium-socks5-h3-proxy",
+     "SOCKS5 proxy with HTTP/3",
+     "Enter a proxy as socks5://host:port. While enabled, Thorium ignores the Android system proxy and sends HTTP/1.1, HTTP/2, and HTTP/3 through this SOCKS5 proxy. HTTP/3 requires UDP ASSOCIATE support. Authentication is not supported yet. Reset this flag to restore normal system proxy or direct behavior.",
+     kOsAndroid, STRING_VALUE_TYPE(switches::kProxyServer, "")},
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
     {"show-component-extension-options",

@@ -119,3 +119,16 @@ python3 build.py --expect-os android --expect-cpu arm64
 
 Replace `arm64` with `arm`, `x86`, or `x64` when using the corresponding
 configuration.
+
+## Experimental SOCKS5 HTTP/3 proxy
+
+Open `chrome://flags/#thorium-socks5-h3-proxy`, select **Enabled**, and enter
+`socks5://host:port`. Relaunch Thorium. This overrides Android's system proxy;
+HTTP/1.1 and HTTP/2 use the normal SOCKS5 TCP tunnel, while HTTP/3 uses SOCKS5
+`UDP ASSOCIATE`. The proxy must support that command. Authentication is not yet
+supported.
+
+Reset the flag to **Default** to restore normal Android system-proxy or direct
+behavior. If the UDP association or QUIC handshake fails, Chromium's normal
+alternative-service racing can continue over HTTP/2 through the same SOCKS5
+proxy. HTTP/3 is attempted after the origin advertises it with `Alt-Svc`.

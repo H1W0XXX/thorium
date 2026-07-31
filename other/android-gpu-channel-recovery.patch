@@ -1,0 +1,141 @@
+diff --git a/content/browser/gpu/browser_gpu_channel_host_factory.cc b/content/browser/gpu/browser_gpu_channel_host_factory.cc
+index ad53478e86..d69c9c69e7 100644
+--- a/content/browser/gpu/browser_gpu_channel_host_factory.cc
++++ b/content/browser/gpu/browser_gpu_channel_host_factory.cc
+@@ -23,10 +23,12 @@
+ #include "content/browser/gpu/gpu_data_manager_impl.h"
+ #include "content/browser/gpu/gpu_disk_cache_factory.h"
+ #include "content/browser/gpu/gpu_process_host.h"
++#include "content/browser/web_contents/web_contents_impl.h"
+ #include "content/public/browser/browser_task_traits.h"
+ #include "content/public/browser/browser_thread.h"
+ #include "content/public/browser/content_browser_client.h"
+ #include "content/public/browser/gpu_data_manager.h"
++#include "content/public/browser/navigation_controller.h"
+ #include "content/public/common/content_client.h"
+ #include "content/public/common/content_switches.h"
+ #include "gpu/ipc/common/gpu_client_ids.h"
+@@ -43,6 +45,27 @@ namespace {
+ 
+ #if BUILDFLAG(IS_ANDROID)
+ 
++constexpr int kMaxGpuChannelRecoveryAttempts = 3;
++
++void ReloadVisibleWebContentsAfterGpuRecovery() {
++  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
++
++  size_t reload_count = 0;
++  for (WebContentsImpl* web_contents : WebContentsImpl::GetAllWebContents()) {
++    if (web_contents->GetVisibility() != Visibility::VISIBLE)
++      continue;
++    if (!web_contents->GetController().GetLastCommittedEntry())
++      continue;
++
++    web_contents->GetController().Reload(
++        ReloadType::NORMAL, /*check_for_repost=*/false);
++    ++reload_count;
++  }
++
++  LOG(WARNING) << "Reloaded " << reload_count
++               << " visible WebContents after Android GPU recovery.";
++}
++
+ // This is used as the stack frame to group these timeout crashes, so avoid
+ // renaming it or moving the LOG(FATAL) call.
+ NOINLINE void TimedOut() {
+@@ -423,10 +446,64 @@ void BrowserGpuChannelHostFactory::GpuChannelEstablished(
+   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+   DCHECK(!pending_request_ || pending_request_ == request);
+   gpu_channel_ = request->gpu_channel();
++#if BUILDFLAG(IS_ANDROID)
++  const bool recovered_from_timeout =
++      gpu_channel_ && gpu_channel_recovery_attempts_ > 0;
++#endif
+   pending_request_ = nullptr;
++  gpu_channel_recovery_attempts_ = 0;
+   timeout_.Stop();
+   if (gpu_channel_)
+     GetContentClient()->SetGpuInfo(gpu_channel_->gpu_info());
++#if BUILDFLAG(IS_ANDROID)
++  if (recovered_from_timeout) {
++    GetUIThreadTaskRunner({})->PostTask(
++        FROM_HERE, base::BindOnce(&ReloadVisibleWebContentsAfterGpuRecovery));
++  }
++#endif
++}
++
++void BrowserGpuChannelHostFactory::RecoverFromTimeout() {
++  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
++#if BUILDFLAG(IS_ANDROID)
++  if (!pending_request_ || !is_visible_)
++    return;
++
++  if (gpu_channel_recovery_attempts_ >= kMaxGpuChannelRecoveryAttempts) {
++    DumpGpuStackOnProcessThread();
++    return;
++  }
++
++  ++gpu_channel_recovery_attempts_;
++  LOG(ERROR) << "GPU channel timed out; discarding the stale GPU host and "
++                "retrying (attempt "
++             << gpu_channel_recovery_attempts_ << "/"
++             << kMaxGpuChannelRecoveryAttempts << ").";
++
++  GpuProcessHost* host =
++      GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false);
++  if (host)
++    host->DumpProcessStack();
++
++  std::vector<gpu::GpuChannelEstablishedCallback> callbacks =
++      pending_request_->TakeCallbacks();
++  pending_request_->Cancel();
++  pending_request_ = nullptr;
++  CloseChannel();
++
++  // ForceShutdown() removes this host from the global host table immediately,
++  // so EstablishRequest::Create() below cannot attach to the stale Android
++  // service connection.
++  if (host)
++    host->ForceShutdown();
++
++  scoped_refptr<EstablishRequest> request = EstablishRequest::Create(
++      gpu_client_id_, gpu_client_tracing_id_, /*sync=*/false,
++      std::move(callbacks));
++  if (!request->finished())
++    pending_request_ = std::move(request);
++  RestartTimeout();
++#endif
+ }
+ 
+ void BrowserGpuChannelHostFactory::RestartTimeout() {
+@@ -462,7 +539,9 @@ void BrowserGpuChannelHostFactory::RestartTimeout() {
+ #endif
+ 
+   timeout_.Start(FROM_HERE, base::Seconds(kGpuChannelTimeoutInSeconds),
+-                 base::BindOnce(&DumpGpuStackOnProcessThread));
++                 base::BindOnce(
++                     &BrowserGpuChannelHostFactory::RecoverFromTimeout,
++                     base::Unretained(this)));
+ #endif  // BUILDFLAG(IS_ANDROID)
+ }
+ 
+diff --git a/content/browser/gpu/browser_gpu_channel_host_factory.h b/content/browser/gpu/browser_gpu_channel_host_factory.h
+index 7cebc6e4a7..a2bf94665c 100644
+--- a/content/browser/gpu/browser_gpu_channel_host_factory.h
++++ b/content/browser/gpu/browser_gpu_channel_host_factory.h
+@@ -62,6 +62,7 @@ class BrowserGpuChannelHostFactory : public gpu::GpuChannelEstablishFactory {
+                            bool sync);
+ 
+   void GpuChannelEstablished(EstablishRequest* request);
++  void RecoverFromTimeout();
+   void RestartTimeout();
+ 
+   const int gpu_client_id_;
+@@ -70,6 +71,7 @@ class BrowserGpuChannelHostFactory : public gpu::GpuChannelEstablishFactory {
+   scoped_refptr<EstablishRequest> pending_request_;
+   bool is_visible_ = true;
+ 
++  int gpu_channel_recovery_attempts_ = 0;
+   base::OneShotTimer timeout_;
+ 
+   // instance() might be inlined at a call site so instance_ must also be

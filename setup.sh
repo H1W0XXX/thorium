@@ -368,6 +368,14 @@ esac
 copyAndroid () {
 	printf "\n" &&
 	printf "${YEL}Copying Android (ARM64 and ARM32) build files...${c0}\n" &&
+	cp -v other/android-gpu-channel-recovery.patch ${CR_SRC_DIR}/ &&
+	cd ${CR_SRC_DIR} &&
+	if git apply --check ./android-gpu-channel-recovery.patch; then
+		git apply ./android-gpu-channel-recovery.patch
+	elif ! git apply --reverse --check ./android-gpu-channel-recovery.patch; then
+		die "${RED}Failed to apply Android GPU channel recovery patch${c0}"
+	fi &&
+	cd ~/thorium &&
 	cp -r -v arm/build/* ${CR_SRC_DIR}/build/ &&
 	cp -r -v arm/third_party/* ${CR_SRC_DIR}/third_party/ &&
 	printf "\n" &&
